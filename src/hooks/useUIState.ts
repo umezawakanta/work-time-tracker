@@ -21,6 +21,9 @@ export const FEATURE_IDS = {
   SOUND_APP: 'sound-app',
   NOTIFICATIONS: 'notifications',
   VERSION_INFO: 'version-info',
+  THEME_SETTINGS: 'theme-settings',
+  FONT_SETTINGS: 'font-settings',
+  FEATURE_SETTINGS: 'feature-settings',
 } as const;
 
 export const useUIState = () => {
@@ -45,6 +48,9 @@ export const useUIState = () => {
   const [showSoundApp, setShowSoundApp] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showVersionInfo, setShowVersionInfo] = useState(false);
+  const [showThemeSettings, setShowThemeSettings] = useState(false);
+  const [showFontSettings, setShowFontSettings] = useState(false);
+  const [showFeatureSettings, setShowFeatureSettings] = useState(false);
 
   // ドラッグ&ドロップ状態
   const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
@@ -165,6 +171,9 @@ export const useUIState = () => {
     setShowSoundApp(activeFeature === FEATURE_IDS.SOUND_APP);
     setShowNotifications(activeFeature === FEATURE_IDS.NOTIFICATIONS);
     setShowVersionInfo(activeFeature === FEATURE_IDS.VERSION_INFO);
+    setShowThemeSettings(activeFeature === FEATURE_IDS.THEME_SETTINGS);
+    setShowFontSettings(activeFeature === FEATURE_IDS.FONT_SETTINGS);
+    setShowFeatureSettings(activeFeature === FEATURE_IDS.FEATURE_SETTINGS);
   };
 
   // テーマ適用
@@ -229,6 +238,12 @@ export const useUIState = () => {
     setShowNotifications,
     showVersionInfo,
     setShowVersionInfo,
+    showThemeSettings,
+    setShowThemeSettings,
+    showFontSettings,
+    setShowFontSettings,
+    showFeatureSettings,
+    setShowFeatureSettings,
 
     // ドラッグ&ドロップ
     draggedFeature,

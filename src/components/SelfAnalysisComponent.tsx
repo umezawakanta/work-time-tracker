@@ -610,7 +610,8 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                               <div className="progress-bar">
                                 <div 
                                   className="progress-fill" 
-                                  style={{'--percentage': `${percentage}%`} as React.CSSProperties}
+                                  // eslint-disable-next-line react/forbid-dom-props
+                                  style={{ width: `${percentage}%` }}
                                 ></div>
                               </div>
                               <span className="time-value">{hours.toFixed(1)}h</span>

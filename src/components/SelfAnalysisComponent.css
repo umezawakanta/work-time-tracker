@@ -510,7 +510,7 @@
   background: linear-gradient(90deg, var(--primary-color, #3b82f6), var(--primary-light, #60a5fa));
   border-radius: 4px;
   transition: width 0.3s ease;
-  width: var(--percentage, 0%);
+  width: 0%;
 }
 
 .time-value {
