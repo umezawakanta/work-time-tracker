@@ -3,6 +3,14 @@ import { apiFetch } from '../utils/apiClient';
 import { User, Project, ReportSummary, AdminUser, Book, Memo, IncomeExpenseRecord, WorkDiary } from '../types';
 
 export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
+  // デバッグログの追加
+  useEffect(() => {
+    console.log('useDataFetching - Initialized with:', {
+      isLoggedIn,
+      user: user ? { id: user.id, email: user.email, displayName: user.displayName } : null
+    });
+  }, [isLoggedIn, user]);
+
   // ローディング状態
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
   const [projectsLoading, setProjectsLoading] = useState(false);

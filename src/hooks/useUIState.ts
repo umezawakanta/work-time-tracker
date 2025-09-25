@@ -24,6 +24,11 @@ export const FEATURE_IDS = {
 } as const;
 
 export const useUIState = () => {
+  // デバッグログの追加
+  useEffect(() => {
+    console.log('useUIState - Initialized');
+  }, []);
+
   // 機能表示状態
   const [showCharacterHome, setShowCharacterHome] = useState(false);
   const [showProjects, setShowProjects] = useState(false);

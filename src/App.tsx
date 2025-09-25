@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import LoginForm from "./components/LoginForm";
 import MainLayout from "./components/MainLayout";
@@ -16,11 +16,35 @@ import BugReportModal from "./components/BugReportModal";
 import { setErrorReportCallback } from "./utils/apiClient";
 
 function App() {
+  // エラーハンドリングの追加
+  const [appError, setAppError] = useState<Error | null>(null);
+
   // カスタムフックの使用
   const auth = useAuth();
   const errorHandling = useErrorHandling();
   const dataFetching = useDataFetching(auth.isLoggedIn, auth.user);
   const uiState = useUIState();
+
+  // エラーキャッチ用のuseEffect
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('App.tsx - Global error caught:', event.error);
+      setAppError(event.error);
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('App.tsx - Unhandled promise rejection:', event.reason);
+      setAppError(new Error(`Unhandled promise rejection: ${event.reason}`));
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
 
   // デバッグログの追加
   React.useEffect(() => {
@@ -33,10 +57,55 @@ function App() {
     });
   }, [auth.isLoggedIn, auth.isCheckingAuth, auth.user, auth.loading, auth.message]);
 
+  // エラーハンドリングの状態もログ出力
+  React.useEffect(() => {
+    console.log('App.tsx - Error handling state:', {
+      showErrorModal: errorHandling.showErrorModal,
+      currentError: errorHandling.currentError,
+      showSimpleErrorModal: errorHandling.showSimpleErrorModal,
+      showUpdateRequestModal: errorHandling.showUpdateRequestModal,
+      showBugReportModal: errorHandling.showBugReportModal
+    });
+  }, [errorHandling.showErrorModal, errorHandling.currentError, errorHandling.showSimpleErrorModal, errorHandling.showUpdateRequestModal, errorHandling.showBugReportModal]);
+
+  // UI状態もログ出力
+  React.useEffect(() => {
+    console.log('App.tsx - UI state:', {
+      showCharacterHome: uiState.showCharacterHome,
+      showProjects: uiState.showProjects,
+      showCookingTimer: uiState.showCookingTimer,
+      showSelfAnalysis: uiState.showSelfAnalysis,
+      showBookshelf: uiState.showBookshelf,
+      showMemos: uiState.showMemos,
+      showReports: uiState.showReports,
+      showAdminPanel: uiState.showAdminPanel,
+      showTimeTracking: uiState.showTimeTracking,
+      showTimers: uiState.showTimers,
+      showPublicMemos: uiState.showPublicMemos,
+      showWorkRecords: uiState.showWorkRecords,
+      showSoundApp: uiState.showSoundApp,
+      showNotifications: uiState.showNotifications,
+      showVersionInfo: uiState.showVersionInfo
+    });
+  }, [uiState]);
+
   // エラーレポートコールバックの設定
   React.useEffect(() => {
     setErrorReportCallback(errorHandling.handleApiErrorReport);
   }, [errorHandling.handleApiErrorReport]);
+
+  // アプリエラーが発生した場合
+  if (appError) {
+    return (
+      <div className="error-container">
+        <h2>アプリケーションエラーが発生しました</h2>
+        <p>エラー詳細: {appError.message}</p>
+        <button onClick={() => window.location.reload()}>
+          ページを再読み込み
+        </button>
+      </div>
+    );
+  }
 
   // 認証チェック中はローディング表示
   if (auth.isCheckingAuth) {
