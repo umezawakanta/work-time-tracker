@@ -999,7 +999,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                 const chordVolume = balanceScore > 0.7 ? 0.5 : 0.3;
                 pianoInst.volume.value =
                   Math.log10(Math.max(0.001, chordVolume)) * 20;
-                pianoInst.triggerAttackRelease(chord.notes, "2s");
+                // 和音を個別の音符として順次再生
+                chord.notes.forEach((note, index) => {
+                  setTimeout(() => {
+                    pianoInst.triggerAttackRelease(note, "2s");
+                  }, index * 50); // 50ms間隔で順次再生
+                });
               } catch (e) {
                 console.error("Chord playback failed:", e);
               }
