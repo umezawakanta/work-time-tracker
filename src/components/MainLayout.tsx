@@ -91,6 +91,28 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setShowVersionInfo,
   closeOtherFeatures,
 }) => {
+  // デバッグログの追加
+  React.useEffect(() => {
+    console.log('MainLayout - Props received:', {
+      user: user ? { id: user.id, email: user.email, displayName: user.displayName } : null,
+      isLoggedIn,
+      showCharacterHome,
+      showProjects,
+      showCookingTimer,
+      showSelfAnalysis,
+      showBookshelf,
+      showMemos,
+      showReports,
+      showAdminPanel,
+      showTimeTracking,
+      showTimers,
+      showPublicMemos,
+      showWorkRecords,
+      showSoundApp,
+      showNotifications,
+      showVersionInfo,
+    });
+  }, [user, isLoggedIn, showCharacterHome, showProjects, showCookingTimer, showSelfAnalysis, showBookshelf, showMemos, showReports, showAdminPanel, showTimeTracking, showTimers, showPublicMemos, showWorkRecords, showSoundApp, showNotifications, showVersionInfo]);
   return (
     <div className="app">
       <HeaderComponent

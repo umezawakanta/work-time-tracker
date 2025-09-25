@@ -17,20 +17,25 @@ export const apiFetch = async (
   options: RequestInit = {}
 ): Promise<Response> => {
   try {
+    console.log('apiFetch - Making request to:', url, 'with options:', options);
     const response = await fetch(url, options);
+    console.log('apiFetch - Response status:', response.status, 'for URL:', url);
     
     // HTTPエラーステータスをチェック
     if (!response.ok) {
+      console.log('apiFetch - HTTP error:', response.status, response.statusText);
       const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
       const apiError = createApiError(error, response, { url, method: options.method || 'GET' });
       
       // エラー報告コールバックが設定されている場合は呼び出し
       if (globalErrorReportCallback) {
+        console.log('apiFetch - Calling error report callback');
         globalErrorReportCallback(apiError);
       }
       
       // 401 Unauthorizedの場合は特別な処理（エラー報告後に実行）
       if (response.status === 401) {
+        console.log('apiFetch - 401 Unauthorized, clearing tokens and reloading page');
         // 認証トークンをクリア
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');

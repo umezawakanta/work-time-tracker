@@ -16,33 +16,43 @@ export const useAuth = () => {
 
   // 認証チェック
   const checkAuth = async () => {
-    const token = getAuthToken();
+    console.log('useAuth - Starting auth check...');
+    const token = getAuthToken((message) => console.log('getAuthToken message:', message));
+    console.log('useAuth - Token found:', !!token);
+    
     if (!token) {
+      console.log('useAuth - No token found, setting isCheckingAuth to false');
       setIsCheckingAuth(false);
       return;
     }
 
     try {
+      console.log('useAuth - Verifying token with API...');
       const response = await apiFetch('/api/auth/verify', {
         method: 'POST',
         headers: createAuthHeaders(),
       });
 
+      console.log('useAuth - Verify response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('useAuth - Verification successful, user data:', data.user);
         setUser(data.user);
         setIsLoggedIn(true);
       } else {
+        console.log('useAuth - Verification failed, removing token');
         localStorage.removeItem('authToken');
         setIsLoggedIn(false);
         setUser(null);
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error('useAuth - Auth check failed:', error);
       localStorage.removeItem('authToken');
       setIsLoggedIn(false);
       setUser(null);
     } finally {
+      console.log('useAuth - Setting isCheckingAuth to false');
       setIsCheckingAuth(false);
     }
   };

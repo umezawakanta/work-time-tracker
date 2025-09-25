@@ -22,6 +22,17 @@ function App() {
   const dataFetching = useDataFetching(auth.isLoggedIn, auth.user);
   const uiState = useUIState();
 
+  // デバッグログの追加
+  React.useEffect(() => {
+    console.log('App.tsx - Auth state:', {
+      isLoggedIn: auth.isLoggedIn,
+      isCheckingAuth: auth.isCheckingAuth,
+      user: auth.user,
+      loading: auth.loading,
+      message: auth.message
+    });
+  }, [auth.isLoggedIn, auth.isCheckingAuth, auth.user, auth.loading, auth.message]);
+
   // エラーレポートコールバックの設定
   React.useEffect(() => {
     setErrorReportCallback(errorHandling.handleApiErrorReport);

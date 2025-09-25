@@ -7,7 +7,9 @@
  */
 export const getAuthToken = (setMessage: (message: string) => void): string | null => {
   const token = localStorage.getItem('access_token');
+  console.log('getAuthToken - Token found:', !!token);
   if (!token) {
+    console.log('getAuthToken - No token found, setting message');
     setMessage('ログインが必要です');
     return null;
   }

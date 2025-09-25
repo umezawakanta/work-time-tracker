@@ -32,6 +32,7 @@ export const useErrorHandling = () => {
   };
 
   const handleApiErrorReport = (errorInfo: ApiErrorInfo) => {
+    console.log('useErrorHandling - API error report received:', errorInfo);
     setCurrentError(new Error(errorInfo.message));
     setShowErrorModal(true);
   };
