@@ -331,7 +331,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       // 拍子記号と調号を追加（VexFlowが解釈できない場合はCにフォールバック）
       const keyForVexflow =
         typeof scoreData.key === "string" &&
-        SUPPORTED_KEY_SIGNATURES.includes(scoreData.key)
+        SUPPORTED_KEY_SIGNATURES.includes(scoreData.key as any)
           ? scoreData.key
           : "C";
       stave
