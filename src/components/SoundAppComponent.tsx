@@ -693,7 +693,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         if (categoryId === "staple" || genre === "japanese") {
           instrument.triggerAttackRelease("C2", duration + "s");
         } else {
-          instrument.triggerAttackRelease(frequency, duration + "s");
+          instrument.triggerAttackRelease(Tone.Frequency(frequency, "hz").toNote(), duration + "s");
         }
       } catch (error) {
         console.log(`Could not play sound for ${categoryId}`);
