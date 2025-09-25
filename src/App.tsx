@@ -1698,41 +1698,15 @@ function App() {
       stopCustomTimer={stopCustomTimer}
       resetCustomTimer={resetCustomTimer}
       // 料理タイマー関連のプロパティ
-      selectedEggType={selectedEggType}
-      setSelectedEggType={setSelectedEggType}
-      eggTimerActive={eggTimerActive}
-      setEggTimerActive={setEggTimerActive}
-      eggTimerPaused={eggTimerPaused}
-      setEggTimerPaused={setEggTimerPaused}
-      eggTimerTime={eggTimerTime}
-      setEggTimerTime={setEggTimerTime}
-      eggTimerInterval={eggTimerInterval}
-      setEggTimerInterval={setEggTimerInterval}
       eggTimerType={eggTimerType}
       setEggTimerType={setEggTimerType}
-      eggTimerSound={eggTimerSound}
-      setEggTimerSound={setEggTimerSound}
-      eggTimerOriginalTime={eggTimerOriginalTime}
-      setEggTimerOriginalTime={setEggTimerOriginalTime}
-      eggTimerPhase={eggTimerPhase}
-      setEggTimerPhase={setEggTimerPhase}
-      eggTimerPhaseTime={eggTimerPhaseTime}
-      setEggTimerPhaseTime={setEggTimerPhaseTime}
-      eggTimerPhaseName={eggTimerPhaseName}
-      setEggTimerPhaseName={setEggTimerPhaseName}
       startEggTimer={startEggTimer}
-      pauseEggTimer={pauseEggTimer}
-      stopEggTimer={stopEggTimer}
-      resetEggTimer={resetEggTimer}
-      getEggTimerDuration={getEggTimerDuration}
       // 音声関連のプロパティ
       soundLoopInterval={soundLoopInterval}
       setSoundLoopInterval={setSoundLoopInterval}
       isSoundPlaying={isSoundPlaying}
       setIsSoundPlaying={setIsSoundPlaying}
       playEggTimerSound={playEggTimerSound}
-      startSoundLoop={startSoundLoop}
-      stopSoundLoop={stopSoundLoop}
       // タイマープリセット関連のプロパティ
       timerPresets={timerPresets}
       setTimerPresets={setTimerPresets}
@@ -1745,25 +1719,7 @@ function App() {
       // 通知機能
       sendNotification={sendNotification}
       // カレンダー関連のプロパティ
-      showCalendar={showCalendar}
-      setShowCalendar={setShowCalendar}
-      currentDate={currentDate}
-      setCurrentDate={setCurrentDate}
-      currentMonth={currentMonth}
-      setCurrentMonth={setCurrentMonth}
-      selectedDate={selectedDate}
-      setSelectedDate={setSelectedDate}
-      showRecordDetail={showRecordDetail}
-      setShowRecordDetail={setShowRecordDetail}
-      selectedRecord={selectedRecord}
-      setSelectedRecord={setSelectedRecord}
-      selectedRecordType={selectedRecordType}
-      setSelectedRecordType={setSelectedRecordType}
       // 月収支メモ関連のプロパティ
-      monthlyMemo={monthlyMemo}
-      setMonthlyMemo={setMonthlyMemo}
-      editingMonthlyMemo={editingMonthlyMemo}
-      setEditingMonthlyMemo={setEditingMonthlyMemo}
       loadMonthlyMemo={loadMonthlyMemo}
       saveMonthlyMemo={saveMonthlyMemo}
       startEditingMonthlyMemo={startEditingMonthlyMemo}
