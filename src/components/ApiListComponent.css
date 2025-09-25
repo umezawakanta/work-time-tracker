@@ -499,3 +499,41 @@
     color: #e2e8f0;
   }
 }
+
+/* ステータス別の色設定 */
+.status-indicator.status-healthy {
+  color: #28a745;
+}
+
+.status-indicator.status-warning {
+  color: #ffc107;
+}
+
+.status-indicator.status-error {
+  color: #dc3545;
+}
+
+.status-indicator.status-unknown {
+  color: #6c757d;
+}
+
+/* メソッド別の色設定 */
+.method-badge.method-get {
+  background-color: #28a745;
+}
+
+.method-badge.method-post {
+  background-color: #007bff;
+}
+
+.method-badge.method-put {
+  background-color: #ffc107;
+}
+
+.method-badge.method-delete {
+  background-color: #dc3545;
+}
+
+.method-badge.method-patch {
+  background-color: #6c757d;
+}

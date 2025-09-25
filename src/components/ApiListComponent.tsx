@@ -340,8 +340,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
                 <tr key={endpoint.id} className={`api-endpoint-row status-${endpoint.status}`}>
                   <td>
                     <span
-                      className="status-indicator"
-                      style={{ color: getStatusColor(endpoint.status) }}
+                      className={`status-indicator status-${endpoint.status}`}
                     >
                       <i className={getStatusIcon(endpoint.status)}></i>
                       {endpoint.status === 'healthy' && '正常'}
@@ -352,8 +351,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
                   </td>
                   <td>
                     <span
-                      className="method-badge"
-                      style={{ backgroundColor: getMethodColor(endpoint.method) }}
+                      className={`method-badge method-${endpoint.method.toLowerCase()}`}
                     >
                       {endpoint.method}
                     </span>
