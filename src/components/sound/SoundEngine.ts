@@ -7,7 +7,6 @@ let toneInitializationPromise: Promise<boolean> | null = null;
 let isInitializing = false;
 
 // Tone.jsの自動初期化を防ぐ
-Tone.context.latencyHint = "interactive";
 try {
   if (Tone.context.state !== 'closed') {
     Tone.context.dispose();
