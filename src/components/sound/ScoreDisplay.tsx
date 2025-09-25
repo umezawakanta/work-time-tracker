@@ -9,6 +9,7 @@ import {
 } from "vexflow";
 import { SUPPORTED_KEY_SIGNATURES, type KeySignature } from "./MusicConstants";
 import { CategoryRatio, MusicGenre } from "./types";
+import { DEFAULT_NOTE_MAPPING, getNoteDuration } from "./ScoreConstants";
 
 export interface NoteData {
   pitch: string;
@@ -183,16 +184,10 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
         .filter((cat) => cat.ratio > 0)
         .forEach((category, index) => {
           // 音符マッピングは外部から渡される想定
-          const noteMapping = "C/3"; // デフォルト値
+          const noteMapping = DEFAULT_NOTE_MAPPING;
           
           // 音の長さを音符の長さに変換
-          let duration = "q"; // デフォルトは四分音符
-          if (category.sound.duration > 0.6) {
-            duration = "h"; // 二分音符
-          }
-          if (category.sound.duration < 0.3) {
-            duration = "8"; // 八分音符
-          }
+          const duration = getNoteDuration(category.sound.duration);
 
           notes.push({
             pitch: noteMapping, // すでに正しいVexFlow形式
