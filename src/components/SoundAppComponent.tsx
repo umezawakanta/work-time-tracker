@@ -693,7 +693,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           instrument.triggerAttackRelease(Tone.Frequency(frequency, "hz").toNote(), duration + "s");
         }
       } catch (error) {
-        console.log(`Could not play sound for ${categoryId}`);
+        console.log(`Could not play sound for ${categoryId}:`, error);
       }
     },
     [getOrCreateInstrument, createInstrumentForGenre]
