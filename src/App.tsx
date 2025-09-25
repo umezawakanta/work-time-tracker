@@ -2271,7 +2271,9 @@ ${errorInfo.stack}
 
   const handleCreateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     try {
       const response = await fetch("/api/work-records/diary", {
