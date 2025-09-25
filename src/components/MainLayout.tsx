@@ -84,6 +84,8 @@ interface MainLayoutProps {
   handleResetTracking: () => void;
   // ユーザー設定
   loadUserSettings: () => Promise<void>;
+  // 機能管理
+  getVisibleFeatures: () => any[];
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({
@@ -143,6 +145,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   handleStopTracking,
   handleResetTracking,
   loadUserSettings,
+  getVisibleFeatures,
 }) => {
   // CookingTimerSection の状態管理
   const [selectedRecipe, setSelectedRecipe] = React.useState("boiled-egg");
@@ -370,87 +373,108 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         }
       `}</style>
       <div className="app">
-      <HeaderComponent
-        user={user}
-        isLoggedIn={isLoggedIn}
-        onShowCharacterHome={() => {
-          closeOtherFeatures('character-home');
-        }}
-        onShowProjects={() => {
-          closeOtherFeatures('projects');
-        }}
-        onShowCookingTimer={() => {
-          closeOtherFeatures('cooking-timer');
-        }}
-        onShowSelfAnalysis={() => {
-          closeOtherFeatures('self-analysis');
-        }}
-        onShowBookshelf={() => {
-          closeOtherFeatures('bookshelf');
-        }}
-        onShowMemos={() => {
-          closeOtherFeatures('memos');
-        }}
-        onShowReports={() => {
-          closeOtherFeatures('reports');
-        }}
-        onShowAdminPanel={() => {
-          closeOtherFeatures('admin-panel');
-        }}
-        onShowTimeTracking={() => {
-          closeOtherFeatures('time-tracking');
-        }}
-        onShowTimers={() => {
-          closeOtherFeatures('timers');
-        }}
-        onShowPublicMemos={() => {
-          closeOtherFeatures('public-memos');
-        }}
-        onShowWorkRecords={() => {
-          closeOtherFeatures('work-records');
-        }}
-        onShowSoundApp={() => {
-          closeOtherFeatures('sound-app');
-        }}
-        onShowNotifications={() => {
-          closeOtherFeatures('notifications');
-        }}
-        onShowVersionInfo={() => {
-          closeOtherFeatures('version-info');
-        }}
-        currentCharacter={null}
-        showThemeSettings={false}
-        showFontSettings={false}
-        showFeatureSettings={false}
-        handleCharacterHomeToggle={() => {
-          closeOtherFeatures('character-home');
-          setShowCharacterHome(true);
-        }}
-        handleLogout={() => {
-          console.log('MainLayout - Logout button clicked');
-          // ログアウト処理
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('authToken');
-          window.location.reload();
-        }}
-        closeOtherFeatures={closeOtherFeatures}
-        setShowThemeSettings={setShowThemeSettings}
-        setShowFontSettings={setShowFontSettings}
-        setShowFeatureSettings={setShowFeatureSettings}
-        loadUserSettings={loadUserSettings}
-        isTimeTrackingActive={false}
-        onUpdateRequestClick={() => {
-          console.log('MainLayout - Update request button clicked');
-          setShowUpdateRequestModal(true);
-        }}
-        onBugReportClick={() => {
-          console.log('MainLayout - Bug report button clicked');
-          setShowBugReportModal(true);
-        }}
-      />
+      <div className="dashboard">
+        <HeaderComponent
+          user={user}
+          isLoggedIn={isLoggedIn}
+          onShowCharacterHome={() => {
+            closeOtherFeatures('character-home');
+          }}
+          onShowProjects={() => {
+            closeOtherFeatures('projects');
+          }}
+          onShowCookingTimer={() => {
+            closeOtherFeatures('cooking-timer');
+          }}
+          onShowSelfAnalysis={() => {
+            closeOtherFeatures('self-analysis');
+          }}
+          onShowBookshelf={() => {
+            closeOtherFeatures('bookshelf');
+          }}
+          onShowMemos={() => {
+            closeOtherFeatures('memos');
+          }}
+          onShowReports={() => {
+            closeOtherFeatures('reports');
+          }}
+          onShowAdminPanel={() => {
+            closeOtherFeatures('admin-panel');
+          }}
+          onShowTimeTracking={() => {
+            closeOtherFeatures('time-tracking');
+          }}
+          onShowTimers={() => {
+            closeOtherFeatures('timers');
+          }}
+          onShowPublicMemos={() => {
+            closeOtherFeatures('public-memos');
+          }}
+          onShowWorkRecords={() => {
+            closeOtherFeatures('work-records');
+          }}
+          onShowSoundApp={() => {
+            closeOtherFeatures('sound-app');
+          }}
+          onShowNotifications={() => {
+            closeOtherFeatures('notifications');
+          }}
+          onShowVersionInfo={() => {
+            closeOtherFeatures('version-info');
+          }}
+          currentCharacter={null}
+          showThemeSettings={false}
+          showFontSettings={false}
+          showFeatureSettings={false}
+          handleCharacterHomeToggle={() => {
+            closeOtherFeatures('character-home');
+            setShowCharacterHome(true);
+          }}
+          handleLogout={() => {
+            console.log('MainLayout - Logout button clicked');
+            // ログアウト処理
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('authToken');
+            window.location.reload();
+          }}
+          closeOtherFeatures={closeOtherFeatures}
+          setShowThemeSettings={setShowThemeSettings}
+          setShowFontSettings={setShowFontSettings}
+          setShowFeatureSettings={setShowFeatureSettings}
+          loadUserSettings={loadUserSettings}
+          isTimeTrackingActive={false}
+          onUpdateRequestClick={() => {
+            console.log('MainLayout - Update request button clicked');
+            setShowUpdateRequestModal(true);
+          }}
+          onBugReportClick={() => {
+            console.log('MainLayout - Bug report button clicked');
+            setShowBugReportModal(true);
+          }}
+        />
 
-      <main className="main-content">
-        {showCharacterHome && (
+        {/* 通知コンポーネント */}
+        <div className="notification-wrapper">
+          <NotificationComponent 
+            onNavigateToMemo={(memoId: string) => {
+              // メモセクションを表示
+              setShowMemos(true);
+              // メモを検索して該当するメモを表示
+              loadMemos();
+              // 通知ドロップダウンを閉じる
+              setTimeout(() => {
+                // 該当するメモをハイライトする処理（必要に応じて実装）
+                console.log('Navigating to memo:', memoId);
+              }, 100);
+            }}
+          />
+        </div>
+      </div>
+
+      <main className="dashboard-main">
+        {getVisibleFeatures().map((feature) => {
+          if (feature.id === "character-home" && showCharacterHome) {
+            return (
           <CharacterHome
             showCharacterHome={showCharacterHome}
             setShowCharacterHome={setShowCharacterHome}

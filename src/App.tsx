@@ -15,6 +15,18 @@ import UpdateRequestModal from "./components/UpdateRequestModal";
 import BugReportModal from "./components/BugReportModal";
 import { setErrorReportCallback } from "./utils/apiClient";
 
+// 機能の型定義
+interface Feature {
+  id: string;
+  name: string;
+  description: string;
+  component: React.ComponentType<any> | null;
+  icon: string;
+  category: string;
+  isNew?: boolean;
+  isPopular?: boolean;
+}
+
 function App() {
   // エラーハンドリングの追加
   const [appError, setAppError] = useState<Error | null>(null);
@@ -224,6 +236,130 @@ function App() {
     // ユーザー設定の読み込み
   };
 
+  // 機能の定義
+  const features: Feature[] = [
+    {
+      id: "time-tracking",
+      name: "時間管理",
+      description: "作業時間の記録と管理",
+      component: null,
+      icon: "⏰",
+      category: "productivity",
+      isPopular: true
+    },
+    {
+      id: "cooking-timer",
+      name: "料理タイマー",
+      description: "ゆでたまごタイマーなど料理用タイマー",
+      component: null,
+      icon: "🍳",
+      category: "lifestyle"
+    },
+    {
+      id: "self-analysis",
+      name: "じぶん図鑑",
+      description: "自己分析と目標管理",
+      component: null,
+      icon: "📊",
+      category: "personal",
+      isPopular: true
+    },
+    {
+      id: "bookshelf",
+      name: "本棚",
+      description: "読書管理と記録",
+      component: null,
+      icon: "📚",
+      category: "learning"
+    },
+    {
+      id: "memos",
+      name: "メモ",
+      description: "個人メモの管理",
+      component: null,
+      icon: "📝",
+      category: "productivity"
+    },
+    {
+      id: "reports",
+      name: "レポート",
+      description: "収支記録と日記",
+      component: null,
+      icon: "📈",
+      category: "finance"
+    },
+    {
+      id: "admin-panel",
+      name: "管理パネル",
+      description: "システム管理機能",
+      component: null,
+      icon: "⚙️",
+      category: "admin"
+    },
+    {
+      id: "timers",
+      name: "タイマー",
+      description: "カスタムタイマー機能",
+      component: null,
+      icon: "⏲️",
+      category: "productivity"
+    },
+    {
+      id: "public-memos",
+      name: "公開メモ",
+      description: "公開メモの閲覧と投稿",
+      component: null,
+      icon: "🌐",
+      category: "social"
+    },
+    {
+      id: "work-records",
+      name: "勤務記録",
+      description: "勤務時間と収支管理",
+      component: null,
+      icon: "💼",
+      category: "work"
+    },
+    {
+      id: "sound-app",
+      name: "サウンドアプリ",
+      description: "音声再生と管理",
+      component: null,
+      icon: "🎵",
+      category: "entertainment"
+    }
+  ];
+
+  // ユーザー設定の取得（簡易版）
+  const userSettings = {
+    featureOrder: features.map(f => f.id),
+    hiddenFeatures: [] as string[]
+  };
+
+  // 機能の順序を取得
+  const getFeatureOrder = () => {
+    if (!userSettings) {
+      return features.map((f) => f.id);
+    }
+    return userSettings.featureOrder || features.map((f) => f.id);
+  };
+
+  // 表示する機能を取得
+  const getVisibleFeatures = () => {
+    const order = getFeatureOrder();
+    let hiddenFeatures = userSettings?.hiddenFeatures || [];
+
+    // 「じぶん図鑑」が隠されている場合は表示に戻す
+    if ((hiddenFeatures || []).includes("self-analysis")) {
+      hiddenFeatures = (hiddenFeatures || []).filter((id) => id !== "self-analysis");
+    }
+
+    return (order || [])
+      .filter((id) => !(hiddenFeatures || []).includes(id))
+      .map((id) => features.find((f) => f.id === id))
+      .filter(Boolean) as Feature[];
+  };
+
   // アプリエラーが発生した場合
   if (appError) {
     return (
@@ -330,6 +466,7 @@ function App() {
         handleStopTracking={handleStopTracking}
         handleResetTracking={handleResetTracking}
         loadUserSettings={loadUserSettings}
+        getVisibleFeatures={getVisibleFeatures}
       />
 
       {/* エラーモーダル */}
