@@ -787,7 +787,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       activeCats.forEach((category, index) => {
         const delay = index * beatDuration * 800;
         const frequency = category.sound.frequency * (0.9 + balanceScore * 0.2);
-      const duration = category.sound.duration * (1.0 + balanceScore * 0.6);
+        const duration = category.sound.duration * (1.0 + balanceScore * 0.6);
         const volume = Math.min(
           0.6,
           category.sound.volume * (0.5 + balanceScore * 0.5)
