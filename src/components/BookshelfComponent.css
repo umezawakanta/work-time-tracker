@@ -305,6 +305,11 @@
   height: 100%;
   background: linear-gradient(90deg, #28a745, #20c997);
   transition: width 0.3s ease;
+  width: calc(var(--progress, 0) * 1%);
+}
+
+.progress-fill[data-progress] {
+  width: calc(attr(data-progress) * 1%);
 }
 
 .progress-text {
