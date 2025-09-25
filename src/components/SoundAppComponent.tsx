@@ -509,7 +509,189 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     }
   }, []);
 
-  // ジャンルに応じた楽器を作成
+  // 8bit風エフェクトチェーンを作成
+  const create8bitEffects = useCallback(() => {
+    if (!globalToneInitialized) {
+      return null;
+    }
+
+    // ビットクラッシュエフェクト（8bit風のデジタル歪み）
+    const bitCrusher = new Tone.BitCrusher(4); // 4bitにクラッシュ（8bit風）
+
+    // ローパスフィルター（8bit風の音質制限）
+    const lowpassFilter = new Tone.Filter({
+      type: "lowpass",
+      frequency: 2000,
+      rolloff: -24,
+    });
+
+    // デジタルディストーション
+    const distortion = new Tone.Distortion({
+      distortion: 0.2,
+      wet: 0.4,
+    });
+
+    // エフェクトチェーンを構築
+    bitCrusher.chain(lowpassFilter, distortion, Tone.Destination);
+    
+    return bitCrusher;
+  }, []);
+
+  // 明和電機風の8bit音色を作成（エフェクト付き）
+  const createMeiwaInstrument = useCallback((categoryId: string) => {
+    if (!globalToneInitialized) {
+      return null;
+    }
+
+    const effects = create8bitEffects();
+    if (!effects) {
+      return null;
+    }
+
+    // カテゴリ別の明和電機風音色設定（エフェクト付き）
+    switch (categoryId) {
+      case "staple":
+        // ドラム風の8bit音
+        return new Tone.MonoSynth({
+          oscillator: { 
+            type: "square",
+            detune: -12, // 低音にデチューン
+          } as any,
+          envelope: { 
+            attack: 0.001, 
+            decay: 0.05, 
+            sustain: 0.0, 
+            release: 0.1 
+          },
+          filter: {
+            type: "lowpass",
+            frequency: 400,
+            rolloff: -24,
+          } as any,
+        }).connect(effects);
+
+      case "side":
+        // ベース風の8bit音
+        return new Tone.MonoSynth({
+          oscillator: { 
+            type: "sawtooth",
+            detune: -6,
+          } as any,
+          envelope: { 
+            attack: 0.01, 
+            decay: 0.1, 
+            sustain: 0.3, 
+            release: 0.2 
+          },
+          filter: {
+            type: "lowpass",
+            frequency: 600,
+            rolloff: -12,
+          } as any,
+        }).connect(effects);
+
+      case "miso":
+        // メロディー風の8bit音
+        return new Tone.MonoSynth({
+          oscillator: { 
+            type: "square",
+            detune: 0,
+          } as any,
+          envelope: { 
+            attack: 0.001, 
+            decay: 0.02, 
+            sustain: 0.1, 
+            release: 0.15 
+          },
+          filter: {
+            type: "lowpass",
+            frequency: 1200,
+            rolloff: -6,
+          } as any,
+        }).connect(effects);
+
+      case "meat":
+        // リード風の8bit音
+        return new Tone.MonoSynth({
+          oscillator: { 
+            type: "sawtooth",
+            detune: 3,
+          } as any,
+          envelope: { 
+            attack: 0.001, 
+            decay: 0.03, 
+            sustain: 0.2, 
+            release: 0.1 
+          },
+          filter: {
+            type: "lowpass",
+            frequency: 800,
+            rolloff: -18,
+          } as any,
+        }).connect(effects);
+
+      case "fish":
+        // 高音域の8bit音
+        return new Tone.MonoSynth({
+          oscillator: { 
+            type: "triangle",
+            detune: 6,
+          } as any,
+          envelope: { 
+            attack: 0.001, 
+            decay: 0.01, 
+            sustain: 0.05, 
+            release: 0.08 
+          },
+          filter: {
+            type: "lowpass",
+            frequency: 2000,
+            rolloff: -12,
+          } as any,
+        }).connect(effects);
+
+      case "vegetable":
+        // ピアノ風の8bit音
+        return new Tone.MonoSynth({
+          oscillator: { 
+            type: "square",
+            detune: -3,
+          } as any,
+          envelope: { 
+            attack: 0.001, 
+            decay: 0.05, 
+            sustain: 0.1, 
+            release: 0.2 
+          },
+          filter: {
+            type: "lowpass",
+            frequency: 1000,
+            rolloff: -6,
+          } as any,
+        }).connect(effects);
+
+      default:
+        return new Tone.MonoSynth({
+          oscillator: { 
+            type: "square",
+            detune: 0,
+          } as any,
+          envelope: { 
+            attack: 0.001, 
+            decay: 0.02, 
+            sustain: 0.0, 
+            release: 0.1 
+          },
+          filter: {
+            type: "lowpass",
+            frequency: 1000,
+            rolloff: -12,
+          } as any,
+        }).connect(effects);
+    }
+  }, [create8bitEffects]);
+
+  // ジャンルに応じた楽器を作成（すべて明和電機風に統一）
   const createInstrumentForGenre = useCallback(
     (categoryId: string, genre: string) => {
       // 初期化されていない場合はnullを返す（エラーを防ぐ）
@@ -520,136 +702,10 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         return null;
       }
 
-      let instrument = null;
-
-      // ジャンル別の音色設定（明和電機風に強化）
-      switch (genre) {
-        case "rock":
-          instrument = new Tone.FMSynth({
-            harmonicity: 3.0,
-            modulationIndex: 25,
-            oscillator: { type: "sawtooth" },
-            envelope: { attack: 0.001, decay: 0.3, sustain: 0.2, release: 0.5 },
-            modulation: { type: "square" },
-            modulationEnvelope: {
-              attack: 0.01,
-              decay: 0.3,
-              sustain: 0.8,
-              release: 0.2,
-            },
-          }).toDestination();
-          break;
-
-        case "techno":
-          // 明和電機風の電子音
-          instrument = new Tone.MonoSynth({
-            oscillator: { 
-              type: "pulse",
-              width: 0.3,
-            },
-            envelope: { attack: 0.001, decay: 0.05, sustain: 0.1, release: 0.1 },
-            filterEnvelope: {
-              attack: 0.001,
-              decay: 0.1,
-              sustain: 0.3,
-              release: 0.2,
-              baseFrequency: 200,
-              octaves: 6,
-            },
-            filter: {
-              type: "lowpass",
-              frequency: 800,
-              rolloff: -24,
-            },
-          }).toDestination();
-          break;
-
-        case "classical":
-          instrument = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "sine" },
-            envelope: { attack: 0.1, decay: 0.5, sustain: 0.7, release: 1.5 },
-          }).toDestination();
-          break;
-
-        case "japanese":
-          // 明和電機風の機械音
-          instrument = new Tone.FMSynth({
-            harmonicity: 1.5,
-            modulationIndex: 15,
-            oscillator: { type: "triangle" },
-            envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.4 },
-            modulation: { type: "sawtooth" },
-            modulationEnvelope: {
-              attack: 0.02,
-              decay: 0.1,
-              sustain: 0.5,
-              release: 0.3,
-            },
-          }).toDestination();
-          break;
-
-        case "jazz":
-          instrument = new Tone.MonoSynth({
-            oscillator: { type: "sine" },
-            envelope: { attack: 0.02, decay: 0.3, sustain: 0.6, release: 0.8 },
-            filterEnvelope: {
-              attack: 0.02,
-              decay: 0.3,
-              sustain: 0.6,
-              release: 0.8,
-              baseFrequency: 250,
-              octaves: 2,
-            },
-          }).toDestination();
-          break;
-
-        case "ambient":
-          const reverb = new Tone.Reverb({
-            decay: 5,
-            wet: 0.8,
-          }).toDestination();
-          instrument = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "triangle" },
-            envelope: { attack: 0.5, decay: 1, sustain: 0.8, release: 3 },
-          }).connect(reverb);
-          break;
-
-        case "meiwa":
-          // 明和電機専用の8bit風音色
-          instrument = new Tone.MonoSynth({
-            oscillator: { 
-              type: "square",
-              detune: 0,
-            } as any,
-            envelope: { 
-              attack: 0.001, 
-              decay: 0.01, 
-              sustain: 0.0, 
-              release: 0.1 
-            },
-            filterEnvelope: {
-              attack: 0.001,
-              decay: 0.01,
-              sustain: 0.0,
-              release: 0.1,
-              baseFrequency: 1000,
-              octaves: 2,
-            },
-            filter: {
-              type: "lowpass",
-              frequency: 2000,
-              rolloff: -12,
-            } as any,
-          }).toDestination();
-          break;
-
-        default:
-          instrument = getOrCreateInstrument(categoryId);
-      }
-
-      return instrument;
+      // すべてのジャンルで明和電機風の音色を使用
+      return createMeiwaInstrument(categoryId);
     },
-    []
+    [createMeiwaInstrument]
   );
 
   // 基本楽器の作成（明和電機風に強化）
@@ -927,143 +983,146 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     return chordProgressions.minor;
   };
 
-  // 音楽を生成（明和電機風に強化）
+  // 明和電機風の8bitリズムパターンを生成（音の重ね合わせ対応）
+  const generateMeiwaRhythm = useCallback((beatDuration: number, categoryRatios: any[]) => {
+    const activeCats = categoryRatios
+      .filter((cat) => cat.ratio > 0)
+      .sort((a, b) => b.ratio - a.ratio);
+
+    // 8bit風のドラムパターン（16分音符ベース）
+    const drumPattern = [
+      { time: 0, note: "C2", category: "staple", volume: 0.8 },
+      { time: 4, note: "C2", category: "staple", volume: 0.6 },
+      { time: 8, note: "E2", category: "side", volume: 0.4 },
+      { time: 12, note: "C2", category: "staple", volume: 0.7 },
+      { time: 16, note: "G2", category: "miso", volume: 0.5 },
+      { time: 20, note: "C2", category: "staple", volume: 0.6 },
+      { time: 24, note: "E2", category: "side", volume: 0.3 },
+      { time: 28, note: "C2", category: "staple", volume: 0.8 },
+    ];
+
+    // 明和電機風のメロディーパターン（シンプルで機械的）
+    const melodyPattern = [
+      { time: 0, note: "C4", category: "miso", volume: 0.6 },
+      { time: 2, note: "C4", category: "miso", volume: 0.4 },
+      { time: 4, note: "D4", category: "miso", volume: 0.5 },
+      { time: 6, note: "D4", category: "miso", volume: 0.3 },
+      { time: 8, note: "E4", category: "miso", volume: 0.6 },
+      { time: 10, note: "E4", category: "miso", volume: 0.4 },
+      { time: 12, note: "F4", category: "miso", volume: 0.5 },
+      { time: 14, note: "F4", category: "miso", volume: 0.3 },
+      { time: 16, note: "G4", category: "meat", volume: 0.7 },
+      { time: 18, note: "G4", category: "meat", volume: 0.5 },
+      { time: 20, note: "A4", category: "meat", volume: 0.6 },
+      { time: 22, note: "A4", category: "meat", volume: 0.4 },
+      { time: 24, note: "B4", category: "fish", volume: 0.5 },
+      { time: 26, note: "B4", category: "fish", volume: 0.3 },
+      { time: 28, note: "C5", category: "fish", volume: 0.8 },
+      { time: 30, note: "C5", category: "fish", volume: 0.6 },
+    ];
+
+    // ベースパターン（低音の8bit風）
+    const bassPattern = [
+      { time: 0, note: "C3", category: "side", volume: 0.4 },
+      { time: 8, note: "E3", category: "side", volume: 0.3 },
+      { time: 16, note: "G3", category: "side", volume: 0.4 },
+      { time: 24, note: "C3", category: "side", volume: 0.3 },
+    ];
+
+    // 明和電機風の音の重ね合わせ（デチューン効果）
+    const layeredPattern = [
+      { time: 0, note: "C4", category: "vegetable", volume: 0.3, detune: 5 },
+      { time: 0, note: "C4", category: "vegetable", volume: 0.3, detune: -5 },
+      { time: 8, note: "E4", category: "vegetable", volume: 0.2, detune: 3 },
+      { time: 8, note: "E4", category: "vegetable", volume: 0.2, detune: -3 },
+      { time: 16, note: "G4", category: "vegetable", volume: 0.3, detune: 7 },
+      { time: 16, note: "G4", category: "vegetable", volume: 0.3, detune: -7 },
+      { time: 24, note: "C5", category: "vegetable", volume: 0.4, detune: 4 },
+      { time: 24, note: "C5", category: "vegetable", volume: 0.4, detune: -4 },
+    ] as Array<{ time: number; note: string; category: string; volume: number; detune?: number }>;
+
+    // すべてのパターンを統合して再生
+    [...drumPattern, ...melodyPattern, ...bassPattern, ...layeredPattern].forEach((pattern) => {
+      const delay = pattern.time * beatDuration * 0.25; // 16分音符ベース
+      const baseFrequency = Tone.Frequency(pattern.note).toFrequency();
+      const frequency = 'detune' in pattern && pattern.detune ? 
+        baseFrequency * Math.pow(2, (pattern.detune as number) / 1200) : // セント単位のデチューン
+        baseFrequency;
+      const duration = 0.05; // 短い8bit風の音
+      
+      const timeout = setTimeout(() => {
+        playSound(pattern.category, frequency, duration, pattern.volume, "meiwa");
+      }, delay);
+
+      playTimeoutsRef.current.push(timeout);
+    });
+  }, [playSound]);
+
+  // 音楽を生成（すべて明和電機風に統一、テンポ同期改善）
   const generateMusic = useCallback(
     (categoryRatios: any[], balanceScore: number, genre: MusicGenre) => {
       playTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
       playTimeoutsRef.current = [];
 
-      const { baseTempo } = genre;
-      let adjustedTempo = baseTempo;
-      
-      // 明和電機風の場合は固定テンポ
-      if (genre.id === "meiwa") {
-        adjustedTempo = 120; // 8bit風のテンポ
-      } else {
-        adjustedTempo = Math.max(80, Math.min(160, baseTempo * (0.7 + balanceScore * 0.3)));
-      }
-      
+      // 明和電機風の固定テンポ（120 BPM）
+      const adjustedTempo = 120;
       const beatDuration = 60 / adjustedTempo;
+      const sixteenthNoteDuration = beatDuration * 0.25; // 16分音符の長さ
 
       const activeCats = categoryRatios
         .filter((cat) => cat.ratio > 0)
         .sort((a, b) => b.ratio - a.ratio);
 
       // 楽譜データを生成（明和電機風の場合はスキップ）
-      if (genre.id !== "meiwa") {
-        const scoreData = generateScoreData(categoryRatios, genre);
-        setCurrentScore(scoreData);
+      setCurrentScore(null);
 
-        // 楽譜を表示
-        if (showScore && scoreData) {
-          setTimeout(() => renderScore(scoreData), 100);
-        }
-      } else {
-        // 明和電機風の場合は楽譜を非表示
-        setCurrentScore(null);
+      // 明和電機風の8bit音楽を生成（正確なテンポ同期）
+      generateMeiwaRhythm(beatDuration, categoryRatios);
+
+      // バランススコアに応じた追加のメロディー（機械的な正確性を重視）
+      if (balanceScore > 0.5) {
+        const harmonyPattern = [
+          { time: 32, note: "C4", category: "vegetable", volume: 0.4 },
+          { time: 36, note: "E4", category: "vegetable", volume: 0.3 },
+          { time: 40, note: "G4", category: "vegetable", volume: 0.4 },
+          { time: 44, note: "C5", category: "vegetable", volume: 0.5 },
+        ];
+
+        harmonyPattern.forEach((pattern) => {
+          // 16分音符ベースで正確なタイミング計算
+          const delay = pattern.time * sixteenthNoteDuration;
+          const frequency = Tone.Frequency(pattern.note).toFrequency();
+          const duration = 0.1;
+          
+          const timeout = setTimeout(() => {
+            playSound(pattern.category, frequency, duration, pattern.volume, "meiwa");
+          }, delay);
+
+          playTimeoutsRef.current.push(timeout);
+        });
       }
 
-      // 明和電機風の8bitメロディー生成
-      if (genre.id === "meiwa") {
-        // 8bit風のシンプルなメロディー
-        const melodyNotes = ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5"];
-        const melodyPattern = [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1];
+      // 明和電機風の機械的リズムパターンを追加（より正確なタイミング）
+      const mechanicalPattern = [
+        { time: 48, note: "C3", category: "side", volume: 0.6 },
+        { time: 52, note: "E3", category: "side", volume: 0.4 },
+        { time: 56, note: "G3", category: "side", volume: 0.5 },
+        { time: 60, note: "C4", category: "miso", volume: 0.7 },
+      ];
+
+      mechanicalPattern.forEach((pattern) => {
+        const delay = pattern.time * sixteenthNoteDuration;
+        const frequency = Tone.Frequency(pattern.note).toFrequency();
+        const duration = 0.08; // 短い8bit風の音
         
-        melodyPattern.forEach((noteIndex, index) => {
-          const delay = index * beatDuration * 200; // より速いテンポ
-          const note = melodyNotes[noteIndex % melodyNotes.length];
-          const frequency = Tone.Frequency(note).toFrequency();
-          const duration = 0.05; // より短いビープ音
-          const volume = 0.9;
+        const timeout = setTimeout(() => {
+          playSound(pattern.category, frequency, duration, pattern.volume, "meiwa");
+        }, delay);
 
-          const timeout = setTimeout(() => {
-            playSound("staple", frequency, duration, volume, genre.id);
-          }, delay);
-
-          playTimeoutsRef.current.push(timeout);
-        });
-
-        // 明和電機風のリズムパターンを追加
-        const rhythmPattern = [0, 0, 1, 0, 2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 1, 0];
-        rhythmPattern.forEach((patternIndex, index) => {
-          const delay = index * beatDuration * 100; // より速いリズム
-          const rhythmNotes = ["C3", "E3", "G3"];
-          const note = rhythmNotes[patternIndex];
-          const frequency = Tone.Frequency(note).toFrequency();
-          const duration = 0.02; // 非常に短いビープ音
-          const volume = 0.6;
-
-          const timeout = setTimeout(() => {
-            playSound("side", frequency, duration, volume, genre.id);
-          }, delay);
-
-          playTimeoutsRef.current.push(timeout);
-        });
-      } else {
-        // 通常のメロディーラインを生成
-        activeCats.forEach((category, index) => {
-          const delay = index * beatDuration * 800;
-          const frequency = category.sound.frequency * (0.9 + balanceScore * 0.2);
-          const duration = category.sound.duration * (1.0 + balanceScore * 0.6);
-          const volume = Math.min(0.6, category.sound.volume * (0.5 + balanceScore * 0.5));
-
-          const timeout = setTimeout(() => {
-            playSound(category.id, frequency, duration, volume, genre.id);
-
-            // リアルタイムで楽譜をハイライト（視覚的フィードバック）
-            if (scoreContainerRef.current) {
-              const notes = scoreContainerRef.current.querySelectorAll(".vf-stavenote");
-              if (notes[index]) {
-                notes[index].classList.add("playing");
-                setTimeout(() => notes[index].classList.remove("playing"), duration * 1000);
-              }
-            }
-          }, delay);
-
-          playTimeoutsRef.current.push(timeout);
-        });
-      }
-
-      // 和音進行を追加（明和電機風以外）
-      if (genre.id !== "meiwa") {
-        const chordProg = getChordProgression(genre.id, balanceScore);
-
-        if (balanceScore > 0.4) {
-          const harmonyStartDelay = activeCats.length * beatDuration * 800 + 500;
-
-          chordProg.forEach((chord, chordIndex) => {
-            const chordDelay = harmonyStartDelay + chordIndex * beatDuration * 1000;
-
-            const timeout = setTimeout(() => {
-              const pianoInst = getOrCreateInstrument("vegetable");
-              if (pianoInst) {
-                try {
-                  const chordVolume = balanceScore > 0.7 ? 0.5 : 0.3;
-                  pianoInst.volume.value = Math.log10(Math.max(0.001, chordVolume)) * 20;
-                  // 和音を個別の音符として順次再生
-                  chord.notes.forEach((note, index) => {
-                    setTimeout(() => {
-                      pianoInst.triggerAttackRelease(note, "2s");
-                    }, index * 50); // 50ms間隔で順次再生
-                  });
-                } catch (e) {
-                  console.error("Chord playback failed:", e);
-                }
-              }
-            }, chordDelay);
-
-            playTimeoutsRef.current.push(timeout);
-          });
-        }
-      }
+        playTimeoutsRef.current.push(timeout);
+      });
     },
-    [
-      playSound,
-      getOrCreateInstrument,
-      generateScoreData,
-      renderScore,
-      showScore,
-    ]
+    [playSound, generateMeiwaRhythm]
   );
 
   // メイン再生関数
