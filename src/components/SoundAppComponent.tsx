@@ -94,11 +94,11 @@ const VEXFLOW_KEY_SIGNATURE_PATTERN = /^(?:[A-G](?:b|#)?|Cb|F#|G#|D#|A#|E#|B#)$/
 // VexFlowでサポートされている調号のリスト（メジャー・マイナー両方）
 const SUPPORTED_KEY_SIGNATURES = [
   // メジャーキー
-  'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#', 'E#', 'B#',
-  'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 'Fb', 'Bbb', 'Ebb', 'Abb', 'Dbb', 'Gbb', 'Cbb',
+  'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#',
+  'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb',
   // マイナーキー
-  'Am', 'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'A#m', 'E#m', 'B#m',
-  'Dm', 'Gm', 'Cm', 'Fm', 'Bbm', 'Ebm', 'Abm', 'Dbm', 'Gbm', 'Cbm'
+  'Am', 'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'A#m',
+  'Dm', 'Gm', 'Cm', 'Fm', 'Bbm', 'Ebm', 'Abm', 'Dbm', 'Gbm'
 ] as const;
 
 // Voice.Modeの型安全なアクセス
