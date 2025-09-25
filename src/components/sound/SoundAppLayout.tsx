@@ -22,6 +22,7 @@ interface SoundAppLayoutProps {
   onPlay: () => void;
   onStop: () => void;
   disabled: boolean;
+  onInitialize?: () => Promise<void>;
   currentScore: ScoreData | null;
   showScore: boolean;
   onToggleScore: () => void;
@@ -43,6 +44,7 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
   onPlay,
   onStop,
   disabled,
+  onInitialize,
   currentScore,
   showScore,
   onToggleScore,
@@ -107,6 +109,7 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
             onPlay={onPlay}
             onStop={onStop}
             disabled={disabled}
+            onInitialize={onInitialize}
           />
         </>
       )}

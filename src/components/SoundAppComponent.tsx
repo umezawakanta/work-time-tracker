@@ -51,9 +51,21 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   };
 
   // 楽器の作成（InstrumentFactoryを使用）
-  const getOrCreateInstrument = useCallback((categoryId: string) => {
-    if (!globalToneInitialized) {
+  const getOrCreateInstrument = useCallback(async (categoryId: string) => {
+    // AudioContextが準備できているか確認
+    const isReady = await ensureAudioContextReady();
+    if (!isReady) {
+      console.warn("AudioContext is not ready, cannot create instrument");
       return null;
+    }
+
+    if (!globalToneInitialized) {
+      // Tone.jsを初期化
+      const initialized = await initializeTone();
+      if (!initialized) {
+        console.warn("Failed to initialize Tone.js");
+        return null;
+      }
     }
 
     if (instrumentsRef.current[categoryId]) {
@@ -76,6 +88,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       if (!isReady) {
         console.warn("AudioContext is not ready, skipping sound playback");
         return;
+      }
+
+      // Tone.jsが初期化されていない場合は初期化
+      if (!globalToneInitialized) {
+        const initialized = await initializeTone();
+        if (!initialized) {
+          console.warn("Failed to initialize Tone.js for sound playback");
+          return;
+        }
       }
 
       await playSound(
@@ -136,6 +157,23 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const { playMealBalance, stopPlayback, handleUpdateCategoryCount, handleResetMeal } = 
     usePlaybackManager(playbackState, playbackCallbacks);
 
+  // 初期化処理
+  const handleInitialize = async () => {
+    const isReady = await ensureAudioContextReady();
+    if (!isReady) {
+      showMessage("AudioContextの初期化に失敗しました", 3000);
+      return;
+    }
+
+    const initialized = await initializeTone();
+    if (!initialized) {
+      showMessage("Tone.jsの初期化に失敗しました", 3000);
+      return;
+    }
+
+    showMessage("音アプリが起動しました！", 2000);
+  };
+
   return (
     <div className="sound-app-section">
       <div className="section-header">
@@ -169,6 +207,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
             isPlaying ||
             Object.values(currentMeal.categories).every((c) => c === 0)
           }
+          onInitialize={handleInitialize}
           currentScore={currentScore}
           showScore={showScore}
           onToggleScore={() => setShowScore(!showScore)}

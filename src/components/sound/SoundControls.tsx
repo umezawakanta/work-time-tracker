@@ -1,5 +1,7 @@
 import React from "react";
 import * as Tone from "tone";
+import { ensureAudioContextReady } from "./AudioContextUtils";
+import { initializeTone } from "./SoundEngine";
 
 interface SoundControlsProps {
   isPlaying: boolean;
@@ -8,6 +10,7 @@ interface SoundControlsProps {
   onPlay: () => void;
   onStop: () => void;
   disabled: boolean;
+  onInitialize?: () => Promise<void>;
 }
 
 const SoundControls: React.FC<SoundControlsProps> = ({
@@ -17,6 +20,7 @@ const SoundControls: React.FC<SoundControlsProps> = ({
   onPlay,
   onStop,
   disabled,
+  onInitialize,
 }) => {
   // AudioContextの状態を取得
   const getAudioContextStatus = () => {
@@ -32,13 +36,20 @@ const SoundControls: React.FC<SoundControlsProps> = ({
 
   const audioContextStatus = getAudioContextStatus();
 
+  // 初期化処理
+  const handleInitialize = async () => {
+    if (onInitialize) {
+      await onInitialize();
+    }
+  };
+
   return (
     <div className="sound-controls">
       <div className="audio-status">
         <small>AudioContext: {audioContextStatus}</small>
       </div>
       <button
-        onClick={onPlay}
+        onClick={!globalToneInitialized ? handleInitialize : onPlay}
         disabled={disabled}
         className={`play-button ${isPlaying ? "playing" : ""}`}
       >
