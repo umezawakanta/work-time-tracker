@@ -593,18 +593,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             handleCancelEditReply={() => {}}
             replyContent=""
             setReplyContent={() => {}}
-            replyingToMemo={null}
-            setReplyingToMemo={() => {}}
           />
         )}
 
-        {showWorkRecords && (
-          <WorkRecordsComponent
-            showWorkRecords={showWorkRecords}
-            setShowWorkRecords={setShowWorkRecords}
-            closeOtherFeatures={closeOtherFeatures}
-          />
-        )}
+        {/* {showWorkRecords && (
+          <WorkRecordsComponent />
+        )} */}
 
         {showSoundApp && (
           <SoundAppComponent
@@ -615,19 +609,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         )}
 
         {showNotifications && (
-          <NotificationComponent
-            showNotifications={showNotifications}
-            setShowNotifications={setShowNotifications}
-            closeOtherFeatures={closeOtherFeatures}
-          />
+          <NotificationComponent />
         )}
 
         {showVersionInfo && (
-          <VersionInfo
-            showVersionInfo={showVersionInfo}
-            setShowVersionInfo={setShowVersionInfo}
-            closeOtherFeatures={closeOtherFeatures}
-          />
+          <VersionInfo />
         )}
       </main>
     </div>

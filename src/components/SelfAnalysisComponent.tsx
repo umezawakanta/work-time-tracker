@@ -286,10 +286,18 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   };
 
   const getMoodEmoji = (mood: number) => {
-    if (mood <= 2) return "😢";
-    if (mood <= 4) return "😔";
-    if (mood <= 6) return "😐";
-    if (mood <= 8) return "😊";
+    if (mood <= 2) {
+      return "😢";
+    }
+    if (mood <= 4) {
+      return "😔";
+    }
+    if (mood <= 6) {
+      return "😐";
+    }
+    if (mood <= 8) {
+      return "😊";
+    }
     return "😄";
   };
 
