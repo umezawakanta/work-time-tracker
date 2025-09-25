@@ -98,12 +98,20 @@ export const useAuth = () => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('authToken', data.token);
+        console.log('useAuth - Login successful, saving token:', data.token ? data.token.substring(0, 20) + '...' : 'null');
+        localStorage.setItem('access_token', data.token);
+        localStorage.setItem('authToken', data.token); // 後方互換性のため
         setUser(data.user);
         setIsLoggedIn(true);
         setMessage("ログインしました");
         setEmail("");
         setPassword("");
+        
+        // 認証状態を確実に更新するため、少し待ってから認証チェックを再実行
+        setTimeout(() => {
+          console.log('useAuth - Re-checking auth after login');
+          checkAuth();
+        }, 100);
       } else {
         const errorData = await response.json();
         setMessage(errorData.message || "ログインに失敗しました");
@@ -131,7 +139,9 @@ export const useAuth = () => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('authToken', data.token);
+        console.log('useAuth - Register successful, saving token:', data.token ? data.token.substring(0, 20) + '...' : 'null');
+        localStorage.setItem('access_token', data.token);
+        localStorage.setItem('authToken', data.token); // 後方互換性のため
         setUser(data.user);
         setIsLoggedIn(true);
         setMessage("登録しました");
@@ -139,6 +149,12 @@ export const useAuth = () => {
         setPassword("");
         setDisplayName("");
         setIsRegisterMode(false);
+        
+        // 認証状態を確実に更新するため、少し待ってから認証チェックを再実行
+        setTimeout(() => {
+          console.log('useAuth - Re-checking auth after register');
+          checkAuth();
+        }, 100);
       } else {
         const errorData = await response.json();
         setMessage(errorData.message || "登録に失敗しました");
@@ -154,6 +170,8 @@ export const useAuth = () => {
   // ログアウト
   const handleLogout = () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     setIsLoggedIn(false);
     setUser(null);
     setMessage("ログアウトしました");

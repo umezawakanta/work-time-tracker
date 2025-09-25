@@ -27,25 +27,25 @@ export const apiFetch = async (
       const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
       const apiError = createApiError(error, response, { url, method: options.method || 'GET' });
       
-      // エラー報告コールバックが設定されている場合は呼び出し
-      if (globalErrorReportCallback) {
-        console.log('apiFetch - Calling error report callback for error:', apiError);
-        globalErrorReportCallback(apiError);
-      } else {
-        console.log('apiFetch - No error report callback set, skipping error report');
-      }
-      
-      // 401 Unauthorizedの場合は特別な処理（エラー報告後に実行）
+      // 401 Unauthorizedの場合は特別な処理（エラー報告をスキップ）
       if (response.status === 401) {
-        console.log('apiFetch - 401 Unauthorized, clearing tokens');
+        console.log('apiFetch - 401 Unauthorized, clearing tokens and skipping error report');
         // 認証トークンをクリア
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('authToken');
-        
+
         // ページリロードは行わず、認証状態の変更のみ行う
         // これにより無限ループを防ぐ
         console.log('apiFetch - Tokens cleared, authentication state will be updated by useAuth hook');
+      } else {
+        // 401以外のエラーの場合のみエラー報告コールバックを呼び出し
+        if (globalErrorReportCallback) {
+          console.log('apiFetch - Calling error report callback for error:', apiError);
+          globalErrorReportCallback(apiError);
+        } else {
+          console.log('apiFetch - No error report callback set, skipping error report');
+        }
       }
       
       throw apiError;
