@@ -88,15 +88,7 @@ const REPEAT_OPTIONS = {
   LOOP: -1,
 } as const;
 
-// 周波数から音符への変換テーブル
-const frequencyToNote: { [key: number]: string } = {
-  110: "A2",
-  220: "A3",
-  330: "E4",
-  440: "A4",
-  660: "E5",
-  880: "A5",
-};
+// 周波数→音名の手動マップは未使用のため削除（Tone.Frequencyで変換）
 
 // 音楽ジャンルの定義（拡張版）
 export interface MusicGenre {
@@ -320,19 +312,24 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       // 譜表の作成（位置を少し調整）
       const stave = new Stave(10, 40, 780);
 
-      // 拍子記号と調号を追加
+      // 拍子記号と調号を追加（VexFlowが解釈できない場合はCにフォールバック）
+      const keyForVexflow = /^(?:[A-G])(b|#)?m?$/i.test(scoreData.key || "")
+        ? scoreData.key
+        : "C";
       stave
         .addClef("treble")
         .addTimeSignature(scoreData.timeSignature || "4/4")
-        .addKeySignature(scoreData.key || "C");
+        .addKeySignature(keyForVexflow as any);
 
       stave.setContext(context).draw();
 
       // 音符の作成
       const notes = scoreData.notes.map((note) => {
+        // VexFlowは通常大文字の音名を期待するため変換
+        const vfPitch = (note.pitch || "").replace(/^([a-g])/, (_, p1) => p1.toUpperCase());
         const staveNote = new StaveNote({
           clef: "treble", // ← clefを追加
-          keys: [note.pitch],
+          keys: [vfPitch],
           duration: note.duration,
           autoStem: true, // ← 自動ステム方向を追加
         });
@@ -359,15 +356,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       }
 
       // Voice の作成
-      const VOICE_SOFT_MODE = 3; // VexFlow Voice.Mode.SOFT 相当（enum未公開環境向け）
       try {
         const voice = new Voice({
           numBeats: 4,
           beatValue: 4,
         });
 
-        // setMode: SOFT モード
-        voice.setMode(VOICE_SOFT_MODE);
+        // setMode: SOFT モード（公式enumを使用）
+        // @ts-ignore - 型定義にModeがない環境への対応
+        voice.setMode((Voice as any).Mode ? (Voice as any).Mode.SOFT : 3);
         voice.addTickables(notes);
 
         // Formatterで配置
