@@ -377,7 +377,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   };
 
   const addMilestone = () => {
-    if (!newMilestone.trim()) return;
+    if (!newMilestone.trim()) {
+      return;
+    }
     const milestoneId = Date.now().toString();
     setGoalForm((prev) => ({
       ...prev,
