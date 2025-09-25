@@ -319,3 +319,36 @@
     transform: translateY(0);
   }
 }
+
+.tone-init-hint {
+  color: #ffeb3b;
+}
+
+.score-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  min-height: 200px;
+  overflow: auto;
+}
+
+.category-color-square {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  border-radius: 4px;
+}
+.cat-staple { background-color: #8B4513; }
+.cat-side { background-color: #228B22; }
+.cat-miso { background-color: #D2691E; }
+.cat-meat { background-color: #DC143C; }
+.cat-fish { background-color: #4169E1; }
+.cat-vegetable { background-color: #32CD32; }
+
+.user-message-box {
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 10px;
+}

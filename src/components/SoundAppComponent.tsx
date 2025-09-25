@@ -974,9 +974,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           <div className="app-description">
             <p>食事のバランスを音と楽譜で表現します 🎼</p>
             {!globalToneInitialized && (
-              <p style={{ color: "#ffeb3b" }}>
-                初回は音ボタンをクリックしてください
-              </p>
+              <p className="tone-init-hint">初回は音ボタンをクリックしてください</p>
             )}
           </div>
 
@@ -997,13 +995,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
               <div
                 ref={scoreContainerRef}
                 className="score-container"
-                style={{
-                  background: "white",
-                  padding: "20px",
-                  borderRadius: "8px",
-                  minHeight: "200px",
-                  overflow: "auto",
-                }}
               />
             </div>
           )}
@@ -1051,15 +1042,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                 <div className="category-grid">
                   {foodCategories.map((category) => (
                     <div key={category.id} className="category-item">
-                      <span
-                        style={{
-                          width: "20px",
-                          height: "20px",
-                          backgroundColor: category.color,
-                          display: "inline-block",
-                          borderRadius: "4px",
-                        }}
-                      ></span>
+                  <span className={`category-color-square cat-${category.id}`}></span>
                       <span>{category.name}</span>
                       <span>{category.instrument}</span>
                       <span className="note-display">
@@ -1152,20 +1135,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
             </div>
           )}
 
-          {userMessage && (
-            <div
-              className="user-message"
-              style={{
-                padding: "10px",
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                borderRadius: "8px",
-                textAlign: "center",
-                marginTop: "10px",
-              }}
-            >
-              {userMessage}
-            </div>
-          )}
+      {userMessage && (
+        <div className="user-message user-message-box">{userMessage}</div>
+      )}
         </div>
       )}
     </div>
