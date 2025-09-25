@@ -2099,7 +2099,9 @@ ${errorInfo.stack}
 
   const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     try {
       // 入力値の検証
