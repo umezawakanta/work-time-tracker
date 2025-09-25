@@ -19,13 +19,20 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
     }
     
     console.log('useDataFetching - User authenticated, loading data...');
-    // 認証が必要なデータを読み込み
-    loadProjects();
-    loadReportSummary();
-    loadBooks();
-    loadMemos();
-    loadIncomeExpenseRecords();
-    loadWorkDiaries();
+    
+    // 認証状態が安定するまで少し待機してからAPIリクエストを実行
+    const timer = setTimeout(() => {
+      console.log('useDataFetching - Starting authenticated API calls after delay');
+      // 認証が必要なデータを読み込み
+      loadProjects();
+      loadReportSummary();
+      loadBooks();
+      loadMemos();
+      loadIncomeExpenseRecords();
+      loadWorkDiaries();
+    }, 100); // 100msの遅延
+    
+    return () => clearTimeout(timer);
   }, [isLoggedIn, user]);
 
   // ローディング状態

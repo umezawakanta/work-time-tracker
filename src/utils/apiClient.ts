@@ -11,14 +11,38 @@ export const setErrorReportCallback = (callback: ErrorReportCallback) => {
   globalErrorReportCallback = callback;
 };
 
+// 認証ヘッダーを取得する関数
+const getAuthHeaders = (): HeadersInit => {
+  const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return headers;
+};
+
 // カスタムfetch関数
 export const apiFetch = async (
   url: string,
   options: RequestInit = {}
 ): Promise<Response> => {
   try {
-    console.log('apiFetch - Making request to:', url, 'with options:', options);
-    const response = await fetch(url, options);
+    // 認証ヘッダーを自動的に追加
+    const authHeaders = getAuthHeaders();
+    const mergedOptions: RequestInit = {
+      ...options,
+      headers: {
+        ...authHeaders,
+        ...options.headers,
+      },
+    };
+    
+    console.log('apiFetch - Making request to:', url, 'with options:', mergedOptions);
+    const response = await fetch(url, mergedOptions);
     console.log('apiFetch - Response status:', response.status, 'for URL:', url);
     
     // HTTPエラーステータスをチェック
