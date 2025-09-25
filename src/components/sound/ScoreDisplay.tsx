@@ -25,7 +25,7 @@ export interface ScoreData {
 
 
 // Voice.Modeの型安全なアクセス
-// VexFlowのVoice.Mode.SOFT定数を直接使用
+const VOICE_MODE_SOFT = 3; // VexFlowの定数値
 
 interface ScoreDisplayProps {
   currentScore: ScoreData | null;

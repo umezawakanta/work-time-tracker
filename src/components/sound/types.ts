@@ -1,7 +1,7 @@
 import { MealRecord, FoodCategory } from "./MealRecording";
 import { ScoreData } from "./ScoreDisplay";
 
-// 保存された記録
+// Saved records
 export interface SavedRecord {
   id: string;
   date: string;
@@ -12,10 +12,10 @@ export interface SavedRecord {
     instruments: string[];
   };
   balanceScore: number;
-  scoreData?: ScoreData; // 楽譜データを追加
+  scoreData?: ScoreData; // Add score data
 }
 
-// 編集可能な曲データ
+// Editable song data
 export interface ComposedSong {
   id: string;
   name: string;
@@ -23,10 +23,10 @@ export interface ComposedSong {
   records: SavedRecord[];
   genre: string;
   isEdited: boolean;
-  fullScore?: ScoreData; // 完全な楽譜
+  fullScore?: ScoreData; // Complete score
 }
 
-// 食事カテゴリの定義（音符マッピング追加）
+// Food category definitions (with note mapping)
 export const foodCategories: FoodCategory[] = [
   {
     id: "staple",
@@ -34,7 +34,7 @@ export const foodCategories: FoodCategory[] = [
     sound: { frequency: 220, duration: 0.5, volume: 0.7 },
     color: "#8B4513",
     instrument: "🥁 ドラム",
-    noteMapping: "C/3", // VexFlow形式（大文字）
+    noteMapping: "C/3", // VexFlow format (uppercase)
   },
   {
     id: "side",
@@ -42,7 +42,7 @@ export const foodCategories: FoodCategory[] = [
     sound: { frequency: 330, duration: 0.4, volume: 0.6 },
     color: "#228B22",
     instrument: "🎸 ベース",
-    noteMapping: "E/3", // VexFlow形式（大文字）
+    noteMapping: "E/3", // VexFlow format (uppercase)
   },
   {
     id: "miso",
@@ -50,7 +50,7 @@ export const foodCategories: FoodCategory[] = [
     sound: { frequency: 440, duration: 0.3, volume: 0.5 },
     color: "#D2691E",
     instrument: "🎺 トランペット",
-    noteMapping: "A/4", // VexFlow形式（大文字）
+    noteMapping: "A/4", // VexFlow format (uppercase)
   },
   {
     id: "meat",
@@ -58,7 +58,7 @@ export const foodCategories: FoodCategory[] = [
     sound: { frequency: 110, duration: 0.8, volume: 0.9 },
     color: "#DC143C",
     instrument: "🎸 エレキギター",
-    noteMapping: "A/2", // VexFlow形式（大文字）
+    noteMapping: "A/2", // VexFlow format (uppercase)
   },
   {
     id: "fish",
@@ -66,7 +66,7 @@ export const foodCategories: FoodCategory[] = [
     sound: { frequency: 880, duration: 0.6, volume: 0.8 },
     color: "#4169E1",
     instrument: "🎹 シンセサイザー",
-    noteMapping: "A/5", // VexFlow形式（大文字）
+    noteMapping: "A/5", // VexFlow format (uppercase)
   },
   {
     id: "vegetable",
@@ -74,6 +74,6 @@ export const foodCategories: FoodCategory[] = [
     sound: { frequency: 660, duration: 0.4, volume: 0.7 },
     color: "#32CD32",
     instrument: "🎹 ピアノ",
-    noteMapping: "E/5", // VexFlow形式（大文字）
+    noteMapping: "E/5", // VexFlow format (uppercase)
   },
 ];

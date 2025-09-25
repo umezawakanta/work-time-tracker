@@ -5,7 +5,7 @@ import { playSound } from "./SoundEngine";
 export const generateMeiwaRhythm = (
   beatDuration: number, 
   categoryRatios: any[], 
-  playSoundCallback: (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => void
+  playSoundCallback: (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => Promise<void>
 ) => {
   const activeCats = categoryRatios
     .filter((cat) => cat.ratio > 0)
