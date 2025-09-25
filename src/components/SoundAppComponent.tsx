@@ -817,7 +817,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                   Math.log10(Math.max(0.001, chordVolume)) * 20;
                 pianoInst.triggerAttackRelease(chord.notes, "2s");
               } catch (e) {
-                /* ignore */
+                console.error("Chord playback failed:", e);
               }
             }
           }, chordDelay);
