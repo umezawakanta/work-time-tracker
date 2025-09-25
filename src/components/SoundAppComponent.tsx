@@ -91,10 +91,14 @@ const REPEAT_OPTIONS = {
 // VexFlow調号検証用の正規表現パターン（より包括的）
 const VEXFLOW_KEY_SIGNATURE_PATTERN = /^(?:[A-G](?:b|#)?|Cb|F#|G#|D#|A#|E#|B#)$/i;
 
-// VexFlowでサポートされている調号のリスト
+// VexFlowでサポートされている調号のリスト（メジャー・マイナー両方）
 const SUPPORTED_KEY_SIGNATURES = [
+  // メジャーキー
   'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#', 'E#', 'B#',
-  'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 'Fb', 'Bbb', 'Ebb', 'Abb', 'Dbb', 'Gbb', 'Cbb'
+  'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 'Fb', 'Bbb', 'Ebb', 'Abb', 'Dbb', 'Gbb', 'Cbb',
+  // マイナーキー
+  'Am', 'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'A#m', 'E#m', 'B#m',
+  'Dm', 'Gm', 'Cm', 'Fm', 'Bbm', 'Ebm', 'Abm', 'Dbm', 'Gbm', 'Cbm'
 ] as const;
 
 // Voice.Modeの型安全なアクセス
