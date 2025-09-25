@@ -148,8 +148,16 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
     try {
       const response = await apiFetch('/api/memos/public');
       if (response.ok) {
-        const data = await response.json();
-        setPublicMemos(data.memos || []);
+        const responseText = await response.text();
+        console.log('Public memos response:', responseText);
+        try {
+          const data = JSON.parse(responseText);
+          setPublicMemos(data.memos || []);
+        } catch (jsonError) {
+          console.error('JSON parse error:', jsonError);
+          console.error('Response text:', responseText);
+          setPublicMemos([]);
+        }
       }
     } catch (error) {
       console.error('Failed to load public memos:', error);
