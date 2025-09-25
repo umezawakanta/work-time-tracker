@@ -2344,7 +2344,9 @@ ${errorInfo.stack}
 
   const handleUpdateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id || !editingDiary) return;
+    if (!user?.id || !editingDiary) {
+      return;
+    }
 
     try {
       const response = await fetch(
