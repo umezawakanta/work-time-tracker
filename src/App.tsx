@@ -1159,10 +1159,6 @@ function App() {
 
 
 
-  const resetEggTimer = () => {
-    setEggTimerTime(eggTimerOriginalTime);
-    setEggTimerPaused(false);
-  };
 
 
   // 音声関連のハンドラー（App_backup.tsxから復元）
