@@ -2325,3 +2325,114 @@
 .role-user {
   background-color: #6c757d;
 }
+
+/* カバレッジバーの動的幅設定 */
+.coverage-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* data属性を使用した動的幅設定 */
+.coverage-fill[data-coverage="0"] { width: 0%; }
+.coverage-fill[data-coverage="1"] { width: 1%; }
+.coverage-fill[data-coverage="2"] { width: 2%; }
+.coverage-fill[data-coverage="3"] { width: 3%; }
+.coverage-fill[data-coverage="4"] { width: 4%; }
+.coverage-fill[data-coverage="5"] { width: 5%; }
+.coverage-fill[data-coverage="6"] { width: 6%; }
+.coverage-fill[data-coverage="7"] { width: 7%; }
+.coverage-fill[data-coverage="8"] { width: 8%; }
+.coverage-fill[data-coverage="9"] { width: 9%; }
+.coverage-fill[data-coverage="10"] { width: 10%; }
+.coverage-fill[data-coverage="11"] { width: 11%; }
+.coverage-fill[data-coverage="12"] { width: 12%; }
+.coverage-fill[data-coverage="13"] { width: 13%; }
+.coverage-fill[data-coverage="14"] { width: 14%; }
+.coverage-fill[data-coverage="15"] { width: 15%; }
+.coverage-fill[data-coverage="16"] { width: 16%; }
+.coverage-fill[data-coverage="17"] { width: 17%; }
+.coverage-fill[data-coverage="18"] { width: 18%; }
+.coverage-fill[data-coverage="19"] { width: 19%; }
+.coverage-fill[data-coverage="20"] { width: 20%; }
+.coverage-fill[data-coverage="21"] { width: 21%; }
+.coverage-fill[data-coverage="22"] { width: 22%; }
+.coverage-fill[data-coverage="23"] { width: 23%; }
+.coverage-fill[data-coverage="24"] { width: 24%; }
+.coverage-fill[data-coverage="25"] { width: 25%; }
+.coverage-fill[data-coverage="26"] { width: 26%; }
+.coverage-fill[data-coverage="27"] { width: 27%; }
+.coverage-fill[data-coverage="28"] { width: 28%; }
+.coverage-fill[data-coverage="29"] { width: 29%; }
+.coverage-fill[data-coverage="30"] { width: 30%; }
+.coverage-fill[data-coverage="31"] { width: 31%; }
+.coverage-fill[data-coverage="32"] { width: 32%; }
+.coverage-fill[data-coverage="33"] { width: 33%; }
+.coverage-fill[data-coverage="34"] { width: 34%; }
+.coverage-fill[data-coverage="35"] { width: 35%; }
+.coverage-fill[data-coverage="36"] { width: 36%; }
+.coverage-fill[data-coverage="37"] { width: 37%; }
+.coverage-fill[data-coverage="38"] { width: 38%; }
+.coverage-fill[data-coverage="39"] { width: 39%; }
+.coverage-fill[data-coverage="40"] { width: 40%; }
+.coverage-fill[data-coverage="41"] { width: 41%; }
+.coverage-fill[data-coverage="42"] { width: 42%; }
+.coverage-fill[data-coverage="43"] { width: 43%; }
+.coverage-fill[data-coverage="44"] { width: 44%; }
+.coverage-fill[data-coverage="45"] { width: 45%; }
+.coverage-fill[data-coverage="46"] { width: 46%; }
+.coverage-fill[data-coverage="47"] { width: 47%; }
+.coverage-fill[data-coverage="48"] { width: 48%; }
+.coverage-fill[data-coverage="49"] { width: 49%; }
+.coverage-fill[data-coverage="50"] { width: 50%; }
+.coverage-fill[data-coverage="51"] { width: 51%; }
+.coverage-fill[data-coverage="52"] { width: 52%; }
+.coverage-fill[data-coverage="53"] { width: 53%; }
+.coverage-fill[data-coverage="54"] { width: 54%; }
+.coverage-fill[data-coverage="55"] { width: 55%; }
+.coverage-fill[data-coverage="56"] { width: 56%; }
+.coverage-fill[data-coverage="57"] { width: 57%; }
+.coverage-fill[data-coverage="58"] { width: 58%; }
+.coverage-fill[data-coverage="59"] { width: 59%; }
+.coverage-fill[data-coverage="60"] { width: 60%; }
+.coverage-fill[data-coverage="61"] { width: 61%; }
+.coverage-fill[data-coverage="62"] { width: 62%; }
+.coverage-fill[data-coverage="63"] { width: 63%; }
+.coverage-fill[data-coverage="64"] { width: 64%; }
+.coverage-fill[data-coverage="65"] { width: 65%; }
+.coverage-fill[data-coverage="66"] { width: 66%; }
+.coverage-fill[data-coverage="67"] { width: 67%; }
+.coverage-fill[data-coverage="68"] { width: 68%; }
+.coverage-fill[data-coverage="69"] { width: 69%; }
+.coverage-fill[data-coverage="70"] { width: 70%; }
+.coverage-fill[data-coverage="71"] { width: 71%; }
+.coverage-fill[data-coverage="72"] { width: 72%; }
+.coverage-fill[data-coverage="73"] { width: 73%; }
+.coverage-fill[data-coverage="74"] { width: 74%; }
+.coverage-fill[data-coverage="75"] { width: 75%; }
+.coverage-fill[data-coverage="76"] { width: 76%; }
+.coverage-fill[data-coverage="77"] { width: 77%; }
+.coverage-fill[data-coverage="78"] { width: 78%; }
+.coverage-fill[data-coverage="79"] { width: 79%; }
+.coverage-fill[data-coverage="80"] { width: 80%; }
+.coverage-fill[data-coverage="81"] { width: 81%; }
+.coverage-fill[data-coverage="82"] { width: 82%; }
+.coverage-fill[data-coverage="83"] { width: 83%; }
+.coverage-fill[data-coverage="84"] { width: 84%; }
+.coverage-fill[data-coverage="85"] { width: 85%; }
+.coverage-fill[data-coverage="86"] { width: 86%; }
+.coverage-fill[data-coverage="87"] { width: 87%; }
+.coverage-fill[data-coverage="88"] { width: 88%; }
+.coverage-fill[data-coverage="89"] { width: 89%; }
+.coverage-fill[data-coverage="90"] { width: 90%; }
+.coverage-fill[data-coverage="91"] { width: 91%; }
+.coverage-fill[data-coverage="92"] { width: 92%; }
+.coverage-fill[data-coverage="93"] { width: 93%; }
+.coverage-fill[data-coverage="94"] { width: 94%; }
+.coverage-fill[data-coverage="95"] { width: 95%; }
+.coverage-fill[data-coverage="96"] { width: 96%; }
+.coverage-fill[data-coverage="97"] { width: 97%; }
+.coverage-fill[data-coverage="98"] { width: 98%; }
+.coverage-fill[data-coverage="99"] { width: 99%; }
+.coverage-fill[data-coverage="100"] { width: 100%; }

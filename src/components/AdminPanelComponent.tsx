@@ -1518,8 +1518,8 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                           </div>
                           <div className="coverage-bar">
                             <div 
-                              className="coverage-fill" 
-                              style={{ width: `${testResults.coverage || 0}%` }}
+                              className="coverage-fill"
+                              data-coverage={testResults.coverage || 0}
                             ></div>
                           </div>
                         </div>
