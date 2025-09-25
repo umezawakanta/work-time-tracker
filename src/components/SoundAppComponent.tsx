@@ -88,8 +88,17 @@ const REPEAT_OPTIONS = {
   LOOP: -1,
 } as const;
 
-// VexFlow調号検証用の正規表現パターン
-const VEXFLOW_KEY_SIGNATURE_PATTERN = /^(?:[A-G])(b|#)?m?$/i;
+// VexFlow調号検証用の正規表現パターン（より包括的）
+const VEXFLOW_KEY_SIGNATURE_PATTERN = /^(?:[A-G](?:b|#)?|Cb|F#|G#|D#|A#|E#|B#)$/i;
+
+// VexFlowでサポートされている調号のリスト
+const SUPPORTED_KEY_SIGNATURES = [
+  'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#', 'E#', 'B#',
+  'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 'Fb', 'Bbb', 'Ebb', 'Abb', 'Dbb', 'Gbb', 'Cbb'
+] as const;
+
+// Voice.Modeの型安全なアクセス
+const VOICE_MODE_SOFT = 3; // VexFlowの定数値
 
 // 周波数→音名の手動マップは未使用のため削除（Tone.Frequencyで変換）
 
@@ -316,13 +325,13 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       const stave = new Stave(10, 40, 780);
 
       // 拍子記号と調号を追加（VexFlowが解釈できない場合はCにフォールバック）
-      const keyForVexflow = VEXFLOW_KEY_SIGNATURE_PATTERN.test(scoreData.key || "")
+      const keyForVexflow = SUPPORTED_KEY_SIGNATURES.includes(scoreData.key as any)
         ? scoreData.key
         : "C";
       stave
         .addClef("treble")
         .addTimeSignature(scoreData.timeSignature || "4/4")
-        .addKeySignature(keyForVexflow as any);
+        .addKeySignature(keyForVexflow);
 
       stave.setContext(context).draw();
 
@@ -365,9 +374,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           beatValue: 4,
         });
 
-        // setMode: SOFT モード（公式enumを使用）
-        // @ts-ignore - 型定義にModeがない環境への対応
-        const VOICE_MODE_SOFT = (Voice as any).Mode ? (Voice as any).Mode.SOFT : 3;
+        // setMode: SOFT モード（型安全な定数を使用）
         voice.setMode(VOICE_MODE_SOFT);
         voice.addTickables(notes);
 
