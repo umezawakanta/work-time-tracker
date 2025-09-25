@@ -73,7 +73,6 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = ({
   handleEditBook,
   handleDeleteBook,
   handleBookCategoryChange,
-  getBookCategories,
   getReadingProgress,
 }) => {
   return (
@@ -390,7 +389,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = ({
                       <div className="progress-bar">
                         <div
                           className="progress-fill"
-                          style={{ width: `${getReadingProgress(book)}%` }}
+                          data-progress={getReadingProgress(book)}
                         ></div>
                       </div>
                       <span className="progress-text">
