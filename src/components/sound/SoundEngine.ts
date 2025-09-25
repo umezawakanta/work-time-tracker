@@ -17,7 +17,7 @@ const getNoteForCategory = (categoryId: string, genre?: string, frequency?: numb
     try {
       return Tone.Frequency(frequency, "hz").toNote();
     } catch (freqError) {
-      throw new Error("Invalid frequency specified for note conversion");
+      throw new Error(`Invalid frequency (${frequency}Hz) specified for note conversion`);
     }
   }
   
