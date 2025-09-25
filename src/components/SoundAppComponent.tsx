@@ -1060,8 +1060,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                     <div key={category.id} className="category-item">
                   <span
                     className={`category-color-square cat-${category.id}`}
-                    role="img"
-                    aria-label={`Category color for ${category.name}`}
+                    aria-hidden="true"
                   ></span>
                       <span>{category.name}</span>
                       <span>{category.instrument}</span>
