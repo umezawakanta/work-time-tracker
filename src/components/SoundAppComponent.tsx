@@ -202,9 +202,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     {
       id: "meiwa",
       name: "明和電機",
-      baseTempo: 100,
-      instruments: ["electronic", "mechanical"],
-      description: "明和電機風の電子音・機械音",
+      baseTempo: 120,
+      instruments: ["8bit", "chip"],
+      description: "8bit風のチップチューン・明和電機風",
       keySignature: "C",
     },
     {
@@ -615,30 +615,31 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           break;
 
         case "meiwa":
-          // 明和電機専用の音色
-          instrument = new Tone.FMSynth({
-            harmonicity: 2.0,
-            modulationIndex: 30,
+          // 明和電機専用の8bit風音色
+          instrument = new Tone.MonoSynth({
             oscillator: { 
-              type: "sawtooth",
-              detune: 10,
+              type: "square",
+              detune: 0,
             } as any,
             envelope: { 
               attack: 0.001, 
-              decay: 0.1, 
-              sustain: 0.1, 
-              release: 0.2 
+              decay: 0.01, 
+              sustain: 0.0, 
+              release: 0.1 
             },
-            modulation: { 
-              type: "square",
-              detune: -5,
-            } as any,
-            modulationEnvelope: {
-              attack: 0.01,
-              decay: 0.05,
-              sustain: 0.8,
+            filterEnvelope: {
+              attack: 0.001,
+              decay: 0.01,
+              sustain: 0.0,
               release: 0.1,
+              baseFrequency: 1000,
+              octaves: 2,
             },
+            filter: {
+              type: "lowpass",
+              frequency: 2000,
+              rolloff: -12,
+            } as any,
           }).toDestination();
           break;
 
@@ -901,11 +902,11 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       { name: "Min", notes: ["E4", "F4", "B4"] },
     ],
     meiwa: [
-      // 明和電機風の和音進行（電子音・機械音）
-      { name: "Meiwa1", notes: ["C3", "F3", "G3", "C4"] },
-      { name: "Meiwa2", notes: ["D3", "G3", "A3", "D4"] },
-      { name: "Meiwa3", notes: ["E3", "A3", "B3", "E4"] },
-      { name: "Meiwa4", notes: ["F3", "Bb3", "C4", "F4"] },
+      // 明和電機風の8bitメロディー（シンプルな音階）
+      { name: "Meiwa1", notes: ["C4", "D4", "E4", "F4"] },
+      { name: "Meiwa2", notes: ["G4", "A4", "B4", "C5"] },
+      { name: "Meiwa3", notes: ["F4", "E4", "D4", "C4"] },
+      { name: "Meiwa4", notes: ["G4", "F4", "E4", "D4"] },
     ],
   };
 
@@ -926,17 +927,22 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     return chordProgressions.minor;
   };
 
-  // 音楽を生成（楽譜データも同時に生成）
+  // 音楽を生成（明和電機風に強化）
   const generateMusic = useCallback(
     (categoryRatios: any[], balanceScore: number, genre: MusicGenre) => {
       playTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
       playTimeoutsRef.current = [];
 
       const { baseTempo } = genre;
-      const adjustedTempo = Math.max(
-        80,
-        Math.min(160, baseTempo * (0.7 + balanceScore * 0.3))
-      );
+      let adjustedTempo = baseTempo;
+      
+      // 明和電機風の場合は固定テンポ
+      if (genre.id === "meiwa") {
+        adjustedTempo = 120; // 8bit風のテンポ
+      } else {
+        adjustedTempo = Math.max(80, Math.min(160, baseTempo * (0.7 + balanceScore * 0.3)));
+      }
+      
       const beatDuration = 60 / adjustedTempo;
 
       const activeCats = categoryRatios
@@ -952,67 +958,81 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         setTimeout(() => renderScore(scoreData), 100);
       }
 
-      // メロディーラインを生成
-      activeCats.forEach((category, index) => {
-        const delay = index * beatDuration * 800;
-        const frequency = category.sound.frequency * (0.9 + balanceScore * 0.2);
-        const duration = category.sound.duration * (1.0 + balanceScore * 0.6);
-        const volume = Math.min(
-          0.6,
-          category.sound.volume * (0.5 + balanceScore * 0.5)
-        );
-
-        const timeout = setTimeout(() => {
-          playSound(category.id, frequency, duration, volume, genre.id);
-
-          // リアルタイムで楽譜をハイライト（視覚的フィードバック）
-          if (scoreContainerRef.current) {
-            const notes =
-              scoreContainerRef.current.querySelectorAll(".vf-stavenote");
-            if (notes[index]) {
-              notes[index].classList.add("playing");
-              setTimeout(
-                () => notes[index].classList.remove("playing"),
-                duration * 1000
-              );
-            }
-          }
-        }, delay);
-
-        playTimeoutsRef.current.push(timeout);
-      });
-
-      // 和音進行を追加
-      const chordProg = getChordProgression(genre.id, balanceScore);
-
-      if (balanceScore > 0.4) {
-        const harmonyStartDelay = activeCats.length * beatDuration * 800 + 500;
-
-        chordProg.forEach((chord, chordIndex) => {
-          const chordDelay =
-            harmonyStartDelay + chordIndex * beatDuration * 1000;
+      // 明和電機風の8bitメロディー生成
+      if (genre.id === "meiwa") {
+        // 8bit風のシンプルなメロディー
+        const melodyNotes = ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5"];
+        const melodyPattern = [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1];
+        
+        melodyPattern.forEach((noteIndex, index) => {
+          const delay = index * beatDuration * 200; // より速いテンポ
+          const note = melodyNotes[noteIndex % melodyNotes.length];
+          const frequency = Tone.Frequency(note).toFrequency();
+          const duration = 0.1; // 短いビープ音
+          const volume = 0.8;
 
           const timeout = setTimeout(() => {
-            const pianoInst = getOrCreateInstrument("vegetable");
-            if (pianoInst) {
-              try {
-                const chordVolume = balanceScore > 0.7 ? 0.5 : 0.3;
-                pianoInst.volume.value =
-                  Math.log10(Math.max(0.001, chordVolume)) * 20;
-                // 和音を個別の音符として順次再生
-                chord.notes.forEach((note, index) => {
-                  setTimeout(() => {
-                    pianoInst.triggerAttackRelease(note, "2s");
-                  }, index * 50); // 50ms間隔で順次再生
-                });
-              } catch (e) {
-                console.error("Chord playback failed:", e);
-              }
-            }
-          }, chordDelay);
+            playSound("staple", frequency, duration, volume, genre.id);
+          }, delay);
 
           playTimeoutsRef.current.push(timeout);
         });
+      } else {
+        // 通常のメロディーラインを生成
+        activeCats.forEach((category, index) => {
+          const delay = index * beatDuration * 800;
+          const frequency = category.sound.frequency * (0.9 + balanceScore * 0.2);
+          const duration = category.sound.duration * (1.0 + balanceScore * 0.6);
+          const volume = Math.min(0.6, category.sound.volume * (0.5 + balanceScore * 0.5));
+
+          const timeout = setTimeout(() => {
+            playSound(category.id, frequency, duration, volume, genre.id);
+
+            // リアルタイムで楽譜をハイライト（視覚的フィードバック）
+            if (scoreContainerRef.current) {
+              const notes = scoreContainerRef.current.querySelectorAll(".vf-stavenote");
+              if (notes[index]) {
+                notes[index].classList.add("playing");
+                setTimeout(() => notes[index].classList.remove("playing"), duration * 1000);
+              }
+            }
+          }, delay);
+
+          playTimeoutsRef.current.push(timeout);
+        });
+      }
+
+      // 和音進行を追加（明和電機風以外）
+      if (genre.id !== "meiwa") {
+        const chordProg = getChordProgression(genre.id, balanceScore);
+
+        if (balanceScore > 0.4) {
+          const harmonyStartDelay = activeCats.length * beatDuration * 800 + 500;
+
+          chordProg.forEach((chord, chordIndex) => {
+            const chordDelay = harmonyStartDelay + chordIndex * beatDuration * 1000;
+
+            const timeout = setTimeout(() => {
+              const pianoInst = getOrCreateInstrument("vegetable");
+              if (pianoInst) {
+                try {
+                  const chordVolume = balanceScore > 0.7 ? 0.5 : 0.3;
+                  pianoInst.volume.value = Math.log10(Math.max(0.001, chordVolume)) * 20;
+                  // 和音を個別の音符として順次再生
+                  chord.notes.forEach((note, index) => {
+                    setTimeout(() => {
+                      pianoInst.triggerAttackRelease(note, "2s");
+                    }, index * 50); // 50ms間隔で順次再生
+                  });
+                } catch (e) {
+                  console.error("Chord playback failed:", e);
+                }
+              }
+            }, chordDelay);
+
+            playTimeoutsRef.current.push(timeout);
+          });
+        }
       }
     },
     [
