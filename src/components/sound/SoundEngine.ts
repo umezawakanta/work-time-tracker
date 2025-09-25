@@ -1,12 +1,13 @@
 import * as Tone from "tone";
 import { ensureAudioContextReady } from "./AudioContextUtils";
 
-// グローバルでTone.jsの初期化状態を管理
+// グローバルでTone.jsの初期化状態を管理（ユーザー操作時のみ初期化）
 let globalToneInitialized = false;
 let toneInitializationPromise: Promise<boolean> | null = null;
 let isInitializing = false;
 
 // Tone.jsの自動初期化を防ぐ
+Tone.context.latencyHint = "interactive";
 try {
   if (Tone.context.state !== 'closed') {
     Tone.context.dispose();
@@ -236,7 +237,7 @@ export const createMeiwaInstrument = async (categoryId: string) => {
   }
 };
 
-// Tone.jsの初期化
+// Tone.jsの初期化（ユーザー操作時のみ）
 export const initializeTone = async (): Promise<boolean> => {
   if (globalToneInitialized) {
     return true;
@@ -256,14 +257,14 @@ export const initializeTone = async (): Promise<boolean> => {
 
   toneInitializationPromise = (async () => {
     try {
-      // まずAudioContextを確実に準備
+      // ユーザー操作後にAudioContextを確実に準備
       const audioReady = await ensureAudioContextReady();
       if (!audioReady) {
         throw new Error("AudioContext is not ready");
       }
 
-      // Tone.jsを明示的に開始
-      console.log("Starting Tone.js...");
+      // Tone.jsを明示的に開始（ユーザー操作後なので安全）
+      console.log("Starting Tone.js after user interaction...");
       await Tone.start();
       
       console.log("Tone.js started successfully");

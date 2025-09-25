@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 
 /**
- * AudioContextの状態を確認し、必要に応じて再開する
+ * AudioContextの状態を確認し、必要に応じて再開する（ユーザー操作後のみ）
  * @returns Promise<boolean> - 成功した場合true、失敗した場合false
  */
 export const ensureAudioContextReady = async (): Promise<boolean> => {
@@ -15,7 +15,7 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
       await Tone.context.resume();
     } else if (currentState === 'closed') {
       console.log("AudioContext is closed, creating new context...");
-      // 新しいAudioContextを作成
+      // 新しいAudioContextを作成（ユーザー操作後なので安全）
       const newContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       // Tone.jsのコンテキストを更新
       Tone.setContext(newContext);
