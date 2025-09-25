@@ -198,7 +198,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
   // 気分ログ管理関数
   const addMoodLog = () => {
-    if (!moodForm.date) return;
+    if (!moodForm.date) {
+      return;
+    }
     const moodLogId = Date.now().toString();
     const newMoodLog: MoodLog = {
       id: moodLogId,

@@ -52,11 +52,7 @@ const UserInfoComponent: React.FC<UserInfoComponentProps> = ({
           }
           setShowFontSettings(!showFontSettings);
         }}
-        onFeatureSettingsToggle={() => {
-          closeOtherFeatures("feature-settings");
-          setShowFeatureSettings(true);
-          loadUserSettings();
-        }}
+        onFeatureSettingsToggle={onFeatureSettingsToggle}
       />
     </div>
   );
