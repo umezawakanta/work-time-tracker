@@ -253,12 +253,6 @@ function App() {
   const [publicMemoCurrentDate, setPublicMemoCurrentDate] = useState(new Date());
   const [publicMemoSelectedDate, setPublicMemoSelectedDate] = useState<Date | null>(null);
 
-  // 返信機能の状態
-  const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
-  const [replyContent, setReplyContent] = useState("");
-  const [editingReply, setEditingReply] = useState<string | null>(null);
-  const [editReplyContent, setEditReplyContent] = useState("");
-
   // 本棚関連の状態
   const [showBookshelf, setShowBookshelf] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
