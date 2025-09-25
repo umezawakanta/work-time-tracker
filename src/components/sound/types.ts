@@ -1,5 +1,5 @@
-import { MealRecord, FoodCategory } from "./MealRecording";
-import { ScoreData } from "./ScoreDisplay";
+import { MealRecord, FoodCategory } from "./MealRecording.types";
+import { ScoreData } from "./ScoreDisplay.types";
 
 // Saved records
 export interface SavedRecord {
