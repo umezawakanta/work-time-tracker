@@ -3006,8 +3006,7 @@ ${errorInfo.stack}
       // データベースの日付をUTC日付文字列に変換して比較
       const diaryDate = new Date(diary.date);
       const diaryDateStr = diaryDate.toISOString().split("T")[0];
-      const matches = diaryDateStr === selectedDateUTCStr;
-      return matches;
+      return diaryDateStr === selectedDateUTCStr;
     });
 
     return { incomeExpenseRecords: filteredIncomeExpenseRecords, diaries: filteredDiaries };
