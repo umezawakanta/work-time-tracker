@@ -610,7 +610,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                               <div className="progress-bar">
                                 <div 
                                   className="progress-fill" 
-                                  // eslint-disable-next-line react/forbid-dom-props
+                                  // eslint-disable-next-line react/forbid-dom-props, @typescript-eslint/no-explicit-any
                                   style={{ width: `${percentage}%` }}
                                 ></div>
                               </div>
