@@ -731,7 +731,7 @@ function App() {
 
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(`/api/books/${editingBook._id}`, {
+      const response = await fetch(`/api/books/${editingBook.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
