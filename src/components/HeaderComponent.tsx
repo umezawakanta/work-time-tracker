@@ -71,19 +71,25 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             showThemeSettings={showThemeSettings}
             onThemeSettingsToggle={() => {
               if (!showThemeSettings) {
-                closeOtherFeatures("theme-settings");
+                if (closeOtherFeatures) {
+                  closeOtherFeatures("theme-settings");
+                }
               }
               setShowThemeSettings(!showThemeSettings);
             }}
             showFontSettings={showFontSettings}
             onFontSettingsToggle={() => {
               if (!showFontSettings) {
-                closeOtherFeatures("font-settings");
+                if (closeOtherFeatures) {
+                  closeOtherFeatures("font-settings");
+                }
               }
               setShowFontSettings(!showFontSettings);
             }}
             onFeatureSettingsToggle={() => {
-              closeOtherFeatures("feature-settings");
+              if (closeOtherFeatures) {
+                closeOtherFeatures("feature-settings");
+              }
               setShowFeatureSettings(true);
               loadUserSettings();
             }}
