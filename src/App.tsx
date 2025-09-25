@@ -1675,7 +1675,6 @@ function App() {
       getReadingProgress={getReadingProgress}
       handleCreateMemo={handleCreateMemo}
       // タイマー関連のプロパティ
-      setShowTimers={uiState.setShowTimers}
       customTimerActive={customTimerActive}
       setCustomTimerActive={setCustomTimerActive}
       customTimerPaused={customTimerPaused}
@@ -1699,8 +1698,6 @@ function App() {
       stopCustomTimer={stopCustomTimer}
       resetCustomTimer={resetCustomTimer}
       // 料理タイマー関連のプロパティ
-      selectedRecipe={selectedRecipe}
-      setSelectedRecipe={setSelectedRecipe}
       selectedEggType={selectedEggType}
       setSelectedEggType={setSelectedEggType}
       eggTimerActive={eggTimerActive}
