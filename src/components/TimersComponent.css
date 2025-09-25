@@ -591,3 +591,28 @@
     padding: 1rem;
   }
 }
+
+/* プリセットボタンの色設定 */
+.preset-pomodoro {
+  --preset-color: #e74c3c;
+}
+
+.preset-short-break {
+  --preset-color: #27ae60;
+}
+
+.preset-long-break {
+  --preset-color: #3498db;
+}
+
+.preset-focus {
+  --preset-color: #9b59b6;
+}
+
+.preset-study {
+  --preset-color: #f39c12;
+}
+
+.preset-workout {
+  --preset-color: #e67e22;
+}

@@ -304,8 +304,7 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
                 <button
                   key={preset.id}
                   onClick={() => startPresetTimer(preset)}
-                  className={`preset-button ${selectedPreset === preset.id ? 'active' : ''}`}
-                  style={{ '--preset-color': preset.color } as React.CSSProperties}
+                  className={`preset-button preset-${preset.id} ${selectedPreset === preset.id ? 'active' : ''}`}
                   disabled={customTimerActive}
                 >
                   <div className="preset-name">{preset.name}</div>
