@@ -367,7 +367,7 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
                       <div className="success-rate-bar">
                         <div
                           className="success-rate-fill"
-                          style={{ width: `${endpoint.successRate}%` }}
+                          data-rate={endpoint.successRate}
                         ></div>
                       </div>
                       <span className="success-rate-text">
