@@ -1403,44 +1403,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 setDiaryMood={setDiaryMood}
                 diaryActivities={diaryActivities}
                 setDiaryActivities={setDiaryActivities}
-                diaryTags={diaryTags}
-                setDiaryTags={setDiaryTags}
-                diaryIsPrivate={diaryIsPrivate}
-                setDiaryIsPrivate={setDiaryIsPrivate}
-                diaryWorkSummary={diaryWorkSummary}
-                setDiaryWorkSummary={setDiaryWorkSummary}
                 diaryAchievements={diaryAchievements}
                 setDiaryAchievements={setDiaryAchievements}
                 diaryChallenges={diaryChallenges}
                 setDiaryChallenges={setDiaryChallenges}
-                diaryLearnings={diaryLearnings}
-                setDiaryLearnings={setDiaryLearnings}
                 diaryNextGoals={diaryNextGoals}
                 setDiaryNextGoals={setDiaryNextGoals}
-                diaryEnergyLevel={diaryEnergyLevel}
-                setDiaryEnergyLevel={setDiaryEnergyLevel}
-                diaryStressLevel={diaryStressLevel}
-                setDiaryStressLevel={setDiaryStressLevel}
-                diaryWorkHours={diaryWorkHours}
-                setDiaryWorkHours={setDiaryWorkHours}
-                diaryBreakTime={diaryBreakTime}
-                setDiaryBreakTime={setDiaryBreakTime}
-                diaryProductivity={diaryProductivity}
-                setDiaryProductivity={setDiaryProductivity}
+
                 diaryNotes={diaryNotes}
                 setDiaryNotes={setDiaryNotes}
                 diaryGratitude={diaryGratitude}
                 setDiaryGratitude={setDiaryGratitude}
                 diaryReflection={diaryReflection}
                 setDiaryReflection={setDiaryReflection}
-                newAchievement={newAchievement}
-                setNewAchievement={setNewAchievement}
-                newChallenge={newChallenge}
-                setNewChallenge={setNewChallenge}
-                newLearning={newLearning}
-                setNewLearning={setNewLearning}
-                newNextGoal={newNextGoal}
-                setNewNextGoal={setNewNextGoal}
                 loadIncomeExpenseRecords={loadIncomeExpenseRecords}
                 loadWorkDiaries={loadWorkDiaries}
                 handleCreateIncomeExpenseRecord={handleCreateIncomeExpenseRecord}
@@ -1449,20 +1424,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 handleUpdateDiary={() => {}}
                 handleDeleteIncomeExpenseRecord={() => {}}
                 handleDeleteDiary={() => {}}
-                handleEditIncomeExpenseRecord={() => {}}
-                handleEditDiary={() => {}}
-                handleViewIncomeExpenseRecord={() => {}}
-                handleViewDiary={() => {}}
                 showCalendar={showCalendar}
                 setShowCalendar={setShowCalendar}
-                currentDate={currentDate}
-                setCurrentDate={setCurrentDate}
                 currentMonth={currentMonth}
                 setCurrentMonth={setCurrentMonth}
                 selectedDate={selectedDate}
                 setSelectedDate={setSelectedDate}
-                showRecordDetail={showRecordDetail}
-                setShowRecordDetail={setShowRecordDetail}
                 selectedRecord={selectedRecord}
                 setSelectedRecord={setSelectedRecord}
                 selectedRecordType={selectedRecordType}
@@ -1475,9 +1442,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 saveMonthlyMemo={saveMonthlyMemo}
                 startEditingMonthlyMemo={startEditingMonthlyMemo}
                 cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
-                navigateMonth={navigateMonth}
                 openDiaryForm={openDiaryForm}
-                openIncomeExpenseForm={openIncomeExpenseForm}
                 user={user}
               />
             );
