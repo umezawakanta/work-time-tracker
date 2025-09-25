@@ -2779,7 +2779,9 @@ ${errorInfo.stack}
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!draggedFeature) return;
+    if (!draggedFeature) {
+      return;
+    }
     e.preventDefault();
   };
 
