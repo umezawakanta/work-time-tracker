@@ -185,7 +185,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
   const getHabitCompletionRate = (habitId: string) => {
     const habit = habits.find((h) => h.id === habitId);
-    if (!habit) return 0;
+    if (!habit) {
+      return 0;
+    }
 
     const history = habitHistory[habitId] || [];
     const daysSinceStart = Math.ceil(
