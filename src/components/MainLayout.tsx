@@ -184,6 +184,25 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           closeOtherFeatures('version-info');
           setShowVersionInfo(true);
         }}
+        currentCharacter={null}
+        showThemeSettings={false}
+        showFontSettings={false}
+        showFeatureSettings={false}
+        handleCharacterHomeToggle={() => {
+          closeOtherFeatures('character-home');
+          setShowCharacterHome(true);
+        }}
+        handleLogout={() => {
+          // ログアウト処理
+        }}
+        closeOtherFeatures={closeOtherFeatures}
+        setShowThemeSettings={() => {}}
+        setShowFontSettings={() => {}}
+        setShowFeatureSettings={() => {}}
+        loadUserSettings={() => {}}
+        isTimeTrackingActive={false}
+        onUpdateRequestClick={() => {}}
+        onBugReportClick={() => {}}
       />
 
       <main className="main-content">
