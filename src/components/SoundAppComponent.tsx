@@ -189,7 +189,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     },
   ];
 
-  // 拡張された音楽ジャンル（調号追加）
+  // 拡張された音楽ジャンル（明和電機風に強化）
   const musicGenres: MusicGenre[] = [
     {
       id: "balanced",
@@ -197,6 +197,14 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       baseTempo: 120,
       instruments: ["piano", "strings"],
       description: "バランスの取れた食事の時",
+      keySignature: "C",
+    },
+    {
+      id: "meiwa",
+      name: "明和電機",
+      baseTempo: 100,
+      instruments: ["electronic", "mechanical"],
+      description: "明和電機風の電子音・機械音",
       keySignature: "C",
     },
     {
@@ -212,7 +220,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       name: "テクノ",
       baseTempo: 128,
       instruments: ["synth", "electronic"],
-      description: "電子音楽スタイル",
+      description: "明和電機風の電子音楽",
       keySignature: "Am",
     },
     {
@@ -228,7 +236,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       name: "和楽器",
       baseTempo: 100,
       instruments: ["shamisen", "taiko", "koto"],
-      description: "日本の伝統音楽",
+      description: "明和電機風の機械音",
       keySignature: "Dm",
     },
     {
@@ -514,28 +522,44 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
       let instrument = null;
 
-      // ジャンル別の音色設定
+      // ジャンル別の音色設定（明和電機風に強化）
       switch (genre) {
         case "rock":
           instrument = new Tone.FMSynth({
-            harmonicity: 2.5,
-            modulationIndex: 20,
-            oscillator: { type: "square" },
-            envelope: { attack: 0.001, decay: 0.2, sustain: 0.5, release: 0.3 },
+            harmonicity: 3.0,
+            modulationIndex: 25,
+            oscillator: { type: "sawtooth" },
+            envelope: { attack: 0.001, decay: 0.3, sustain: 0.2, release: 0.5 },
+            modulation: { type: "square" },
+            modulationEnvelope: {
+              attack: 0.01,
+              decay: 0.3,
+              sustain: 0.8,
+              release: 0.2,
+            },
           }).toDestination();
           break;
 
         case "techno":
+          // 明和電機風の電子音
           instrument = new Tone.MonoSynth({
-            oscillator: { type: "pulse" },
-            envelope: { attack: 0.001, decay: 0.1, sustain: 0.9, release: 0.1 },
+            oscillator: { 
+              type: "pulse",
+              width: 0.3,
+            },
+            envelope: { attack: 0.001, decay: 0.05, sustain: 0.1, release: 0.1 },
             filterEnvelope: {
               attack: 0.001,
               decay: 0.1,
-              sustain: 0.5,
+              sustain: 0.3,
               release: 0.2,
-              baseFrequency: 400,
-              octaves: 4,
+              baseFrequency: 200,
+              octaves: 6,
+            },
+            filter: {
+              type: "lowpass",
+              frequency: 800,
+              rolloff: -24,
             },
           }).toDestination();
           break;
@@ -548,10 +572,19 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           break;
 
         case "japanese":
-          instrument = new Tone.PluckSynth({
-            attackNoise: 1,
-            dampening: 4000,
-            resonance: 0.9,
+          // 明和電機風の機械音
+          instrument = new Tone.FMSynth({
+            harmonicity: 1.5,
+            modulationIndex: 15,
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.4 },
+            modulation: { type: "sawtooth" },
+            modulationEnvelope: {
+              attack: 0.02,
+              decay: 0.1,
+              sustain: 0.5,
+              release: 0.3,
+            },
           }).toDestination();
           break;
 
@@ -581,6 +614,34 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           }).connect(reverb);
           break;
 
+        case "meiwa":
+          // 明和電機専用の音色
+          instrument = new Tone.FMSynth({
+            harmonicity: 2.0,
+            modulationIndex: 30,
+            oscillator: { 
+              type: "sawtooth",
+              detune: 10,
+            } as any,
+            envelope: { 
+              attack: 0.001, 
+              decay: 0.1, 
+              sustain: 0.1, 
+              release: 0.2 
+            },
+            modulation: { 
+              type: "square",
+              detune: -5,
+            } as any,
+            modulationEnvelope: {
+              attack: 0.01,
+              decay: 0.05,
+              sustain: 0.8,
+              release: 0.1,
+            },
+          }).toDestination();
+          break;
+
         default:
           instrument = getOrCreateInstrument(categoryId);
       }
@@ -590,7 +651,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     []
   );
 
-  // 基本楽器の作成
+  // 基本楽器の作成（明和電機風に強化）
   const getOrCreateInstrument = useCallback((categoryId: string) => {
     if (!globalToneInitialized) {
       return null;
@@ -604,71 +665,160 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
     switch (categoryId) {
       case "staple":
+        // 明和電機風のドラム音
         instrument = new Tone.MembraneSynth({
-          pitchDecay: 0.05,
-          octaves: 10,
-          oscillator: { type: "sine" },
-          envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.4 },
+          pitchDecay: 0.02,
+          octaves: 12,
+          oscillator: { 
+            type: "sawtooth",
+            detune: 5,
+          } as any,
+          envelope: { 
+            attack: 0.001, 
+            decay: 0.2, 
+            sustain: 0.01, 
+            release: 0.8 
+          },
         }).toDestination();
         break;
 
       case "side":
-        instrument = new Tone.MonoSynth({
-          oscillator: { type: "sawtooth" },
-          envelope: { attack: 0.01, decay: 0.3, sustain: 0.4, release: 0.5 },
-          filterEnvelope: {
+        // 明和電機風のベース音
+        instrument = new Tone.FMSynth({
+          harmonicity: 2.5,
+          modulationIndex: 20,
+          oscillator: { 
+            type: "sawtooth",
+            detune: -10,
+          } as any,
+          envelope: { 
+            attack: 0.01, 
+            decay: 0.2, 
+            sustain: 0.3, 
+            release: 0.4 
+          },
+          modulation: { 
+            type: "square",
+            detune: 5,
+          } as any,
+          modulationEnvelope: {
             attack: 0.01,
-            decay: 0.2,
-            sustain: 0.5,
-            release: 0.5,
-            baseFrequency: 200,
-            octaves: 2.6,
+            decay: 0.1,
+            sustain: 0.6,
+            release: 0.3,
           },
         }).toDestination();
         break;
 
       case "miso":
-        instrument = new Tone.MonoSynth({
-          oscillator: { type: "sawtooth" },
-          envelope: { attack: 0.05, decay: 0.2, sustain: 0.8, release: 0.3 },
-          filterEnvelope: {
-            attack: 0.05,
-            decay: 0.2,
-            sustain: 0.5,
-            release: 0.3,
-            baseFrequency: 300,
-            octaves: 3,
-          },
-        }).toDestination();
-        break;
-
-      case "meat":
+        // 明和電機風のトランペット音
         instrument = new Tone.FMSynth({
-          harmonicity: 3.01,
-          modulationIndex: 14,
-          oscillator: { type: "triangle" },
-          envelope: { attack: 0.002, decay: 0.3, sustain: 0.3, release: 0.5 },
-          modulation: { type: "square" },
+          harmonicity: 1.8,
+          modulationIndex: 25,
+          oscillator: { 
+            type: "triangle",
+            detune: 3,
+          } as any,
+          envelope: { 
+            attack: 0.02, 
+            decay: 0.1, 
+            sustain: 0.6, 
+            release: 0.2 
+          },
+          modulation: { 
+            type: "sine",
+            detune: -2,
+          } as any,
           modulationEnvelope: {
             attack: 0.01,
-            decay: 0.5,
-            sustain: 0.2,
+            decay: 0.05,
+            sustain: 0.8,
             release: 0.1,
           },
         }).toDestination();
         break;
 
+      case "meat":
+        // 明和電機風のエレキギター音
+        instrument = new Tone.FMSynth({
+          harmonicity: 4.0,
+          modulationIndex: 35,
+          oscillator: { 
+            type: "sawtooth",
+            detune: 8,
+          } as any,
+          envelope: { 
+            attack: 0.001, 
+            decay: 0.2, 
+            sustain: 0.1, 
+            release: 0.3 
+          },
+          modulation: { 
+            type: "square",
+            detune: -8,
+          } as any,
+          modulationEnvelope: {
+            attack: 0.005,
+            decay: 0.3,
+            sustain: 0.1,
+            release: 0.05,
+          },
+        }).toDestination();
+        break;
+
       case "fish":
-        instrument = new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: "sawtooth" },
-          envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.4 },
+        // 明和電機風のシンセサイザー音
+        instrument = new Tone.FMSynth({
+          harmonicity: 1.2,
+          modulationIndex: 18,
+          oscillator: { 
+            type: "sawtooth",
+            detune: 12,
+          } as any,
+          envelope: { 
+            attack: 0.01, 
+            decay: 0.05, 
+            sustain: 0.2, 
+            release: 0.3 
+          },
+          modulation: { 
+            type: "triangle",
+            detune: -5,
+          } as any,
+          modulationEnvelope: {
+            attack: 0.02,
+            decay: 0.1,
+            sustain: 0.4,
+            release: 0.2,
+          },
         }).toDestination();
         break;
 
       case "vegetable":
-        instrument = new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: "sine" },
-          envelope: { attack: 0.01, decay: 0.3, sustain: 0.6, release: 1.0 },
+        // 明和電機風のピアノ音
+        instrument = new Tone.FMSynth({
+          harmonicity: 0.5,
+          modulationIndex: 8,
+          oscillator: { 
+            type: "sine",
+            detune: 2,
+          } as any,
+          envelope: { 
+            attack: 0.005, 
+            decay: 0.2, 
+            sustain: 0.4, 
+            release: 0.8 
+          },
+          modulation: { 
+            type: "sine",
+            detune: 1,
+          } as any,
+          modulationEnvelope: {
+            attack: 0.01,
+            decay: 0.3,
+            sustain: 0.2,
+            release: 0.5,
+          },
         }).toDestination();
         break;
     }
@@ -724,7 +874,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     [getOrCreateInstrument, createInstrumentForGenre]
   );
 
-  // 和音の定義（3和音）
+  // 和音の定義（明和電機風に強化）
   const chordProgressions = {
     major: [
       { name: "C", notes: ["C4", "E4", "G4"] },
@@ -750,10 +900,20 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       { name: "Ritsu", notes: ["D4", "E4", "A4"] },
       { name: "Min", notes: ["E4", "F4", "B4"] },
     ],
+    meiwa: [
+      // 明和電機風の和音進行（電子音・機械音）
+      { name: "Meiwa1", notes: ["C3", "F3", "G3", "C4"] },
+      { name: "Meiwa2", notes: ["D3", "G3", "A3", "D4"] },
+      { name: "Meiwa3", notes: ["E3", "A3", "B3", "E4"] },
+      { name: "Meiwa4", notes: ["F3", "Bb3", "C4", "F4"] },
+    ],
   };
 
-  // ジャンルに応じた和音進行を選択
+  // ジャンルに応じた和音進行を選択（明和電機風に強化）
   const getChordProgression = (genre: string, balanceScore: number) => {
+    if (genre === "meiwa") {
+      return chordProgressions.meiwa;
+    }
     if (genre === "jazz") {
       return chordProgressions.jazz;
     }
