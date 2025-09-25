@@ -139,6 +139,23 @@ function App() {
   const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(null);
   const [isMannerMode, setIsMannerMode] = useState(false);
 
+  // タイマー設定の状態
+  const [timerSettings, setTimerSettings] = useState({
+    eggTimerSound: "bell" as "bell" | "chime" | "beep" | "alarm",
+    customTimerSound: "bell" as "bell" | "chime" | "beep" | "alarm",
+    enableNotifications: true,
+    enableSounds: true,
+    defaultCustomMinutes: 5,
+    defaultCustomSeconds: 0,
+    theme: "default" as "default" | "dark" | "colorful" | "minimal",
+    customColors: {
+      primary: "#3b82f6",
+      secondary: "#10b981",
+      accent: "#f59e0b",
+      background: "#ffffff",
+    },
+  });
+
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
   const [fontSettings, setFontSettings] = useState<any>({});
@@ -582,6 +599,170 @@ function App() {
       }
     } catch (error) {
       console.error('Error creating diary:', error);
+    }
+  };
+
+  // 収入・支出記録の更新（App_backup.tsxから復元）
+  const handleUpdateIncomeExpenseRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingIncomeExpenseRecord) return;
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/work-records/salary/${editingIncomeExpenseRecord.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          date: incomeExpenseDate,
+          amount: parseFloat(incomeExpenseAmount) || 0,
+          type: incomeExpenseType,
+          notes: incomeExpenseNotes,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Income/expense record updated successfully');
+        setEditingIncomeExpenseRecord(null);
+        setIncomeExpenseDate("");
+        setIncomeExpenseAmount("");
+        setIncomeExpenseType("income");
+        setIncomeExpenseNotes("");
+        setShowIncomeExpenseForm(false);
+        loadIncomeExpenseRecords();
+      } else {
+        console.error('Failed to update income/expense record:', data.message);
+      }
+    } catch (error) {
+      console.error('Error updating income/expense record:', error);
+    }
+  };
+
+  // 日記の更新（App_backup.tsxから復元）
+  const handleUpdateDiary = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingDiary) return;
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/work-records/diary/${editingDiary.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          date: diaryDate,
+          title: diaryTitle,
+          content: diaryContent,
+          mood: parseInt(diaryMood),
+          activities: diaryActivities,
+          tags: diaryTags.split(",").map(tag => tag.trim()).filter(tag => tag),
+          isPrivate: diaryIsPrivate,
+          workSummary: diaryWorkSummary,
+          achievements: diaryAchievements,
+          challenges: diaryChallenges,
+          learnings: diaryLearnings,
+          nextGoals: diaryNextGoals,
+          energyLevel: diaryEnergyLevel,
+          stressLevel: diaryStressLevel,
+          workHours: diaryWorkHours,
+          breakTime: diaryBreakTime,
+          productivity: diaryProductivity,
+          notes: diaryNotes,
+          gratitude: diaryGratitude,
+          reflection: diaryReflection,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Diary updated successfully');
+        setEditingDiary(null);
+        setDiaryDate("");
+        setDiaryTitle("");
+        setDiaryContent("");
+        setDiaryMood("4");
+        setDiaryActivities([]);
+        setDiaryTags("");
+        setDiaryIsPrivate(true);
+        setDiaryWorkSummary("");
+        setDiaryAchievements([]);
+        setDiaryChallenges([]);
+        setDiaryLearnings([]);
+        setDiaryNextGoals([]);
+        setDiaryEnergyLevel(5);
+        setDiaryStressLevel(5);
+        setDiaryWorkHours(0);
+        setDiaryBreakTime(0);
+        setDiaryProductivity(5);
+        setDiaryNotes("");
+        setDiaryGratitude("");
+        setDiaryReflection("");
+        setShowDiaryForm(false);
+        loadWorkDiaries();
+      } else {
+        console.error('Failed to update diary:', data.message);
+      }
+    } catch (error) {
+      console.error('Error updating diary:', error);
+    }
+  };
+
+  // 収入・支出記録の削除（App_backup.tsxから復元）
+  const handleDeleteIncomeExpenseRecord = async (id: string) => {
+    if (!confirm('この記録を削除しますか？')) return;
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/work-records/salary/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Income/expense record deleted successfully');
+        loadIncomeExpenseRecords();
+      } else {
+        console.error('Failed to delete income/expense record:', data.message);
+      }
+    } catch (error) {
+      console.error('Error deleting income/expense record:', error);
+    }
+  };
+
+  // 日記の削除（App_backup.tsxから復元）
+  const handleDeleteDiary = async (id: string) => {
+    if (!confirm('この日記を削除しますか？')) return;
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/work-records/diary/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Diary deleted successfully');
+        loadWorkDiaries();
+      } else {
+        console.error('Failed to delete diary:', data.message);
+      }
+    } catch (error) {
+      console.error('Error deleting diary:', error);
     }
   };
 
@@ -1342,6 +1523,25 @@ function App() {
     // ユーザー設定の読み込み
   };
 
+  // タイマー設定の保存
+  const saveTimerSettings = (newSettings: typeof timerSettings) => {
+    setTimerSettings(newSettings);
+    localStorage.setItem("timerSettings", JSON.stringify(newSettings));
+  };
+
+  // タイマー設定の読み込み
+  const loadTimerSettings = () => {
+    try {
+      const saved = localStorage.getItem("timerSettings");
+      if (saved) {
+        const parsedSettings = JSON.parse(saved);
+        setTimerSettings(parsedSettings);
+      }
+    } catch (error) {
+      console.error("Failed to load timer settings:", error);
+    }
+  };
+
   // 機能の定義（簡易版）
   const features = [
     { id: "time-tracking", name: "時間管理", icon: "⏰" },
@@ -1647,6 +1847,10 @@ function App() {
       handleResetTracking={handleResetTracking}
       handleCreateIncomeExpenseRecord={handleCreateIncomeExpenseRecord}
       handleCreateDiary={handleCreateDiary}
+      handleUpdateIncomeExpenseRecord={handleUpdateIncomeExpenseRecord}
+      handleUpdateDiary={handleUpdateDiary}
+      handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
+      handleDeleteDiary={handleDeleteDiary}
       loadUserSettings={loadUserSettings}
       getVisibleFeatures={getVisibleFeatures}
       // 追加のプロパティ（App_backup.tsxから復元）

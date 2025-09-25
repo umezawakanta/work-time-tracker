@@ -222,6 +222,10 @@ interface MainLayoutProps {
   handleResetTracking: () => void;
   handleCreateIncomeExpenseRecord: (e: React.FormEvent) => Promise<void>;
   handleCreateDiary: (e: React.FormEvent) => Promise<void>;
+  handleUpdateIncomeExpenseRecord: (e: React.FormEvent) => Promise<void>;
+  handleUpdateDiary: (e: React.FormEvent) => Promise<void>;
+  handleDeleteIncomeExpenseRecord: (id: string) => Promise<void>;
+  handleDeleteDiary: (id: string) => Promise<void>;
   // ユーザー設定
   loadUserSettings: () => Promise<void>;
   // 機能管理
@@ -580,6 +584,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   handleResetTracking,
   handleCreateIncomeExpenseRecord,
   handleCreateDiary,
+  handleUpdateIncomeExpenseRecord,
+  handleUpdateDiary,
+  handleDeleteIncomeExpenseRecord,
+  handleDeleteDiary,
   loadUserSettings,
   getVisibleFeatures,
   // 追加のプロパティ（App_backup.tsxから復元）
@@ -1423,10 +1431,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 loadWorkDiaries={loadWorkDiaries}
                 handleCreateIncomeExpenseRecord={handleCreateIncomeExpenseRecord}
                 handleCreateDiary={handleCreateDiary}
-                handleUpdateIncomeExpenseRecord={() => {}}
-                handleUpdateDiary={() => {}}
-                handleDeleteIncomeExpenseRecord={() => {}}
-                handleDeleteDiary={() => {}}
+                handleUpdateIncomeExpenseRecord={handleUpdateIncomeExpenseRecord}
+                handleUpdateDiary={handleUpdateDiary}
+                handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
+                handleDeleteDiary={handleDeleteDiary}
                 editDiary={() => {}}
                 showCalendar={showCalendar}
                 setShowCalendar={setShowCalendar}
