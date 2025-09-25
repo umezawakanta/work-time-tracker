@@ -325,9 +325,11 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       const stave = new Stave(10, 40, 780);
 
       // 拍子記号と調号を追加（VexFlowが解釈できない場合はCにフォールバック）
-      const keyForVexflow = SUPPORTED_KEY_SIGNATURES.includes(scoreData.key as any)
-        ? scoreData.key
-        : "C";
+      const keyForVexflow =
+        typeof scoreData.key === "string" &&
+        SUPPORTED_KEY_SIGNATURES.includes(scoreData.key)
+          ? scoreData.key
+          : "C";
       stave
         .addClef("treble")
         .addTimeSignature(scoreData.timeSignature || "4/4")
