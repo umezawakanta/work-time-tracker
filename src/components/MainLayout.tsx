@@ -19,6 +19,8 @@ import NotificationComponent from './NotificationComponent';
 import VersionInfo from './VersionInfo';
 import UpdateRequestModal from './UpdateRequestModal';
 import BugReportModal from './BugReportModal';
+import EggTimerComponent from './EggTimerComponent';
+import HetamaIconComponent from './HetamaIconComponent';
 import { User } from '../types';
 
 interface MainLayoutProps {
@@ -388,6 +390,13 @@ interface MainLayoutProps {
   handleAddCategory: () => void;
   handleDeleteCategory: (category: string) => void;
   getAllGenres: () => string[];
+  // EggTimerComponent用のプロパティ
+  showEggTimer: boolean;
+  setShowEggTimer: (show: boolean) => void;
+  timerSettings: {
+    eggTimerSound: 'bell' | 'chime' | 'beep' | 'alarm';
+    enableSounds: boolean;
+  };
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({
@@ -691,6 +700,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   handleAddCategory,
   handleDeleteCategory,
   getAllGenres,
+  // EggTimerComponent用のプロパティ
+  showEggTimer,
+  setShowEggTimer,
+  timerSettings,
 }) => {
   // 機能の定義（App_backup.tsxから復元）
   const features = [
@@ -752,6 +765,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       id: "timers",
       name: "タイマー",
       description: "カスタムタイマーとプリセットタイマー",
+      component: null,
+    },
+    {
+      id: "egg-timer",
+      name: "ゆでたまごタイマー",
+      description: "ゆでたまごの調理時間管理",
       component: null,
     },
     {
@@ -1037,6 +1056,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           }}
           onShowTimers={() => {
             closeOtherFeatures('timers');
+          }}
+          onShowEggTimer={() => {
+            closeOtherFeatures('egg-timer');
+            setShowEggTimer(true);
           }}
           onShowPublicMemos={() => {
             closeOtherFeatures('public-memos');
@@ -1353,6 +1376,39 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 showTimers={showTimers}
                 setShowTimers={setShowTimers}
                 closeOtherFeatures={closeOtherFeatures}
+              />
+            );
+          } else if (feature.id === "egg-timer" && showEggTimer) {
+            return (
+              <EggTimerComponent
+                key={feature.id}
+                eggTimerActive={eggTimerActive}
+                eggTimerPaused={eggTimerPaused}
+                eggTimerTime={eggTimerTime}
+                eggTimerOriginalTime={eggTimerOriginalTime}
+                eggTimerPhase={eggTimerPhase}
+                eggTimerPhaseTime={eggTimerPhaseTime}
+                eggTimerPhaseName={eggTimerPhaseName}
+                eggTimerSound={eggTimerSound}
+                eggTimerType={selectedEggType}
+                setEggTimerActive={setEggTimerActive}
+                setEggTimerPaused={setEggTimerPaused}
+                setEggTimerTime={setEggTimerTime}
+                setEggTimerOriginalTime={setEggTimerOriginalTime}
+                setEggTimerPhase={setEggTimerPhase}
+                setEggTimerPhaseTime={setEggTimerPhaseTime}
+                setEggTimerPhaseName={setEggTimerPhaseName}
+                setEggTimerSound={setEggTimerSound}
+                setEggTimerType={setSelectedEggType}
+                setEggTimerInterval={setEggTimerInterval}
+                getEggTimerDuration={getEggTimerDuration}
+                getTotalCookingTime={(type: 'soft' | 'medium' | 'hard') => getEggTimerDuration(type)}
+                formatTime={formatTime}
+                playBellSound={playBellSound}
+                playChimeSound={playChimeSound}
+                playBeepSound={playBeepSound}
+                playAlarmSound={playAlarmSound}
+                timerSettings={timerSettings}
               />
             );
           } else if (feature.id === "public-memos" && showPublicMemos) {

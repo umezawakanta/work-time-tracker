@@ -247,6 +247,9 @@ function App() {
 
   // お仕事記録の状態
   const [showWorkRecords, setShowWorkRecords] = useState(false);
+  
+  // EggTimerComponent用の状態
+  const [showEggTimer, setShowEggTimer] = useState(false);
 
 
   // メモ関連の状態
@@ -1602,7 +1605,19 @@ function App() {
 
   // ログイン済みの場合はメインレイアウトを表示
   return (
-    <MainLayout
+    <TimerPresetProvider
+      onStartTimer={(minutes: number, seconds: number, name: string) => {
+        const totalSeconds = minutes * 60 + seconds;
+        setCustomTimerTime(totalSeconds);
+        setCustomTimerOriginalTime(totalSeconds);
+        setCustomTimerName(name);
+        startCustomTimer();
+      }}
+      onStopTimer={stopCustomTimer}
+      onResetTimer={resetCustomTimer}
+      isTimerActive={customTimerActive}
+    >
+      <MainLayout
       user={auth.user}
       isLoggedIn={auth.isLoggedIn}
       showCharacterHome={uiState.showCharacterHome}
@@ -1615,6 +1630,7 @@ function App() {
       showAdminPanel={uiState.showAdminPanel}
       showTimeTracking={uiState.showTimeTracking}
       showTimers={uiState.showTimers}
+      showEggTimer={showEggTimer}
       showPublicMemos={uiState.showPublicMemos}
       showWorkRecords={uiState.showWorkRecords}
       showSoundApp={uiState.showSoundApp}
@@ -1821,6 +1837,7 @@ function App() {
       setShowAdminPanel={uiState.setShowAdminPanel}
       setShowTimeTracking={uiState.setShowTimeTracking}
       setShowTimers={uiState.setShowTimers}
+      setShowEggTimer={setShowEggTimer}
       setShowWorkRecords={uiState.setShowWorkRecords}
       setShowSoundApp={uiState.setShowSoundApp}
       setShowNotifications={uiState.setShowNotifications}
@@ -1940,7 +1957,10 @@ function App() {
       handleAddCategory={handleAddCategory}
       handleDeleteCategory={handleDeleteCategory}
       getAllGenres={getAllGenres}
+      // EggTimerComponent用のプロパティ
+      timerSettings={timerSettings}
     />
+    </TimerPresetProvider>
   );
 }
 
@@ -1948,16 +1968,9 @@ const AppWithProviders = () => {
   return (
     <LoadingStateProvider>
       <TimeTrackingStateProvider user={null}>
-        <TimerPresetProvider
-          onStartTimer={() => {}}
-          onStopTimer={() => {}}
-          onResetTimer={() => {}}
-          isTimerActive={false}
-        >
-          <MoodLogProvider>
-            <App />
-          </MoodLogProvider>
-        </TimerPresetProvider>
+        <MoodLogProvider>
+          <App />
+        </MoodLogProvider>
       </TimeTrackingStateProvider>
     </LoadingStateProvider>
   );

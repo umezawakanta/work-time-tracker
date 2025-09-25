@@ -24,6 +24,7 @@ interface HeaderComponentProps {
   onShowAdminPanel: () => void;
   onShowTimeTracking: () => void;
   onShowTimers: () => void;
+  onShowEggTimer: () => void;
   onShowPublicMemos: () => void;
   onShowWorkRecords: () => void;
   onShowSoundApp: () => void;
@@ -58,6 +59,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   onShowAdminPanel,
   onShowTimeTracking,
   onShowTimers,
+  onShowEggTimer,
   onShowPublicMemos,
   onShowWorkRecords,
   onShowSoundApp,
@@ -156,6 +158,9 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             </button>
             <button onClick={onShowTimers} className="nav-button" title="タイマー">
               ⏲️
+            </button>
+            <button onClick={onShowEggTimer} className="nav-button" title="ゆでたまごタイマー">
+              🥚
             </button>
             <button onClick={onShowPublicMemos} className="nav-button" title="公開メモ">
               🌐
