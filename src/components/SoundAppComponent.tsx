@@ -72,7 +72,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       return instrumentsRef.current[categoryId];
     }
 
-    const instrument = createInstrumentForCategory(categoryId);
+    const instrument = await createInstrumentForCategory(categoryId);
     if (instrument) {
       instrumentsRef.current[categoryId] = instrument;
     }

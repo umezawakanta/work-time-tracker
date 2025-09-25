@@ -4,9 +4,16 @@ import { ensureAudioContextReady } from "./AudioContextUtils";
 // グローバルでTone.jsの初期化状態を管理
 let globalToneInitialized = false;
 
-// 8bit風エフェクトチェーンを作成
-export const create8bitEffects = () => {
+// 8bit風エフェクトチェーンを作成（遅延初期化）
+export const create8bitEffects = async () => {
   if (!globalToneInitialized) {
+    return null;
+  }
+
+  // AudioContextが準備できているか確認
+  const isReady = await ensureAudioContextReady();
+  if (!isReady) {
+    console.warn("AudioContext is not ready for creating effects");
     return null;
   }
 
@@ -37,13 +44,13 @@ export const create8bitEffects = () => {
 };
 
 // 明和電機風の8bit音色を作成（エフェクト付き）
-export const createMeiwaInstrument = (categoryId: string) => {
+export const createMeiwaInstrument = async (categoryId: string) => {
   if (!globalToneInitialized) {
     return null;
   }
 
   try {
-    const effects = create8bitEffects();
+    const effects = await create8bitEffects();
     if (!effects) {
       return null;
     }
@@ -219,8 +226,8 @@ export const playSound = async (
   volume: number,
   genre?: string,
   instrumentsRef?: { [key: string]: any },
-  createInstrumentForGenre?: (categoryId: string, genre: string) => any,
-  getOrCreateInstrument?: (categoryId: string) => any
+  createInstrumentForGenre?: (categoryId: string, genre: string) => Promise<any>,
+  getOrCreateInstrument?: (categoryId: string) => Promise<any>
 ) => {
   if (!globalToneInitialized) {
     console.warn("Tone.js not initialized, skipping sound playback");
@@ -236,11 +243,13 @@ export const playSound = async (
 
 
   try {
-    const instrument = genre && createInstrumentForGenre
-      ? createInstrumentForGenre(categoryId, genre)
-      : getOrCreateInstrument
-      ? getOrCreateInstrument(categoryId)
-      : null;
+    let instrument = null;
+    
+    if (genre && createInstrumentForGenre) {
+      instrument = await createInstrumentForGenre(categoryId, genre);
+    } else if (getOrCreateInstrument) {
+      instrument = await getOrCreateInstrument(categoryId);
+    }
     
     if (!instrument) {
       return;

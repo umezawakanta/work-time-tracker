@@ -1,6 +1,13 @@
 import * as Tone from "tone";
+import { ensureAudioContextReady } from "./AudioContextUtils";
 
-export const createInstrumentForCategory = (categoryId: string) => {
+export const createInstrumentForCategory = async (categoryId: string) => {
+  // AudioContextが準備できているか確認
+  const isReady = await ensureAudioContextReady();
+  if (!isReady) {
+    console.warn("AudioContext is not ready for creating instrument");
+    return null;
+  }
   switch (categoryId) {
     case "staple":
       // 明和電機風のドラム音
