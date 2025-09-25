@@ -339,9 +339,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
         // シャープやフラットを追加（メソッド名を修正）
         if (note.pitch.includes("#")) {
-          staveNote.addModifier(new Accidental("#")); // ← addModifierからaddAccidentalに変更
+          staveNote.addModifier(new Accidental("#")); // シャープをaddModifierで追加
         } else if (note.pitch.includes("b")) {
-          staveNote.addModifier(new Accidental("b")); // ← addModifierからaddAccidentalに変更
+          staveNote.addModifier(new Accidental("b")); // フラットをaddModifierで追加
         }
 
         return staveNote;
