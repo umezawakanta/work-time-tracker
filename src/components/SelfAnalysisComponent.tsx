@@ -610,7 +610,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                               <div className="progress-bar">
                                 <div 
                                   className="progress-fill" 
-                                  style={{ width: `${percentage}%` }}
+                                  data-width={percentage}
                                 ></div>
                               </div>
                               <span className="time-value">{hours.toFixed(1)}h</span>
@@ -651,7 +651,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                                     <div key={day.date} className="graph-bar">
                                       <div 
                                         className="bar-fill"
-                                        style={{'--bar-height': `${height}%`} as React.CSSProperties}
+                                        data-height={height}
                                         title={`${day.dayOfWeek} ${day.workHours.toFixed(1)}h`}
                                       ></div>
                                       <div className="bar-label">{day.dayOfWeek}</div>
@@ -720,7 +720,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                       <div className="mood-average">
                         <span className="mood-label">平均気分</span>
                         <div className="mood-scale">
-                          <div className="mood-indicator" style={{'--indicator-position': '70%'} as React.CSSProperties}>😊</div>
+                          <div className="mood-indicator" data-position="70">😊</div>
                           <div className="scale-line"></div>
                         </div>
                         <span className="mood-value">7.2/10</span>
@@ -1294,7 +1294,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             <div className="factor-bar">
                               <div 
                                 className="factor-fill" 
-                                style={{'--percentage': `${(log.energy / 5) * 100}%`} as React.CSSProperties}
+                                data-percentage={(log.energy / 5) * 100}
                               ></div>
                             </div>
                             <span className="factor-value">{log.energy}/5</span>
@@ -1304,7 +1304,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             <div className="factor-bar">
                               <div 
                                 className="factor-fill stress" 
-                                style={{'--percentage': `${(log.stress / 5) * 100}%`} as React.CSSProperties}
+                                data-percentage={(log.stress / 5) * 100}
                               ></div>
                             </div>
                             <span className="factor-value">{log.stress}/5</span>

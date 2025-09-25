@@ -1907,3 +1907,20 @@
     font-size: 1rem;
   }
 }
+
+/* Data attribute based styling */
+.progress-fill[data-width] {
+  width: calc(attr(data-width number) * 1%);
+}
+
+.bar-fill[data-height] {
+  height: calc(attr(data-height number) * 1%);
+}
+
+.mood-indicator[data-position] {
+  left: calc(attr(data-position number) * 1%);
+}
+
+.factor-fill[data-percentage] {
+  width: calc(attr(data-percentage number) * 1%);
+}
