@@ -166,6 +166,64 @@ function App() {
     }
   };
 
+  // データローディング関数
+  const loadProjects = async () => {
+    console.log('App.tsx - Loading projects');
+    // プロジェクトデータの読み込み
+  };
+
+  const loadTimeEntries = async () => {
+    console.log('App.tsx - Loading time entries');
+    // 時間記録データの読み込み
+  };
+
+  const loadBooks = async () => {
+    console.log('App.tsx - Loading books');
+    // 本のデータの読み込み
+  };
+
+  const loadMemos = async () => {
+    console.log('App.tsx - Loading memos');
+    // メモデータの読み込み
+  };
+
+  const loadPublicMemos = async () => {
+    console.log('App.tsx - Loading public memos');
+    // 公開メモデータの読み込み
+  };
+
+  const loadAdminUsers = async () => {
+    console.log('App.tsx - Loading admin users');
+    // 管理者ユーザーデータの読み込み
+  };
+
+  const loadReportSummary = async () => {
+    console.log('App.tsx - Loading report summary');
+    // レポートサマリーデータの読み込み
+  };
+
+  // 時間記録ハンドラー
+  const handleStartTracking = () => {
+    console.log('App.tsx - Starting time tracking');
+    // 時間記録開始処理
+  };
+
+  const handleStopTracking = () => {
+    console.log('App.tsx - Stopping time tracking');
+    // 時間記録停止処理
+  };
+
+  const handleResetTracking = () => {
+    console.log('App.tsx - Resetting time tracking');
+    // 時間記録リセット処理
+  };
+
+  // ユーザー設定の読み込み
+  const loadUserSettings = async () => {
+    console.log('App.tsx - Loading user settings');
+    // ユーザー設定の読み込み
+  };
+
   // アプリエラーが発生した場合
   if (appError) {
     return (
@@ -261,6 +319,17 @@ function App() {
         closeOtherFeatures={uiState.closeOtherFeatures}
         onUpdateRequestSubmit={handleUpdateRequest}
         onBugReportSubmit={handleBugReport}
+        loadProjects={loadProjects}
+        loadTimeEntries={loadTimeEntries}
+        loadBooks={loadBooks}
+        loadMemos={loadMemos}
+        loadPublicMemos={loadPublicMemos}
+        loadAdminUsers={loadAdminUsers}
+        loadReportSummary={loadReportSummary}
+        handleStartTracking={handleStartTracking}
+        handleStopTracking={handleStopTracking}
+        handleResetTracking={handleResetTracking}
+        loadUserSettings={loadUserSettings}
       />
 
       {/* エラーモーダル */}

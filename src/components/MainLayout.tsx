@@ -70,6 +70,20 @@ interface MainLayoutProps {
   closeOtherFeatures: (activeFeature: string) => void;
   onUpdateRequestSubmit: (updateRequest: { title: string; content: string; priority: string; category: string }) => Promise<void>;
   onBugReportSubmit: (bugReport: { title: string; content: string; severity: string; category: string }) => Promise<void>;
+  // データローディング関数
+  loadProjects: () => Promise<void>;
+  loadTimeEntries: () => Promise<void>;
+  loadBooks: () => Promise<void>;
+  loadMemos: () => Promise<void>;
+  loadPublicMemos: () => Promise<void>;
+  loadAdminUsers: () => Promise<void>;
+  loadReportSummary: () => Promise<void>;
+  // 時間記録ハンドラー
+  handleStartTracking: () => void;
+  handleStopTracking: () => void;
+  handleResetTracking: () => void;
+  // ユーザー設定
+  loadUserSettings: () => Promise<void>;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({
@@ -118,6 +132,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   closeOtherFeatures,
   onUpdateRequestSubmit,
   onBugReportSubmit,
+  loadProjects,
+  loadTimeEntries,
+  loadBooks,
+  loadMemos,
+  loadPublicMemos,
+  loadAdminUsers,
+  loadReportSummary,
+  handleStartTracking,
+  handleStopTracking,
+  handleResetTracking,
+  loadUserSettings,
 }) => {
   // CookingTimerSection の状態管理
   const [selectedRecipe, setSelectedRecipe] = React.useState("boiled-egg");
@@ -413,7 +438,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         setShowThemeSettings={setShowThemeSettings}
         setShowFontSettings={setShowFontSettings}
         setShowFeatureSettings={setShowFeatureSettings}
-        loadUserSettings={() => {}}
+        loadUserSettings={loadUserSettings}
         isTimeTrackingActive={false}
         onUpdateRequestClick={() => {
           console.log('MainLayout - Update request button clicked');
@@ -556,7 +581,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             setSelectedBookCategory={() => {}}
             getBookCategories={() => ['小説', '技術書', 'ビジネス', '自己啓発', 'その他']}
             loading={false}
-            loadBooks={() => {}}
+            loadBooks={loadBooks}
             handleCreateBook={() => {}}
             handleUpdateBook={() => {}}
             handleEditBook={() => {}}
@@ -576,7 +601,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             memosLoading={false}
             customCategories={[]}
             setCustomCategories={() => {}}
-            loadMemos={() => {}}
+            loadMemos={loadMemos}
             handleDeleteMemo={() => {}}
             user={user}
             handleCreateMemo={() => {}}
@@ -619,7 +644,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             workDiaries={[]}
             reportsLoading={false}
             reportSummary={{}}
-            loadReportSummary={() => {}}
+            loadReportSummary={loadReportSummary}
           />
         )}
 
@@ -632,7 +657,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             adminUsersLoading={false}
             editingUser={null}
             setEditingUser={() => {}}
-            loadAdminUsers={() => {}}
+            loadAdminUsers={loadAdminUsers}
             handleEditUser={() => {}}
             handleUpdateUser={() => {}}
             handleDeleteUser={() => {}}
@@ -655,11 +680,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             currentProject=""
             setCurrentProject={() => {}}
             elapsedTime={0}
-            loadProjects={() => {}}
-            loadTimeEntries={() => {}}
-            handleStartTracking={() => {}}
-            handleStopTracking={() => {}}
-            handleResetTracking={() => {}}
+            loadProjects={loadProjects}
+            loadTimeEntries={loadTimeEntries}
+            handleStartTracking={handleStartTracking}
+            handleStopTracking={handleStopTracking}
+            handleResetTracking={handleResetTracking}
           />
         )}
 
@@ -679,7 +704,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             publicMemos={[]}
             publicMemosLoading={false}
             user={user}
-            loadPublicMemos={() => {}}
+            loadPublicMemos={loadPublicMemos}
             handleReplySubmit={() => {}}
             handleReplyCancel={() => {}}
             handleEditReply={() => {}}
