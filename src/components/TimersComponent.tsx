@@ -143,7 +143,9 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
 
   // タイマーの進行状況を計算
   const getProgress = () => {
-    if (customTimerTime === 0) return 0;
+    if (customTimerTime === 0) {
+      return 0;
+    }
     return ((customTimerTime - customTimerTimeLeft) / customTimerTime) * 100;
   };
 
