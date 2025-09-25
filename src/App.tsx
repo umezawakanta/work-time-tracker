@@ -2621,7 +2621,9 @@ ${errorInfo.stack}
   };
 
   const updateUserSettings = async (newSettings: Partial<UserSettings>) => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     try {
       const result = await executeAuthenticatedRequest(setMessage, async (token) => {
