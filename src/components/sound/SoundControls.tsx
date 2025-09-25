@@ -50,8 +50,8 @@ const SoundControls: React.FC<SoundControlsProps> = ({
       </div>
       <button
         onClick={!globalToneInitialized ? handleInitialize : onPlay}
-        disabled={disabled}
-        className={`play-button ${isPlaying ? "playing" : ""}`}
+        disabled={disabled && globalToneInitialized}
+        className={`play-button ${isPlaying ? "playing" : ""} ${!globalToneInitialized ? "initialize-button" : ""}`}
       >
         {!globalToneInitialized
           ? "🎵 クリックして起動"

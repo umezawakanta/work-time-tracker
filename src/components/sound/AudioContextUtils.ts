@@ -10,11 +10,18 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
     if (Tone.context.state === 'suspended') {
       console.log("AudioContext is suspended, attempting to resume...");
       await Tone.context.resume();
-      console.log("AudioContext resumed successfully");
     }
-    return true;
+    
+    // AudioContextが正常に動作しているか確認
+    if (Tone.context.state === 'running') {
+      console.log("AudioContext is ready");
+      return true;
+    } else {
+      console.warn(`AudioContext state: ${Tone.context.state}`);
+      return false;
+    }
   } catch (error) {
-    console.error("Failed to resume AudioContext:", error);
+    console.error("Failed to ensure AudioContext is ready:", error);
     return false;
   }
 };

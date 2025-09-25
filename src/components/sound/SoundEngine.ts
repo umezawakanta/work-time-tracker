@@ -239,13 +239,18 @@ export const initializeTone = async (): Promise<boolean> => {
 
   toneInitializationPromise = (async () => {
     try {
-      // AudioContextの状態を確認
+      // ユーザージェスチャーが必要なため、AudioContextの状態を確認
       if (Tone.context.state === 'suspended') {
         console.log("AudioContext is suspended, attempting to resume...");
         await Tone.context.resume();
       }
       
-      await Tone.start();
+      // Tone.start()を呼び出す前に、AudioContextが既に開始されているか確認
+      if (Tone.context.state !== 'running') {
+        console.log("AudioContext is not running, starting Tone.js...");
+        await Tone.start();
+      }
+      
       console.log("Tone.js started successfully");
       globalToneInitialized = true;
       return true;
