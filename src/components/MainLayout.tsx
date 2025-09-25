@@ -472,282 +472,395 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       </div>
 
       <main className="dashboard-main">
-        {showCharacterHome && (
-          <CharacterHome
-            showCharacterHome={showCharacterHome}
-            setShowCharacterHome={setShowCharacterHome}
-            closeOtherFeatures={closeOtherFeatures}
-          />
-        )}
-
-        {showProjects && (
-          <ProjectsSection
-            showProjects={showProjects}
-            setShowProjects={setShowProjects}
-            closeOtherFeatures={closeOtherFeatures}
-            showProjectForm={false}
-            setShowProjectForm={() => {}}
-            projects={[]}
-            projectsLoading={false}
-            selectedProject=""
-            setSelectedProject={() => {}}
-            projectName=""
-            setProjectName={() => {}}
-            projectDescription=""
-            setProjectDescription={() => {}}
-            projectColor="#007bff"
-            setProjectColor={() => {}}
-            loading={false}
-            handleCreateProject={async () => {}}
-            loadProjects={async () => {}}
-          />
-        )}
-
-        {showCookingTimer && (
-          <CookingTimerSection
-            showCookingTimer={showCookingTimer}
-            setShowCookingTimer={setShowCookingTimer}
-            closeOtherFeatures={closeOtherFeatures}
-            selectedRecipe={selectedRecipe}
-            setSelectedRecipe={setSelectedRecipe}
-            selectedEggType={selectedEggType}
-            setSelectedEggType={setSelectedEggType}
-            eggTimerActive={eggTimerActive}
-            eggTimerPaused={eggTimerPaused}
-            eggTimerTime={eggTimerTime}
-            eggTimerOriginalTime={eggTimerOriginalTime}
-            eggTimerPhase={eggTimerPhase}
-            eggTimerPhaseTime={eggTimerPhaseTime}
-            eggTimerPhaseName={eggTimerPhaseName}
-            eggTimerSound={eggTimerSound}
-            setEggTimerSound={setEggTimerSound}
-            setEggTimerTime={setEggTimerTime}
-            setEggTimerOriginalTime={setEggTimerOriginalTime}
-            setEggTimerActive={setEggTimerActive}
-            setEggTimerPaused={setEggTimerPaused}
-            setEggTimerPhase={setEggTimerPhase}
-            setEggTimerPhaseTime={setEggTimerPhaseTime}
-            setEggTimerPhaseName={setEggTimerPhaseName}
-            setEggTimerInterval={setEggTimerInterval}
-            setMessage={setMessage}
-            sendNotification={sendNotification}
-            startSoundLoop={startSoundLoop}
-            addToTimerHistory={addToTimerHistory}
-            playEggTimerSound={playEggTimerSound}
-            pauseEggTimer={pauseEggTimer}
-            stopEggTimer={stopEggTimer}
-            resetEggTimer={resetEggTimer}
-            getEggTimerDuration={getEggTimerDuration}
-            getTotalCookingTime={getTotalCookingTime}
-            formatTime={formatTime}
-            eggTimerType={selectedEggType}
-          />
-        )}
-
-        {showSelfAnalysis && (
-          <SelfAnalysisComponent
-            showSelfAnalysis={showSelfAnalysis}
-            setShowSelfAnalysis={setShowSelfAnalysis}
-            selfAnalysisTab={selfAnalysisTab}
-            setSelfAnalysisTab={setSelfAnalysisTab}
-            personalProfile={personalProfile}
-            setPersonalProfile={setPersonalProfile}
-            habits={habits}
-            setHabits={setHabits}
-            habitHistory={habitHistory}
-            setHabitHistory={setHabitHistory}
-            habitStreak={habitStreak}
-            setHabitStreak={setHabitStreak}
-            moodLogs={moodLogs}
-            setMoodLogs={setMoodLogs}
-            goals={goals}
-            setGoals={setGoals}
-            learningRecords={learningRecords}
-            setLearningRecords={setLearningRecords}
-            timeEntries={timeEntries}
-            calculateTimeBreakdown={calculateTimeBreakdown}
-            calculateProductivityTrend={calculateProductivityTrend}
-            calculateProductivityStats={calculateProductivityStats}
-            loadTimeEntries={loadTimeEntries}
-            closeOtherFeatures={closeOtherFeatures}
-          />
-        )}
-
-        {showBookshelf && (
-          <BookshelfComponent
-            showBookshelf={showBookshelf}
-            setShowBookshelf={setShowBookshelf}
-            closeOtherFeatures={closeOtherFeatures}
-            books={[]}
-            booksLoading={false}
-            showBookForm={false}
-            setShowBookForm={() => {}}
-            editingBook={null}
-            setEditingBook={() => {}}
-            bookTitle=""
-            setBookTitle={() => {}}
-            bookAuthor=""
-            setBookAuthor={() => {}}
-            bookIsbn=""
-            setBookIsbn={() => {}}
-            bookPublishedYear={new Date().getFullYear()}
-            setBookPublishedYear={() => {}}
-            bookTotalPages={0}
-            setBookTotalPages={() => {}}
-            bookCategory=""
-            setBookCategory={() => {}}
-            bookNotes=""
-            setBookNotes={() => {}}
-            selectedBookCategory="all"
-            setSelectedBookCategory={() => {}}
-            getBookCategories={() => ['小説', '技術書', 'ビジネス', '自己啓発', 'その他']}
-            loading={false}
-            loadBooks={loadBooks}
-            handleCreateBook={() => {}}
-            handleUpdateBook={() => {}}
-            handleEditBook={() => {}}
-            handleDeleteBook={() => {}}
-            handleBookCategoryChange={() => {}}
-            getReadingProgress={() => 0}
-          />
-        )}
-
-        {showMemos && (
-          <MemosComponent
-            showMemos={showMemos}
-            setShowMemos={setShowMemos}
-            closeOtherFeatures={closeOtherFeatures}
-            memos={[]}
-            publicMemos={[]}
-            memosLoading={false}
-            customCategories={[]}
-            setCustomCategories={() => {}}
-            loadMemos={loadMemos}
-            handleDeleteMemo={() => {}}
-            user={user}
-            handleCreateMemo={() => {}}
-            handleUpdateMemo={() => {}}
-            editingMemo={null}
-            setEditingMemo={() => {}}
-            memoTitle=""
-            setMemoTitle={() => {}}
-            memoContent=""
-            setMemoContent={() => {}}
-            memoCategory=""
-            setMemoCategory={() => {}}
-            memoTags=""
-            setMemoTags={() => {}}
-            memoIsPublic={false}
-            setMemoIsPublic={() => {}}
-            memoIsFamilyOnly={false}
-            setMemoIsFamilyOnly={() => {}}
-            memoIsAdminOnly={false}
-            setMemoIsAdminOnly={() => {}}
-            handleReplySubmit={() => {}}
-            handleReplyCancel={() => {}}
-            handleEditReply={() => {}}
-            handleSaveEditReply={() => {}}
-            handleDeleteReply={() => {}}
-            handleCancelEditReply={() => {}}
-            replyContent=""
-            setReplyContent={() => {}}
-            replyingToMemo={null}
-            setReplyingToMemo={() => {}}
-          />
-        )}
-
-        {showReports && (
-          <ReportsComponent
-            showReports={showReports}
-            setShowReports={setShowReports}
-            closeOtherFeatures={closeOtherFeatures}
-            incomeExpenseRecords={[]}
-            workDiaries={[]}
-            reportsLoading={false}
-            reportSummary={{}}
-            loadReportSummary={loadReportSummary}
-          />
-        )}
-
-        {showAdminPanel && (
-          <AdminPanelComponent
-            showAdminPanel={showAdminPanel}
-            setShowAdminPanel={setShowAdminPanel}
-            closeOtherFeatures={closeOtherFeatures}
-            adminUsers={[]}
-            adminUsersLoading={false}
-            editingUser={null}
-            setEditingUser={() => {}}
-            loadAdminUsers={loadAdminUsers}
-            handleEditUser={() => {}}
-            handleUpdateUser={() => {}}
-            handleDeleteUser={() => {}}
-          />
-        )}
-
-        {showTimeTracking && (
-          <TimeTrackingComponent
-            showTimeTracking={showTimeTracking}
-            setShowTimeTracking={setShowTimeTracking}
-            closeOtherFeatures={closeOtherFeatures}
-            projects={[]}
-            projectsLoading={false}
-            timeEntries={[]}
-            timeEntriesLoading={false}
-            startTime={null}
-            description=""
-            setDescription={() => {}}
-            isTracking={false}
-            currentProject=""
-            setCurrentProject={() => {}}
-            elapsedTime={0}
-            loadProjects={loadProjects}
-            loadTimeEntries={loadTimeEntries}
-            handleStartTracking={handleStartTracking}
-            handleStopTracking={handleStopTracking}
-            handleResetTracking={handleResetTracking}
-          />
-        )}
-
-        {showTimers && (
-          <TimersComponent
-            showTimers={showTimers}
-            setShowTimers={setShowTimers}
-            closeOtherFeatures={closeOtherFeatures}
-          />
-        )}
-
-        {showPublicMemos && (
-          <PublicMemosComponent
-            showPublicMemos={showPublicMemos}
-            setShowPublicMemos={setShowPublicMemos}
-            closeOtherFeatures={closeOtherFeatures}
-            publicMemos={[]}
-            publicMemosLoading={false}
-            user={user}
-            loadPublicMemos={loadPublicMemos}
-            handleReplySubmit={() => {}}
-            handleReplyCancel={() => {}}
-            handleEditReply={() => {}}
-            handleSaveEditReply={() => {}}
-            handleDeleteReply={() => {}}
-            handleCancelEditReply={() => {}}
-            replyContent=""
-            setReplyContent={() => {}}
-          />
-        )}
-
-        {/* {showWorkRecords && (
-          <WorkRecordsComponent />
-        )} */}
-
-        {showSoundApp && (
-          <SoundAppComponent
-            showSoundApp={showSoundApp}
-            setShowSoundApp={setShowSoundApp}
-            closeOtherFeatures={closeOtherFeatures}
-          />
-        )}
+        {getVisibleFeatures().map((feature) => {
+          if (feature.id === "character-home" && showCharacterHome) {
+            return (
+              <CharacterHome
+                key={feature.id}
+                showCharacterHome={showCharacterHome}
+                setShowCharacterHome={setShowCharacterHome}
+                closeOtherFeatures={closeOtherFeatures}
+              />
+            );
+          } else if (feature.id === "time-tracking" && showTimeTracking) {
+            return (
+              <TimeTrackingComponent
+                key={feature.id}
+                showTimeTracking={showTimeTracking}
+                setShowTimeTracking={setShowTimeTracking}
+                closeOtherFeatures={closeOtherFeatures}
+                projects={[]}
+                projectsLoading={false}
+                timeEntries={[]}
+                timeEntriesLoading={false}
+                startTime={null}
+                description=""
+                setDescription={() => {}}
+                isTracking={false}
+                currentProject=""
+                setCurrentProject={() => {}}
+                elapsedTime={0}
+                loadProjects={loadProjects}
+                loadTimeEntries={loadTimeEntries}
+                handleStartTracking={handleStartTracking}
+                handleStopTracking={handleStopTracking}
+                handleResetTracking={handleResetTracking}
+              />
+            );
+          } else if (feature.id === "cooking-timer" && showCookingTimer) {
+            return (
+              <CookingTimerSection
+                key={feature.id}
+                showCookingTimer={showCookingTimer}
+                setShowCookingTimer={setShowCookingTimer}
+                closeOtherFeatures={closeOtherFeatures}
+                selectedRecipe={selectedRecipe}
+                setSelectedRecipe={setSelectedRecipe}
+                selectedEggType={selectedEggType}
+                setSelectedEggType={setSelectedEggType}
+                eggTimerActive={eggTimerActive}
+                eggTimerPaused={eggTimerPaused}
+                eggTimerTime={eggTimerTime}
+                eggTimerOriginalTime={eggTimerOriginalTime}
+                eggTimerPhase={eggTimerPhase}
+                eggTimerPhaseTime={eggTimerPhaseTime}
+                eggTimerPhaseName={eggTimerPhaseName}
+                eggTimerSound={eggTimerSound}
+                setEggTimerSound={setEggTimerSound}
+                setEggTimerTime={setEggTimerTime}
+                setEggTimerOriginalTime={setEggTimerOriginalTime}
+                setEggTimerActive={setEggTimerActive}
+                setEggTimerPaused={setEggTimerPaused}
+                setEggTimerPhase={setEggTimerPhase}
+                setEggTimerPhaseTime={setEggTimerPhaseTime}
+                setEggTimerPhaseName={setEggTimerPhaseName}
+                setEggTimerInterval={setEggTimerInterval}
+                setMessage={setMessage}
+                sendNotification={sendNotification}
+                startSoundLoop={startSoundLoop}
+                addToTimerHistory={addToTimerHistory}
+                playEggTimerSound={playEggTimerSound}
+                pauseEggTimer={pauseEggTimer}
+                stopEggTimer={stopEggTimer}
+                resetEggTimer={resetEggTimer}
+                getEggTimerDuration={getEggTimerDuration}
+                getTotalCookingTime={getTotalCookingTime}
+                formatTime={formatTime}
+                eggTimerType={selectedEggType}
+              />
+            );
+          } else if (feature.id === "projects" && showProjects) {
+            return (
+              <ProjectsSection
+                key={feature.id}
+                showProjects={showProjects}
+                setShowProjects={setShowProjects}
+                closeOtherFeatures={closeOtherFeatures}
+                showProjectForm={false}
+                setShowProjectForm={() => {}}
+                projects={[]}
+                projectsLoading={false}
+                selectedProject=""
+                setSelectedProject={() => {}}
+                projectName=""
+                setProjectName={() => {}}
+                projectDescription=""
+                setProjectDescription={() => {}}
+                projectColor="#007bff"
+                setProjectColor={() => {}}
+                loading={false}
+                handleCreateProject={async () => {}}
+                loadProjects={loadProjects}
+              />
+            );
+          } else if (feature.id === "self-analysis" && showSelfAnalysis) {
+            return (
+              <SelfAnalysisComponent
+                key={feature.id}
+                showSelfAnalysis={showSelfAnalysis}
+                setShowSelfAnalysis={setShowSelfAnalysis}
+                selfAnalysisTab={selfAnalysisTab}
+                setSelfAnalysisTab={setSelfAnalysisTab}
+                personalProfile={personalProfile}
+                setPersonalProfile={setPersonalProfile}
+                habits={habits}
+                setHabits={setHabits}
+                habitHistory={habitHistory}
+                setHabitHistory={setHabitHistory}
+                habitStreak={habitStreak}
+                setHabitStreak={setHabitStreak}
+                moodLogs={moodLogs}
+                setMoodLogs={setMoodLogs}
+                goals={goals}
+                setGoals={setGoals}
+                learningRecords={learningRecords}
+                setLearningRecords={setLearningRecords}
+                timeEntries={timeEntries}
+                calculateTimeBreakdown={calculateTimeBreakdown}
+                calculateProductivityTrend={calculateProductivityTrend}
+                calculateProductivityStats={calculateProductivityStats}
+                loadTimeEntries={loadTimeEntries}
+                closeOtherFeatures={closeOtherFeatures}
+              />
+            );
+          } else if (feature.id === "bookshelf" && showBookshelf) {
+            return (
+              <BookshelfComponent
+                key={feature.id}
+                showBookshelf={showBookshelf}
+                setShowBookshelf={setShowBookshelf}
+                closeOtherFeatures={closeOtherFeatures}
+                books={[]}
+                booksLoading={false}
+                showBookForm={false}
+                setShowBookForm={() => {}}
+                editingBook={null}
+                setEditingBook={() => {}}
+                bookTitle=""
+                setBookTitle={() => {}}
+                bookAuthor=""
+                setBookAuthor={() => {}}
+                bookIsbn=""
+                setBookIsbn={() => {}}
+                bookPublishedYear={new Date().getFullYear()}
+                setBookPublishedYear={() => {}}
+                bookTotalPages={0}
+                setBookTotalPages={() => {}}
+                bookCategory=""
+                setBookCategory={() => {}}
+                bookNotes=""
+                setBookNotes={() => {}}
+                selectedBookCategory="all"
+                setSelectedBookCategory={() => {}}
+                getBookCategories={() => ['小説', '技術書', 'ビジネス', '自己啓発', 'その他']}
+                loading={false}
+                loadBooks={loadBooks}
+                handleCreateBook={() => {}}
+                handleUpdateBook={() => {}}
+                handleEditBook={() => {}}
+                handleDeleteBook={() => {}}
+                handleBookCategoryChange={() => {}}
+                getReadingProgress={() => 0}
+              />
+            );
+          } else if (feature.id === "memos" && showMemos) {
+            return (
+              <MemosComponent
+                key={feature.id}
+                showMemos={showMemos}
+                setShowMemos={setShowMemos}
+                closeOtherFeatures={closeOtherFeatures}
+                memos={[]}
+                publicMemos={[]}
+                memosLoading={false}
+                customCategories={[]}
+                setCustomCategories={() => {}}
+                loadMemos={loadMemos}
+                handleDeleteMemo={() => {}}
+                user={user}
+                handleCreateMemo={() => {}}
+                handleUpdateMemo={() => {}}
+                editingMemo={null}
+                setEditingMemo={() => {}}
+                memoTitle=""
+                setMemoTitle={() => {}}
+                memoContent=""
+                setMemoContent={() => {}}
+                memoCategory=""
+                setMemoCategory={() => {}}
+                memoTags=""
+                setMemoTags={() => {}}
+                memoIsPublic={false}
+                setMemoIsPublic={() => {}}
+                memoIsFamilyOnly={false}
+                setMemoIsFamilyOnly={() => {}}
+                memoIsAdminOnly={false}
+                setMemoIsAdminOnly={() => {}}
+                handleReplySubmit={() => {}}
+                handleReplyCancel={() => {}}
+                handleEditReply={() => {}}
+                handleSaveEditReply={() => {}}
+                handleDeleteReply={() => {}}
+                handleCancelEditReply={() => {}}
+                replyContent=""
+                setReplyContent={() => {}}
+                replyingToMemo={null}
+                setReplyingToMemo={() => {}}
+              />
+            );
+          } else if (feature.id === "reports" && showReports) {
+            return (
+              <ReportsComponent
+                key={feature.id}
+                showReports={showReports}
+                setShowReports={setShowReports}
+                closeOtherFeatures={closeOtherFeatures}
+                incomeExpenseRecords={[]}
+                workDiaries={[]}
+                reportsLoading={false}
+                reportSummary={{}}
+                loadReportSummary={loadReportSummary}
+              />
+            );
+          } else if (feature.id === "admin-panel" && showAdminPanel) {
+            return (
+              <AdminPanelComponent
+                key={feature.id}
+                showAdminPanel={showAdminPanel}
+                setShowAdminPanel={setShowAdminPanel}
+                closeOtherFeatures={closeOtherFeatures}
+                adminUsers={[]}
+                adminUsersLoading={false}
+                editingUser={null}
+                setEditingUser={() => {}}
+                loadAdminUsers={loadAdminUsers}
+                handleEditUser={() => {}}
+                handleUpdateUser={() => {}}
+                handleDeleteUser={() => {}}
+              />
+            );
+          } else if (feature.id === "timers" && showTimers) {
+            return (
+              <TimersComponent
+                key={feature.id}
+                showTimers={showTimers}
+                setShowTimers={setShowTimers}
+                closeOtherFeatures={closeOtherFeatures}
+              />
+            );
+          } else if (feature.id === "public-memos" && showPublicMemos) {
+            return (
+              <PublicMemosComponent
+                key={feature.id}
+                showPublicMemos={showPublicMemos}
+                setShowPublicMemos={setShowPublicMemos}
+                closeOtherFeatures={closeOtherFeatures}
+                publicMemos={[]}
+                publicMemosLoading={false}
+                user={user}
+                loadPublicMemos={loadPublicMemos}
+                handleReplySubmit={() => {}}
+                handleReplyCancel={() => {}}
+                handleEditReply={() => {}}
+                handleSaveEditReply={() => {}}
+                handleDeleteReply={() => {}}
+                handleCancelEditReply={() => {}}
+                replyContent=""
+                setReplyContent={() => {}}
+              />
+            );
+          } else if (feature.id === "work-records" && showWorkRecords) {
+            return (
+              <WorkRecordsComponent
+                key={feature.id}
+                showWorkRecords={showWorkRecords}
+                setShowWorkRecords={setShowWorkRecords}
+                showIncomeExpenseForm={false}
+                setShowIncomeExpenseForm={() => {}}
+                showDiaryForm={false}
+                setShowDiaryForm={() => {}}
+                incomeExpenseRecords={[]}
+                workDiaries={[]}
+                workRecords={[]}
+                incomeExpenseLoading={false}
+                diaryLoading={false}
+                workRecordsLoading={false}
+                incomeExpenseForm={{
+                  id: "",
+                  date: "",
+                  type: "income",
+                  amount: 0,
+                  category: "",
+                  description: "",
+                  createdAt: "",
+                  updatedAt: ""
+                }}
+                setIncomeExpenseForm={() => {}}
+                diaryForm={{
+                  id: "",
+                  date: "",
+                  title: "",
+                  content: "",
+                  mood: "neutral",
+                  weather: "",
+                  tags: [],
+                  createdAt: "",
+                  updatedAt: ""
+                }}
+                setDiaryForm={() => {}}
+                workRecordForm={{
+                  id: "",
+                  date: "",
+                  startTime: "",
+                  endTime: "",
+                  breakTime: 0,
+                  workTime: 0,
+                  hourlyWage: 0,
+                  dailyWage: 0,
+                  notes: "",
+                  createdAt: "",
+                  updatedAt: ""
+                }}
+                setWorkRecordForm={() => {}}
+                editingIncomeExpense={null}
+                setEditingIncomeExpense={() => {}}
+                editingDiary={null}
+                setEditingDiary={() => {}}
+                editingWorkRecord={null}
+                setEditingWorkRecord={() => {}}
+                selectedDate={new Date()}
+                setSelectedDate={() => {}}
+                selectedMonth={new Date().getMonth()}
+                setSelectedMonth={() => {}}
+                selectedYear={new Date().getFullYear()}
+                setSelectedYear={() => {}}
+                viewMode="calendar"
+                setViewMode={() => {}}
+                filterCategory="all"
+                setFilterCategory={() => {}}
+                searchQuery=""
+                setSearchQuery={() => {}}
+                sortBy="date"
+                setSortBy={() => {}}
+                sortOrder="desc"
+                setSortOrder={() => {}}
+                handleCreateIncomeExpense={() => {}}
+                handleUpdateIncomeExpense={() => {}}
+                handleDeleteIncomeExpense={() => {}}
+                handleEditIncomeExpense={() => {}}
+                handleCreateDiary={() => {}}
+                handleUpdateDiary={() => {}}
+                handleDeleteDiary={() => {}}
+                handleEditDiary={() => {}}
+                handleCreateWorkRecord={() => {}}
+                handleUpdateWorkRecord={() => {}}
+                handleDeleteWorkRecord={() => {}}
+                handleEditWorkRecord={() => {}}
+                loadIncomeExpenseRecords={() => {}}
+                loadWorkDiaries={() => {}}
+                loadWorkRecords={() => {}}
+                getTotalIncome={() => 0}
+                getTotalExpense={() => 0}
+                getNetIncome={() => 0}
+                getMonthlyStats={() => ({ income: 0, expense: 0, net: 0 })}
+                getCategoryStats={() => ({})}
+                exportToCSV={() => {}}
+                exportToPDF={() => {}}
+                closeOtherFeatures={closeOtherFeatures}
+              />
+            );
+          } else if (feature.id === "sound-app" && showSoundApp) {
+            return (
+              <SoundAppComponent
+                key={feature.id}
+                showSoundApp={showSoundApp}
+                setShowSoundApp={setShowSoundApp}
+                closeOtherFeatures={closeOtherFeatures}
+              />
+            );
+          }
+          return null;
+        })}
 
         {showNotifications && (
           <NotificationComponent />
