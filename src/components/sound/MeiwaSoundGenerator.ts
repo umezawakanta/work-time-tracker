@@ -2,6 +2,9 @@ import * as Tone from "tone";
 import { playSound } from "./SoundEngine";
 import { CategoryRatio, RhythmPattern } from "./types";
 
+// 16分音符の倍率定数
+const SIXTEENTH_NOTE_MULTIPLIER = 0.25;
+
 // 明和電機風の8bitリズムパターンを生成（音の重ね合わせ対応）
 export const generateMeiwaRhythm = (
   beatDuration: number, 
@@ -67,7 +70,7 @@ export const generateMeiwaRhythm = (
   // すべてのパターンを統合して再生
   const scheduledEvents: number[] = [];
   [...drumPattern, ...melodyPattern, ...bassPattern, ...layeredPattern].forEach((pattern) => {
-    const delay = pattern.time * beatDuration * 0.25 / 1000; // convert ms to seconds for Tone.Transport
+    const delay = pattern.time * beatDuration * SIXTEENTH_NOTE_MULTIPLIER / 1000; // convert ms to seconds for Tone.Transport
     const baseFrequency = Tone.Frequency(pattern.note).toFrequency();
     const frequency = pattern.detune ? 
       baseFrequency * Math.pow(2, pattern.detune / 1200) : // セント単位のデチューン

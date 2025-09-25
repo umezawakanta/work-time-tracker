@@ -183,11 +183,12 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
       categoryRatios
         .filter((cat) => cat.ratio > 0)
         .forEach((category, index) => {
-          // 音符マッピングは外部から渡される想定
-          const noteMapping = DEFAULT_NOTE_MAPPING;
+          // カテゴリ固有の音符マッピングを使用、なければデフォルト
+          const noteMapping = category.noteMapping || DEFAULT_NOTE_MAPPING;
           
           // 音の長さを音符の長さに変換
-          const duration = getNoteDuration(category.sound.duration);
+          const soundDuration = category.sound?.duration || 0.5; // デフォルト0.5秒
+          const duration = getNoteDuration(soundDuration);
 
           notes.push({
             pitch: noteMapping, // すでに正しいVexFlow形式
@@ -196,7 +197,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
             instrument: category.instrument || "unknown",
           });
 
-          currentTime += category.sound.duration;
+          currentTime += soundDuration;
         });
 
       return {

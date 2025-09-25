@@ -34,7 +34,7 @@ export const foodCategories: FoodCategory[] = [
     sound: { frequency: 220, duration: 0.5, volume: 0.7 },
     color: "#8B4513",
     instrument: "🥁 ドラム",
-    noteMapping: "C/3", // VexFlow format (uppercase)
+    noteMapping: "C/3", // VexFlow format
   },
   {
     id: "side",
@@ -87,6 +87,13 @@ export interface CategoryRatio {
   volume: number;
   note: string;
   detune?: number; // Optional detune in cents
+  sound?: {
+    frequency: number;
+    duration: number;
+    volume: number;
+  };
+  instrument?: string;
+  noteMapping?: string;
 }
 
 // Music genre interface

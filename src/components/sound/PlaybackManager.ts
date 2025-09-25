@@ -1,5 +1,5 @@
 import { MealRecord } from './MealRecording';
-import { MusicGenre } from './GenreSelector';
+import { MusicGenre, CategoryRatio } from './types';
 import { foodCategories } from './types';
 import { createInitialMeal, updateCategoryCount, resetMeal, getTotalItems } from './MealLogic';
 import { PLAYBACK_DURATION, REPEAT_OPTIONS } from './constants';
@@ -23,8 +23,8 @@ export interface PlaybackCallbacks {
   setUserMessage: (message: string) => void;
   showMessage: (message: string, duration?: number) => void;
   playSoundCallback: (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => Promise<void>;
-  generateMeiwaRhythmCallback: (beatDuration: number, categoryRatios: any[]) => void;
-  generateMusicCallback: (categoryRatios: any[], balanceScore: number, genre: MusicGenre) => Promise<void>;
+  generateMeiwaRhythmCallback: (beatDuration: number, categoryRatios: CategoryRatio[]) => void;
+  generateMusicCallback: (categoryRatios: CategoryRatio[], balanceScore: number, genre: MusicGenre) => Promise<void>;
 }
 
 export const usePlaybackManager = (
