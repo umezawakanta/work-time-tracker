@@ -8,6 +8,21 @@ export const createInstrumentForCategory = async (categoryId: string) => {
     console.warn("AudioContext is not ready for creating instrument");
     return null;
   }
+
+  // Tone.jsが初期化されているか確認
+  try {
+    // Tone.jsの初期化を待機
+    const { initializeTone } = await import('./SoundEngine');
+    const initialized = await initializeTone();
+    if (!initialized) {
+      console.warn("Tone.js not initialized for creating instrument");
+      return null;
+    }
+  } catch (error) {
+    console.error("Failed to initialize Tone.js for instrument creation:", error);
+    return null;
+  }
+
   switch (categoryId) {
     case "staple":
       // 明和電機風のドラム音

@@ -3,11 +3,17 @@ import { ensureAudioContextReady } from "./AudioContextUtils";
 
 // グローバルでTone.jsの初期化状態を管理
 let globalToneInitialized = false;
+let toneInitializationPromise: Promise<boolean> | null = null;
 
 // 8bit風エフェクトチェーンを作成（遅延初期化）
 export const create8bitEffects = async () => {
+  // Tone.jsが初期化されているか確認
   if (!globalToneInitialized) {
-    return null;
+    const initialized = await initializeTone();
+    if (!initialized) {
+      console.warn("Tone.js not initialized for creating effects");
+      return null;
+    }
   }
 
   // AudioContextが準備できているか確認
@@ -45,8 +51,13 @@ export const create8bitEffects = async () => {
 
 // 明和電機風の8bit音色を作成（エフェクト付き）
 export const createMeiwaInstrument = async (categoryId: string) => {
+  // Tone.jsが初期化されているか確認
   if (!globalToneInitialized) {
-    return null;
+    const initialized = await initializeTone();
+    if (!initialized) {
+      console.warn("Tone.js not initialized for creating Meiwa instrument");
+      return null;
+    }
   }
 
   try {
@@ -201,21 +212,33 @@ export const initializeTone = async (): Promise<boolean> => {
     return true;
   }
 
-  try {
-    // AudioContextの状態を確認
-    if (Tone.context.state === 'suspended') {
-      console.log("AudioContext is suspended, attempting to resume...");
-      await Tone.context.resume();
-    }
-    
-    await Tone.start();
-    console.log("Tone.js started successfully");
-    globalToneInitialized = true;
-    return true;
-  } catch (error) {
-    console.error("Failed to initialize Tone.js:", error);
-    return false;
+  // 既に初期化中の場合は同じPromiseを返す
+  if (toneInitializationPromise) {
+    return toneInitializationPromise;
   }
+
+  toneInitializationPromise = (async () => {
+    try {
+      // AudioContextの状態を確認
+      if (Tone.context.state === 'suspended') {
+        console.log("AudioContext is suspended, attempting to resume...");
+        await Tone.context.resume();
+      }
+      
+      await Tone.start();
+      console.log("Tone.js started successfully");
+      globalToneInitialized = true;
+      return true;
+    } catch (error) {
+      console.error("Failed to initialize Tone.js:", error);
+      globalToneInitialized = false;
+      return false;
+    } finally {
+      toneInitializationPromise = null;
+    }
+  })();
+
+  return toneInitializationPromise;
 };
 
 // 音を再生
@@ -229,9 +252,13 @@ export const playSound = async (
   createInstrumentForGenre?: (categoryId: string, genre: string) => Promise<any>,
   getOrCreateInstrument?: (categoryId: string) => Promise<any>
 ) => {
+  // Tone.jsが初期化されているか確認
   if (!globalToneInitialized) {
-    console.warn("Tone.js not initialized, skipping sound playback");
-    return;
+    const initialized = await initializeTone();
+    if (!initialized) {
+      console.warn("Tone.js not initialized, skipping sound playback");
+      return;
+    }
   }
 
   // AudioContextの状態を確認し、必要に応じて再開
