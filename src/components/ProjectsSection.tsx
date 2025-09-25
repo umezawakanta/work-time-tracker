@@ -160,10 +160,10 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                 <div className="spinner"></div>
                 <p>プロジェクトを読み込み中...</p>
               </div>
-            ) : projects.length === 0 ? (
+            ) : !projects || projects.length === 0 ? (
               <p className="no-projects">プロジェクトが登録されていません</p>
             ) : (
-              projects.map((project) => (
+              projects && projects.map((project) => (
                 <div
                   key={project.id}
                   className={`project-item ${

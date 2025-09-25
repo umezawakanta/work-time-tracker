@@ -219,6 +219,21 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             showProjects={showProjects}
             setShowProjects={setShowProjects}
             closeOtherFeatures={closeOtherFeatures}
+            showProjectForm={false}
+            setShowProjectForm={() => {}}
+            projects={[]}
+            projectsLoading={false}
+            selectedProject=""
+            setSelectedProject={() => {}}
+            projectName=""
+            setProjectName={() => {}}
+            projectDescription=""
+            setProjectDescription={() => {}}
+            projectColor="#007bff"
+            setProjectColor={() => {}}
+            loading={false}
+            handleCreateProject={async () => {}}
+            loadProjects={async () => {}}
           />
         )}
 
