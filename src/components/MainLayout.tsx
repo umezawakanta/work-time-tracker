@@ -250,63 +250,48 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         user={user}
         isLoggedIn={isLoggedIn}
         onShowCharacterHome={() => {
-          setShowCharacterHome(true);
           closeOtherFeatures('character-home');
         }}
         onShowProjects={() => {
-          setShowProjects(true);
           closeOtherFeatures('projects');
         }}
         onShowCookingTimer={() => {
-          setShowCookingTimer(true);
           closeOtherFeatures('cooking-timer');
         }}
         onShowSelfAnalysis={() => {
-          setShowSelfAnalysis(true);
           closeOtherFeatures('self-analysis');
         }}
         onShowBookshelf={() => {
-          setShowBookshelf(true);
           closeOtherFeatures('bookshelf');
         }}
         onShowMemos={() => {
-          setShowMemos(true);
           closeOtherFeatures('memos');
         }}
         onShowReports={() => {
-          setShowReports(true);
           closeOtherFeatures('reports');
         }}
         onShowAdminPanel={() => {
-          setShowAdminPanel(true);
           closeOtherFeatures('admin-panel');
         }}
         onShowTimeTracking={() => {
-          setShowTimeTracking(true);
           closeOtherFeatures('time-tracking');
         }}
         onShowTimers={() => {
-          setShowTimers(true);
           closeOtherFeatures('timers');
         }}
         onShowPublicMemos={() => {
-          setShowPublicMemos(true);
           closeOtherFeatures('public-memos');
         }}
         onShowWorkRecords={() => {
-          setShowWorkRecords(true);
           closeOtherFeatures('work-records');
         }}
         onShowSoundApp={() => {
-          setShowSoundApp(true);
           closeOtherFeatures('sound-app');
         }}
         onShowNotifications={() => {
-          setShowNotifications(true);
           closeOtherFeatures('notifications');
         }}
         onShowVersionInfo={() => {
-          setShowVersionInfo(true);
           closeOtherFeatures('version-info');
         }}
         currentCharacter={null}
