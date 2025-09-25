@@ -310,7 +310,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
   // 目標管理関数
   const addGoal = () => {
-    if (!goalForm.title.trim()) return;
+    if (!goalForm.title.trim()) {
+      return;
+    }
     const goalId = Date.now().toString();
     const newGoal: Goal = {
       id: goalId,
