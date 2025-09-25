@@ -254,7 +254,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const [customTempo, setCustomTempo] = useState<number>(120);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>("");
-  const [repeatMode, setRepeatMode] = useState<number>(REPEAT_OPTIONS.ONCE);
+  const [repeatMode, setRepeatMode] = useState<number>(REPEAT_OPTIONS.THREE_TIMES);
   const [isLooping, setIsLooping] = useState<boolean>(false);
   const [currentMeal, setCurrentMeal] = useState<MealRecord>({
     id: Date.now().toString(),
@@ -787,7 +787,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       activeCats.forEach((category, index) => {
         const delay = index * beatDuration * 800;
         const frequency = category.sound.frequency * (0.9 + balanceScore * 0.2);
-        const duration = category.sound.duration * (0.8 + balanceScore * 0.4);
+      const duration = category.sound.duration * (1.0 + balanceScore * 0.6);
         const volume = Math.min(
           0.6,
           category.sound.volume * (0.5 + balanceScore * 0.5)
@@ -830,7 +830,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
                 const chordVolume = balanceScore > 0.7 ? 0.5 : 0.3;
                 pianoInst.volume.value =
                   Math.log10(Math.max(0.001, chordVolume)) * 20;
-                pianoInst.triggerAttackRelease(chord.notes, "1s");
+                pianoInst.triggerAttackRelease(chord.notes, "2s");
               } catch (e) {
                 /* ignore */
               }
