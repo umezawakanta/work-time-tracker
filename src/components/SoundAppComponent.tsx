@@ -703,7 +703,13 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         if (categoryId === "staple" || genre === "japanese") {
           instrument.triggerAttackRelease("C2", duration + "s");
         } else {
-          instrument.triggerAttackRelease(Tone.Frequency(frequency, "hz").toNote(), duration + "s");
+          let note;
+          try {
+            note = Tone.Frequency(frequency, "hz").toNote();
+          } catch (freqError) {
+            throw new Error(`Failed to convert frequency ${frequency} Hz to a musical note: ${freqError}`);
+          }
+          instrument.triggerAttackRelease(note, duration + "s");
         }
       } catch (error) {
         console.log(`Could not play sound for ${categoryId}:`, error);
