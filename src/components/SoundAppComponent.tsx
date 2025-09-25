@@ -374,7 +374,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
         // シンプルな形式でフォーマット（まず基本を動作させる）
         formatter.joinVoices([voice]);
-        formatter.format([voice], 750); // ← オプションを一旦削除
+        formatter.format([voice], 750);
 
         // 描画
         voice.draw(context, stave);
