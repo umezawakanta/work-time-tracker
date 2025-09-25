@@ -763,7 +763,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       playTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
       playTimeoutsRef.current = [];
 
-      const baseTempo = genre.baseTempo;
+      const { baseTempo } = genre;
       const adjustedTempo = Math.max(
         80,
         Math.min(160, baseTempo * (0.7 + balanceScore * 0.3))
