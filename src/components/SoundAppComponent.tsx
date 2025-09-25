@@ -381,20 +381,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
         // ビームの追加（後で対応）
         // 一旦コメントアウトして基本描画を確認
-        /*
-      const hasEighthNotes = notes.some(
-        (note) => note.getDuration() === "8" || note.getDuration() === "8d"
-      );
-
-      if (hasEighthNotes && notes.length > 1) {
-        try {
-          const beams = Beam.generateBeams(notes);
-          beams.forEach((beam) => beam.setContext(context).draw());
-        } catch (beamError) {
-          console.log("Beam generation skipped:", beamError);
-        }
-      }
-      */
       } catch (voiceError) {
         console.error("Voice error:", voiceError);
         // エラー詳細を表示
