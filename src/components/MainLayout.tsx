@@ -761,7 +761,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 setShowDiaryForm={() => {}}
                 incomeExpenseRecords={[]}
                 workDiaries={[]}
-                workRecords={[]}
                 incomeExpenseLoading={false}
                 diaryLoading={false}
                 workRecordsLoading={false}
