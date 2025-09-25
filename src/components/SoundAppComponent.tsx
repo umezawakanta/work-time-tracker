@@ -361,8 +361,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       // Voice の作成
       try {
         const voice = new Voice({
-          numBeats: 4, // ← numBeatsからnum_beatsに変更
-          beatValue: 4, // ← beatValueからbeat_valueに変更
+          numBeats: 4,
+          beatValue: 4,
         });
 
         // setModeの数値を直接指定（Mode.SOFTが使えない場合の対策）
