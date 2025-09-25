@@ -250,64 +250,64 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         user={user}
         isLoggedIn={isLoggedIn}
         onShowCharacterHome={() => {
-          closeOtherFeatures('character-home');
           setShowCharacterHome(true);
+          closeOtherFeatures('character-home');
         }}
         onShowProjects={() => {
-          closeOtherFeatures('projects');
           setShowProjects(true);
+          closeOtherFeatures('projects');
         }}
         onShowCookingTimer={() => {
-          closeOtherFeatures('cooking-timer');
           setShowCookingTimer(true);
+          closeOtherFeatures('cooking-timer');
         }}
         onShowSelfAnalysis={() => {
-          closeOtherFeatures('self-analysis');
           setShowSelfAnalysis(true);
+          closeOtherFeatures('self-analysis');
         }}
         onShowBookshelf={() => {
-          closeOtherFeatures('bookshelf');
           setShowBookshelf(true);
+          closeOtherFeatures('bookshelf');
         }}
         onShowMemos={() => {
-          closeOtherFeatures('memos');
           setShowMemos(true);
+          closeOtherFeatures('memos');
         }}
         onShowReports={() => {
-          closeOtherFeatures('reports');
           setShowReports(true);
+          closeOtherFeatures('reports');
         }}
         onShowAdminPanel={() => {
-          closeOtherFeatures('admin-panel');
           setShowAdminPanel(true);
+          closeOtherFeatures('admin-panel');
         }}
         onShowTimeTracking={() => {
-          closeOtherFeatures('time-tracking');
           setShowTimeTracking(true);
+          closeOtherFeatures('time-tracking');
         }}
         onShowTimers={() => {
-          closeOtherFeatures('timers');
           setShowTimers(true);
+          closeOtherFeatures('timers');
         }}
         onShowPublicMemos={() => {
-          closeOtherFeatures('public-memos');
           setShowPublicMemos(true);
+          closeOtherFeatures('public-memos');
         }}
         onShowWorkRecords={() => {
-          closeOtherFeatures('work-records');
           setShowWorkRecords(true);
+          closeOtherFeatures('work-records');
         }}
         onShowSoundApp={() => {
-          closeOtherFeatures('sound-app');
           setShowSoundApp(true);
+          closeOtherFeatures('sound-app');
         }}
         onShowNotifications={() => {
-          closeOtherFeatures('notifications');
           setShowNotifications(true);
+          closeOtherFeatures('notifications');
         }}
         onShowVersionInfo={() => {
-          closeOtherFeatures('version-info');
           setShowVersionInfo(true);
+          closeOtherFeatures('version-info');
         }}
         currentCharacter={null}
         showThemeSettings={false}
