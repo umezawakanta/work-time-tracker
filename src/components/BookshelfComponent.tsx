@@ -28,6 +28,7 @@ interface BookshelfComponentProps {
   setBookNotes: (notes: string) => void;
   selectedBookCategory: string;
   setSelectedBookCategory: (category: string) => void;
+  getBookCategories: () => string[];
   loading: boolean;
   loadBooks: () => void;
   handleCreateBook: (e: React.FormEvent) => void;
@@ -65,6 +66,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = ({
   setBookNotes,
   selectedBookCategory,
   setSelectedBookCategory,
+  getBookCategories,
   loading,
   loadBooks,
   handleCreateBook,

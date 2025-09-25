@@ -258,6 +258,37 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             showBookshelf={showBookshelf}
             setShowBookshelf={setShowBookshelf}
             closeOtherFeatures={closeOtherFeatures}
+            books={[]}
+            booksLoading={false}
+            showBookForm={false}
+            setShowBookForm={() => {}}
+            editingBook={null}
+            setEditingBook={() => {}}
+            bookTitle=""
+            setBookTitle={() => {}}
+            bookAuthor=""
+            setBookAuthor={() => {}}
+            bookIsbn=""
+            setBookIsbn={() => {}}
+            bookPublishedYear={new Date().getFullYear()}
+            setBookPublishedYear={() => {}}
+            bookTotalPages={0}
+            setBookTotalPages={() => {}}
+            bookCategory=""
+            setBookCategory={() => {}}
+            bookNotes=""
+            setBookNotes={() => {}}
+            selectedBookCategory="all"
+            setSelectedBookCategory={() => {}}
+            getBookCategories={() => ['小説', '技術書', 'ビジネス', '自己啓発', 'その他']}
+            loading={false}
+            loadBooks={() => {}}
+            handleCreateBook={() => {}}
+            handleUpdateBook={() => {}}
+            handleEditBook={() => {}}
+            handleDeleteBook={() => {}}
+            handleBookCategoryChange={() => {}}
+            getReadingProgress={() => 0}
           />
         )}
 
