@@ -76,7 +76,7 @@ export const generateMeiwaRhythm = (
 
     const eventId = Tone.Transport.scheduleOnce((time) => {
       playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
-    }, "+" + delay);
+    }, `+${delay}`);
     scheduledEvents.push(eventId);
   });
 
