@@ -260,7 +260,78 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     return null;
   }
   return (
-    <div className="app">
+    <>
+      <style>{`
+        .theme-settings-modal,
+        .font-settings-modal,
+        .feature-settings-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 1000;
+        }
+        
+        .modal-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .modal-content {
+          background: white;
+          border-radius: 8px;
+          padding: 0;
+          max-width: 500px;
+          width: 90%;
+          max-height: 80vh;
+          overflow-y: auto;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px;
+          border-bottom: 1px solid #eee;
+        }
+        
+        .modal-header h3 {
+          margin: 0;
+          font-size: 1.2em;
+        }
+        
+        .close-button {
+          background: none;
+          border: none;
+          font-size: 1.5em;
+          cursor: pointer;
+          padding: 5px;
+          border-radius: 4px;
+        }
+        
+        .close-button:hover {
+          background-color: #f0f0f0;
+        }
+        
+        .modal-body {
+          padding: 20px;
+        }
+        
+        .modal-body p {
+          margin: 10px 0;
+          line-height: 1.5;
+        }
+      `}</style>
+      <div className="app">
       <HeaderComponent
         user={user}
         isLoggedIn={isLoggedIn}
@@ -615,8 +686,75 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         {showVersionInfo && (
           <VersionInfo />
         )}
+
+        {showThemeSettings && (
+          <div className="theme-settings-modal">
+            <div className="modal-overlay" onClick={() => setShowThemeSettings(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>🎨 テーマ設定</h3>
+                  <button 
+                    className="close-button"
+                    onClick={() => setShowThemeSettings(false)}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <p>テーマ設定機能は準備中です。</p>
+                  <p>近日中に利用可能になります。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showFontSettings && (
+          <div className="font-settings-modal">
+            <div className="modal-overlay" onClick={() => setShowFontSettings(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>🔤 フォント設定</h3>
+                  <button 
+                    className="close-button"
+                    onClick={() => setShowFontSettings(false)}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <p>フォント設定機能は準備中です。</p>
+                  <p>近日中に利用可能になります。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showFeatureSettings && (
+          <div className="feature-settings-modal">
+            <div className="modal-overlay" onClick={() => setShowFeatureSettings(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>⚙️ 機能設定</h3>
+                  <button 
+                    className="close-button"
+                    onClick={() => setShowFeatureSettings(false)}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <p>機能設定機能は準備中です。</p>
+                  <p>近日中に利用可能になります。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
-    </div>
+      </div>
+    </>
   );
 };
 
