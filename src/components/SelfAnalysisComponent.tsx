@@ -107,7 +107,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
   // プロフィール管理関数
   const addToProfile = (field: keyof PersonalProfile, value: string) => {
-    if (!value.trim()) return;
+    if (!value.trim()) {
+      return;
+    }
     setPersonalProfile((prev) => ({
       ...prev,
       [field]: [...(prev[field] as string[]), value.trim()],
