@@ -42,6 +42,8 @@ export const apiFetch = async (
     };
     
     console.log('apiFetch - Making request to:', url, 'with options:', mergedOptions);
+    console.log('apiFetch - Auth headers:', authHeaders);
+    console.log('apiFetch - Token exists:', !!(localStorage.getItem('access_token') || localStorage.getItem('authToken')));
     const response = await fetch(url, mergedOptions);
     console.log('apiFetch - Response status:', response.status, 'for URL:', url);
     
