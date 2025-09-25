@@ -3,7 +3,7 @@ import './SelfAnalysisComponent.css';
 import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
 import HetamaIconComponent from './HetamaIconComponent';
 
-interface PersonalProfile {
+export interface PersonalProfile {
   values: string[];
   goals: string[];
   skills: string[];

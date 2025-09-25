@@ -232,7 +232,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 
   // メモの件数を計算する関数（個人メモ + 公開メモ）
   const getMemoCounts = () => {
-    const allMemos = [...memos, ...publicMemos];
+    const allMemos = [...(memos || []), ...(publicMemos || [])];
     const totalMemos = allMemos.length;
     const errorReports = allMemos.filter(memo => memo.postType === 'error_report').length;
     const updateRequests = allMemos.filter(memo => memo.postType === 'update_request').length;

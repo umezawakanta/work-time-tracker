@@ -8,6 +8,8 @@ import BookshelfComponent from './BookshelfComponent';
 import MemosComponent from './MemosComponent';
 import ReportsComponent from './ReportsComponent';
 import AdminPanelComponent from './AdminPanelComponent';
+import { PersonalProfile } from './SelfAnalysisComponent';
+import { Habit, Goal, LearningRecord } from '../types';
 import TimeTrackingComponent from './TimeTrackingComponent';
 import TimersComponent from './TimersComponent';
 import PublicMemosComponent from './PublicMemosComponent';
@@ -91,6 +93,129 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setShowVersionInfo,
   closeOtherFeatures,
 }) => {
+  // CookingTimerSection の状態管理
+  const [selectedRecipe, setSelectedRecipe] = React.useState("boiled-egg");
+  const [selectedEggType, setSelectedEggType] = React.useState<"soft" | "medium" | "hard">("medium");
+  const [eggTimerActive, setEggTimerActive] = React.useState(false);
+  const [eggTimerPaused, setEggTimerPaused] = React.useState(false);
+  const [eggTimerTime, setEggTimerTime] = React.useState(0);
+  const [eggTimerOriginalTime, setEggTimerOriginalTime] = React.useState(0);
+  const [eggTimerPhase, setEggTimerPhase] = React.useState<"heating" | "boiling" | "cooking">("heating");
+  const [eggTimerPhaseTime, setEggTimerPhaseTime] = React.useState(0);
+  const [eggTimerPhaseName, setEggTimerPhaseName] = React.useState("");
+  const [eggTimerSound, setEggTimerSound] = React.useState<"bell" | "chime" | "beep" | "alarm">("bell");
+  const [eggTimerInterval, setEggTimerInterval] = React.useState<NodeJS.Timeout | null>(null);
+  const [message, setMessage] = React.useState("");
+
+  // SelfAnalysisComponent の状態管理
+  const [selfAnalysisTab, setSelfAnalysisTab] = React.useState("profile");
+  const [personalProfile, setPersonalProfile] = React.useState<PersonalProfile>({
+    values: [],
+    goals: [],
+    skills: [],
+    interests: [],
+    strengths: [],
+    weaknesses: [],
+    personality: "",
+    lifestyle: "",
+    workStyle: "",
+    learningStyle: "",
+    motivation: "",
+    challenges: [],
+    achievements: [],
+    futureVision: "",
+    notes: ""
+  });
+  const [habits, setHabits] = React.useState<Habit[]>([]);
+  const [habitHistory, setHabitHistory] = React.useState({});
+  const [habitStreak, setHabitStreak] = React.useState({});
+  const [moodLogs, setMoodLogs] = React.useState<any[]>([]);
+  const [goals, setGoals] = React.useState<Goal[]>([]);
+  const [learningRecords, setLearningRecords] = React.useState<LearningRecord[]>([]);
+  const [timeEntries, setTimeEntries] = React.useState([]);
+
+  // SelfAnalysisComponent の関数
+  const calculateTimeBreakdown = () => ({});
+  const calculateProductivityTrend = () => [];
+  const calculateProductivityStats = () => ({
+    averageHours: 0,
+    maxHours: 0,
+    totalHours: 0,
+    productiveDays: 0,
+    productivityRate: 0
+  });
+  const loadTimeEntries = () => {};
+
+  // CookingTimerSection の関数
+  const sendNotification = (title: string, body: string, icon?: string) => {
+    if (Notification.permission === "granted") {
+      new Notification(title, { body, icon });
+    }
+  };
+
+  const startSoundLoop = (soundType: "bell" | "chime" | "beep" | "alarm") => {
+    // 音声ループの実装（簡易版）
+    console.log(`Starting sound loop: ${soundType}`);
+  };
+
+  const addToTimerHistory = (name: string, duration: number, type: "custom" | "egg" | "preset") => {
+    // タイマー履歴の追加（簡易版）
+    console.log(`Added to timer history: ${name}, ${duration}s, ${type}`);
+  };
+
+  const playEggTimerSound = async () => {
+    // 音声再生の実装（簡易版）
+    console.log("Playing egg timer sound");
+  };
+
+  const pauseEggTimer = () => {
+    setEggTimerPaused(true);
+    if (eggTimerInterval) {
+      clearInterval(eggTimerInterval);
+      setEggTimerInterval(null);
+    }
+  };
+
+  const stopEggTimer = () => {
+    setEggTimerActive(false);
+    setEggTimerPaused(false);
+    setEggTimerTime(0);
+    if (eggTimerInterval) {
+      clearInterval(eggTimerInterval);
+      setEggTimerInterval(null);
+    }
+  };
+
+  const resetEggTimer = () => {
+    setEggTimerTime(eggTimerOriginalTime);
+    setEggTimerPhase("heating");
+    setEggTimerPhaseTime(0);
+    setEggTimerPhaseName("");
+  };
+
+  const getEggTimerDuration = (type: "soft" | "medium" | "hard") => {
+    const durations = { soft: 6 * 60, medium: 8 * 60, hard: 10 * 60 };
+    return durations[type];
+  };
+
+  const getTotalCookingTime = (recipeKey: string, eggType?: "soft" | "medium" | "hard") => {
+    if (recipeKey === "boiled-egg" && eggType) {
+      return getEggTimerDuration(eggType);
+    }
+    return 0;
+  };
+
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  };
+
   // デバッグログの追加
   React.useEffect(() => {
     console.log('MainLayout - Props received:', {
@@ -242,6 +367,39 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             showCookingTimer={showCookingTimer}
             setShowCookingTimer={setShowCookingTimer}
             closeOtherFeatures={closeOtherFeatures}
+            selectedRecipe={selectedRecipe}
+            setSelectedRecipe={setSelectedRecipe}
+            selectedEggType={selectedEggType}
+            setSelectedEggType={setSelectedEggType}
+            eggTimerActive={eggTimerActive}
+            eggTimerPaused={eggTimerPaused}
+            eggTimerTime={eggTimerTime}
+            eggTimerOriginalTime={eggTimerOriginalTime}
+            eggTimerPhase={eggTimerPhase}
+            eggTimerPhaseTime={eggTimerPhaseTime}
+            eggTimerPhaseName={eggTimerPhaseName}
+            eggTimerSound={eggTimerSound}
+            setEggTimerSound={setEggTimerSound}
+            setEggTimerTime={setEggTimerTime}
+            setEggTimerOriginalTime={setEggTimerOriginalTime}
+            setEggTimerActive={setEggTimerActive}
+            setEggTimerPaused={setEggTimerPaused}
+            setEggTimerPhase={setEggTimerPhase}
+            setEggTimerPhaseTime={setEggTimerPhaseTime}
+            setEggTimerPhaseName={setEggTimerPhaseName}
+            setEggTimerInterval={setEggTimerInterval}
+            setMessage={setMessage}
+            sendNotification={sendNotification}
+            startSoundLoop={startSoundLoop}
+            addToTimerHistory={addToTimerHistory}
+            playEggTimerSound={playEggTimerSound}
+            pauseEggTimer={pauseEggTimer}
+            stopEggTimer={stopEggTimer}
+            resetEggTimer={resetEggTimer}
+            getEggTimerDuration={getEggTimerDuration}
+            getTotalCookingTime={getTotalCookingTime}
+            formatTime={formatTime}
+            eggTimerType={selectedEggType}
           />
         )}
 
@@ -249,6 +407,27 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           <SelfAnalysisComponent
             showSelfAnalysis={showSelfAnalysis}
             setShowSelfAnalysis={setShowSelfAnalysis}
+            selfAnalysisTab={selfAnalysisTab}
+            setSelfAnalysisTab={setSelfAnalysisTab}
+            personalProfile={personalProfile}
+            setPersonalProfile={setPersonalProfile}
+            habits={habits}
+            setHabits={setHabits}
+            habitHistory={habitHistory}
+            setHabitHistory={setHabitHistory}
+            habitStreak={habitStreak}
+            setHabitStreak={setHabitStreak}
+            moodLogs={moodLogs}
+            setMoodLogs={setMoodLogs}
+            goals={goals}
+            setGoals={setGoals}
+            learningRecords={learningRecords}
+            setLearningRecords={setLearningRecords}
+            timeEntries={timeEntries}
+            calculateTimeBreakdown={calculateTimeBreakdown}
+            calculateProductivityTrend={calculateProductivityTrend}
+            calculateProductivityStats={calculateProductivityStats}
+            loadTimeEntries={loadTimeEntries}
             closeOtherFeatures={closeOtherFeatures}
           />
         )}
@@ -297,6 +476,42 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             showMemos={showMemos}
             setShowMemos={setShowMemos}
             closeOtherFeatures={closeOtherFeatures}
+            memos={[]}
+            publicMemos={[]}
+            memosLoading={false}
+            customCategories={[]}
+            setCustomCategories={() => {}}
+            loadMemos={() => {}}
+            handleDeleteMemo={() => {}}
+            user={user}
+            handleCreateMemo={() => {}}
+            handleUpdateMemo={() => {}}
+            editingMemo={null}
+            setEditingMemo={() => {}}
+            memoTitle=""
+            setMemoTitle={() => {}}
+            memoContent=""
+            setMemoContent={() => {}}
+            memoCategory=""
+            setMemoCategory={() => {}}
+            memoTags=""
+            setMemoTags={() => {}}
+            memoIsPublic={false}
+            setMemoIsPublic={() => {}}
+            memoIsFamilyOnly={false}
+            setMemoIsFamilyOnly={() => {}}
+            memoIsAdminOnly={false}
+            setMemoIsAdminOnly={() => {}}
+            handleReplySubmit={() => {}}
+            handleReplyCancel={() => {}}
+            handleEditReply={() => {}}
+            handleSaveEditReply={() => {}}
+            handleDeleteReply={() => {}}
+            handleCancelEditReply={() => {}}
+            replyContent=""
+            setReplyContent={() => {}}
+            replyingToMemo={null}
+            setReplyingToMemo={() => {}}
           />
         )}
 
@@ -305,6 +520,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             showReports={showReports}
             setShowReports={setShowReports}
             closeOtherFeatures={closeOtherFeatures}
+            incomeExpenseRecords={[]}
+            workDiaries={[]}
+            reportsLoading={false}
+            reportSummary={{}}
+            loadReportSummary={() => {}}
           />
         )}
 
@@ -313,6 +533,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             showAdminPanel={showAdminPanel}
             setShowAdminPanel={setShowAdminPanel}
             closeOtherFeatures={closeOtherFeatures}
+            adminUsers={[]}
+            adminUsersLoading={false}
+            editingUser={null}
+            setEditingUser={() => {}}
+            loadAdminUsers={() => {}}
+            handleEditUser={() => {}}
+            handleUpdateUser={() => {}}
+            handleDeleteUser={() => {}}
           />
         )}
 
@@ -321,6 +549,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             showTimeTracking={showTimeTracking}
             setShowTimeTracking={setShowTimeTracking}
             closeOtherFeatures={closeOtherFeatures}
+            projects={[]}
+            projectsLoading={false}
+            timeEntries={[]}
+            timeEntriesLoading={false}
+            startTime={null}
+            description=""
+            setDescription={() => {}}
+            isTracking={false}
+            currentProject=""
+            setCurrentProject={() => {}}
+            elapsedTime={0}
+            loadProjects={() => {}}
+            loadTimeEntries={() => {}}
+            handleStartTracking={() => {}}
+            handleStopTracking={() => {}}
+            handleResetTracking={() => {}}
           />
         )}
 
@@ -337,6 +581,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             showPublicMemos={showPublicMemos}
             setShowPublicMemos={setShowPublicMemos}
             closeOtherFeatures={closeOtherFeatures}
+            publicMemos={[]}
+            publicMemosLoading={false}
+            user={user}
+            loadPublicMemos={() => {}}
+            handleReplySubmit={() => {}}
+            handleReplyCancel={() => {}}
+            handleEditReply={() => {}}
+            handleSaveEditReply={() => {}}
+            handleDeleteReply={() => {}}
+            handleCancelEditReply={() => {}}
+            replyContent=""
+            setReplyContent={() => {}}
+            replyingToMemo={null}
+            setReplyingToMemo={() => {}}
           />
         )}
 
