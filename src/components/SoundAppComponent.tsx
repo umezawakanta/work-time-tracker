@@ -4,60 +4,15 @@ import "./SoundAppComponent.css";
 
 // サブコンポーネントのインポート
 import SoundControls from "./sound/SoundControls";
-import MealRecording, { FoodCategory, MealRecord } from "./sound/MealRecording";
-import ScoreDisplay, { ScoreData, NoteData } from "./sound/ScoreDisplay";
+import MealRecording, { MealRecord } from "./sound/MealRecording";
+import ScoreDisplay, { ScoreData } from "./sound/ScoreDisplay";
 import GenreSelector, { MusicGenre } from "./sound/GenreSelector";
 import { initializeTone, createMeiwaInstrument, playSound, globalToneInitialized } from "./sound/SoundEngine";
-import { generateMeiwaRhythm, getChordProgression } from "./sound/MeiwaSoundGenerator";
-
-// 型定義はサブコンポーネントからインポート済み
-
-// 保存された記録
-export interface SavedRecord {
-  id: string;
-  date: string;
-  mealData: MealRecord;
-  genre: string;
-  customSettings?: {
-    tempo: number;
-    instruments: string[];
-  };
-  balanceScore: number;
-  scoreData?: ScoreData; // 楽譜データを追加
-}
-
-// 編集可能な曲データ
-export interface ComposedSong {
-  id: string;
-  name: string;
-  createdDate: string;
-  records: SavedRecord[];
-  genre: string;
-  isEdited: boolean;
-  fullScore?: ScoreData; // 完全な楽譜
-}
-
-// 定数定義
-const IDEAL_BALANCE_RATIOS = {
-  staple: 0.4,
-  side: 0.3,
-  miso: 0.1,
-  meat: 0.1,
-  fish: 0.05,
-  vegetable: 0.05,
-} as const;
-
-const PLAYBACK_DURATION = 15000;
-const TEMPO_RANGE = { MIN: 60, MAX: 200 } as const;
-const REPEAT_OPTIONS = {
-  NONE: 0,
-  ONCE: 1,
-  TWICE: 2,
-  THREE_TIMES: 3,
-  LOOP: -1,
-} as const;
-
-// 型定義はサブコンポーネントからインポート済み
+import { generateMeiwaRhythm } from "./sound/MeiwaSoundGenerator";
+import { generateMusic, calculateBalanceScore } from "./sound/MusicGenerator";
+import { foodCategories, SavedRecord, ComposedSong } from "./sound/types";
+import { createInitialMeal, updateCategoryCount, resetMeal, getTotalItems } from "./sound/MealLogic";
+import { PLAYBACK_DURATION, REPEAT_OPTIONS } from "./sound/constants";
 
 interface SoundAppComponentProps {
   showSoundApp: boolean;
@@ -70,57 +25,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   setShowSoundApp,
   closeOtherFeatures,
 }) => {
-  // 食事カテゴリの定義（音符マッピング追加）
-  const foodCategories: FoodCategory[] = [
-    {
-      id: "staple",
-      name: "主食",
-      sound: { frequency: 220, duration: 0.5, volume: 0.7 },
-      color: "#8B4513",
-      instrument: "🥁 ドラム",
-      noteMapping: "C/3", // VexFlow形式（大文字）
-    },
-    {
-      id: "side",
-      name: "副菜",
-      sound: { frequency: 330, duration: 0.4, volume: 0.6 },
-      color: "#228B22",
-      instrument: "🎸 ベース",
-      noteMapping: "E/3", // VexFlow形式（大文字）
-    },
-    {
-      id: "miso",
-      name: "味噌",
-      sound: { frequency: 440, duration: 0.3, volume: 0.5 },
-      color: "#D2691E",
-      instrument: "🎺 トランペット",
-      noteMapping: "A/4", // VexFlow形式（大文字）
-    },
-    {
-      id: "meat",
-      name: "肉",
-      sound: { frequency: 110, duration: 0.8, volume: 0.9 },
-      color: "#DC143C",
-      instrument: "🎸 エレキギター",
-      noteMapping: "A/2", // VexFlow形式（大文字）
-    },
-    {
-      id: "fish",
-      name: "魚",
-      sound: { frequency: 880, duration: 0.6, volume: 0.8 },
-      color: "#4169E1",
-      instrument: "🎹 シンセサイザー",
-      noteMapping: "A/5", // VexFlow形式（大文字）
-    },
-    {
-      id: "vegetable",
-      name: "野菜",
-      sound: { frequency: 660, duration: 0.4, volume: 0.7 },
-      color: "#32CD32",
-      instrument: "🎹 ピアノ",
-      noteMapping: "E/5", // VexFlow形式（大文字）
-    },
-  ];
 
   // 拡張された音楽ジャンル（明和電機風に強化）
   const musicGenres: MusicGenre[] = [
@@ -205,12 +109,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const [userMessage, setUserMessage] = useState<string>("");
   const [repeatMode, setRepeatMode] = useState<number>(REPEAT_OPTIONS.THREE_TIMES);
   const [isLooping, setIsLooping] = useState<boolean>(false);
-  const [currentMeal, setCurrentMeal] = useState<MealRecord>({
-    id: Date.now().toString(),
-    date: new Date().toISOString().split("T")[0],
-    time: new Date().toTimeString().split(" ")[0],
-    categories: {},
-  });
+  const [currentMeal, setCurrentMeal] = useState<MealRecord>(createInitialMeal());
 
   // 新機能の状態
   const [savedRecords, setSavedRecords] = useState<SavedRecord[]>([]);
@@ -478,68 +377,16 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   }, [playSoundCallback]);
 
   // 音楽を生成（すべて明和電機風に統一、テンポ同期改善）
-  const generateMusic = useCallback(
-    (categoryRatios: any[], balanceScore: number, genre: MusicGenre) => {
+  const generateMusicCallback = useCallback(
+    async (categoryRatios: any[], balanceScore: number, genre: MusicGenre) => {
       playTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
       playTimeoutsRef.current = [];
-
-      // 明和電機風の固定テンポ（120 BPM）
-      const adjustedTempo = 120;
-      const beatDuration = 60 / adjustedTempo;
-      const sixteenthNoteDuration = beatDuration * 0.25; // 16分音符の長さ
-
-      const activeCats = categoryRatios
-        .filter((cat) => cat.ratio > 0)
-        .sort((a, b) => b.ratio - a.ratio);
 
       // 楽譜データを生成（明和電機風の場合はスキップ）
       setCurrentScore(null);
 
-      // 明和電機風の8bit音楽を生成（正確なテンポ同期）
-      generateMeiwaRhythmCallback(beatDuration, categoryRatios);
-
-      // バランススコアに応じた追加のメロディー（機械的な正確性を重視）
-      if (balanceScore > 0.5) {
-        const harmonyPattern = [
-          { time: 32, note: "C4", category: "vegetable", volume: 0.4 },
-          { time: 36, note: "E4", category: "vegetable", volume: 0.3 },
-          { time: 40, note: "G4", category: "vegetable", volume: 0.4 },
-          { time: 44, note: "C5", category: "vegetable", volume: 0.5 },
-        ];
-
-        harmonyPattern.forEach((pattern) => {
-          // 16分音符ベースで正確なタイミング計算
-          const delay = pattern.time * sixteenthNoteDuration;
-          const frequency = Tone.Frequency(pattern.note).toFrequency();
-          const duration = 0.1;
-          
-          const timeout = setTimeout(async () => {
-            await playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
-          }, delay);
-
-          playTimeoutsRef.current.push(timeout);
-        });
-      }
-
-      // 明和電機風の機械的リズムパターンを追加（より正確なタイミング）
-      const mechanicalPattern = [
-        { time: 48, note: "C3", category: "side", volume: 0.6 },
-        { time: 52, note: "E3", category: "side", volume: 0.4 },
-        { time: 56, note: "G3", category: "side", volume: 0.5 },
-        { time: 60, note: "C4", category: "miso", volume: 0.7 },
-      ];
-
-      mechanicalPattern.forEach((pattern) => {
-        const delay = pattern.time * sixteenthNoteDuration;
-        const frequency = Tone.Frequency(pattern.note).toFrequency();
-        const duration = 0.08; // 短い8bit風の音
-        
-        const timeout = setTimeout(async () => {
-          await playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
-        }, delay);
-
-        playTimeoutsRef.current.push(timeout);
-      });
+      // 明和電機風の8bit音楽を生成
+      await generateMusic(categoryRatios, balanceScore, genre, playSoundCallback, generateMeiwaRhythmCallback);
     },
     [playSoundCallback, generateMeiwaRhythmCallback]
   );
@@ -560,10 +407,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       return;
     }
 
-    const totalItems = Object.values(currentMeal.categories).reduce(
-      (sum, count) => sum + count,
-      0
-    );
+    const totalItems = getTotalItems(currentMeal.categories);
     if (totalItems === 0) {
       showMessage("食事を記録してください", 3000);
       return;
@@ -578,16 +422,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       ratio: (currentMeal.categories[category.id] || 0) / totalItems,
     }));
 
-    const balanceScore =
-      categoryRatios.reduce((score, category) => {
-        const ideal =
-          IDEAL_BALANCE_RATIOS[
-            category.id as keyof typeof IDEAL_BALANCE_RATIOS
-          ] || 0;
-        return score + (1 - Math.abs(ideal - category.ratio));
-      }, 0) / categoryRatios.length;
+    const balanceScore = calculateBalanceScore(categoryRatios);
 
-    generateMusic(categoryRatios, balanceScore, genre);
+    await generateMusicCallback(categoryRatios, balanceScore, genre);
 
     const message =
       balanceScore > 0.7
@@ -599,16 +436,16 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
     if (repeatMode === REPEAT_OPTIONS.LOOP) {
       setIsLooping(true);
-      const loop = () => {
-        generateMusic(categoryRatios, balanceScore, genre);
+      const loop = async () => {
+        await generateMusicCallback(categoryRatios, balanceScore, genre);
         loopTimeoutRef.current = setTimeout(loop, PLAYBACK_DURATION);
       };
       loopTimeoutRef.current = setTimeout(loop, PLAYBACK_DURATION);
     } else if (repeatMode > 0) {
       let count = 0;
-      const repeat = () => {
+      const repeat = async () => {
         if (++count < repeatMode) {
-          generateMusic(categoryRatios, balanceScore, genre);
+          await generateMusicCallback(categoryRatios, balanceScore, genre);
           setTimeout(repeat, PLAYBACK_DURATION);
         } else {
           setIsPlaying(false);
@@ -627,7 +464,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     foodCategories,
     musicGenres,
     initializeTone,
-    generateMusic,
+    generateMusicCallback,
     showMessage,
   ]);
 
@@ -643,19 +480,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     playTimeoutsRef.current = [];
   };
 
-  const updateCategoryCount = (categoryId: string, count: number) => {
-    setCurrentMeal((prev) => ({
-      ...prev,
-      categories: { ...prev.categories, [categoryId]: Math.max(0, count) },
-    }));
+  const handleUpdateCategoryCount = (categoryId: string, count: number) => {
+    setCurrentMeal((prev) => updateCategoryCount(prev, categoryId, count));
   };
 
-  const resetMeal = () => {
-    setCurrentMeal((prev) => ({
-      ...prev,
-      categories: {},
-      time: new Date().toTimeString().split(" ")[0],
-    }));
+  const handleResetMeal = () => {
+    setCurrentMeal((prev) => resetMeal(prev));
     setCurrentScore(null);
   };
 
@@ -728,8 +558,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
               <MealRecording
                 foodCategories={foodCategories}
                 currentMeal={currentMeal}
-                onUpdateCategoryCount={updateCategoryCount}
-                onResetMeal={resetMeal}
+                onUpdateCategoryCount={handleUpdateCategoryCount}
+                onResetMeal={handleResetMeal}
               />
 
               <SoundControls
