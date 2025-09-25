@@ -515,26 +515,30 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       return null;
     }
 
-    // ビットクラッシュエフェクト（8bit風のデジタル歪み）
-    const bitCrusher = new Tone.BitCrusher(4); // 4bitにクラッシュ（8bit風）
+    try {
+      // ビットクラッシュエフェクト（8bit風のデジタル歪み）
+      const bitCrusher = new Tone.BitCrusher(4); // 4bitにクラッシュ（8bit風）
 
-    // ローパスフィルター（8bit風の音質制限）
-    const lowpassFilter = new Tone.Filter({
-      type: "lowpass",
-      frequency: 2000,
-      rolloff: -24,
-    });
+      // ローパスフィルター（8bit風の音質制限）
+      const lowpassFilter = new Tone.Filter({
+        type: "lowpass",
+        frequency: 2000,
+      });
 
-    // デジタルディストーション
-    const distortion = new Tone.Distortion({
-      distortion: 0.2,
-      wet: 0.4,
-    });
+      // デジタルディストーション
+      const distortion = new Tone.Distortion({
+        distortion: 0.2,
+        wet: 0.4,
+      });
 
-    // エフェクトチェーンを構築
-    bitCrusher.chain(lowpassFilter, distortion, Tone.Destination);
-    
-    return bitCrusher;
+      // エフェクトチェーンを構築
+      bitCrusher.chain(lowpassFilter, distortion, Tone.Destination);
+      
+      return bitCrusher;
+    } catch (error) {
+      console.error("Failed to create 8bit effects:", error);
+      return null;
+    }
   }, []);
 
   // 明和電機風の8bit音色を作成（エフェクト付き）
@@ -543,10 +547,11 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       return null;
     }
 
-    const effects = create8bitEffects();
-    if (!effects) {
-      return null;
-    }
+    try {
+      const effects = create8bitEffects();
+      if (!effects) {
+        return null;
+      }
 
     // カテゴリ別の明和電機風音色設定（エフェクト付き）
     switch (categoryId) {
@@ -566,7 +571,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           filter: {
             type: "lowpass",
             frequency: 400,
-            rolloff: -24,
           } as any,
         }).connect(effects);
 
@@ -586,7 +590,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           filter: {
             type: "lowpass",
             frequency: 600,
-            rolloff: -12,
           } as any,
         }).connect(effects);
 
@@ -606,7 +609,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           filter: {
             type: "lowpass",
             frequency: 1200,
-            rolloff: -6,
           } as any,
         }).connect(effects);
 
@@ -626,7 +628,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           filter: {
             type: "lowpass",
             frequency: 800,
-            rolloff: -18,
           } as any,
         }).connect(effects);
 
@@ -646,7 +647,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           filter: {
             type: "lowpass",
             frequency: 2000,
-            rolloff: -12,
           } as any,
         }).connect(effects);
 
@@ -666,7 +666,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           filter: {
             type: "lowpass",
             frequency: 1000,
-            rolloff: -6,
           } as any,
         }).connect(effects);
 
@@ -685,9 +684,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           filter: {
             type: "lowpass",
             frequency: 1000,
-            rolloff: -12,
           } as any,
         }).connect(effects);
+    }
+    } catch (error) {
+      console.error("Failed to create Meiwa instrument:", error);
+      return null;
     }
   }, [create8bitEffects]);
 
@@ -902,14 +904,19 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       volume: number,
       genre?: string
     ) => {
-      const instrument = genre
-        ? createInstrumentForGenre(categoryId, genre)
-        : getOrCreateInstrument(categoryId);
-      if (!instrument) {
+      if (!globalToneInitialized) {
+        console.warn("Tone.js not initialized, skipping sound playback");
         return;
       }
 
       try {
+        const instrument = genre
+          ? createInstrumentForGenre(categoryId, genre)
+          : getOrCreateInstrument(categoryId);
+        if (!instrument) {
+          return;
+        }
+
         const volumeDb = Math.log10(Math.max(0.001, volume)) * 20;
         instrument.volume.value = volumeDb;
 
