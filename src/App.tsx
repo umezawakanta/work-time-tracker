@@ -1180,10 +1180,6 @@ function App() {
     setEggTimerPaused(false);
   };
 
-  const getEggTimerDuration = (type: "soft" | "medium" | "hard") => {
-    const durations = { soft: 6 * 60, medium: 8 * 60, hard: 10 * 60 };
-    return durations[type];
-  };
 
   // 音声関連のハンドラー（App_backup.tsxから復元）
   const playBellSound = (audioContext: AudioContext) => {
