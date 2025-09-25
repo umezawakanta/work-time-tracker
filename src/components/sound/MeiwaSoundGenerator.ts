@@ -64,18 +64,25 @@ export const generateMeiwaRhythm = (
   ] as Array<{ time: number; note: string; category: string; volume: number; detune?: number }>;
 
   // すべてのパターンを統合して再生
+  const scheduledEvents: string[] = [];
   [...drumPattern, ...melodyPattern, ...bassPattern, ...layeredPattern].forEach((pattern) => {
-    const delay = pattern.time * beatDuration * 0.25; // 16分音符ベース
+    const delay = pattern.time * beatDuration * 0.25 / 1000; // convert ms to seconds for Tone.Transport
     const baseFrequency = Tone.Frequency(pattern.note).toFrequency();
     const frequency = 'detune' in pattern && pattern.detune ? 
       baseFrequency * Math.pow(2, (pattern.detune as number) / 1200) : // セント単位のデチューン
       baseFrequency;
     const duration = 0.05; // 短い8bit風の音
-    
-        setTimeout(async () => {
-          await playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
-        }, delay);
+
+    const eventId = Tone.Transport.scheduleOnce(async (time) => {
+      await playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
+    }, "+" + delay);
+    scheduledEvents.push(eventId);
   });
+
+  // Return a cleanup function to clear scheduled events
+  return () => {
+    scheduledEvents.forEach((id) => Tone.Transport.clear(id));
+  };
 };
 
 // 和音の定義（明和電機風に強化）
