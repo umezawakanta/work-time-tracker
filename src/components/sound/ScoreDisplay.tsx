@@ -110,10 +110,13 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
         });
 
         // シャープやフラットを追加（メソッド名を修正）
-        if (note.pitch && note.pitch.includes("#")) {
-          staveNote.addModifier(new Accidental("#"), 0); // シャープをaddModifierで追加
-        } else if (note.pitch && note.pitch.includes("b")) {
-          staveNote.addModifier(new Accidental("b"), 0); // フラットをaddModifierで追加
+        if (note.pitch) {
+          // 臨時記号を検出（大文字小文字を区別しない、#とbをサポート）
+          const accidentalMatch = note.pitch.match(/^([a-gA-G])([#b]{1,2})/i);
+          if (accidentalMatch) {
+            const accidental = accidentalMatch[2].toLowerCase();
+            staveNote.addModifier(new Accidental(accidental), 0);
+          }
         }
 
         return staveNote;
