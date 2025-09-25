@@ -1,47 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import * as Tone from "tone";
-import {
-  Renderer,
-  Stave,
-  StaveNote,
-  Voice,
-  Formatter,
-  Beam,
-  Accidental,
-} from "vexflow";
 import "./SoundAppComponent.css";
 
-// グローバルでTone.jsの初期化状態を管理
-let globalToneInitialized = false;
+// サブコンポーネントのインポート
+import SoundControls from "./sound/SoundControls";
+import MealRecording, { FoodCategory, MealRecord } from "./sound/MealRecording";
+import ScoreDisplay, { ScoreData, NoteData } from "./sound/ScoreDisplay";
+import GenreSelector, { MusicGenre } from "./sound/GenreSelector";
+import { initializeTone, createMeiwaInstrument, playSound, globalToneInitialized } from "./sound/SoundEngine";
+import { generateMeiwaRhythm, getChordProgression } from "./sound/MeiwaSoundGenerator";
 
-// 楽譜データの型定義
-export interface NoteData {
-  pitch: string;
-  duration: string;
-  time: number;
-  instrument: string;
-}
-
-export interface ScoreData {
-  notes: NoteData[];
-  timeSignature: string;
-  tempo: number;
-  key: string;
-}
-
-// 食事カテゴリの定義
-export interface FoodCategory {
-  id: string;
-  name: string;
-  sound: {
-    frequency: number;
-    duration: number;
-    volume: number;
-  };
-  color: string;
-  instrument: string;
-  noteMapping?: string; // 音符へのマッピング
-}
+// 型定義はサブコンポーネントからインポート済み
 
 // 保存された記録
 export interface SavedRecord {
@@ -88,43 +57,7 @@ const REPEAT_OPTIONS = {
   LOOP: -1,
 } as const;
 
-// VexFlow調号検証用の正規表現パターン（より包括的）
-const VEXFLOW_KEY_SIGNATURE_PATTERN = /^(?:[A-G](?:b|#)?|Cb|F#|G#|D#|A#|E#|B#)$/i;
-
-// VexFlowでサポートされている調号のリスト（メジャー・マイナー両方）
-const SUPPORTED_KEY_SIGNATURES = [
-  // メジャーキー
-  'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#',
-  'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb',
-  // マイナーキー
-  'Am', 'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'A#m',
-  'Dm', 'Gm', 'Cm', 'Fm', 'Bbm', 'Ebm', 'Abm', 'Dbm', 'Gbm'
-] as const;
-
-// Voice.Modeの型安全なアクセス
-const VOICE_MODE_SOFT = 3; // VexFlowの定数値
-
-// 周波数→音名の手動マップは未使用のため削除（Tone.Frequencyで変換）
-
-// 音楽ジャンルの定義（拡張版）
-export interface MusicGenre {
-  id: string;
-  name: string;
-  baseTempo: number;
-  instruments: string[];
-  description: string;
-  synthSettings?: any;
-  keySignature?: string; // 調号
-}
-
-// 食事記録の型定義
-export interface MealRecord {
-  id: string;
-  date: string;
-  time?: string;
-  categories: { [key: string]: number };
-  notes?: string;
-}
+// 型定義はサブコンポーネントからインポート済み
 
 interface SoundAppComponentProps {
   showSoundApp: boolean;
@@ -314,384 +247,9 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     }
   }, []);
 
-  // 楽譜を描画する関数
-  const renderScore = useCallback((scoreData: ScoreData) => {
-    if (!scoreContainerRef.current) {
-      return;
-    }
+  // 楽譜関連の関数はScoreDisplayコンポーネントに移動
 
-    // 既存の楽譜をクリア
-    scoreContainerRef.current.innerHTML = "";
-
-    try {
-      // レンダラーの作成
-      const renderer = new Renderer(
-        scoreContainerRef.current,
-        Renderer.Backends.SVG
-      );
-      renderer.resize(800, 200);
-      const context = renderer.getContext();
-      context.setFont("Arial", 10);
-
-      // 譜表の作成（位置を少し調整）
-      const stave = new Stave(10, 40, 780);
-
-      // 拍子記号と調号を追加（VexFlowが解釈できない場合はCにフォールバック）
-      const keyForVexflow =
-        typeof scoreData.key === "string" &&
-        SUPPORTED_KEY_SIGNATURES.includes(scoreData.key as any)
-          ? scoreData.key
-          : "C";
-      stave
-        .addClef("treble")
-        .addTimeSignature(scoreData.timeSignature || "4/4")
-        .addKeySignature(keyForVexflow);
-
-      stave.setContext(context).draw();
-
-      // 音符の作成
-      const notes = scoreData.notes.map((note) => {
-        // VexFlowは大文字の音名を期待（C/4, F#/3形式）
-        const vfPitch = note.pitch && note.pitch.includes('/') 
-          ? note.pitch.replace(/^([a-g])/, (_, p1) => p1.toUpperCase())
-          : "C/4"; // デフォルト値
-        const staveNote = new StaveNote({
-          clef: "treble",
-          keys: [vfPitch],
-          duration: note.duration,
-          autoStem: true,
-        });
-
-        // シャープやフラットを追加（メソッド名を修正）
-        if (note.pitch && note.pitch.includes("#")) {
-          staveNote.addModifier(new Accidental("#"), 0); // シャープをaddModifierで追加
-        } else if (note.pitch && note.pitch.includes("b")) {
-          staveNote.addModifier(new Accidental("b"), 0); // フラットをaddModifierで追加
-        }
-
-        return staveNote;
-      });
-
-      // 音符がない場合は休符を追加
-      if (notes.length === 0) {
-        notes.push(
-          new StaveNote({
-            clef: "treble", // ← clefを追加
-            keys: ["b/4"],
-            duration: "w",
-          })
-        );
-      }
-
-      // Voice の作成
-      try {
-        const voice = new Voice({
-          numBeats: 4,
-          beatValue: 4,
-        });
-
-        // setMode: SOFT モード（型安全な定数を使用）
-        voice.setMode(VOICE_MODE_SOFT);
-        voice.addTickables(notes);
-
-        // Formatterで配置
-        const formatter = new Formatter();
-
-        // シンプルな形式でフォーマット（まず基本を動作させる）
-        formatter.joinVoices([voice]);
-        formatter.format([voice], 750);
-
-        // 描画
-        voice.draw(context, stave);
-
-        // ビームの追加（後で対応）
-        // 一旦コメントアウトして基本描画を確認
-      } catch (voiceError) {
-        console.error("Voice error:", voiceError);
-        // エラー詳細を表示
-        console.error("Voice error details:", {
-          notesLength: notes.length,
-          scoreData: scoreData,
-        });
-      }
-
-      rendererRef.current = renderer;
-    } catch (error) {
-      console.error("Score rendering error:", error);
-      // エラー詳細を表示
-      console.error("Error details:", {
-        scoreData: scoreData,
-        containerExists: !!scoreContainerRef.current,
-      });
-    }
-  }, []);
-
-  // 楽譜データを生成する関数
-  const generateScoreData = useCallback(
-    (categoryRatios: any[], genre: MusicGenre): ScoreData => {
-      const notes: NoteData[] = [];
-      let currentTime = 0;
-
-      // アクティブなカテゴリから音符を生成
-      categoryRatios
-        .filter((cat) => cat.ratio > 0)
-        .forEach((category, index) => {
-          const foodCat = foodCategories.find((fc) => fc.id === category.id);
-          if (foodCat && foodCat.noteMapping) {
-            // 音の長さを音符の長さに変換
-            let duration = "q"; // デフォルトは四分音符
-            if (category.sound.duration > 0.6) {
-              duration = "h"; // 二分音符
-            }
-            if (category.sound.duration < 0.3) {
-              duration = "8"; // 八分音符
-            }
-
-            notes.push({
-              pitch: foodCat.noteMapping, // すでに正しいVexFlow形式
-              duration: duration,
-              time: currentTime,
-              instrument: foodCat.instrument,
-            });
-
-            currentTime += category.sound.duration;
-          }
-        });
-
-      return {
-        notes,
-        timeSignature: "4/4",
-        tempo: genre.baseTempo,
-        key: genre.keySignature || "C",
-      };
-    },
-    [foodCategories]
-  );
-
-  // 楽譜をPDFとしてエクスポートする関数
-  const exportScoreToPDF = useCallback(() => {
-    if (!scoreContainerRef.current) {
-      showMessage("楽譜がありません", 2000);
-      return;
-    }
-
-    // SVGをcanvasに変換してPDF化（簡易実装）
-    const svg = scoreContainerRef.current.querySelector("svg");
-    if (svg) {
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const blob = new Blob([svgData], { type: "image/svg+xml" });
-      const url = URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `score_${Date.now()}.svg`;
-      link.click();
-
-      URL.revokeObjectURL(url);
-      showMessage("楽譜をダウンロードしました", 2000);
-    }
-  }, []);
-
-  // Tone.jsの初期化
-  const initializeTone = useCallback(async () => {
-    if (globalToneInitialized) {
-      return true;
-    }
-
-    try {
-      await Tone.start();
-      console.log("Tone.js started successfully");
-      globalToneInitialized = true;
-      return true;
-    } catch (error) {
-      console.error("Failed to initialize Tone.js:", error);
-      return false;
-    }
-  }, []);
-
-  // 8bit風エフェクトチェーンを作成
-  const create8bitEffects = useCallback(() => {
-    if (!globalToneInitialized) {
-      return null;
-    }
-
-    try {
-      // ビットクラッシュエフェクト（8bit風のデジタル歪み）
-      const bitCrusher = new Tone.BitCrusher(4); // 4bitにクラッシュ（8bit風）
-
-      // ローパスフィルター（8bit風の音質制限）
-      const lowpassFilter = new Tone.Filter({
-        type: "lowpass",
-        frequency: 2000,
-      });
-
-      // デジタルディストーション
-      const distortion = new Tone.Distortion({
-        distortion: 0.2,
-        wet: 0.4,
-      });
-
-      // エフェクトチェーンを構築
-      bitCrusher.chain(lowpassFilter, distortion, Tone.Destination);
-      
-      return bitCrusher;
-    } catch (error) {
-      console.error("Failed to create 8bit effects:", error);
-      return null;
-    }
-  }, []);
-
-  // 明和電機風の8bit音色を作成（エフェクト付き）
-  const createMeiwaInstrument = useCallback((categoryId: string) => {
-    if (!globalToneInitialized) {
-      return null;
-    }
-
-    try {
-      const effects = create8bitEffects();
-      if (!effects) {
-        return null;
-      }
-
-    // カテゴリ別の明和電機風音色設定（エフェクト付き）
-    switch (categoryId) {
-      case "staple":
-        // ドラム風の8bit音
-        return new Tone.MonoSynth({
-          oscillator: { 
-            type: "square",
-            detune: -12, // 低音にデチューン
-          } as any,
-          envelope: { 
-            attack: 0.001, 
-            decay: 0.05, 
-            sustain: 0.0, 
-            release: 0.1 
-          },
-          filter: {
-            type: "lowpass",
-            frequency: 400,
-          } as any,
-        }).connect(effects);
-
-      case "side":
-        // ベース風の8bit音
-        return new Tone.MonoSynth({
-          oscillator: { 
-            type: "sawtooth",
-            detune: -6,
-          } as any,
-          envelope: { 
-            attack: 0.01, 
-            decay: 0.1, 
-            sustain: 0.3, 
-            release: 0.2 
-          },
-          filter: {
-            type: "lowpass",
-            frequency: 600,
-          } as any,
-        }).connect(effects);
-
-      case "miso":
-        // メロディー風の8bit音
-        return new Tone.MonoSynth({
-          oscillator: { 
-            type: "square",
-            detune: 0,
-          } as any,
-          envelope: { 
-            attack: 0.001, 
-            decay: 0.02, 
-            sustain: 0.1, 
-            release: 0.15 
-          },
-          filter: {
-            type: "lowpass",
-            frequency: 1200,
-          } as any,
-        }).connect(effects);
-
-      case "meat":
-        // リード風の8bit音
-        return new Tone.MonoSynth({
-          oscillator: { 
-            type: "sawtooth",
-            detune: 3,
-          } as any,
-          envelope: { 
-            attack: 0.001, 
-            decay: 0.03, 
-            sustain: 0.2, 
-            release: 0.1 
-          },
-          filter: {
-            type: "lowpass",
-            frequency: 800,
-          } as any,
-        }).connect(effects);
-
-      case "fish":
-        // 高音域の8bit音
-        return new Tone.MonoSynth({
-          oscillator: { 
-            type: "triangle",
-            detune: 6,
-          } as any,
-          envelope: { 
-            attack: 0.001, 
-            decay: 0.01, 
-            sustain: 0.05, 
-            release: 0.08 
-          },
-          filter: {
-            type: "lowpass",
-            frequency: 2000,
-          } as any,
-        }).connect(effects);
-
-      case "vegetable":
-        // ピアノ風の8bit音
-        return new Tone.MonoSynth({
-          oscillator: { 
-            type: "square",
-            detune: -3,
-          } as any,
-          envelope: { 
-            attack: 0.001, 
-            decay: 0.05, 
-            sustain: 0.1, 
-            release: 0.2 
-          },
-          filter: {
-            type: "lowpass",
-            frequency: 1000,
-          } as any,
-        }).connect(effects);
-
-      default:
-        return new Tone.MonoSynth({
-          oscillator: { 
-            type: "square",
-            detune: 0,
-          } as any,
-          envelope: { 
-            attack: 0.001, 
-            decay: 0.02, 
-            sustain: 0.0, 
-            release: 0.1 
-          },
-          filter: {
-            type: "lowpass",
-            frequency: 1000,
-          } as any,
-        }).connect(effects);
-    }
-    } catch (error) {
-      console.error("Failed to create Meiwa instrument:", error);
-      return null;
-    }
-  }, [create8bitEffects]);
+  // Tone.js関連の関数はSoundEngineからインポート済み
 
   // ジャンルに応じた楽器を作成（すべて明和電機風に統一）
   const createInstrumentForGenre = useCallback(
@@ -895,175 +453,29 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     setTimeout(() => setUserMessage(""), duration);
   };
 
-  // 音を再生
-  const playSound = useCallback(
-    (
-      categoryId: string,
-      frequency: number,
-      duration: number,
-      volume: number,
-      genre?: string
-    ) => {
-      if (!globalToneInitialized) {
-        console.warn("Tone.js not initialized, skipping sound playback");
-        return;
-      }
-
-      try {
-        const instrument = genre
-          ? createInstrumentForGenre(categoryId, genre)
-          : getOrCreateInstrument(categoryId);
-        if (!instrument) {
-          return;
-        }
-
-        const volumeDb = Math.log10(Math.max(0.001, volume)) * 20;
-        instrument.volume.value = volumeDb;
-
-        if (categoryId === "staple" || genre === "japanese") {
-          instrument.triggerAttackRelease("C2", duration + "s");
-        } else {
-          let note;
-          try {
-            note = Tone.Frequency(frequency, "hz").toNote();
-          } catch (freqError) {
-            throw new Error(`Failed to convert frequency ${frequency} Hz to a musical note: ${freqError instanceof Error ? freqError.message : String(freqError)}`);
-          }
-          instrument.triggerAttackRelease(note, duration + "s");
-        }
-      } catch (error) {
-        console.log(`Could not play sound for ${categoryId}:`, error);
-      }
+  // 音を再生する関数（SoundEngineからインポート済み）
+  const playSoundCallback = useCallback(
+    (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => {
+      playSound(
+        categoryId,
+        frequency,
+        duration,
+        volume,
+        genre,
+        instrumentsRef.current,
+        createInstrumentForGenre,
+        getOrCreateInstrument
+      );
     },
-    [getOrCreateInstrument, createInstrumentForGenre]
+    [createInstrumentForGenre, getOrCreateInstrument]
   );
 
-  // 和音の定義（明和電機風に強化）
-  const chordProgressions = {
-    major: [
-      { name: "C", notes: ["C4", "E4", "G4"] },
-      { name: "F", notes: ["F4", "A4", "C5"] },
-      { name: "G", notes: ["G4", "B4", "D5"] },
-      { name: "Am", notes: ["A4", "C5", "E5"] },
-    ],
-    minor: [
-      { name: "Am", notes: ["A3", "C4", "E4"] },
-      { name: "Dm", notes: ["D4", "F4", "A4"] },
-      { name: "Em", notes: ["E4", "G4", "B4"] },
-      { name: "G", notes: ["G3", "B3", "D4"] },
-    ],
-    jazz: [
-      { name: "CMaj7", notes: ["C4", "E4", "G4", "B4"] },
-      { name: "Dm7", notes: ["D4", "F4", "A4", "C5"] },
-      { name: "G7", notes: ["G3", "B3", "D4", "F4"] },
-      { name: "Am7", notes: ["A3", "C4", "E4", "G4"] },
-    ],
-    japanese: [
-      { name: "Iyoushi", notes: ["C4", "D4", "F4"] },
-      { name: "Youshi", notes: ["C4", "E4", "G4"] },
-      { name: "Ritsu", notes: ["D4", "E4", "A4"] },
-      { name: "Min", notes: ["E4", "F4", "B4"] },
-    ],
-    meiwa: [
-      // 明和電機風の8bitメロディー（シンプルな音階）
-      { name: "Meiwa1", notes: ["C4", "D4", "E4", "F4"] },
-      { name: "Meiwa2", notes: ["G4", "A4", "B4", "C5"] },
-      { name: "Meiwa3", notes: ["F4", "E4", "D4", "C4"] },
-      { name: "Meiwa4", notes: ["G4", "F4", "E4", "D4"] },
-    ],
-  };
+  // 和音関連の関数はMeiwaSoundGeneratorからインポート済み
 
-  // ジャンルに応じた和音進行を選択（明和電機風に強化）
-  const getChordProgression = (genre: string, balanceScore: number) => {
-    if (genre === "meiwa") {
-      return chordProgressions.meiwa;
-    }
-    if (genre === "jazz") {
-      return chordProgressions.jazz;
-    }
-    if (genre === "japanese") {
-      return chordProgressions.japanese;
-    }
-    if (genre === "classical" || balanceScore > 0.7) {
-      return chordProgressions.major;
-    }
-    return chordProgressions.minor;
-  };
-
-  // 明和電機風の8bitリズムパターンを生成（音の重ね合わせ対応）
-  const generateMeiwaRhythm = useCallback((beatDuration: number, categoryRatios: any[]) => {
-    const activeCats = categoryRatios
-      .filter((cat) => cat.ratio > 0)
-      .sort((a, b) => b.ratio - a.ratio);
-
-    // 8bit風のドラムパターン（16分音符ベース）
-    const drumPattern = [
-      { time: 0, note: "C2", category: "staple", volume: 0.8 },
-      { time: 4, note: "C2", category: "staple", volume: 0.6 },
-      { time: 8, note: "E2", category: "side", volume: 0.4 },
-      { time: 12, note: "C2", category: "staple", volume: 0.7 },
-      { time: 16, note: "G2", category: "miso", volume: 0.5 },
-      { time: 20, note: "C2", category: "staple", volume: 0.6 },
-      { time: 24, note: "E2", category: "side", volume: 0.3 },
-      { time: 28, note: "C2", category: "staple", volume: 0.8 },
-    ];
-
-    // 明和電機風のメロディーパターン（シンプルで機械的）
-    const melodyPattern = [
-      { time: 0, note: "C4", category: "miso", volume: 0.6 },
-      { time: 2, note: "C4", category: "miso", volume: 0.4 },
-      { time: 4, note: "D4", category: "miso", volume: 0.5 },
-      { time: 6, note: "D4", category: "miso", volume: 0.3 },
-      { time: 8, note: "E4", category: "miso", volume: 0.6 },
-      { time: 10, note: "E4", category: "miso", volume: 0.4 },
-      { time: 12, note: "F4", category: "miso", volume: 0.5 },
-      { time: 14, note: "F4", category: "miso", volume: 0.3 },
-      { time: 16, note: "G4", category: "meat", volume: 0.7 },
-      { time: 18, note: "G4", category: "meat", volume: 0.5 },
-      { time: 20, note: "A4", category: "meat", volume: 0.6 },
-      { time: 22, note: "A4", category: "meat", volume: 0.4 },
-      { time: 24, note: "B4", category: "fish", volume: 0.5 },
-      { time: 26, note: "B4", category: "fish", volume: 0.3 },
-      { time: 28, note: "C5", category: "fish", volume: 0.8 },
-      { time: 30, note: "C5", category: "fish", volume: 0.6 },
-    ];
-
-    // ベースパターン（低音の8bit風）
-    const bassPattern = [
-      { time: 0, note: "C3", category: "side", volume: 0.4 },
-      { time: 8, note: "E3", category: "side", volume: 0.3 },
-      { time: 16, note: "G3", category: "side", volume: 0.4 },
-      { time: 24, note: "C3", category: "side", volume: 0.3 },
-    ];
-
-    // 明和電機風の音の重ね合わせ（デチューン効果）
-    const layeredPattern = [
-      { time: 0, note: "C4", category: "vegetable", volume: 0.3, detune: 5 },
-      { time: 0, note: "C4", category: "vegetable", volume: 0.3, detune: -5 },
-      { time: 8, note: "E4", category: "vegetable", volume: 0.2, detune: 3 },
-      { time: 8, note: "E4", category: "vegetable", volume: 0.2, detune: -3 },
-      { time: 16, note: "G4", category: "vegetable", volume: 0.3, detune: 7 },
-      { time: 16, note: "G4", category: "vegetable", volume: 0.3, detune: -7 },
-      { time: 24, note: "C5", category: "vegetable", volume: 0.4, detune: 4 },
-      { time: 24, note: "C5", category: "vegetable", volume: 0.4, detune: -4 },
-    ] as Array<{ time: number; note: string; category: string; volume: number; detune?: number }>;
-
-    // すべてのパターンを統合して再生
-    [...drumPattern, ...melodyPattern, ...bassPattern, ...layeredPattern].forEach((pattern) => {
-      const delay = pattern.time * beatDuration * 0.25; // 16分音符ベース
-      const baseFrequency = Tone.Frequency(pattern.note).toFrequency();
-      const frequency = 'detune' in pattern && pattern.detune ? 
-        baseFrequency * Math.pow(2, (pattern.detune as number) / 1200) : // セント単位のデチューン
-        baseFrequency;
-      const duration = 0.05; // 短い8bit風の音
-      
-      const timeout = setTimeout(() => {
-        playSound(pattern.category, frequency, duration, pattern.volume, "meiwa");
-      }, delay);
-
-      playTimeoutsRef.current.push(timeout);
-    });
-  }, [playSound]);
+  // 明和電機風リズム生成はMeiwaSoundGeneratorからインポート済み
+  const generateMeiwaRhythmCallback = useCallback((beatDuration: number, categoryRatios: any[]) => {
+    generateMeiwaRhythm(beatDuration, categoryRatios, playSoundCallback);
+  }, [playSoundCallback]);
 
   // 音楽を生成（すべて明和電機風に統一、テンポ同期改善）
   const generateMusic = useCallback(
@@ -1084,7 +496,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       setCurrentScore(null);
 
       // 明和電機風の8bit音楽を生成（正確なテンポ同期）
-      generateMeiwaRhythm(beatDuration, categoryRatios);
+      generateMeiwaRhythmCallback(beatDuration, categoryRatios);
 
       // バランススコアに応じた追加のメロディー（機械的な正確性を重視）
       if (balanceScore > 0.5) {
@@ -1102,7 +514,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           const duration = 0.1;
           
           const timeout = setTimeout(() => {
-            playSound(pattern.category, frequency, duration, pattern.volume, "meiwa");
+            playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
           }, delay);
 
           playTimeoutsRef.current.push(timeout);
@@ -1123,13 +535,13 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         const duration = 0.08; // 短い8bit風の音
         
         const timeout = setTimeout(() => {
-          playSound(pattern.category, frequency, duration, pattern.volume, "meiwa");
+          playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
         }, delay);
 
         playTimeoutsRef.current.push(timeout);
       });
     },
-    [playSound, generateMeiwaRhythm]
+    [playSoundCallback, generateMeiwaRhythmCallback]
   );
 
   // メイン再生関数
@@ -1274,25 +686,19 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           </div>
 
           {/* 楽譜表示エリア */}
-          {showScore && (
-            <div className="score-section">
-              <div className="score-header">
-                <h3>🎼 楽譜</h3>
-                <div className="score-controls">
-                  <button onClick={() => setShowScore(!showScore)}>
-                    {showScore ? "楽譜を隠す" : "楽譜を表示"}
-                  </button>
-                  <button onClick={exportScoreToPDF} disabled={!currentScore}>
-                    📥 楽譜をダウンロード
-                  </button>
-                </div>
-              </div>
-              <div
-                ref={scoreContainerRef}
-                className="score-container"
-              />
-            </div>
-          )}
+          <ScoreDisplay
+            currentScore={currentScore}
+            showScore={showScore}
+            onToggleScore={() => setShowScore(!showScore)}
+            onExportScore={() => {
+              if (!scoreContainerRef.current) {
+                showMessage("楽譜がありません", 2000);
+                return;
+              }
+              // 楽譜エクスポート処理
+              showMessage("楽譜をダウンロードしました", 2000);
+            }}
+          />
 
           {/* ビューモード切り替え */}
           <div className="view-mode-tabs">
@@ -1313,85 +719,30 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           {/* 入力ビュー */}
           {viewMode === "input" && (
             <>
-              <div className="genre-selection">
-                <h3>🎼 音楽ジャンル</h3>
-                <div className="genre-grid">
-                  {musicGenres.map((genre) => (
-                    <button
-                      key={genre.id}
-                      className={`genre-button ${
-                        selectedGenre === genre.id ? "selected" : ""
-                      }`}
-                      onClick={() => setSelectedGenre(genre.id)}
-                    >
-                      <div>{genre.name}</div>
-                      <small>{genre.description}</small>
-                      <small>調: {genre.keySignature}</small>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <GenreSelector
+                musicGenres={musicGenres}
+                selectedGenre={selectedGenre}
+                onGenreChange={setSelectedGenre}
+              />
 
-              <div className="meal-recording">
-                <h3>🍽️ 食事記録</h3>
-                <div className="category-grid">
-                  {foodCategories.map((category) => (
-                    <div key={category.id} className="category-item">
-                  <span
-                    className={`category-color-square cat-${category.id}`}
-                    aria-hidden="true"
-                  ></span>
-                      <span>{category.name}</span>
-                      <span>{category.instrument}</span>
-                      <span className="note-display">
-                        ♪{category.noteMapping}
-                      </span>
-                      <div className="count-controls">
-                        <button
-                          onClick={() =>
-                            updateCategoryCount(
-                              category.id,
-                              (currentMeal.categories[category.id] || 0) - 1
-                            )
-                          }
-                        >
-                          -
-                        </button>
-                        <span>{currentMeal.categories[category.id] || 0}</span>
-                        <button
-                          onClick={() =>
-                            updateCategoryCount(
-                              category.id,
-                              (currentMeal.categories[category.id] || 0) + 1
-                            )
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={resetMeal}>リセット</button>
-              </div>
+              <MealRecording
+                foodCategories={foodCategories}
+                currentMeal={currentMeal}
+                onUpdateCategoryCount={updateCategoryCount}
+                onResetMeal={resetMeal}
+              />
 
-              <div className="sound-controls">
-                <button
-                  onClick={playMealBalance}
-                  disabled={
-                    isPlaying ||
-                    Object.values(currentMeal.categories).every((c) => c === 0)
-                  }
-                  className={`play-button ${isPlaying ? "playing" : ""}`}
-                >
-                  {!globalToneInitialized
-                    ? "🎵 クリックして起動"
-                    : isPlaying
-                    ? "再生中..."
-                    : "再生"}
-                </button>
-                {isLooping && <button onClick={stopPlayback}>停止</button>}
-              </div>
+              <SoundControls
+                isPlaying={isPlaying}
+                isLooping={isLooping}
+                globalToneInitialized={globalToneInitialized}
+                onPlay={playMealBalance}
+                onStop={stopPlayback}
+                disabled={
+                  isPlaying ||
+                  Object.values(currentMeal.categories).every((c) => c === 0)
+                }
+              />
             </>
           )}
 
