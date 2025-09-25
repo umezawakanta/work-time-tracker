@@ -1157,23 +1157,7 @@ function App() {
     }
   };
 
-  const pauseEggTimer = () => {
-    if (eggTimerInterval) {
-      clearInterval(eggTimerInterval);
-      setEggTimerInterval(null);
-      setEggTimerPaused(true);
-    }
-  };
 
-  const stopEggTimer = () => {
-    setEggTimerActive(false);
-    setEggTimerPaused(false);
-    setEggTimerTime(0);
-    if (eggTimerInterval) {
-      clearInterval(eggTimerInterval);
-      setEggTimerInterval(null);
-    }
-  };
 
   const resetEggTimer = () => {
     setEggTimerTime(eggTimerOriginalTime);
