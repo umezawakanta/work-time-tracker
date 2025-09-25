@@ -2157,9 +2157,15 @@ ${errorInfo.stack}
         let errorMessage = `エラー: ${data.message}`;
         if (data.details) {
           const missingFields = [];
-          if (!data.details.date) missingFields.push('日付');
-          if (!data.details.amount) missingFields.push('金額');
-          if (!data.details.type) missingFields.push('タイプ');
+          if (!data.details.date) {
+            missingFields.push('日付');
+          }
+          if (!data.details.amount) {
+            missingFields.push('金額');
+          }
+          if (!data.details.type) {
+            missingFields.push('タイプ');
+          }
           
           if (missingFields.length > 0) {
             errorMessage += `\n不足しているフィールド: ${missingFields.join(', ')}`;
@@ -2237,9 +2243,15 @@ ${errorInfo.stack}
         let errorMessage = `エラー: ${data.message}`;
         if (data.details) {
           const missingFields = [];
-          if (!data.details.date) missingFields.push('日付');
-          if (!data.details.amount) missingFields.push('金額');
-          if (!data.details.type) missingFields.push('タイプ');
+          if (!data.details.date) {
+            missingFields.push('日付');
+          }
+          if (!data.details.amount) {
+            missingFields.push('金額');
+          }
+          if (!data.details.type) {
+            missingFields.push('タイプ');
+          }
           
           if (missingFields.length > 0) {
             errorMessage += `\n不足しているフィールド: ${missingFields.join(', ')}`;
