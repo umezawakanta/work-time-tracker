@@ -29,8 +29,10 @@ export const apiFetch = async (
       
       // エラー報告コールバックが設定されている場合は呼び出し
       if (globalErrorReportCallback) {
-        console.log('apiFetch - Calling error report callback');
+        console.log('apiFetch - Calling error report callback for error:', apiError);
         globalErrorReportCallback(apiError);
+      } else {
+        console.log('apiFetch - No error report callback set, skipping error report');
       }
       
       // 401 Unauthorizedの場合は特別な処理（エラー報告後に実行）

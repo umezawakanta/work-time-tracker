@@ -29,11 +29,23 @@ function App() {
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
       console.error('App.tsx - Global error caught:', event.error);
+      console.error('App.tsx - Error details:', {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error
+      });
       setAppError(event.error);
     };
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
       console.error('App.tsx - Unhandled promise rejection:', event.reason);
+      console.error('App.tsx - Rejection details:', {
+        reason: event.reason,
+        type: event.type,
+        promise: event.promise
+      });
       setAppError(new Error(`Unhandled promise rejection: ${event.reason}`));
     };
 
@@ -109,6 +121,7 @@ function App() {
 
   // エラーレポートコールバックの設定
   React.useEffect(() => {
+    console.log('App.tsx - Setting error report callback:', errorHandling.handleApiErrorReport);
     setErrorReportCallback(errorHandling.handleApiErrorReport);
   }, [errorHandling.handleApiErrorReport]);
 
@@ -137,6 +150,7 @@ function App() {
 
   // ログインしていない場合はログインフォームを表示
   if (!auth.isLoggedIn) {
+    console.log('App.tsx - Rendering login form');
     return (
       <div className="app">
         <LoginForm
