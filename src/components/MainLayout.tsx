@@ -86,6 +86,26 @@ interface MainLayoutProps {
   loadUserSettings: () => Promise<void>;
   // 機能管理
   getVisibleFeatures: () => any[];
+  // 追加のプロパティ（App_backup.tsxから復元）
+  projects: any[];
+  books: any[];
+  memos: any[];
+  publicMemos: any[];
+  adminUsers: any[];
+  reportSummary: any;
+  selectedProject: string;
+  setSelectedProject: (project: string) => void;
+  showProjectForm: boolean;
+  setShowProjectForm: (show: boolean) => void;
+  projectName: string;
+  setProjectName: (name: string) => void;
+  projectDescription: string;
+  setProjectDescription: (description: string) => void;
+  projectColor: string;
+  setProjectColor: (color: string) => void;
+  handleCreateProject: (e: React.FormEvent) => Promise<void>;
+  handleCreateBook: (e: React.FormEvent) => Promise<void>;
+  handleCreateMemo: (e: React.FormEvent) => Promise<void>;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({
@@ -146,7 +166,113 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   handleResetTracking,
   loadUserSettings,
   getVisibleFeatures,
+  // 追加のプロパティ（App_backup.tsxから復元）
+  projects,
+  books,
+  memos,
+  publicMemos,
+  adminUsers,
+  reportSummary,
+  selectedProject,
+  setSelectedProject,
+  showProjectForm,
+  setShowProjectForm,
+  projectName,
+  setProjectName,
+  projectDescription,
+  setProjectDescription,
+  projectColor,
+  setProjectColor,
+  handleCreateProject,
+  handleCreateBook,
+  handleCreateMemo,
 }) => {
+  // 機能の定義（App_backup.tsxから復元）
+  const features = [
+    {
+      id: "time-tracking",
+      name: "時間管理",
+      description: "作業時間の記録と管理",
+      component: null,
+    },
+    {
+      id: "cooking-timer",
+      name: "料理タイマー",
+      description: "料理の調理時間管理",
+      component: null,
+    },
+    {
+      id: "projects",
+      name: "プロジェクト",
+      description: "プロジェクトの管理",
+      component: null,
+    },
+    {
+      id: "reports",
+      name: "レポート",
+      description: "作業時間のレポート表示",
+      component: null,
+    },
+    {
+      id: "admin-panel",
+      name: "管理者パネル",
+      description: "ユーザー管理とシステム設定",
+      component: null,
+    },
+    {
+      id: "bookshelf",
+      name: "本棚",
+      description: "本の管理と記録",
+      component: null,
+    },
+    {
+      id: "memos",
+      name: "メモ",
+      description: "個人メモの管理",
+      component: null,
+    },
+    {
+      id: "public-memos",
+      name: "公開メモ",
+      description: "公開メモの閲覧と投稿",
+      component: null,
+    },
+    {
+      id: "work-records",
+      name: "お仕事記録",
+      description: "給料記録と日記",
+      component: null,
+    },
+    {
+      id: "timers",
+      name: "タイマー",
+      description: "カスタムタイマーとプリセットタイマー",
+      component: null,
+    },
+    {
+      id: "self-analysis",
+      name: "じぶん図鑑",
+      description: "自分自身を深く理解するための分析ツール",
+      component: null,
+    },
+    {
+      id: "sound-app",
+      name: "音アプリ",
+      description: "食事バランスを音で表現するアプリ",
+      component: null,
+    },
+  ];
+
+  // 表示する機能を取得
+  const getVisibleFeaturesList = () => {
+    return features.filter(feature => {
+      // 管理者パネルは管理者のみ表示
+      if (feature.id === "admin-panel" && user?.role !== "admin") {
+        return false;
+      }
+      return true;
+    });
+  };
   // CookingTimerSection の状態管理
   const [selectedRecipe, setSelectedRecipe] = React.useState("boiled-egg");
   const [selectedEggType, setSelectedEggType] = React.useState<"soft" | "medium" | "hard">("medium");
@@ -472,17 +598,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       </div>
 
       <main className="dashboard-main">
-        {getVisibleFeatures().map((feature) => {
-          if (feature.id === "character-home" && showCharacterHome) {
-            return (
-              <CharacterHome
-                key={feature.id}
-                showCharacterHome={showCharacterHome}
-                setShowCharacterHome={setShowCharacterHome}
-                closeOtherFeatures={closeOtherFeatures}
-              />
-            );
-          } else if (feature.id === "time-tracking" && showTimeTracking) {
+        {getVisibleFeaturesList().map((feature) => {
+          if (feature.id === "time-tracking" && showTimeTracking) {
             return (
               <TimeTrackingComponent
                 key={feature.id}
@@ -556,20 +673,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 showProjects={showProjects}
                 setShowProjects={setShowProjects}
                 closeOtherFeatures={closeOtherFeatures}
-                showProjectForm={false}
-                setShowProjectForm={() => {}}
-                projects={[]}
+                showProjectForm={showProjectForm}
+                setShowProjectForm={setShowProjectForm}
+                projects={projects}
                 projectsLoading={false}
-                selectedProject=""
-                setSelectedProject={() => {}}
-                projectName=""
-                setProjectName={() => {}}
-                projectDescription=""
-                setProjectDescription={() => {}}
-                projectColor="#007bff"
-                setProjectColor={() => {}}
+                selectedProject={selectedProject}
+                setSelectedProject={setSelectedProject}
+                projectName={projectName}
+                setProjectName={setProjectName}
+                projectDescription={projectDescription}
+                setProjectDescription={setProjectDescription}
+                projectColor={projectColor}
+                setProjectColor={setProjectColor}
                 loading={false}
-                handleCreateProject={async () => {}}
+                handleCreateProject={handleCreateProject}
                 loadProjects={loadProjects}
               />
             );
@@ -610,7 +727,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 showBookshelf={showBookshelf}
                 setShowBookshelf={setShowBookshelf}
                 closeOtherFeatures={closeOtherFeatures}
-                books={[]}
+                books={books}
                 booksLoading={false}
                 showBookForm={false}
                 setShowBookForm={() => {}}
@@ -635,7 +752,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 getBookCategories={() => ['小説', '技術書', 'ビジネス', '自己啓発', 'その他']}
                 loading={false}
                 loadBooks={loadBooks}
-                handleCreateBook={() => {}}
+                handleCreateBook={handleCreateBook}
                 handleUpdateBook={() => {}}
                 handleEditBook={() => {}}
                 handleDeleteBook={() => {}}
@@ -650,15 +767,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 showMemos={showMemos}
                 setShowMemos={setShowMemos}
                 closeOtherFeatures={closeOtherFeatures}
-                memos={[]}
-                publicMemos={[]}
+                memos={memos}
+                publicMemos={publicMemos}
                 memosLoading={false}
                 customCategories={[]}
                 setCustomCategories={() => {}}
                 loadMemos={loadMemos}
                 handleDeleteMemo={() => {}}
                 user={user}
-                handleCreateMemo={() => {}}
+                handleCreateMemo={handleCreateMemo}
                 handleUpdateMemo={() => {}}
                 editingMemo={null}
                 setEditingMemo={() => {}}
@@ -698,7 +815,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 incomeExpenseRecords={[]}
                 workDiaries={[]}
                 reportsLoading={false}
-                reportSummary={{}}
+                reportSummary={reportSummary}
                 loadReportSummary={loadReportSummary}
               />
             );
@@ -709,7 +826,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 showAdminPanel={showAdminPanel}
                 setShowAdminPanel={setShowAdminPanel}
                 closeOtherFeatures={closeOtherFeatures}
-                adminUsers={[]}
+                adminUsers={adminUsers}
                 adminUsersLoading={false}
                 editingUser={null}
                 setEditingUser={() => {}}
@@ -735,7 +852,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 showPublicMemos={showPublicMemos}
                 setShowPublicMemos={setShowPublicMemos}
                 closeOtherFeatures={closeOtherFeatures}
-                publicMemos={[]}
+                publicMemos={publicMemos}
                 publicMemosLoading={false}
                 user={user}
                 loadPublicMemos={loadPublicMemos}

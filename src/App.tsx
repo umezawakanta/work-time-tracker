@@ -75,6 +75,40 @@ function App() {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [reportSummary, setReportSummary] = useState<any>({});
 
+  // 追加の状態変数（App_backup.tsxから復元）
+  const [selectedProject, setSelectedProject] = useState<string>("");
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [projectColor, setProjectColor] = useState("#3b82f6");
+
+  // 本棚関連の状態
+  const [showBookshelf, setShowBookshelf] = useState(false);
+  const [showBookForm, setShowBookForm] = useState(false);
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const [bookTitle, setBookTitle] = useState("");
+  const [bookAuthor, setBookAuthor] = useState("");
+  const [bookIsbn, setBookIsbn] = useState("");
+  const [bookPublishedYear, setBookPublishedYear] = useState(new Date().getFullYear());
+  const [bookTotalPages, setBookTotalPages] = useState(0);
+  const [bookCategory, setBookCategory] = useState("");
+  const [bookNotes, setBookNotes] = useState("");
+  const [selectedBookCategory, setSelectedBookCategory] = useState("all");
+
+  // メモ関連の状態
+  const [showMemos, setShowMemos] = useState(false);
+  const [showMemoForm, setShowMemoForm] = useState(false);
+  const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
+  const [memoTitle, setMemoTitle] = useState("");
+  const [memoContent, setMemoContent] = useState("");
+  const [memoCategory, setMemoCategory] = useState("");
+  const [memoTags, setMemoTags] = useState("");
+  const [memoIsPublic, setMemoIsPublic] = useState(false);
+  const [memoIsFamilyOnly, setMemoIsFamilyOnly] = useState(false);
+  const [memoIsAdminOnly, setMemoIsAdminOnly] = useState(false);
+  const [memoSearchTerm, setMemoSearchTerm] = useState("");
+  const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
+
   // エラーレポートコールバックの設定
   useEffect(() => {
     setErrorReportCallback(errorHandling.handleApiErrorReport);
@@ -102,14 +136,22 @@ function App() {
     }
   };
 
-  // データローディング関数
+  // データローディング関数（App_backup.tsxから復元）
   const loadProjects = async () => {
     console.log('App.tsx - Loading projects');
     try {
-      // プロジェクトデータの読み込み
-      // const response = await fetch('/api/projects');
-      // const data = await response.json();
-      // setProjects(data);
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/projects/list", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setProjects(data.projects || []);
+      }
     } catch (error) {
       console.error('Failed to load projects:', error);
     }
@@ -117,16 +159,40 @@ function App() {
 
   const loadTimeEntries = async () => {
     console.log('App.tsx - Loading time entries');
-    // 時間記録データの読み込み
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/time/entries", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // 時間記録データの処理
+        console.log('Time entries loaded:', data.entries);
+      }
+    } catch (error) {
+      console.error('Failed to load time entries:', error);
+    }
   };
 
   const loadBooks = async () => {
     console.log('App.tsx - Loading books');
     try {
-      // 本のデータの読み込み
-      // const response = await fetch('/api/books');
-      // const data = await response.json();
-      // setBooks(data);
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/books", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setBooks(data.books || []);
+      }
     } catch (error) {
       console.error('Failed to load books:', error);
     }
@@ -135,10 +201,18 @@ function App() {
   const loadMemos = async () => {
     console.log('App.tsx - Loading memos');
     try {
-      // メモデータの読み込み
-      // const response = await fetch('/api/memos');
-      // const data = await response.json();
-      // setMemos(data);
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/memos", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMemos(data.memos || []);
+      }
     } catch (error) {
       console.error('Failed to load memos:', error);
     }
@@ -147,10 +221,18 @@ function App() {
   const loadPublicMemos = async () => {
     console.log('App.tsx - Loading public memos');
     try {
-      // 公開メモデータの読み込み
-      // const response = await fetch('/api/memos/public');
-      // const data = await response.json();
-      // setPublicMemos(data);
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/memos/public", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setPublicMemos(data.memos || []);
+      }
     } catch (error) {
       console.error('Failed to load public memos:', error);
     }
@@ -159,10 +241,18 @@ function App() {
   const loadAdminUsers = async () => {
     console.log('App.tsx - Loading admin users');
     try {
-      // 管理者ユーザーデータの読み込み
-      // const response = await fetch('/api/admin/users');
-      // const data = await response.json();
-      // setAdminUsers(data);
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/admin/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setAdminUsers(data.users || []);
+      }
     } catch (error) {
       console.error('Failed to load admin users:', error);
     }
@@ -171,29 +261,205 @@ function App() {
   const loadReportSummary = async () => {
     console.log('App.tsx - Loading report summary');
     try {
-      // レポートサマリーデータの読み込み
-      // const response = await fetch('/api/reports/summary');
-      // const data = await response.json();
-      // setReportSummary(data);
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/reports/summary", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setReportSummary(data.summary || {});
+      }
     } catch (error) {
       console.error('Failed to load report summary:', error);
     }
   };
 
-  // 時間記録ハンドラー
-  const handleStartTracking = () => {
+  // 時間記録ハンドラー（App_backup.tsxから復元）
+  const handleStartTracking = async () => {
     console.log('App.tsx - Starting time tracking');
-    // 時間記録開始処理
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/time/start", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          projectId: selectedProject || "",
+          description: "",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Time tracking started successfully');
+        loadTimeEntries();
+      } else {
+        console.error('Failed to start time tracking:', data.message);
+      }
+    } catch (error) {
+      console.error('Error starting time tracking:', error);
+    }
   };
 
-  const handleStopTracking = () => {
+  const handleStopTracking = async () => {
     console.log('App.tsx - Stopping time tracking');
-    // 時間記録停止処理
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/time/stop", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Time tracking stopped successfully');
+        loadTimeEntries();
+      } else {
+        console.error('Failed to stop time tracking:', data.message);
+      }
+    } catch (error) {
+      console.error('Error stopping time tracking:', error);
+    }
   };
 
   const handleResetTracking = () => {
     console.log('App.tsx - Resetting time tracking');
     // 時間記録リセット処理
+  };
+
+  // プロジェクト作成ハンドラー（App_backup.tsxから復元）
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('App.tsx - Creating project');
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/projects/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: projectName || "",
+          description: projectDescription || "",
+          color: projectColor || "#3b82f6",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Project created successfully');
+        setProjectName("");
+        setProjectDescription("");
+        setProjectColor("#3b82f6");
+        setShowProjectForm(false);
+        loadProjects();
+      } else {
+        console.error('Failed to create project:', data.message);
+      }
+    } catch (error) {
+      console.error('Error creating project:', error);
+    }
+  };
+
+  // 本作成ハンドラー（App_backup.tsxから復元）
+  const handleCreateBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('App.tsx - Creating book');
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/books", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: bookTitle || "",
+          author: bookAuthor || "",
+          isbn: bookIsbn || "",
+          publishedYear: bookPublishedYear || new Date().getFullYear(),
+          totalPages: bookTotalPages || 0,
+          category: bookCategory || "",
+          notes: bookNotes || "",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Book created successfully');
+        setBookTitle("");
+        setBookAuthor("");
+        setBookIsbn("");
+        setBookPublishedYear(new Date().getFullYear());
+        setBookTotalPages(0);
+        setBookCategory("");
+        setBookNotes("");
+        setShowBookForm(false);
+        loadBooks();
+      } else {
+        console.error('Failed to create book:', data.message);
+      }
+    } catch (error) {
+      console.error('Error creating book:', error);
+    }
+  };
+
+  // メモ作成ハンドラー（App_backup.tsxから復元）
+  const handleCreateMemo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('App.tsx - Creating memo');
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: memoTitle || "",
+          content: memoContent || "",
+          category: memoCategory || "",
+          tags: memoTags || "",
+          isPublic: memoIsPublic || false,
+          isFamilyOnly: memoIsFamilyOnly || false,
+          isAdminOnly: memoIsAdminOnly || false,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Memo created successfully');
+        setMemoTitle("");
+        setMemoContent("");
+        setMemoCategory("");
+        setMemoTags("");
+        setMemoIsPublic(false);
+        setMemoIsFamilyOnly(false);
+        setMemoIsAdminOnly(false);
+        setShowMemoForm(false);
+        loadMemos();
+      } else {
+        console.error('Failed to create memo:', data.message);
+      }
+    } catch (error) {
+      console.error('Error creating memo:', error);
+    }
   };
 
   // ユーザー設定の読み込み
@@ -320,6 +586,26 @@ function App() {
       handleResetTracking={handleResetTracking}
       loadUserSettings={loadUserSettings}
       getVisibleFeatures={getVisibleFeatures}
+      // 追加のプロパティ（App_backup.tsxから復元）
+      projects={projects}
+      books={books}
+      memos={memos}
+      publicMemos={publicMemos}
+      adminUsers={adminUsers}
+      reportSummary={reportSummary}
+      selectedProject={selectedProject}
+      setSelectedProject={setSelectedProject}
+      showProjectForm={showProjectForm}
+      setShowProjectForm={setShowProjectForm}
+      projectName={projectName}
+      setProjectName={setProjectName}
+      projectDescription={projectDescription}
+      setProjectDescription={setProjectDescription}
+      projectColor={projectColor}
+      setProjectColor={setProjectColor}
+      handleCreateProject={handleCreateProject}
+      handleCreateBook={handleCreateBook}
+      handleCreateMemo={handleCreateMemo}
     />
   );
 }
