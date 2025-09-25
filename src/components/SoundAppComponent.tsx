@@ -145,7 +145,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       sound: { frequency: 220, duration: 0.5, volume: 0.7 },
       color: "#8B4513",
       instrument: "🥁 ドラム",
-      noteMapping: "c/3", // VexFlow形式に修正
+      noteMapping: "C/3", // VexFlow形式（大文字）
     },
     {
       id: "side",
@@ -153,7 +153,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       sound: { frequency: 330, duration: 0.4, volume: 0.6 },
       color: "#228B22",
       instrument: "🎸 ベース",
-      noteMapping: "e/3", // VexFlow形式に修正
+      noteMapping: "E/3", // VexFlow形式（大文字）
     },
     {
       id: "miso",
@@ -161,7 +161,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       sound: { frequency: 440, duration: 0.3, volume: 0.5 },
       color: "#D2691E",
       instrument: "🎺 トランペット",
-      noteMapping: "a/4", // VexFlow形式に修正
+      noteMapping: "A/4", // VexFlow形式（大文字）
     },
     {
       id: "meat",
@@ -169,7 +169,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       sound: { frequency: 110, duration: 0.8, volume: 0.9 },
       color: "#DC143C",
       instrument: "🎸 エレキギター",
-      noteMapping: "a/2", // VexFlow形式に修正
+      noteMapping: "A/2", // VexFlow形式（大文字）
     },
     {
       id: "fish",
@@ -177,7 +177,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       sound: { frequency: 880, duration: 0.6, volume: 0.8 },
       color: "#4169E1",
       instrument: "🎹 シンセサイザー",
-      noteMapping: "a/5", // VexFlow形式に修正
+      noteMapping: "A/5", // VexFlow形式（大文字）
     },
     {
       id: "vegetable",
@@ -185,7 +185,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       sound: { frequency: 660, duration: 0.4, volume: 0.7 },
       color: "#32CD32",
       instrument: "🎹 ピアノ",
-      noteMapping: "e/5", // VexFlow形式に修正
+      noteMapping: "E/5", // VexFlow形式（大文字）
     },
   ];
 
@@ -343,13 +343,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
       // 音符の作成
       const notes = scoreData.notes.map((note) => {
-        // VexFlowは通常大文字の音名を期待するため変換
-        const vfPitch = (note.pitch || "").replace(/^([a-g])/, (_, p1) => p1.toUpperCase());
+        // VexFlowは大文字の音名を期待（C/4, F#/3形式）
+        const vfPitch = note.pitch && note.pitch.includes('/') 
+          ? note.pitch.replace(/^([a-g])/, (_, p1) => p1.toUpperCase())
+          : "C/4"; // デフォルト値
         const staveNote = new StaveNote({
-          clef: "treble", // ← clefを追加
+          clef: "treble",
           keys: [vfPitch],
           duration: note.duration,
-          autoStem: true, // ← 自動ステム方向を追加
+          autoStem: true,
         });
 
         // シャープやフラットを追加（メソッド名を修正）
