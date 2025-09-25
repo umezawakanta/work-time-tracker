@@ -92,7 +92,7 @@ export const useUIState = () => {
   };
 
   // 機能の表示切り替え
-  const handleFeatureToggle = (featureId: string) => {
+  const handleFeatureToggle = async (featureId: string) => {
     if (!userSettings) {
       return;
     }
