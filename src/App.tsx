@@ -115,7 +115,10 @@ function App() {
       showWorkRecords: uiState.showWorkRecords,
       showSoundApp: uiState.showSoundApp,
       showNotifications: uiState.showNotifications,
-      showVersionInfo: uiState.showVersionInfo
+      showVersionInfo: uiState.showVersionInfo,
+      showThemeSettings: uiState.showThemeSettings,
+      showFontSettings: uiState.showFontSettings,
+      showFeatureSettings: uiState.showFeatureSettings
     });
   }, [uiState]);
 
@@ -192,6 +195,9 @@ function App() {
         showSoundApp={uiState.showSoundApp}
         showNotifications={uiState.showNotifications}
         showVersionInfo={uiState.showVersionInfo}
+        showThemeSettings={uiState.showThemeSettings}
+        showFontSettings={uiState.showFontSettings}
+        showFeatureSettings={uiState.showFeatureSettings}
         setShowCharacterHome={uiState.setShowCharacterHome}
         setShowProjects={uiState.setShowProjects}
         setShowCookingTimer={uiState.setShowCookingTimer}
@@ -207,6 +213,9 @@ function App() {
         setShowSoundApp={uiState.setShowSoundApp}
         setShowNotifications={uiState.setShowNotifications}
         setShowVersionInfo={uiState.setShowVersionInfo}
+        setShowThemeSettings={uiState.setShowThemeSettings}
+        setShowFontSettings={uiState.setShowFontSettings}
+        setShowFeatureSettings={uiState.setShowFeatureSettings}
         closeOtherFeatures={uiState.closeOtherFeatures}
       />
 

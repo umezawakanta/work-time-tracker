@@ -38,6 +38,9 @@ interface MainLayoutProps {
   showSoundApp: boolean;
   showNotifications: boolean;
   showVersionInfo: boolean;
+  showThemeSettings: boolean;
+  showFontSettings: boolean;
+  showFeatureSettings: boolean;
   // セッター関数
   setShowCharacterHome: (show: boolean) => void;
   setShowProjects: (show: boolean) => void;
@@ -54,6 +57,9 @@ interface MainLayoutProps {
   setShowSoundApp: (show: boolean) => void;
   setShowNotifications: (show: boolean) => void;
   setShowVersionInfo: (show: boolean) => void;
+  setShowThemeSettings: (show: boolean) => void;
+  setShowFontSettings: (show: boolean) => void;
+  setShowFeatureSettings: (show: boolean) => void;
   // その他の関数
   closeOtherFeatures: (activeFeature: string) => void;
 }
@@ -76,6 +82,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showSoundApp,
   showNotifications,
   showVersionInfo,
+  showThemeSettings,
+  showFontSettings,
+  showFeatureSettings,
   setShowCharacterHome,
   setShowProjects,
   setShowCookingTimer,
@@ -91,6 +100,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setShowSoundApp,
   setShowNotifications,
   setShowVersionInfo,
+  setShowThemeSettings,
+  setShowFontSettings,
+  setShowFeatureSettings,
   closeOtherFeatures,
 }) => {
   // CookingTimerSection の状態管理
@@ -306,9 +318,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           // ログアウト処理
         }}
         closeOtherFeatures={closeOtherFeatures}
-        setShowThemeSettings={() => {}}
-        setShowFontSettings={() => {}}
-        setShowFeatureSettings={() => {}}
+        setShowThemeSettings={setShowThemeSettings}
+        setShowFontSettings={setShowFontSettings}
+        setShowFeatureSettings={setShowFeatureSettings}
         loadUserSettings={() => {}}
         isTimeTrackingActive={false}
         onUpdateRequestClick={() => {}}
