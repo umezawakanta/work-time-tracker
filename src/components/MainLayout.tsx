@@ -177,38 +177,11 @@ interface MainLayoutProps {
   setSelectedBookCategory: (category: string) => void;
   // 料理タイマー関連の状態
   selectedRecipe: string;
-  setSelectedRecipe: (recipe: string) => void;
-  selectedEggType: "soft" | "medium" | "hard";
-  setSelectedEggType: (type: "soft" | "medium" | "hard") => void;
-  eggTimerActive: boolean;
-  setEggTimerActive: (active: boolean) => void;
-  eggTimerPaused: boolean;
-  setEggTimerPaused: (paused: boolean) => void;
-  eggTimerTime: number;
-  setEggTimerTime: (time: number) => void;
-  eggTimerInterval: NodeJS.Timeout | null;
-  setEggTimerInterval: (interval: NodeJS.Timeout | null) => void;
-  eggTimerSound: "bell" | "chime" | "beep" | "alarm";
-  setEggTimerSound: (sound: "bell" | "chime" | "beep" | "alarm") => void;
-  eggTimerOriginalTime: number;
-  setEggTimerOriginalTime: (time: number) => void;
-  eggTimerPhase: "heating" | "boiling" | "cooking";
-  setEggTimerPhase: (phase: "heating" | "boiling" | "cooking") => void;
-  eggTimerPhaseTime: number;
-  setEggTimerPhaseTime: (time: number) => void;
-  eggTimerPhaseName: string;
-  setEggTimerPhaseName: (name: string) => void;
-  pauseEggTimer: () => void;
-  stopEggTimer: () => void;
-  resetEggTimer: () => void;
-  getEggTimerDuration: (type: "soft" | "medium" | "hard") => number;
   // 音響関連のハンドラー関数
   playBellSound: (audioContext: AudioContext) => void;
   playChimeSound: (audioContext: AudioContext) => void;
   playBeepSound: (audioContext: AudioContext) => void;
   playAlarmSound: (audioContext: AudioContext) => void;
-  startSoundLoop: (soundType: "bell" | "chime" | "beep" | "alarm") => void;
-  stopSoundLoop: () => void;
   // セッター関数
   setShowCharacterHome: (show: boolean) => void;
   setShowProjects: (show: boolean) => void;
@@ -304,7 +277,6 @@ interface MainLayoutProps {
   stopCustomTimer: () => void;
   resetCustomTimer: () => void;
   // 料理タイマー関連のプロパティ
-  selectedRecipe: string;
   setSelectedRecipe: (recipe: string) => void;
   selectedEggType: "soft" | "medium" | "hard";
   setSelectedEggType: (type: "soft" | "medium" | "hard") => void;
@@ -567,40 +539,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setBookNotes,
   selectedBookCategory,
   setSelectedBookCategory,
-  // 料理タイマー関連の状態
-  selectedRecipe,
-  setSelectedRecipe,
-  selectedEggType,
-  setSelectedEggType,
-  eggTimerActive,
-  setEggTimerActive,
-  eggTimerPaused,
-  setEggTimerPaused,
-  eggTimerTime,
-  setEggTimerTime,
-  eggTimerInterval,
-  setEggTimerInterval,
-  eggTimerSound,
-  setEggTimerSound,
-  eggTimerOriginalTime,
-  setEggTimerOriginalTime,
-  eggTimerPhase,
-  setEggTimerPhase,
-  eggTimerPhaseTime,
-  setEggTimerPhaseTime,
-  eggTimerPhaseName,
-  setEggTimerPhaseName,
-  pauseEggTimer,
-  stopEggTimer,
-  resetEggTimer,
-  getEggTimerDuration,
   // 音響関連のハンドラー関数
   playBellSound,
   playChimeSound,
   playBeepSound,
   playAlarmSound,
-  startSoundLoop,
-  stopSoundLoop,
   setShowCharacterHome,
   setShowProjects,
   setShowCookingTimer,
