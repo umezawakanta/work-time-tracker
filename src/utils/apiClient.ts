@@ -30,6 +30,7 @@ export const apiFetch = async (
       // 401 Unauthorizedの場合は特別な処理（エラー報告をスキップ）
       if (response.status === 401) {
         console.log('apiFetch - 401 Unauthorized, clearing tokens and skipping error report');
+        console.log('apiFetch - URL:', url, 'Method:', options.method || 'GET');
         // 認証トークンをクリア
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
@@ -38,8 +39,10 @@ export const apiFetch = async (
         // ページリロードは行わず、認証状態の変更のみ行う
         // これにより無限ループを防ぐ
         console.log('apiFetch - Tokens cleared, authentication state will be updated by useAuth hook');
+        console.log('apiFetch - Skipping error report for 401 error');
       } else {
         // 401以外のエラーの場合のみエラー報告コールバックを呼び出し
+        console.log('apiFetch - Non-401 error, calling error report callback');
         if (globalErrorReportCallback) {
           console.log('apiFetch - Calling error report callback for error:', apiError);
           globalErrorReportCallback(apiError);

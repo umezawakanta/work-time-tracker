@@ -17,6 +17,8 @@ export const useAuth = () => {
   // 認証チェック
   const checkAuth = async () => {
     console.log('useAuth - Starting auth check...');
+    console.log('useAuth - localStorage access_token:', localStorage.getItem('access_token') ? 'exists' : 'not found');
+    console.log('useAuth - localStorage authToken:', localStorage.getItem('authToken') ? 'exists' : 'not found');
     const token = getAuthToken((message) => console.log('getAuthToken message:', message));
     console.log('useAuth - Token found:', !!token);
     console.log('useAuth - Token value:', token ? token.substring(0, 20) + '...' : 'null');
@@ -99,8 +101,10 @@ export const useAuth = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('useAuth - Login successful, saving token:', data.token ? data.token.substring(0, 20) + '...' : 'null');
+        console.log('useAuth - Token data:', data);
         localStorage.setItem('access_token', data.token);
         localStorage.setItem('authToken', data.token); // 後方互換性のため
+        console.log('useAuth - Token saved to localStorage');
         setUser(data.user);
         setIsLoggedIn(true);
         setMessage("ログインしました");
