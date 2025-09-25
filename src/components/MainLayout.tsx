@@ -1138,8 +1138,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 setEggTimerPaused={setEggTimerPaused}
                 eggTimerTime={eggTimerTime}
                 setEggTimerTime={setEggTimerTime}
-                eggTimerInterval={eggTimerInterval}
-                setEggTimerInterval={setEggTimerInterval}
                 eggTimerSound={eggTimerSound}
                 setEggTimerSound={setEggTimerSound}
                 eggTimerOriginalTime={eggTimerOriginalTime}
@@ -1158,8 +1156,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 playChimeSound={playChimeSound}
                 playBeepSound={playBeepSound}
                 playAlarmSound={playAlarmSound}
-                startSoundLoop={startSoundLoop}
-                stopSoundLoop={stopSoundLoop}
                 setMessage={() => {}}
                 sendNotification={sendNotification}
                 addToTimerHistory={addToTimerHistory}
