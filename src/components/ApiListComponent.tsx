@@ -54,7 +54,9 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
       // getAuthToken is a synchronous function that returns the token directly.
       // If an error occurs during token retrieval, it will call the provided callback with the error message.
       const token = getAuthToken(setError);
-      if (!token) return;
+      if (!token) {
+        return;
+      }
 
       const response = await fetch('/api/admin/api-list', {
         headers: {
@@ -82,7 +84,9 @@ const ApiListComponent: React.FC<ApiListComponentProps> = ({ className = '' }) =
     
     try {
       const token = getAuthToken(setError);
-      if (!token) return;
+      if (!token) {
+        return;
+      }
 
       const response = await fetch('/api/admin/api-health-check', {
         method: 'POST',
