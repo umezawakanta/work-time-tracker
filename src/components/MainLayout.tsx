@@ -29,13 +29,9 @@ interface MainLayoutProps {
   showProjects: boolean;
   showCookingTimer: boolean;
   showSelfAnalysis: boolean;
-  showBookshelf: boolean;
-  showMemos: boolean;
   showReports: boolean;
   showAdminPanel: boolean;
   showTimeTracking: boolean;
-  showTimers: boolean;
-  showPublicMemos: boolean;
   showWorkRecords: boolean;
   showSoundApp: boolean;
   showNotifications: boolean;
@@ -45,6 +41,140 @@ interface MainLayoutProps {
   showFeatureSettings: boolean;
   showBugReportModal: boolean;
   showUpdateRequestModal: boolean;
+  // お仕事記録関連の状態
+  showIncomeExpenseForm: boolean;
+  setShowIncomeExpenseForm: (show: boolean) => void;
+  showDiaryForm: boolean;
+  setShowDiaryForm: (show: boolean) => void;
+  editingIncomeExpenseRecord: any;
+  setEditingIncomeExpenseRecord: (record: any) => void;
+  editingDiary: any;
+  setEditingDiary: (diary: any) => void;
+  // 収入・支出記録フォームの状態
+  incomeExpenseDate: string;
+  setIncomeExpenseDate: (date: string) => void;
+  incomeExpenseAmount: string;
+  setIncomeExpenseAmount: (amount: string) => void;
+  incomeExpenseType: "income" | "expense";
+  setIncomeExpenseType: (type: "income" | "expense") => void;
+  incomeExpenseNotes: string;
+  setIncomeExpenseNotes: (notes: string) => void;
+  // 日記フォームの状態
+  diaryDate: string;
+  setDiaryDate: (date: string) => void;
+  diaryTitle: string;
+  setDiaryTitle: (title: string) => void;
+  diaryContent: string;
+  setDiaryContent: (content: string) => void;
+  diaryMood: string;
+  setDiaryMood: (mood: string) => void;
+  diaryActivities: string[];
+  setDiaryActivities: (activities: string[]) => void;
+  diaryTags: string;
+  setDiaryTags: (tags: string) => void;
+  diaryIsPrivate: boolean;
+  setDiaryIsPrivate: (isPrivate: boolean) => void;
+  // 新しい日記項目の状態
+  diaryWorkSummary: string;
+  setDiaryWorkSummary: (summary: string) => void;
+  diaryAchievements: string[];
+  setDiaryAchievements: (achievements: string[]) => void;
+  diaryChallenges: string[];
+  setDiaryChallenges: (challenges: string[]) => void;
+  diaryLearnings: string[];
+  setDiaryLearnings: (learnings: string[]) => void;
+  diaryNextGoals: string[];
+  setDiaryNextGoals: (goals: string[]) => void;
+  diaryEnergyLevel: number;
+  setDiaryEnergyLevel: (level: number) => void;
+  diaryStressLevel: number;
+  setDiaryStressLevel: (level: number) => void;
+  diaryWorkHours: number;
+  setDiaryWorkHours: (hours: number) => void;
+  diaryBreakTime: number;
+  setDiaryBreakTime: (time: number) => void;
+  diaryProductivity: number;
+  setDiaryProductivity: (productivity: number) => void;
+  diaryNotes: string;
+  setDiaryNotes: (notes: string) => void;
+  diaryGratitude: string;
+  setDiaryGratitude: (gratitude: string) => void;
+  diaryReflection: string;
+  setDiaryReflection: (reflection: string) => void;
+  // 配列項目の一時入力状態
+  newAchievement: string;
+  setNewAchievement: (achievement: string) => void;
+  newChallenge: string;
+  setNewChallenge: (challenge: string) => void;
+  newLearning: string;
+  setNewLearning: (learning: string) => void;
+  newNextGoal: string;
+  setNewNextGoal: (goal: string) => void;
+  // メモ関連の状態
+  showMemos: boolean;
+  showMemoForm: boolean;
+  setShowMemoForm: (show: boolean) => void;
+  editingMemo: any;
+  setEditingMemo: (memo: any) => void;
+  memoTitle: string;
+  setMemoTitle: (title: string) => void;
+  memoContent: string;
+  setMemoContent: (content: string) => void;
+  memoCategory: string;
+  setMemoCategory: (category: string) => void;
+  memoTags: string;
+  setMemoTags: (tags: string) => void;
+  memoIsPublic: boolean;
+  setMemoIsPublic: (isPublic: boolean) => void;
+  memoIsFamilyOnly: boolean;
+  setMemoIsFamilyOnly: (isFamilyOnly: boolean) => void;
+  memoIsAdminOnly: boolean;
+  setMemoIsAdminOnly: (isAdminOnly: boolean) => void;
+  memoSearchTerm: string;
+  setMemoSearchTerm: (term: string) => void;
+  selectedMemoCategory: string;
+  setSelectedMemoCategory: (category: string) => void;
+  // 公開メモ関連の状態
+  showPublicMemos: boolean;
+  publicMemoSearchTerm: string;
+  setPublicMemoSearchTerm: (term: string) => void;
+  selectedPublicMemoCategory: string;
+  setSelectedPublicMemoCategory: (category: string) => void;
+  publicMemoCurrentDate: Date;
+  setPublicMemoCurrentDate: (date: Date) => void;
+  publicMemoSelectedDate: Date | null;
+  setPublicMemoSelectedDate: (date: Date | null) => void;
+  // 返信機能の状態
+  replyingToMemo: string | null;
+  setReplyingToMemo: (memoId: string | null) => void;
+  replyContent: string;
+  setReplyContent: (content: string) => void;
+  editingReply: string | null;
+  setEditingReply: (replyId: string | null) => void;
+  editReplyContent: string;
+  setEditReplyContent: (content: string) => void;
+  // 本棚関連の状態
+  showBookshelf: boolean;
+  showBookForm: boolean;
+  setShowBookForm: (show: boolean) => void;
+  editingBook: any;
+  setEditingBook: (book: any) => void;
+  bookTitle: string;
+  setBookTitle: (title: string) => void;
+  bookAuthor: string;
+  setBookAuthor: (author: string) => void;
+  bookIsbn: string;
+  setBookIsbn: (isbn: string) => void;
+  bookPublishedYear: number;
+  setBookPublishedYear: (year: number) => void;
+  bookTotalPages: number;
+  setBookTotalPages: (pages: number) => void;
+  bookCategory: string;
+  setBookCategory: (category: string) => void;
+  bookNotes: string;
+  setBookNotes: (notes: string) => void;
+  selectedBookCategory: string;
+  setSelectedBookCategory: (category: string) => void;
   // セッター関数
   setShowCharacterHome: (show: boolean) => void;
   setShowProjects: (show: boolean) => void;
@@ -55,7 +185,6 @@ interface MainLayoutProps {
   setShowReports: (show: boolean) => void;
   setShowAdminPanel: (show: boolean) => void;
   setShowTimeTracking: (show: boolean) => void;
-  setShowTimers: (show: boolean) => void;
   setShowPublicMemos: (show: boolean) => void;
   setShowWorkRecords: (show: boolean) => void;
   setShowSoundApp: (show: boolean) => void;
@@ -78,10 +207,14 @@ interface MainLayoutProps {
   loadPublicMemos: () => Promise<void>;
   loadAdminUsers: () => Promise<void>;
   loadReportSummary: () => Promise<void>;
+  loadIncomeExpenseRecords: () => Promise<void>;
+  loadWorkDiaries: () => Promise<void>;
   // 時間記録ハンドラー
   handleStartTracking: () => void;
   handleStopTracking: () => void;
   handleResetTracking: () => void;
+  handleCreateIncomeExpenseRecord: (e: React.FormEvent) => Promise<void>;
+  handleCreateDiary: (e: React.FormEvent) => Promise<void>;
   // ユーザー設定
   loadUserSettings: () => Promise<void>;
   // 機能管理
@@ -105,7 +238,146 @@ interface MainLayoutProps {
   setProjectColor: (color: string) => void;
   handleCreateProject: (e: React.FormEvent) => Promise<void>;
   handleCreateBook: (e: React.FormEvent) => Promise<void>;
+  handleUpdateBook: (e: React.FormEvent) => Promise<void>;
+  handleEditBook: (book: any) => void;
+  handleDeleteBook: (bookId: string) => Promise<void>;
+  handleBookCategoryChange: (category: string) => void;
+  getReadingProgress: (book: any) => number;
   handleCreateMemo: (e: React.FormEvent) => Promise<void>;
+  // タイマー関連のプロパティ
+  showTimers: boolean;
+  setShowTimers: (show: boolean) => void;
+  customTimerActive: boolean;
+  setCustomTimerActive: (active: boolean) => void;
+  customTimerPaused: boolean;
+  setCustomTimerPaused: (paused: boolean) => void;
+  customTimerTime: number;
+  setCustomTimerTime: (time: number) => void;
+  customTimerInterval: NodeJS.Timeout | null;
+  setCustomTimerInterval: (interval: NodeJS.Timeout | null) => void;
+  customTimerMinutes: number;
+  setCustomTimerMinutes: (minutes: number) => void;
+  customTimerSeconds: number;
+  setCustomTimerSeconds: (seconds: number) => void;
+  customTimerName: string;
+  setCustomTimerName: (name: string) => void;
+  customTimerSound: "bell" | "chime" | "beep" | "alarm";
+  setCustomTimerSound: (sound: "bell" | "chime" | "beep" | "alarm") => void;
+  customTimerOriginalTime: number;
+  setCustomTimerOriginalTime: (time: number) => void;
+  startCustomTimer: () => void;
+  pauseCustomTimer: () => void;
+  stopCustomTimer: () => void;
+  resetCustomTimer: () => void;
+  // 料理タイマー関連のプロパティ
+  selectedRecipe: string;
+  setSelectedRecipe: (recipe: string) => void;
+  selectedEggType: "soft" | "medium" | "hard";
+  setSelectedEggType: (type: "soft" | "medium" | "hard") => void;
+  eggTimerActive: boolean;
+  setEggTimerActive: (active: boolean) => void;
+  eggTimerPaused: boolean;
+  setEggTimerPaused: (paused: boolean) => void;
+  eggTimerTime: number;
+  setEggTimerTime: (time: number) => void;
+  eggTimerInterval: NodeJS.Timeout | null;
+  setEggTimerInterval: (interval: NodeJS.Timeout | null) => void;
+  eggTimerType: "soft" | "medium" | "hard";
+  setEggTimerType: (type: "soft" | "medium" | "hard") => void;
+  eggTimerSound: "bell" | "chime" | "beep" | "alarm";
+  setEggTimerSound: (sound: "bell" | "chime" | "beep" | "alarm") => void;
+  eggTimerOriginalTime: number;
+  setEggTimerOriginalTime: (time: number) => void;
+  eggTimerPhase: "heating" | "boiling" | "cooking";
+  setEggTimerPhase: (phase: "heating" | "boiling" | "cooking") => void;
+  eggTimerPhaseTime: number;
+  setEggTimerPhaseTime: (time: number) => void;
+  eggTimerPhaseName: string;
+  setEggTimerPhaseName: (name: string) => void;
+  startEggTimer: () => void;
+  pauseEggTimer: () => void;
+  stopEggTimer: () => void;
+  resetEggTimer: () => void;
+  getEggTimerDuration: (type: "soft" | "medium" | "hard") => number;
+  // 音声関連のプロパティ
+  soundLoopInterval: NodeJS.Timeout | null;
+  setSoundLoopInterval: (interval: NodeJS.Timeout | null) => void;
+  isSoundPlaying: boolean;
+  setIsSoundPlaying: (playing: boolean) => void;
+  playEggTimerSound: () => Promise<void>;
+  startSoundLoop: (soundType: "bell" | "chime" | "beep" | "alarm") => void;
+  stopSoundLoop: () => void;
+  // タイマープリセット関連のプロパティ
+  timerPresets: Array<{
+    id: number;
+    name: string;
+    minutes: number;
+    seconds: number;
+    color: string;
+  }>;
+  setTimerPresets: (presets: Array<{
+    id: number;
+    name: string;
+    minutes: number;
+    seconds: number;
+    color: string;
+  }>) => void;
+  timerHistory: Array<{
+    id: string;
+    name: string;
+    duration: number;
+    completedAt: Date;
+    type: "custom" | "egg" | "preset";
+  }>;
+  setTimerHistory: (history: Array<{
+    id: string;
+    name: string;
+    duration: number;
+    completedAt: Date;
+    type: "custom" | "egg" | "preset";
+  }>) => void;
+  addToTimerHistory: (name: string, duration: number, type: "custom" | "egg" | "preset") => void;
+  // 時間フォーマット関数
+  formatTime: (seconds: number) => string;
+  formatEggTimerTime: (seconds: number) => string;
+  // 通知機能
+  sendNotification: (title: string, body: string, icon?: string) => void;
+  // カレンダー関連のプロパティ
+  showCalendar: boolean;
+  setShowCalendar: (show: boolean) => void;
+  currentDate: Date;
+  setCurrentDate: (date: Date) => void;
+  currentMonth: Date;
+  setCurrentMonth: (date: Date) => void;
+  selectedDate: Date | null;
+  setSelectedDate: (date: Date | null) => void;
+  showRecordDetail: boolean;
+  setShowRecordDetail: (show: boolean) => void;
+  selectedRecord: any;
+  setSelectedRecord: (record: any) => void;
+  selectedRecordType: "income" | "diary";
+  setSelectedRecordType: (type: "income" | "diary") => void;
+  // 月収支メモ関連のプロパティ
+  monthlyMemo: string;
+  setMonthlyMemo: (memo: string) => void;
+  editingMonthlyMemo: boolean;
+  setEditingMonthlyMemo: (editing: boolean) => void;
+  loadMonthlyMemo: () => void;
+  saveMonthlyMemo: () => void;
+  startEditingMonthlyMemo: () => void;
+  cancelEditingMonthlyMemo: () => void;
+  // カレンダー操作関数
+  navigateMonth: (direction: "prev" | "next") => void;
+  openDiaryForm: () => void;
+  openIncomeExpenseForm: () => void;
+  // カスタムカテゴリ管理
+  customCategories: string[];
+  setCustomCategories: (categories: string[]) => void;
+  newGenreName: string;
+  setNewGenreName: (name: string) => void;
+  handleAddCategory: () => void;
+  handleDeleteCategory: (category: string) => void;
+  getAllGenres: () => string[];
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({
@@ -115,13 +387,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showProjects,
   showCookingTimer,
   showSelfAnalysis,
-  showBookshelf,
-  showMemos,
   showReports,
   showAdminPanel,
   showTimeTracking,
-  showTimers,
-  showPublicMemos,
   showWorkRecords,
   showSoundApp,
   showNotifications,
@@ -131,6 +399,140 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showFeatureSettings,
   showBugReportModal,
   showUpdateRequestModal,
+  // お仕事記録関連の状態
+  showIncomeExpenseForm,
+  setShowIncomeExpenseForm,
+  showDiaryForm,
+  setShowDiaryForm,
+  editingIncomeExpenseRecord,
+  setEditingIncomeExpenseRecord,
+  editingDiary,
+  setEditingDiary,
+  // 収入・支出記録フォームの状態
+  incomeExpenseDate,
+  setIncomeExpenseDate,
+  incomeExpenseAmount,
+  setIncomeExpenseAmount,
+  incomeExpenseType,
+  setIncomeExpenseType,
+  incomeExpenseNotes,
+  setIncomeExpenseNotes,
+  // 日記フォームの状態
+  diaryDate,
+  setDiaryDate,
+  diaryTitle,
+  setDiaryTitle,
+  diaryContent,
+  setDiaryContent,
+  diaryMood,
+  setDiaryMood,
+  diaryActivities,
+  setDiaryActivities,
+  diaryTags,
+  setDiaryTags,
+  diaryIsPrivate,
+  setDiaryIsPrivate,
+  // 新しい日記項目の状態
+  diaryWorkSummary,
+  setDiaryWorkSummary,
+  diaryAchievements,
+  setDiaryAchievements,
+  diaryChallenges,
+  setDiaryChallenges,
+  diaryLearnings,
+  setDiaryLearnings,
+  diaryNextGoals,
+  setDiaryNextGoals,
+  diaryEnergyLevel,
+  setDiaryEnergyLevel,
+  diaryStressLevel,
+  setDiaryStressLevel,
+  diaryWorkHours,
+  setDiaryWorkHours,
+  diaryBreakTime,
+  setDiaryBreakTime,
+  diaryProductivity,
+  setDiaryProductivity,
+  diaryNotes,
+  setDiaryNotes,
+  diaryGratitude,
+  setDiaryGratitude,
+  diaryReflection,
+  setDiaryReflection,
+  // 配列項目の一時入力状態
+  newAchievement,
+  setNewAchievement,
+  newChallenge,
+  setNewChallenge,
+  newLearning,
+  setNewLearning,
+  newNextGoal,
+  setNewNextGoal,
+  // メモ関連の状態
+  showMemos,
+  showMemoForm,
+  setShowMemoForm,
+  editingMemo,
+  setEditingMemo,
+  memoTitle,
+  setMemoTitle,
+  memoContent,
+  setMemoContent,
+  memoCategory,
+  setMemoCategory,
+  memoTags,
+  setMemoTags,
+  memoIsPublic,
+  setMemoIsPublic,
+  memoIsFamilyOnly,
+  setMemoIsFamilyOnly,
+  memoIsAdminOnly,
+  setMemoIsAdminOnly,
+  memoSearchTerm,
+  setMemoSearchTerm,
+  selectedMemoCategory,
+  setSelectedMemoCategory,
+  // 公開メモ関連の状態
+  showPublicMemos,
+  publicMemoSearchTerm,
+  setPublicMemoSearchTerm,
+  selectedPublicMemoCategory,
+  setSelectedPublicMemoCategory,
+  publicMemoCurrentDate,
+  setPublicMemoCurrentDate,
+  publicMemoSelectedDate,
+  setPublicMemoSelectedDate,
+  // 返信機能の状態
+  replyingToMemo,
+  setReplyingToMemo,
+  replyContent,
+  setReplyContent,
+  editingReply,
+  setEditingReply,
+  editReplyContent,
+  setEditReplyContent,
+  // 本棚関連の状態
+  showBookshelf,
+  showBookForm,
+  setShowBookForm,
+  editingBook,
+  setEditingBook,
+  bookTitle,
+  setBookTitle,
+  bookAuthor,
+  setBookAuthor,
+  bookIsbn,
+  setBookIsbn,
+  bookPublishedYear,
+  setBookPublishedYear,
+  bookTotalPages,
+  setBookTotalPages,
+  bookCategory,
+  setBookCategory,
+  bookNotes,
+  setBookNotes,
+  selectedBookCategory,
+  setSelectedBookCategory,
   setShowCharacterHome,
   setShowProjects,
   setShowCookingTimer,
@@ -140,7 +542,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setShowReports,
   setShowAdminPanel,
   setShowTimeTracking,
-  setShowTimers,
   setShowPublicMemos,
   setShowWorkRecords,
   setShowSoundApp,
@@ -161,9 +562,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   loadPublicMemos,
   loadAdminUsers,
   loadReportSummary,
+  loadIncomeExpenseRecords,
+  loadWorkDiaries,
   handleStartTracking,
   handleStopTracking,
   handleResetTracking,
+  handleCreateIncomeExpenseRecord,
+  handleCreateDiary,
   loadUserSettings,
   getVisibleFeatures,
   // 追加のプロパティ（App_backup.tsxから復元）
@@ -185,7 +590,88 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setProjectColor,
   handleCreateProject,
   handleCreateBook,
+  handleUpdateBook,
+  handleEditBook,
+  handleDeleteBook,
+  handleBookCategoryChange,
+  getReadingProgress,
   handleCreateMemo,
+  // タイマー関連のプロパティ
+  showTimers,
+  setShowTimers,
+  customTimerActive,
+  setCustomTimerActive,
+  customTimerPaused,
+  setCustomTimerPaused,
+  customTimerTime,
+  setCustomTimerTime,
+  customTimerInterval,
+  setCustomTimerInterval,
+  customTimerMinutes,
+  setCustomTimerMinutes,
+  customTimerSeconds,
+  setCustomTimerSeconds,
+  customTimerName,
+  setCustomTimerName,
+  customTimerSound,
+  setCustomTimerSound,
+  customTimerOriginalTime,
+  setCustomTimerOriginalTime,
+  startCustomTimer,
+  pauseCustomTimer,
+  stopCustomTimer,
+  resetCustomTimer,
+  eggTimerType,
+  setEggTimerType,
+  startEggTimer,
+  // 音声関連のプロパティ
+  soundLoopInterval,
+  setSoundLoopInterval,
+  isSoundPlaying,
+  setIsSoundPlaying,
+  stopSoundLoop,
+  // タイマープリセット関連のプロパティ
+  timerPresets,
+  setTimerPresets,
+  timerHistory,
+  setTimerHistory,
+  formatEggTimerTime,
+  // カレンダー関連のプロパティ
+  showCalendar,
+  setShowCalendar,
+  currentDate,
+  setCurrentDate,
+  currentMonth,
+  setCurrentMonth,
+  selectedDate,
+  setSelectedDate,
+  showRecordDetail,
+  setShowRecordDetail,
+  selectedRecord,
+  setSelectedRecord,
+  selectedRecordType,
+  setSelectedRecordType,
+  // 月収支メモ関連のプロパティ
+  monthlyMemo,
+  setMonthlyMemo,
+  editingMonthlyMemo,
+  setEditingMonthlyMemo,
+  loadMonthlyMemo,
+  saveMonthlyMemo,
+  startEditingMonthlyMemo,
+  cancelEditingMonthlyMemo,
+  // カレンダー操作関数
+  navigateMonth,
+  openDiaryForm,
+  openIncomeExpenseForm,
+  // カスタムカテゴリ管理
+  customCategories,
+  setCustomCategories,
+  newGenreName,
+  setNewGenreName,
+  handleAddCategory,
+  handleDeleteCategory,
+  getAllGenres,
 }) => {
   // 機能の定義（App_backup.tsxから復元）
   const features = [
@@ -652,7 +1138,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 setEggTimerPhaseTime={setEggTimerPhaseTime}
                 setEggTimerPhaseName={setEggTimerPhaseName}
                 setEggTimerInterval={setEggTimerInterval}
-                setMessage={setMessage}
+                setMessage={() => {}}
                 sendNotification={sendNotification}
                 startSoundLoop={startSoundLoop}
                 addToTimerHistory={addToTimerHistory}
@@ -661,7 +1147,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 stopEggTimer={stopEggTimer}
                 resetEggTimer={resetEggTimer}
                 getEggTimerDuration={getEggTimerDuration}
-                getTotalCookingTime={getTotalCookingTime}
+                getTotalCookingTime={(recipeKey: string, eggType?: "soft" | "medium" | "hard") => {
+                  if (recipeKey === "boiled-egg" && eggType) {
+                    return getEggTimerDuration(eggType);
+                  }
+                  return 0;
+                }}
                 formatTime={formatTime}
                 eggTimerType={selectedEggType}
               />
@@ -729,35 +1220,35 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 closeOtherFeatures={closeOtherFeatures}
                 books={books}
                 booksLoading={false}
-                showBookForm={false}
-                setShowBookForm={() => {}}
-                editingBook={null}
-                setEditingBook={() => {}}
-                bookTitle=""
-                setBookTitle={() => {}}
-                bookAuthor=""
-                setBookAuthor={() => {}}
-                bookIsbn=""
-                setBookIsbn={() => {}}
-                bookPublishedYear={new Date().getFullYear()}
-                setBookPublishedYear={() => {}}
-                bookTotalPages={0}
-                setBookTotalPages={() => {}}
-                bookCategory=""
-                setBookCategory={() => {}}
-                bookNotes=""
-                setBookNotes={() => {}}
-                selectedBookCategory="all"
-                setSelectedBookCategory={() => {}}
+                showBookForm={showBookForm}
+                setShowBookForm={setShowBookForm}
+                editingBook={editingBook}
+                setEditingBook={setEditingBook}
+                bookTitle={bookTitle}
+                setBookTitle={setBookTitle}
+                bookAuthor={bookAuthor}
+                setBookAuthor={setBookAuthor}
+                bookIsbn={bookIsbn}
+                setBookIsbn={setBookIsbn}
+                bookPublishedYear={bookPublishedYear}
+                setBookPublishedYear={setBookPublishedYear}
+                bookTotalPages={bookTotalPages}
+                setBookTotalPages={setBookTotalPages}
+                bookCategory={bookCategory}
+                setBookCategory={setBookCategory}
+                bookNotes={bookNotes}
+                setBookNotes={setBookNotes}
+                selectedBookCategory={selectedBookCategory}
+                setSelectedBookCategory={setSelectedBookCategory}
                 getBookCategories={() => ['小説', '技術書', 'ビジネス', '自己啓発', 'その他']}
                 loading={false}
                 loadBooks={loadBooks}
                 handleCreateBook={handleCreateBook}
-                handleUpdateBook={() => {}}
-                handleEditBook={() => {}}
-                handleDeleteBook={() => {}}
-                handleBookCategoryChange={() => {}}
-                getReadingProgress={() => 0}
+                handleUpdateBook={handleUpdateBook}
+                handleEditBook={handleEditBook}
+                handleDeleteBook={handleDeleteBook}
+                handleBookCategoryChange={handleBookCategoryChange}
+                getReadingProgress={getReadingProgress}
               />
             );
           } else if (feature.id === "memos" && showMemos) {
@@ -770,39 +1261,39 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 memos={memos}
                 publicMemos={publicMemos}
                 memosLoading={false}
-                customCategories={[]}
-                setCustomCategories={() => {}}
+                customCategories={customCategories}
+                setCustomCategories={setCustomCategories}
                 loadMemos={loadMemos}
                 handleDeleteMemo={() => {}}
                 user={user}
                 handleCreateMemo={handleCreateMemo}
                 handleUpdateMemo={() => {}}
-                editingMemo={null}
-                setEditingMemo={() => {}}
-                memoTitle=""
-                setMemoTitle={() => {}}
-                memoContent=""
-                setMemoContent={() => {}}
-                memoCategory=""
-                setMemoCategory={() => {}}
-                memoTags=""
-                setMemoTags={() => {}}
-                memoIsPublic={false}
-                setMemoIsPublic={() => {}}
-                memoIsFamilyOnly={false}
-                setMemoIsFamilyOnly={() => {}}
-                memoIsAdminOnly={false}
-                setMemoIsAdminOnly={() => {}}
+                editingMemo={editingMemo}
+                setEditingMemo={setEditingMemo}
+                memoTitle={memoTitle}
+                setMemoTitle={setMemoTitle}
+                memoContent={memoContent}
+                setMemoContent={setMemoContent}
+                memoCategory={memoCategory}
+                setMemoCategory={setMemoCategory}
+                memoTags={memoTags}
+                setMemoTags={setMemoTags}
+                memoIsPublic={memoIsPublic}
+                setMemoIsPublic={setMemoIsPublic}
+                memoIsFamilyOnly={memoIsFamilyOnly}
+                setMemoIsFamilyOnly={setMemoIsFamilyOnly}
+                memoIsAdminOnly={memoIsAdminOnly}
+                setMemoIsAdminOnly={setMemoIsAdminOnly}
                 handleReplySubmit={() => {}}
                 handleReplyCancel={() => {}}
                 handleEditReply={() => {}}
                 handleSaveEditReply={() => {}}
                 handleDeleteReply={() => {}}
                 handleCancelEditReply={() => {}}
-                replyContent=""
-                setReplyContent={() => {}}
-                replyingToMemo={null}
-                setReplyingToMemo={() => {}}
+                replyContent={replyContent}
+                setReplyContent={setReplyContent}
+                replyingToMemo={replyingToMemo}
+                setReplyingToMemo={setReplyingToMemo}
               />
             );
           } else if (feature.id === "reports" && showReports) {
@@ -843,6 +1334,72 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 showTimers={showTimers}
                 setShowTimers={setShowTimers}
                 closeOtherFeatures={closeOtherFeatures}
+                customTimerActive={customTimerActive}
+                setCustomTimerActive={setCustomTimerActive}
+                customTimerPaused={customTimerPaused}
+                setCustomTimerPaused={setCustomTimerPaused}
+                customTimerTime={customTimerTime}
+                setCustomTimerTime={setCustomTimerTime}
+                customTimerInterval={customTimerInterval}
+                setCustomTimerInterval={setCustomTimerInterval}
+                customTimerMinutes={customTimerMinutes}
+                setCustomTimerMinutes={setCustomTimerMinutes}
+                customTimerSeconds={customTimerSeconds}
+                setCustomTimerSeconds={setCustomTimerSeconds}
+                customTimerName={customTimerName}
+                setCustomTimerName={setCustomTimerName}
+                customTimerSound={customTimerSound}
+                setCustomTimerSound={setCustomTimerSound}
+                customTimerOriginalTime={customTimerOriginalTime}
+                setCustomTimerOriginalTime={setCustomTimerOriginalTime}
+                startCustomTimer={startCustomTimer}
+                pauseCustomTimer={pauseCustomTimer}
+                stopCustomTimer={stopCustomTimer}
+                resetCustomTimer={resetCustomTimer}
+                selectedRecipe={selectedRecipe}
+                setSelectedRecipe={setSelectedRecipe}
+                selectedEggType={selectedEggType}
+                setSelectedEggType={setSelectedEggType}
+                eggTimerActive={eggTimerActive}
+                setEggTimerActive={setEggTimerActive}
+                eggTimerPaused={eggTimerPaused}
+                setEggTimerPaused={setEggTimerPaused}
+                eggTimerTime={eggTimerTime}
+                setEggTimerTime={setEggTimerTime}
+                eggTimerInterval={eggTimerInterval}
+                setEggTimerInterval={setEggTimerInterval}
+                eggTimerType={eggTimerType}
+                setEggTimerType={setEggTimerType}
+                eggTimerSound={eggTimerSound}
+                setEggTimerSound={setEggTimerSound}
+                eggTimerOriginalTime={eggTimerOriginalTime}
+                setEggTimerOriginalTime={setEggTimerOriginalTime}
+                eggTimerPhase={eggTimerPhase}
+                setEggTimerPhase={setEggTimerPhase}
+                eggTimerPhaseTime={eggTimerPhaseTime}
+                setEggTimerPhaseTime={setEggTimerPhaseTime}
+                eggTimerPhaseName={eggTimerPhaseName}
+                setEggTimerPhaseName={setEggTimerPhaseName}
+                startEggTimer={startEggTimer}
+                pauseEggTimer={pauseEggTimer}
+                stopEggTimer={stopEggTimer}
+                resetEggTimer={resetEggTimer}
+                getEggTimerDuration={getEggTimerDuration}
+                soundLoopInterval={soundLoopInterval}
+                setSoundLoopInterval={setSoundLoopInterval}
+                isSoundPlaying={isSoundPlaying}
+                setIsSoundPlaying={setIsSoundPlaying}
+                playEggTimerSound={playEggTimerSound}
+                startSoundLoop={startSoundLoop}
+                stopSoundLoop={stopSoundLoop}
+                timerPresets={timerPresets}
+                setTimerPresets={setTimerPresets}
+                timerHistory={timerHistory}
+                setTimerHistory={setTimerHistory}
+                addToTimerHistory={addToTimerHistory}
+                formatTime={formatTime}
+                formatEggTimerTime={formatEggTimerTime}
+                sendNotification={sendNotification}
               />
             );
           } else if (feature.id === "public-memos" && showPublicMemos) {
@@ -862,12 +1419,125 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 handleSaveEditReply={() => {}}
                 handleDeleteReply={() => {}}
                 handleCancelEditReply={() => {}}
-                replyContent=""
-                setReplyContent={() => {}}
+                replyContent={replyContent}
+                setReplyContent={setReplyContent}
               />
             );
           } else if (feature.id === "work-records" && showWorkRecords) {
-            return null; // WorkRecordsComponent temporarily disabled due to missing props
+            return (
+              <WorkRecordsComponent
+                key={feature.id}
+                showWorkRecords={showWorkRecords}
+                setShowWorkRecords={setShowWorkRecords}
+                closeOtherFeatures={closeOtherFeatures}
+                incomeExpenseRecords={incomeExpenseRecords}
+                workDiaries={workDiaries}
+                incomeExpenseRecordsLoading={false}
+                workDiariesLoading={false}
+                showIncomeExpenseForm={showIncomeExpenseForm}
+                setShowIncomeExpenseForm={setShowIncomeExpenseForm}
+                showDiaryForm={showDiaryForm}
+                setShowDiaryForm={setShowDiaryForm}
+                editingIncomeExpenseRecord={editingIncomeExpenseRecord}
+                setEditingIncomeExpenseRecord={setEditingIncomeExpenseRecord}
+                editingDiary={editingDiary}
+                setEditingDiary={setEditingDiary}
+                incomeExpenseDate={incomeExpenseDate}
+                setIncomeExpenseDate={setIncomeExpenseDate}
+                incomeExpenseAmount={incomeExpenseAmount}
+                setIncomeExpenseAmount={setIncomeExpenseAmount}
+                incomeExpenseType={incomeExpenseType}
+                setIncomeExpenseType={setIncomeExpenseType}
+                incomeExpenseNotes={incomeExpenseNotes}
+                setIncomeExpenseNotes={setIncomeExpenseNotes}
+                diaryDate={diaryDate}
+                setDiaryDate={setDiaryDate}
+                diaryTitle={diaryTitle}
+                setDiaryTitle={setDiaryTitle}
+                diaryContent={diaryContent}
+                setDiaryContent={setDiaryContent}
+                diaryMood={diaryMood}
+                setDiaryMood={setDiaryMood}
+                diaryActivities={diaryActivities}
+                setDiaryActivities={setDiaryActivities}
+                diaryTags={diaryTags}
+                setDiaryTags={setDiaryTags}
+                diaryIsPrivate={diaryIsPrivate}
+                setDiaryIsPrivate={setDiaryIsPrivate}
+                diaryWorkSummary={diaryWorkSummary}
+                setDiaryWorkSummary={setDiaryWorkSummary}
+                diaryAchievements={diaryAchievements}
+                setDiaryAchievements={setDiaryAchievements}
+                diaryChallenges={diaryChallenges}
+                setDiaryChallenges={setDiaryChallenges}
+                diaryLearnings={diaryLearnings}
+                setDiaryLearnings={setDiaryLearnings}
+                diaryNextGoals={diaryNextGoals}
+                setDiaryNextGoals={setDiaryNextGoals}
+                diaryEnergyLevel={diaryEnergyLevel}
+                setDiaryEnergyLevel={setDiaryEnergyLevel}
+                diaryStressLevel={diaryStressLevel}
+                setDiaryStressLevel={setDiaryStressLevel}
+                diaryWorkHours={diaryWorkHours}
+                setDiaryWorkHours={setDiaryWorkHours}
+                diaryBreakTime={diaryBreakTime}
+                setDiaryBreakTime={setDiaryBreakTime}
+                diaryProductivity={diaryProductivity}
+                setDiaryProductivity={setDiaryProductivity}
+                diaryNotes={diaryNotes}
+                setDiaryNotes={setDiaryNotes}
+                diaryGratitude={diaryGratitude}
+                setDiaryGratitude={setDiaryGratitude}
+                diaryReflection={diaryReflection}
+                setDiaryReflection={setDiaryReflection}
+                newAchievement={newAchievement}
+                setNewAchievement={setNewAchievement}
+                newChallenge={newChallenge}
+                setNewChallenge={setNewChallenge}
+                newLearning={newLearning}
+                setNewLearning={setNewLearning}
+                newNextGoal={newNextGoal}
+                setNewNextGoal={setNewNextGoal}
+                loadIncomeExpenseRecords={loadIncomeExpenseRecords}
+                loadWorkDiaries={loadWorkDiaries}
+                handleCreateIncomeExpenseRecord={handleCreateIncomeExpenseRecord}
+                handleCreateDiary={handleCreateDiary}
+                handleUpdateIncomeExpenseRecord={() => {}}
+                handleUpdateDiary={() => {}}
+                handleDeleteIncomeExpenseRecord={() => {}}
+                handleDeleteDiary={() => {}}
+                handleEditIncomeExpenseRecord={() => {}}
+                handleEditDiary={() => {}}
+                handleViewIncomeExpenseRecord={() => {}}
+                handleViewDiary={() => {}}
+                showCalendar={showCalendar}
+                setShowCalendar={setShowCalendar}
+                currentDate={currentDate}
+                setCurrentDate={setCurrentDate}
+                currentMonth={currentMonth}
+                setCurrentMonth={setCurrentMonth}
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                showRecordDetail={showRecordDetail}
+                setShowRecordDetail={setShowRecordDetail}
+                selectedRecord={selectedRecord}
+                setSelectedRecord={setSelectedRecord}
+                selectedRecordType={selectedRecordType}
+                setSelectedRecordType={setSelectedRecordType}
+                monthlyMemo={monthlyMemo}
+                setMonthlyMemo={setMonthlyMemo}
+                editingMonthlyMemo={editingMonthlyMemo}
+                setEditingMonthlyMemo={setEditingMonthlyMemo}
+                loadMonthlyMemo={loadMonthlyMemo}
+                saveMonthlyMemo={saveMonthlyMemo}
+                startEditingMonthlyMemo={startEditingMonthlyMemo}
+                cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
+                navigateMonth={navigateMonth}
+                openDiaryForm={openDiaryForm}
+                openIncomeExpenseForm={openIncomeExpenseForm}
+                user={user}
+              />
+            );
           } else if (feature.id === "sound-app" && showSoundApp) {
             return (
               <SoundAppComponent
