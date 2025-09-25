@@ -1164,30 +1164,6 @@ function App() {
 
 
 
-  const playAlarmSound = (audioContext: AudioContext) => {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    // アラーム音: 高音の連続音
-    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
-    oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.1);
-    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.2);
-    oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.3);
-    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.4);
-    oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.5);
-
-    gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(
-      0.01,
-      audioContext.currentTime + 1.0
-    );
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 1.0);
-  };
 
   const playEggTimerSound = async () => {
     try {
