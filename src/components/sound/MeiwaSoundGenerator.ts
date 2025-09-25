@@ -65,7 +65,7 @@ export const generateMeiwaRhythm = (
   ] as Array<{ time: number; note: string; category: string; volume: number; detune?: number }>;
 
   // すべてのパターンを統合して再生
-  const scheduledEvents: string[] = [];
+  const scheduledEvents: number[] = [];
   [...drumPattern, ...melodyPattern, ...bassPattern, ...layeredPattern].forEach((pattern) => {
     const delay = pattern.time * beatDuration * 0.25 / 1000; // convert ms to seconds for Tone.Transport
     const baseFrequency = Tone.Frequency(pattern.note).toFrequency();

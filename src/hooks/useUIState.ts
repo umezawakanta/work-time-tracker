@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserSettings, Feature } from '../types';
+import { AUTH_CONSTANTS } from '../constants/auth';
 import { availableThemes } from '../constants/themes';
 import { availableFonts, FontSettings, DEFAULT_FONT_SETTINGS } from '../constants/fonts';
 
@@ -107,7 +108,7 @@ export const useUIState = () => {
     
     // サーバーに保存する処理
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem(AUTH_CONSTANTS.ACCESS_TOKEN_KEY);
       if (token) {
         await fetch('/api/user-settings', {
           method: 'POST',

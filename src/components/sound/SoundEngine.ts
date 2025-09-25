@@ -5,6 +5,26 @@ import { ensureAudioContextReady } from "./AudioContextUtils";
 let globalToneInitialized = false;
 let toneInitializationPromise: Promise<boolean> | null = null;
 
+// カテゴリに応じた音符を取得する関数
+const getNoteForCategory = (categoryId: string, genre?: string, frequency?: number): string => {
+  // 主食や日本風の場合は固定のドラム音
+  if (categoryId === "staple" || genre === "japanese") {
+    return "C2";
+  }
+  
+  // その他の場合は周波数から音符を生成
+  if (frequency) {
+    try {
+      return Tone.Frequency(frequency, "hz").toNote();
+    } catch (freqError) {
+      throw new Error("Invalid frequency specified for note conversion");
+    }
+  }
+  
+  // デフォルトの音符
+  return "C4";
+};
+
 // 8bit風エフェクトチェーンを作成（遅延初期化）
 export const create8bitEffects = async () => {
   // Tone.jsが初期化されているか確認
@@ -285,17 +305,8 @@ export const playSound = async (
     const volumeDb = Math.log10(Math.max(0.001, volume)) * 20;
     instrument.volume.value = volumeDb;
 
-    if (categoryId === "staple" || genre === "japanese") {
-      instrument.triggerAttackRelease("C2", duration + "s");
-    } else {
-      let note;
-      try {
-        note = Tone.Frequency(frequency, "hz").toNote();
-      } catch (freqError) {
-        throw new Error("Invalid frequency specified for note conversion");
-      }
-      instrument.triggerAttackRelease(note, duration + "s");
-    }
+    const noteToPlay = getNoteForCategory(categoryId, genre, frequency);
+    instrument.triggerAttackRelease(noteToPlay, duration + "s");
   } catch (error) {
     console.log(`Could not play sound for ${categoryId}:`, error);
   }
