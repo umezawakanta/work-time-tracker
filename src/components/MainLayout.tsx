@@ -175,6 +175,40 @@ interface MainLayoutProps {
   setBookNotes: (notes: string) => void;
   selectedBookCategory: string;
   setSelectedBookCategory: (category: string) => void;
+  // 料理タイマー関連の状態
+  selectedRecipe: string;
+  setSelectedRecipe: (recipe: string) => void;
+  selectedEggType: string;
+  setSelectedEggType: (type: string) => void;
+  eggTimerActive: boolean;
+  setEggTimerActive: (active: boolean) => void;
+  eggTimerPaused: boolean;
+  setEggTimerPaused: (paused: boolean) => void;
+  eggTimerTime: number;
+  setEggTimerTime: (time: number) => void;
+  eggTimerInterval: NodeJS.Timeout | null;
+  setEggTimerInterval: (interval: NodeJS.Timeout | null) => void;
+  eggTimerSound: string;
+  setEggTimerSound: (sound: string) => void;
+  eggTimerOriginalTime: number;
+  setEggTimerOriginalTime: (time: number) => void;
+  eggTimerPhase: number;
+  setEggTimerPhase: (phase: number) => void;
+  eggTimerPhaseTime: number;
+  setEggTimerPhaseTime: (time: number) => void;
+  eggTimerPhaseName: string;
+  setEggTimerPhaseName: (name: string) => void;
+  pauseEggTimer: () => void;
+  stopEggTimer: () => void;
+  resetEggTimer: () => void;
+  getEggTimerDuration: (type: "soft" | "medium" | "hard") => number;
+  // 音響関連のハンドラー関数
+  playBellSound: (audioContext: AudioContext) => void;
+  playChimeSound: (audioContext: AudioContext) => void;
+  playBeepSound: (audioContext: AudioContext) => void;
+  playAlarmSound: (audioContext: AudioContext) => void;
+  startSoundLoop: (soundType: "bell" | "chime" | "beep" | "alarm") => void;
+  stopSoundLoop: () => void;
   // セッター関数
   setShowCharacterHome: (show: boolean) => void;
   setShowProjects: (show: boolean) => void;
@@ -533,6 +567,40 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setBookNotes,
   selectedBookCategory,
   setSelectedBookCategory,
+  // 料理タイマー関連の状態
+  selectedRecipe,
+  setSelectedRecipe,
+  selectedEggType,
+  setSelectedEggType,
+  eggTimerActive,
+  setEggTimerActive,
+  eggTimerPaused,
+  setEggTimerPaused,
+  eggTimerTime,
+  setEggTimerTime,
+  eggTimerInterval,
+  setEggTimerInterval,
+  eggTimerSound,
+  setEggTimerSound,
+  eggTimerOriginalTime,
+  setEggTimerOriginalTime,
+  eggTimerPhase,
+  setEggTimerPhase,
+  eggTimerPhaseTime,
+  setEggTimerPhaseTime,
+  eggTimerPhaseName,
+  setEggTimerPhaseName,
+  pauseEggTimer,
+  stopEggTimer,
+  resetEggTimer,
+  getEggTimerDuration,
+  // 音響関連のハンドラー関数
+  playBellSound,
+  playChimeSound,
+  playBeepSound,
+  playAlarmSound,
+  startSoundLoop,
+  stopSoundLoop,
   setShowCharacterHome,
   setShowProjects,
   setShowCookingTimer,
@@ -1122,31 +1190,37 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 selectedEggType={selectedEggType}
                 setSelectedEggType={setSelectedEggType}
                 eggTimerActive={eggTimerActive}
+                setEggTimerActive={setEggTimerActive}
                 eggTimerPaused={eggTimerPaused}
+                setEggTimerPaused={setEggTimerPaused}
                 eggTimerTime={eggTimerTime}
-                eggTimerOriginalTime={eggTimerOriginalTime}
-                eggTimerPhase={eggTimerPhase}
-                eggTimerPhaseTime={eggTimerPhaseTime}
-                eggTimerPhaseName={eggTimerPhaseName}
+                setEggTimerTime={setEggTimerTime}
+                eggTimerInterval={eggTimerInterval}
+                setEggTimerInterval={setEggTimerInterval}
                 eggTimerSound={eggTimerSound}
                 setEggTimerSound={setEggTimerSound}
-                setEggTimerTime={setEggTimerTime}
+                eggTimerOriginalTime={eggTimerOriginalTime}
                 setEggTimerOriginalTime={setEggTimerOriginalTime}
-                setEggTimerActive={setEggTimerActive}
-                setEggTimerPaused={setEggTimerPaused}
+                eggTimerPhase={eggTimerPhase}
                 setEggTimerPhase={setEggTimerPhase}
+                eggTimerPhaseTime={eggTimerPhaseTime}
                 setEggTimerPhaseTime={setEggTimerPhaseTime}
+                eggTimerPhaseName={eggTimerPhaseName}
                 setEggTimerPhaseName={setEggTimerPhaseName}
-                setEggTimerInterval={setEggTimerInterval}
-                setMessage={() => {}}
-                sendNotification={sendNotification}
-                startSoundLoop={startSoundLoop}
-                addToTimerHistory={addToTimerHistory}
-                playEggTimerSound={playEggTimerSound}
                 pauseEggTimer={pauseEggTimer}
                 stopEggTimer={stopEggTimer}
                 resetEggTimer={resetEggTimer}
                 getEggTimerDuration={getEggTimerDuration}
+                playBellSound={playBellSound}
+                playChimeSound={playChimeSound}
+                playBeepSound={playBeepSound}
+                playAlarmSound={playAlarmSound}
+                startSoundLoop={startSoundLoop}
+                stopSoundLoop={stopSoundLoop}
+                setMessage={() => {}}
+                sendNotification={sendNotification}
+                addToTimerHistory={addToTimerHistory}
+                playEggTimerSound={playEggTimerSound}
                 getTotalCookingTime={(recipeKey: string, eggType?: "soft" | "medium" | "hard") => {
                   if (recipeKey === "boiled-egg" && eggType) {
                     return getEggTimerDuration(eggType);

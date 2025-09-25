@@ -230,46 +230,7 @@ function App() {
 
   // お仕事記録の状態
   const [showWorkRecords, setShowWorkRecords] = useState(false);
-  const [showIncomeExpenseForm, setShowIncomeExpenseForm] = useState(false);
-  const [showDiaryForm, setShowDiaryForm] = useState(false);
-  const [editingIncomeExpenseRecord, setEditingIncomeExpenseRecord] = useState<any>(null);
-  const [editingDiary, setEditingDiary] = useState<any>(null);
 
-  // 収入・支出記録フォームの状態
-  const [incomeExpenseDate, setIncomeExpenseDate] = useState("");
-  const [incomeExpenseAmount, setIncomeExpenseAmount] = useState("");
-  const [incomeExpenseType, setIncomeExpenseType] = useState<"income" | "expense">("income");
-  const [incomeExpenseNotes, setIncomeExpenseNotes] = useState("");
-
-  // 日記フォームの状態
-  const [diaryDate, setDiaryDate] = useState("");
-  const [diaryTitle, setDiaryTitle] = useState("");
-  const [diaryContent, setDiaryContent] = useState("");
-  const [diaryMood, setDiaryMood] = useState("4");
-  const [diaryActivities, setDiaryActivities] = useState<string[]>([]);
-  const [diaryTags, setDiaryTags] = useState("");
-  const [diaryIsPrivate, setDiaryIsPrivate] = useState(true);
-
-  // 新しい日記項目の状態
-  const [diaryWorkSummary, setDiaryWorkSummary] = useState("");
-  const [diaryAchievements, setDiaryAchievements] = useState<string[]>([]);
-  const [diaryChallenges, setDiaryChallenges] = useState<string[]>([]);
-  const [diaryLearnings, setDiaryLearnings] = useState<string[]>([]);
-  const [diaryNextGoals, setDiaryNextGoals] = useState<string[]>([]);
-  const [diaryEnergyLevel, setDiaryEnergyLevel] = useState(5);
-  const [diaryStressLevel, setDiaryStressLevel] = useState(5);
-  const [diaryWorkHours, setDiaryWorkHours] = useState(0);
-  const [diaryBreakTime, setDiaryBreakTime] = useState(0);
-  const [diaryProductivity, setDiaryProductivity] = useState(5);
-  const [diaryNotes, setDiaryNotes] = useState("");
-  const [diaryGratitude, setDiaryGratitude] = useState("");
-  const [diaryReflection, setDiaryReflection] = useState("");
-
-  // 配列項目の一時入力状態
-  const [newAchievement, setNewAchievement] = useState("");
-  const [newChallenge, setNewChallenge] = useState("");
-  const [newLearning, setNewLearning] = useState("");
-  const [newNextGoal, setNewNextGoal] = useState("");
 
   // メモ関連の状態
   const [showMemos, setShowMemos] = useState(false);
@@ -867,6 +828,183 @@ function App() {
   const getReadingProgress = (book: any) => {
     if (!book.totalPages || book.totalPages === 0) return 0;
     return Math.round((book.currentPage || 0) / book.totalPages * 100);
+  };
+
+  // 料理タイマー関連のハンドラー関数
+  const getEggTimerDuration = (type: "soft" | "medium" | "hard") => {
+    switch (type) {
+      case "soft":
+        return 6 * 60; // 6分
+      case "medium":
+        return 8 * 60; // 8分
+      case "hard":
+        return 10 * 60; // 10分
+      default:
+        return 8 * 60;
+    }
+  };
+
+  const pauseEggTimer = () => {
+    if (eggTimerInterval) {
+      clearInterval(eggTimerInterval);
+      setEggTimerInterval(null);
+    }
+    setEggTimerPaused(true);
+  };
+
+  const stopEggTimer = () => {
+    if (eggTimerInterval) {
+      clearInterval(eggTimerInterval);
+      setEggTimerInterval(null);
+    }
+    setEggTimerActive(false);
+    setEggTimerPaused(false);
+    setEggTimerTime(0);
+    setEggTimerPhase(0);
+    setEggTimerPhaseTime(0);
+    setEggTimerPhaseName("");
+  };
+
+  const resetEggTimer = () => {
+    stopEggTimer();
+    setEggTimerTime(getEggTimerDuration(eggTimerType as "soft" | "medium" | "hard"));
+  };
+
+  // 音響関連のハンドラー関数
+  const playBellSound = (audioContext: AudioContext) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // 鐘の音: 低い音から高い音へ
+    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+
+    oscillator.type = "sine";
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 1.0);
+  };
+
+  const playChimeSound = (audioContext: AudioContext) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // チャイム音: 上昇する音階
+    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
+    oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.15); // C#5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.3); // E5
+
+    oscillator.type = "sine";
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.8);
+  };
+
+  const playBeepSound = (audioContext: AudioContext) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // ビープ音: 短い連続音
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.1);
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+
+    oscillator.type = "square";
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.1);
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime + 0.15);
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.25);
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime + 0.3);
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.4);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.6);
+  };
+
+  const playAlarmSound = (audioContext: AudioContext) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // アラーム音: 高音の連続音
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.1);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.2);
+    oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.3);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.4);
+
+    oscillator.type = "square";
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 1.0);
+  };
+
+  const startSoundLoop = (soundType: "bell" | "chime" | "beep" | "alarm") => {
+    if (isSoundPlaying) return;
+
+    setIsSoundPlaying(true);
+
+    const playSound = async () => {
+      try {
+        const audioContext = new (window.AudioContext ||
+          (window as any).webkitAudioContext)();
+        if (audioContext.state === "suspended") {
+          await audioContext.resume();
+        }
+
+        switch (soundType) {
+          case "bell":
+            playBellSound(audioContext);
+            break;
+          case "chime":
+            playChimeSound(audioContext);
+            break;
+          case "beep":
+            playBeepSound(audioContext);
+            break;
+          case "alarm":
+            playAlarmSound(audioContext);
+            break;
+          default:
+            playBellSound(audioContext);
+        }
+      } catch (error) {
+        console.error("音声ループ再生エラー:", error);
+      }
+    };
+
+    // 即座に1回再生
+    playSound();
+
+    // 3秒間隔でループ再生
+    const interval = setInterval(playSound, 3000);
+    setSoundLoopInterval(interval);
+  };
+
+  const stopSoundLoop = () => {
+    if (soundLoopInterval) {
+      clearInterval(soundLoopInterval);
+      setSoundLoopInterval(null);
+    }
+    setIsSoundPlaying(false);
   };
 
   // メモ作成ハンドラー（App_backup.tsxから復元）
@@ -1603,6 +1741,40 @@ function App() {
       setMonthlyMemo={setMonthlyMemo}
       editingMonthlyMemo={editingMonthlyMemo}
       setEditingMonthlyMemo={setEditingMonthlyMemo}
+      // 料理タイマー関連の状態
+      selectedRecipe={selectedRecipe}
+      setSelectedRecipe={setSelectedRecipe}
+      selectedEggType={selectedEggType}
+      setSelectedEggType={setSelectedEggType}
+      eggTimerActive={eggTimerActive}
+      setEggTimerActive={setEggTimerActive}
+      eggTimerPaused={eggTimerPaused}
+      setEggTimerPaused={setEggTimerPaused}
+      eggTimerTime={eggTimerTime}
+      setEggTimerTime={setEggTimerTime}
+      eggTimerInterval={eggTimerInterval}
+      setEggTimerInterval={setEggTimerInterval}
+      eggTimerSound={eggTimerSound}
+      setEggTimerSound={setEggTimerSound}
+      eggTimerOriginalTime={eggTimerOriginalTime}
+      setEggTimerOriginalTime={setEggTimerOriginalTime}
+      eggTimerPhase={eggTimerPhase}
+      setEggTimerPhase={setEggTimerPhase}
+      eggTimerPhaseTime={eggTimerPhaseTime}
+      setEggTimerPhaseTime={setEggTimerPhaseTime}
+      eggTimerPhaseName={eggTimerPhaseName}
+      setEggTimerPhaseName={setEggTimerPhaseName}
+      pauseEggTimer={pauseEggTimer}
+      stopEggTimer={stopEggTimer}
+      resetEggTimer={resetEggTimer}
+      getEggTimerDuration={getEggTimerDuration}
+      // 音響関連のハンドラー関数
+      playBellSound={playBellSound}
+      playChimeSound={playChimeSound}
+      playBeepSound={playBeepSound}
+      playAlarmSound={playAlarmSound}
+      startSoundLoop={startSoundLoop}
+      stopSoundLoop={stopSoundLoop}
       showBugReportModal={errorHandling.showBugReportModal}
       showUpdateRequestModal={errorHandling.showUpdateRequestModal}
       setShowCharacterHome={uiState.setShowCharacterHome}
