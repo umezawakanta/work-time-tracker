@@ -825,18 +825,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           </div>
         )}
 
-        <UpdateRequestModal
-          isOpen={showUpdateRequestModal}
-          onClose={() => setShowUpdateRequestModal(false)}
-          onSubmit={onUpdateRequestSubmit}
-        />
-
-        <BugReportModal
-          isOpen={showBugReportModal}
-          onClose={() => setShowBugReportModal(false)}
-          onSubmit={onBugReportSubmit}
-        />
       </main>
+
+      <UpdateRequestModal
+        isOpen={showUpdateRequestModal}
+        onClose={() => setShowUpdateRequestModal(false)}
+        onSubmit={onUpdateRequestSubmit}
+      />
+
+      <BugReportModal
+        isOpen={showBugReportModal}
+        onClose={() => setShowBugReportModal(false)}
+        onSubmit={onBugReportSubmit}
+      />
       </div>
     </>
   );
