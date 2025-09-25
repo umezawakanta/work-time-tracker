@@ -1,4 +1,5 @@
 import * as Tone from "tone";
+import { ensureAudioContextReady } from "./AudioContextUtils";
 
 // グローバルでTone.jsの初期化状態を管理
 let globalToneInitialized = false;
@@ -53,9 +54,9 @@ export const createMeiwaInstrument = (categoryId: string) => {
         // ドラム風の8bit音
         return new Tone.MonoSynth({
           oscillator: { 
-            type: "square",
+            type: "square" as const,
             detune: -12, // 低音にデチューン
-          } as any,
+          },
           envelope: { 
             attack: 0.001, 
             decay: 0.05, 
@@ -63,9 +64,9 @@ export const createMeiwaInstrument = (categoryId: string) => {
             release: 0.1 
           },
           filter: {
-            type: "lowpass",
+            type: "lowpass" as const,
             frequency: 400,
-          } as any,
+          },
         }).connect(effects);
 
       case "side":
@@ -74,7 +75,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           oscillator: { 
             type: "sawtooth",
             detune: -6,
-          } as any,
+          },
           envelope: { 
             attack: 0.01, 
             decay: 0.1, 
@@ -84,7 +85,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           filter: {
             type: "lowpass",
             frequency: 600,
-          } as any,
+          },
         }).connect(effects);
 
       case "miso":
@@ -93,7 +94,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           oscillator: { 
             type: "square",
             detune: 0,
-          } as any,
+          },
           envelope: { 
             attack: 0.001, 
             decay: 0.02, 
@@ -103,7 +104,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           filter: {
             type: "lowpass",
             frequency: 1200,
-          } as any,
+          },
         }).connect(effects);
 
       case "meat":
@@ -112,7 +113,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           oscillator: { 
             type: "sawtooth",
             detune: 3,
-          } as any,
+          },
           envelope: { 
             attack: 0.001, 
             decay: 0.03, 
@@ -122,7 +123,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           filter: {
             type: "lowpass",
             frequency: 800,
-          } as any,
+          },
         }).connect(effects);
 
       case "fish":
@@ -131,7 +132,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           oscillator: { 
             type: "triangle",
             detune: 6,
-          } as any,
+          },
           envelope: { 
             attack: 0.001, 
             decay: 0.01, 
@@ -141,7 +142,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           filter: {
             type: "lowpass",
             frequency: 2000,
-          } as any,
+          },
         }).connect(effects);
 
       case "vegetable":
@@ -150,7 +151,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           oscillator: { 
             type: "square",
             detune: -3,
-          } as any,
+          },
           envelope: { 
             attack: 0.001, 
             decay: 0.05, 
@@ -160,7 +161,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           filter: {
             type: "lowpass",
             frequency: 1000,
-          } as any,
+          },
         }).connect(effects);
 
       default:
@@ -168,7 +169,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           oscillator: { 
             type: "square",
             detune: 0,
-          } as any,
+          },
           envelope: { 
             attack: 0.001, 
             decay: 0.02, 
@@ -178,7 +179,7 @@ export const createMeiwaInstrument = (categoryId: string) => {
           filter: {
             type: "lowpass",
             frequency: 1000,
-          } as any,
+          },
         }).connect(effects);
     }
   } catch (error) {
@@ -227,14 +228,10 @@ export const playSound = async (
   }
 
   // AudioContextの状態を確認し、必要に応じて再開
-  if (Tone.context.state === 'suspended') {
-    try {
-      await Tone.context.resume();
-      console.log("AudioContext resumed for sound playback");
-    } catch (error) {
-      console.error("Failed to resume AudioContext:", error);
-      return;
-    }
+  const isReady = await ensureAudioContextReady();
+  if (!isReady) {
+    console.warn("AudioContext is not ready, skipping sound playback");
+    return;
   }
 
 
@@ -259,7 +256,7 @@ export const playSound = async (
       try {
         note = Tone.Frequency(frequency, "hz").toNote();
       } catch (freqError) {
-        throw new Error(`Failed to convert frequency ${frequency} Hz to a musical note: ${freqError instanceof Error ? freqError.message : String(freqError)}`);
+        throw new Error("Invalid frequency for musical note conversion");
       }
       instrument.triggerAttackRelease(note, duration + "s");
     }

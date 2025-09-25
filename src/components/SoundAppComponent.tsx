@@ -15,6 +15,7 @@ import { REPEAT_OPTIONS } from "./sound/constants";
 import { MealRecord } from "./sound/MealRecording";
 import { ScoreData } from "./sound/ScoreDisplay";
 import { MusicGenre } from "./sound/GenreSelector";
+import { ensureAudioContextReady } from "./sound/AudioContextUtils";
 
 interface SoundAppComponentProps {
   showSoundApp: boolean;
@@ -71,14 +72,10 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const playSoundCallback = useCallback(
     async (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => {
       // AudioContextの状態を確認
-      if (Tone.context.state === 'suspended') {
-        try {
-          await Tone.context.resume();
-          console.log("AudioContext resumed before sound playback");
-        } catch (error) {
-          console.error("Failed to resume AudioContext:", error);
-          return;
-        }
+      const isReady = await ensureAudioContextReady();
+      if (!isReady) {
+        console.warn("AudioContext is not ready, skipping sound playback");
+        return;
       }
 
       await playSound(

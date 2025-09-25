@@ -104,6 +104,23 @@ export const useUIState = () => {
       updatedSettings.enabledFeatures = [...updatedSettings.enabledFeatures, featureId];
     }
     setUserSettings(updatedSettings);
+    
+    // サーバーに保存する処理
+    try {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        await fetch('/api/user-settings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedSettings),
+        });
+      }
+    } catch (error) {
+      console.error('Failed to save user settings:', error);
+    }
   };
 
   // 他の機能を閉じる

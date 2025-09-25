@@ -7,6 +7,7 @@ import {
   Formatter,
   Accidental,
 } from "vexflow";
+import { SUPPORTED_KEY_SIGNATURES, type KeySignature } from "./MusicConstants";
 
 export interface NoteData {
   pitch: string;
@@ -22,15 +23,6 @@ export interface ScoreData {
   key: string;
 }
 
-// VexFlowでサポートされている調号のリスト（メジャー・マイナー両方）
-const SUPPORTED_KEY_SIGNATURES = [
-  // メジャーキー
-  'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#',
-  'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb',
-  // マイナーキー
-  'Am', 'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'D#m', 'A#m',
-  'Dm', 'Gm', 'Cm', 'Fm', 'Bbm', 'Ebm', 'Abm', 'Dbm', 'Gbm'
-] as const;
 
 // Voice.Modeの型安全なアクセス
 const VOICE_MODE_SOFT = 3; // VexFlowの定数値
@@ -61,24 +53,40 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
     scoreContainerRef.current.innerHTML = "";
 
     try {
+      // コンテナ要素の存在確認
+      if (!scoreContainerRef.current) {
+        throw new Error("Score container element not found");
+      }
+
       // レンダラーの作成
       const renderer = new Renderer(
         scoreContainerRef.current,
         Renderer.Backends.SVG
       );
+      
+      if (!renderer) {
+        throw new Error("Failed to create VexFlow renderer");
+      }
+      
       renderer.resize(800, 200);
       const context = renderer.getContext();
+      
+      if (!context) {
+        throw new Error("Failed to get renderer context");
+      }
       context.setFont("Arial", 10);
 
       // 譜表の作成（位置を少し調整）
       const stave = new Stave(10, 40, 780);
 
       // 拍子記号と調号を追加（VexFlowが解釈できない場合はCにフォールバック）
-      const keyForVexflow =
-        typeof scoreData.key === "string" &&
-        SUPPORTED_KEY_SIGNATURES.includes(scoreData.key as any)
-          ? scoreData.key
-          : "C";
+      const keyForVexflow = (() => {
+        if (typeof scoreData.key === "string" && 
+            SUPPORTED_KEY_SIGNATURES.includes(scoreData.key as typeof SUPPORTED_KEY_SIGNATURES[number])) {
+          return scoreData.key;
+        }
+        return "C";
+      })();
       stave
         .addClef("treble")
         .addTimeSignature(scoreData.timeSignature || "4/4")

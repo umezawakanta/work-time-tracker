@@ -10,7 +10,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         oscillator: { 
           type: "sawtooth",
           detune: 5,
-        } as any,
+        },
         envelope: { 
           attack: 0.001, 
           decay: 0.2, 
@@ -27,7 +27,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         oscillator: { 
           type: "sawtooth",
           detune: -10,
-        } as any,
+        },
         envelope: { 
           attack: 0.01, 
           decay: 0.2, 
@@ -37,7 +37,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         modulation: { 
           type: "square",
           detune: 5,
-        } as any,
+        },
         modulationEnvelope: {
           attack: 0.01,
           decay: 0.1,
@@ -54,7 +54,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         oscillator: { 
           type: "triangle",
           detune: 3,
-        } as any,
+        },
         envelope: { 
           attack: 0.02, 
           decay: 0.1, 
@@ -64,7 +64,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         modulation: { 
           type: "sine",
           detune: -2,
-        } as any,
+        },
         modulationEnvelope: {
           attack: 0.01,
           decay: 0.05,
@@ -81,7 +81,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         oscillator: { 
           type: "sawtooth",
           detune: 8,
-        } as any,
+        },
         envelope: { 
           attack: 0.001, 
           decay: 0.2, 
@@ -91,7 +91,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         modulation: { 
           type: "square",
           detune: -8,
-        } as any,
+        },
         modulationEnvelope: {
           attack: 0.005,
           decay: 0.3,
@@ -108,7 +108,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         oscillator: { 
           type: "sawtooth",
           detune: 12,
-        } as any,
+        },
         envelope: { 
           attack: 0.01, 
           decay: 0.05, 
@@ -118,7 +118,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         modulation: { 
           type: "triangle",
           detune: -5,
-        } as any,
+        },
         modulationEnvelope: {
           attack: 0.02,
           decay: 0.1,
@@ -135,7 +135,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         oscillator: { 
           type: "sine",
           detune: 2,
-        } as any,
+        },
         envelope: { 
           attack: 0.005, 
           decay: 0.2, 
@@ -145,7 +145,7 @@ export const createInstrumentForCategory = (categoryId: string) => {
         modulation: { 
           type: "sine",
           detune: 1,
-        } as any,
+        },
         modulationEnvelope: {
           attack: 0.01,
           decay: 0.3,
