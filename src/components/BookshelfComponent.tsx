@@ -36,7 +36,6 @@ interface BookshelfComponentProps {
   handleEditBook: (book: Book) => void;
   handleDeleteBook: (bookId: string, bookTitle: string) => void;
   handleBookCategoryChange: (category: string) => void;
-  getBookCategories: () => string[];
   getReadingProgress: (book: Book) => number;
 }
 
