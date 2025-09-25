@@ -60,7 +60,9 @@ export const startCookingTimer = (
         addToTimerHistory
     } = setters;
 
-    if (eggTimerActive && !eggTimerPaused) return;
+    if (eggTimerActive && !eggTimerPaused) {
+        return;
+    }
 
     const phases = getRecipePhases(selectedRecipe, selectedRecipe === 'egg' ? selectedEggType : undefined);
     const totalTime = getTotalCookingTime(selectedRecipe, selectedRecipe === 'egg' ? selectedEggType : undefined);
