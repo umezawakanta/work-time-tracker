@@ -266,20 +266,6 @@ function App() {
   const [bookNotes, setBookNotes] = useState("");
   const [selectedBookCategory, setSelectedBookCategory] = useState("all");
 
-  // メモ関連の状態
-  const [showMemos, setShowMemos] = useState(false);
-  const [showMemoForm, setShowMemoForm] = useState(false);
-  const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
-  const [memoTitle, setMemoTitle] = useState("");
-  const [memoContent, setMemoContent] = useState("");
-  const [memoCategory, setMemoCategory] = useState("");
-  const [memoTags, setMemoTags] = useState("");
-  const [memoIsPublic, setMemoIsPublic] = useState(false);
-  const [memoIsFamilyOnly, setMemoIsFamilyOnly] = useState(false);
-  const [memoIsAdminOnly, setMemoIsAdminOnly] = useState(false);
-  const [memoSearchTerm, setMemoSearchTerm] = useState("");
-  const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
-
   // エラーレポートコールバックの設定
   useEffect(() => {
     setErrorReportCallback(errorHandling.handleApiErrorReport);
