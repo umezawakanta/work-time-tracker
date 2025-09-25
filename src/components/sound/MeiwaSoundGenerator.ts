@@ -73,8 +73,8 @@ export const generateMeiwaRhythm = (
       baseFrequency;
     const duration = 0.05; // 短い8bit風の音
 
-    const eventId = Tone.Transport.scheduleOnce(async (time) => {
-      await playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
+    const eventId = Tone.Transport.scheduleOnce((time) => {
+      playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
     }, "+" + delay);
     scheduledEvents.push(eventId);
   });
