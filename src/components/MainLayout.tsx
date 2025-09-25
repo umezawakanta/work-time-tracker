@@ -41,6 +41,8 @@ interface MainLayoutProps {
   showThemeSettings: boolean;
   showFontSettings: boolean;
   showFeatureSettings: boolean;
+  showBugReportModal: boolean;
+  showUpdateRequestModal: boolean;
   // セッター関数
   setShowCharacterHome: (show: boolean) => void;
   setShowProjects: (show: boolean) => void;
@@ -60,6 +62,8 @@ interface MainLayoutProps {
   setShowThemeSettings: (show: boolean) => void;
   setShowFontSettings: (show: boolean) => void;
   setShowFeatureSettings: (show: boolean) => void;
+  setShowBugReportModal: (show: boolean) => void;
+  setShowUpdateRequestModal: (show: boolean) => void;
   // その他の関数
   closeOtherFeatures: (activeFeature: string) => void;
 }
@@ -85,6 +89,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showThemeSettings,
   showFontSettings,
   showFeatureSettings,
+  showBugReportModal,
+  showUpdateRequestModal,
   setShowCharacterHome,
   setShowProjects,
   setShowCookingTimer,
@@ -103,6 +109,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setShowThemeSettings,
   setShowFontSettings,
   setShowFeatureSettings,
+  setShowBugReportModal,
+  setShowUpdateRequestModal,
   closeOtherFeatures,
 }) => {
   // CookingTimerSection の状態管理
@@ -389,7 +397,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           setShowCharacterHome(true);
         }}
         handleLogout={() => {
+          console.log('MainLayout - Logout button clicked');
           // ログアウト処理
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('authToken');
+          window.location.reload();
         }}
         closeOtherFeatures={closeOtherFeatures}
         setShowThemeSettings={setShowThemeSettings}
@@ -397,8 +409,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         setShowFeatureSettings={setShowFeatureSettings}
         loadUserSettings={() => {}}
         isTimeTrackingActive={false}
-        onUpdateRequestClick={() => {}}
-        onBugReportClick={() => {}}
+        onUpdateRequestClick={() => {
+          console.log('MainLayout - Update request button clicked');
+          setShowUpdateRequestModal(true);
+        }}
+        onBugReportClick={() => {
+          console.log('MainLayout - Bug report button clicked');
+          setShowBugReportModal(true);
+        }}
       />
 
       <main className="main-content">
@@ -747,6 +765,58 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 <div className="modal-body">
                   <p>機能設定機能は準備中です。</p>
                   <p>近日中に利用可能になります。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showBugReportModal && (
+          <div className="bug-report-modal">
+            <div className="modal-overlay" onClick={() => setShowBugReportModal(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>🐛 不具合報告</h3>
+                  <button 
+                    className="close-button"
+                    onClick={() => setShowBugReportModal(false)}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <p>不具合を発見された場合は、以下の方法でお知らせください：</p>
+                  <ul>
+                    <li>公開メモ機能で「不具合報告」カテゴリで投稿</li>
+                    <li>管理者に直接連絡</li>
+                  </ul>
+                  <p>報告いただいた内容は開発の参考にさせていただきます。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showUpdateRequestModal && (
+          <div className="update-request-modal">
+            <div className="modal-overlay" onClick={() => setShowUpdateRequestModal(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>💡 更新要望</h3>
+                  <button 
+                    className="close-button"
+                    onClick={() => setShowUpdateRequestModal(false)}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <p>新機能の要望や改善提案は、以下の方法でお知らせください：</p>
+                  <ul>
+                    <li>公開メモ機能で「更新要望」カテゴリで投稿</li>
+                    <li>管理者に直接連絡</li>
+                  </ul>
+                  <p>いただいたご要望は今後の開発に反映させていただきます。</p>
                 </div>
               </div>
             </div>

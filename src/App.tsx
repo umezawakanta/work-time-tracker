@@ -198,6 +198,8 @@ function App() {
         showThemeSettings={uiState.showThemeSettings}
         showFontSettings={uiState.showFontSettings}
         showFeatureSettings={uiState.showFeatureSettings}
+        showBugReportModal={uiState.showBugReportModal}
+        showUpdateRequestModal={uiState.showUpdateRequestModal}
         setShowCharacterHome={uiState.setShowCharacterHome}
         setShowProjects={uiState.setShowProjects}
         setShowCookingTimer={uiState.setShowCookingTimer}
@@ -216,6 +218,8 @@ function App() {
         setShowThemeSettings={uiState.setShowThemeSettings}
         setShowFontSettings={uiState.setShowFontSettings}
         setShowFeatureSettings={uiState.setShowFeatureSettings}
+        setShowBugReportModal={uiState.setShowBugReportModal}
+        setShowUpdateRequestModal={uiState.setShowUpdateRequestModal}
         closeOtherFeatures={uiState.closeOtherFeatures}
       />
 

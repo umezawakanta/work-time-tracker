@@ -51,6 +51,8 @@ export const useUIState = () => {
   const [showThemeSettings, setShowThemeSettings] = useState(false);
   const [showFontSettings, setShowFontSettings] = useState(false);
   const [showFeatureSettings, setShowFeatureSettings] = useState(false);
+  const [showBugReportModal, setShowBugReportModal] = useState(false);
+  const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
 
   // ドラッグ&ドロップ状態
   const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
@@ -246,6 +248,10 @@ export const useUIState = () => {
     setShowFontSettings,
     showFeatureSettings,
     setShowFeatureSettings,
+    showBugReportModal,
+    setShowBugReportModal,
+    showUpdateRequestModal,
+    setShowUpdateRequestModal,
 
     // ドラッグ&ドロップ
     draggedFeature,
