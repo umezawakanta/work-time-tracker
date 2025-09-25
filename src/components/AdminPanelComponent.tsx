@@ -1033,8 +1033,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                     </div>
                     <div className="user-role">
                       <span 
-                        className="role-badge"
-                        style={{ backgroundColor: getRoleColor(user.role || 'user') }}
+                        className={`role-badge role-${user.role || 'user'}`}
                       >
                         {getRoleDisplayName(user.role || 'user')}
                       </span>

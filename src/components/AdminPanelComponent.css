@@ -2302,3 +2302,26 @@
     font-size: 1rem;
   }
 }
+
+/* ロール別のバッジスタイル */
+.role-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-admin {
+  background-color: #dc3545;
+}
+
+.role-moderator {
+  background-color: #fd7e14;
+}
+
+.role-user {
+  background-color: #6c757d;
+}
