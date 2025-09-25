@@ -113,6 +113,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       showVersionInfo,
     });
   }, [user, isLoggedIn, showCharacterHome, showProjects, showCookingTimer, showSelfAnalysis, showBookshelf, showMemos, showReports, showAdminPanel, showTimeTracking, showTimers, showPublicMemos, showWorkRecords, showSoundApp, showNotifications, showVersionInfo]);
+
+  // 認証されていない場合は何も表示しない
+  if (!isLoggedIn || !user) {
+    console.log('MainLayout - User not authenticated, not rendering content');
+    return null;
+  }
   return (
     <div className="app">
       <HeaderComponent

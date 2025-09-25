@@ -11,6 +11,23 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
     });
   }, [isLoggedIn, user]);
 
+  // 認証されていない場合は認証が必要なAPIを呼び出さない
+  useEffect(() => {
+    if (!isLoggedIn || !user) {
+      console.log('useDataFetching - User not authenticated, skipping authenticated API calls');
+      return;
+    }
+    
+    console.log('useDataFetching - User authenticated, loading data...');
+    // 認証が必要なデータを読み込み
+    loadProjects();
+    loadReportSummary();
+    loadBooks();
+    loadMemos();
+    loadIncomeExpenseRecords();
+    loadWorkDiaries();
+  }, [isLoggedIn, user]);
+
   // ローディング状態
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
   const [projectsLoading, setProjectsLoading] = useState(false);

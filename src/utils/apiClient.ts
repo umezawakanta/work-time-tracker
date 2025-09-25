@@ -35,18 +35,15 @@ export const apiFetch = async (
       
       // 401 Unauthorizedの場合は特別な処理（エラー報告後に実行）
       if (response.status === 401) {
-        console.log('apiFetch - 401 Unauthorized, clearing tokens and reloading page');
+        console.log('apiFetch - 401 Unauthorized, clearing tokens');
         // 認証トークンをクリア
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('authToken');
         
-        // 少し遅延してからページをリロードしてログイン画面に遷移
-        // これにより障害報告画面が表示される時間を確保
-        if (typeof window !== 'undefined') {
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000); // 2秒後にリロード
-        }
+        // ページリロードは行わず、認証状態の変更のみ行う
+        // これにより無限ループを防ぐ
+        console.log('apiFetch - Tokens cleared, authentication state will be updated by useAuth hook');
       }
       
       throw apiError;

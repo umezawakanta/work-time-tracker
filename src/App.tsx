@@ -53,6 +53,17 @@ function App() {
     }
   }, [auth.isCheckingAuth, auth.isLoggedIn, auth.loading]);
 
+  // 認証状態の詳細ログ
+  useEffect(() => {
+    console.log('App.tsx - Authentication flow:', {
+      isCheckingAuth: auth.isCheckingAuth,
+      isLoggedIn: auth.isLoggedIn,
+      hasUser: !!auth.user,
+      loading: auth.loading,
+      message: auth.message
+    });
+  }, [auth.isCheckingAuth, auth.isLoggedIn, auth.user, auth.loading, auth.message]);
+
   // デバッグログの追加
   React.useEffect(() => {
     console.log('App.tsx - Auth state:', {
