@@ -1162,28 +1162,6 @@ function App() {
 
 
 
-  const playChimeSound = (audioContext: AudioContext) => {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    // チャイム音: 上昇する音階
-    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
-    oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.15); // C#5
-    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.3); // E5
-    oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.45); // A5
-
-    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(
-      0.01,
-      audioContext.currentTime + 0.8
-    );
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.8);
-  };
 
   const playBeepSound = (audioContext: AudioContext) => {
     const oscillator = audioContext.createOscillator();
