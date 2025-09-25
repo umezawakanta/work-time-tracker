@@ -21,9 +21,12 @@ export const getAuthToken = (setMessage: (message: string) => void): string | nu
  * @param token アクセストークン
  * @returns 認証ヘッダーを含むオブジェクト
  */
-export const createAuthHeaders = (token: string): Record<string, string> => {
+export const createAuthHeaders = (token?: string): Record<string, string> => {
+  const authToken = token || localStorage.getItem('access_token');
+  console.log('createAuthHeaders - Using token:', authToken ? authToken.substring(0, 20) + '...' : 'null');
+  
   return {
-    'Authorization': `Bearer ${token}`,
+    'Authorization': `Bearer ${authToken}`,
     'Content-Type': 'application/json'
   };
 };

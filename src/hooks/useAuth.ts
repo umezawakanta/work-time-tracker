@@ -19,6 +19,7 @@ export const useAuth = () => {
     console.log('useAuth - Starting auth check...');
     const token = getAuthToken((message) => console.log('getAuthToken message:', message));
     console.log('useAuth - Token found:', !!token);
+    console.log('useAuth - Token value:', token ? token.substring(0, 20) + '...' : 'null');
     
     if (!token) {
       console.log('useAuth - No token found, setting isCheckingAuth to false');
@@ -28,12 +29,16 @@ export const useAuth = () => {
 
     try {
       console.log('useAuth - Verifying token with API...');
+      const headers = createAuthHeaders(token);
+      console.log('useAuth - Auth headers:', headers);
+      
       const response = await apiFetch('/api/auth/verify', {
         method: 'POST',
-        headers: createAuthHeaders(),
+        headers: headers,
       });
 
       console.log('useAuth - Verify response status:', response.status);
+      console.log('useAuth - Verify response headers:', Object.fromEntries(response.headers.entries()));
       
       if (response.ok) {
         const data = await response.json();
@@ -42,13 +47,34 @@ export const useAuth = () => {
         setIsLoggedIn(true);
       } else {
         console.log('useAuth - Verification failed, removing token');
+        console.log('useAuth - Response status:', response.status);
+        console.log('useAuth - Response statusText:', response.statusText);
+        
+        // レスポンスの詳細を取得
+        try {
+          const errorData = await response.json();
+          console.log('useAuth - Error response data:', errorData);
+        } catch (e) {
+          console.log('useAuth - Could not parse error response as JSON');
+        }
+        
         localStorage.removeItem('authToken');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
         setIsLoggedIn(false);
         setUser(null);
       }
     } catch (error) {
       console.error('useAuth - Auth check failed:', error);
+      console.error('useAuth - Error details:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      
       localStorage.removeItem('authToken');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       setIsLoggedIn(false);
       setUser(null);
     } finally {

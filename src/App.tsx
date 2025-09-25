@@ -46,6 +46,13 @@ function App() {
     };
   }, []);
 
+  // 認証エラーの監視
+  useEffect(() => {
+    if (!auth.isCheckingAuth && !auth.isLoggedIn && !auth.loading) {
+      console.log('App.tsx - User is not logged in, showing login form');
+    }
+  }, [auth.isCheckingAuth, auth.isLoggedIn, auth.loading]);
+
   // デバッグログの追加
   React.useEffect(() => {
     console.log('App.tsx - Auth state:', {

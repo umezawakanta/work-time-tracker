@@ -32,18 +32,23 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
   // プロジェクト読み込み
   const loadProjects = async () => {
     if (!isLoggedIn || !user) {
+      console.log('useDataFetching - loadProjects: Not logged in or no user');
       return;
     }
     
+    console.log('useDataFetching - loadProjects: Starting to load projects for user:', user.id);
     setProjectsLoading(true);
     try {
       const response = await apiFetch(`/api/projects/list?userId=${user.id}`);
       if (response.ok) {
         const data = await response.json();
+        console.log('useDataFetching - loadProjects: Success, projects loaded:', data.projects?.length || 0);
         setProjects(data.projects || []);
+      } else {
+        console.log('useDataFetching - loadProjects: Failed with status:', response.status);
       }
     } catch (error) {
-      console.error('Failed to load projects:', error);
+      console.error('useDataFetching - loadProjects: Error occurred:', error);
     } finally {
       setProjectsLoading(false);
     }
