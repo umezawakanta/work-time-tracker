@@ -78,7 +78,7 @@ const IDEAL_BALANCE_RATIOS = {
   vegetable: 0.05,
 } as const;
 
-const PLAYBACK_DURATION = 5000;
+const PLAYBACK_DURATION = 15000;
 const TEMPO_RANGE = { MIN: 60, MAX: 200 } as const;
 const REPEAT_OPTIONS = {
   NONE: 0,
