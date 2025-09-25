@@ -3601,7 +3601,9 @@ ${errorInfo.stack}
       }, 1000);
     }
     return () => {
-      if (interval) clearInterval(interval);
+      if (interval) {
+        clearInterval(interval);
+      }
     };
   }, [isTracking, currentTimeEntry]);
 
