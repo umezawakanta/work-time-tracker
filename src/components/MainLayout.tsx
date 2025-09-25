@@ -69,7 +69,7 @@ interface MainLayoutProps {
   diaryMood: string;
   setDiaryMood: (mood: string) => void;
   diaryActivities: string[];
-  setDiaryActivities: (activities: string[]) => void;
+  setDiaryActivities: React.Dispatch<React.SetStateAction<string[]>>;
   diaryTags: string;
   setDiaryTags: (tags: string) => void;
   diaryIsPrivate: boolean;
@@ -78,13 +78,13 @@ interface MainLayoutProps {
   diaryWorkSummary: string;
   setDiaryWorkSummary: (summary: string) => void;
   diaryAchievements: string[];
-  setDiaryAchievements: (achievements: string[]) => void;
+  setDiaryAchievements: React.Dispatch<React.SetStateAction<string[]>>;
   diaryChallenges: string[];
-  setDiaryChallenges: (challenges: string[]) => void;
+  setDiaryChallenges: React.Dispatch<React.SetStateAction<string[]>>;
   diaryLearnings: string[];
   setDiaryLearnings: (learnings: string[]) => void;
   diaryNextGoals: string[];
-  setDiaryNextGoals: (goals: string[]) => void;
+  setDiaryNextGoals: React.Dispatch<React.SetStateAction<string[]>>;
   diaryEnergyLevel: number;
   setDiaryEnergyLevel: (level: number) => void;
   diaryStressLevel: number;
@@ -361,8 +361,8 @@ interface MainLayoutProps {
   setShowRecordDetail: (show: boolean) => void;
   selectedRecord: any;
   setSelectedRecord: (record: any) => void;
-  selectedRecordType: "income" | "diary";
-  setSelectedRecordType: (type: "income" | "diary") => void;
+  selectedRecordType: "income" | "expense" | "diary" | null;
+  setSelectedRecordType: React.Dispatch<React.SetStateAction<"income" | "expense" | "diary" | null>>;
   // 月収支メモ関連のプロパティ
   monthlyMemo: string;
   setMonthlyMemo: (memo: string) => void;
@@ -1375,10 +1375,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 showWorkRecords={showWorkRecords}
                 setShowWorkRecords={setShowWorkRecords}
                 closeOtherFeatures={closeOtherFeatures}
-                incomeExpenseRecords={incomeExpenseRecords}
-                workDiaries={workDiaries}
-                incomeExpenseRecordsLoading={false}
-                workDiariesLoading={false}
+                incomeExpenseRecords={[]}
+                workDiaries={[]}
                 showIncomeExpenseForm={showIncomeExpenseForm}
                 setShowIncomeExpenseForm={setShowIncomeExpenseForm}
                 showDiaryForm={showDiaryForm}

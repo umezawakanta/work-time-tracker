@@ -216,7 +216,7 @@ function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showRecordDetail, setShowRecordDetail] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
-  const [selectedRecordType, setSelectedRecordType] = useState<"income" | "diary">("income");
+  const [selectedRecordType, setSelectedRecordType] = useState<"income" | "expense" | "diary" | null>("income");
 
   // 月収支メモの状態
   const [monthlyMemo, setMonthlyMemo] = useState("");
