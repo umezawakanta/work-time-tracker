@@ -36,6 +36,17 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
         }
         
         console.log(`AudioContext creation completed after ${attempts} attempts, state: ${newContext.state}`);
+        
+        // Tone.jsのコンテキスト状態を強制的に更新
+        if (newContext.state === 'running') {
+          // Tone.jsのコンテキストを再初期化して状態を同期
+          try {
+            await Tone.start();
+            console.log("Tone.js context synchronized with new AudioContext");
+          } catch (toneError) {
+            console.warn("Failed to start Tone.js with new context:", toneError);
+          }
+        }
       } catch (contextError) {
         console.error("Failed to create new AudioContext:", contextError);
         throw contextError;
@@ -44,11 +55,15 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
     
     // AudioContextが正常に動作しているか確認
     const finalState = Tone.context.state;
-    if (finalState === 'running') {
+    const actualContextState = Tone.context.rawContext ? Tone.context.rawContext.state : 'unknown';
+    
+    console.log(`Final AudioContext state - Tone.js: ${finalState}, Raw: ${actualContextState}`);
+    
+    if (finalState === 'running' || actualContextState === 'running') {
       console.log("AudioContext is ready");
       return true;
     } else {
-      console.warn(`AudioContext final state: ${finalState}`);
+      console.warn(`AudioContext final state - Tone.js: ${finalState}, Raw: ${actualContextState}`);
       return false;
     }
   } catch (error) {
