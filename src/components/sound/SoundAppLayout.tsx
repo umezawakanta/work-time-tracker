@@ -105,7 +105,7 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
           <SoundControls
             isPlaying={isPlaying}
             isLooping={isLooping}
-            toneStateManager.isInitialized={toneStateManager.isInitialized}
+            toneStateManager={toneStateManager}
             onPlay={onPlay}
             onStop={onStop}
             disabled={disabled}
