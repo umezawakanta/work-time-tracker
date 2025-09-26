@@ -161,6 +161,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // カレンダーモーダルの状態管理（デフォルトで拡大表示）
   const [showCalendarModal, setShowCalendarModal] = useState(true);
 
+  // 統計表示のアコーディオン状態管理
+  const [isSummaryExpanded, setIsSummaryExpanded] = useState(true);
+
   // 収支記録読み込み関数をWorkRecordsComponent内で定義
   const loadIncomeExpenseRecordsLocal = async () => {
     setIncomeExpenseLoading(true);
@@ -395,8 +398,16 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         <div className="work-records-content">
           {/* 月別統計 */}
           <div className="monthly-summary">
-            <h3><i className="bi bi-graph-up"></i> {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}月の統計</h3>
-            <div className="summary-grid">
+            <div 
+              className="summary-header"
+              onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}
+              style={{ cursor: 'pointer' }}
+            >
+              <h3><i className="bi bi-graph-up"></i> {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}月の統計</h3>
+              <i className={`bi bi-chevron-${isSummaryExpanded ? 'up' : 'down'} summary-toggle-icon`}></i>
+            </div>
+            {isSummaryExpanded && (
+              <div className="summary-grid">
               <div className="summary-item">
                 <span className="summary-label">総収入</span>
                 <span className="summary-value income">¥{(monthlySummary.totalIncome || 0).toLocaleString()}</span>
@@ -433,7 +444,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 <span className="summary-label">日記</span>
                 <span className="summary-value">{monthlySummary.diariesCount}件</span>
               </div>
-            </div>
+              </div>
+            )}
           </div>
 
           {/* カレンダー（常に拡大表示） */}
