@@ -5,11 +5,10 @@ import { EXCLUDED_MEMO_CATEGORIES } from '../utils/requestFormatters';
 
 interface PublicMemosComponentProps {
   publicMemos: Memo[];
-  publicMemosLoading: boolean;
   showPublicMemos: boolean;
   setShowPublicMemos: (show: boolean) => void;
   user: User | null;
-  loadPublicMemos: () => void;
+  loadPublicMemos: () => Promise<void>;
   closeOtherFeatures: (activeFeature: string) => void;
   handleReplySubmit: (memoId: string) => void;
   handleReplyCancel: () => void;
@@ -23,7 +22,6 @@ interface PublicMemosComponentProps {
 
 const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   publicMemos,
-  publicMemosLoading,
   showPublicMemos,
   setShowPublicMemos,
   user,
@@ -38,6 +36,19 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   replyContent,
   setReplyContent,
 }) => {
+  // 公開メモのローディング状態をPublicMemosComponent内で管理
+  const [publicMemosLoading, setPublicMemosLoading] = useState(false);
+
+  // 公開メモの読み込み関数をPublicMemosComponent内で定義
+  const loadPublicMemosLocal = async () => {
+    setPublicMemosLoading(true);
+    try {
+      await loadPublicMemos();
+    } finally {
+      setPublicMemosLoading(false);
+    }
+  };
+
   // 内部状態
   const [publicMemoSelectedDate, setPublicMemoSelectedDate] = useState<Date | null>(null);
   const [publicMemoCurrentMonth, setPublicMemoCurrentMonth] = useState(new Date());
@@ -330,7 +341,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                 closeOtherFeatures("public-memos");
                 setShowPublicMemos(true);
                 if (publicMemos.length === 0) {
-                  loadPublicMemos();
+                  loadPublicMemosLocal();
                 }
               }}
               className="show-section-button"
@@ -346,7 +357,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         <div className="public-memos-content">
           <div className="public-memos-header">
             <button
-              onClick={loadPublicMemos}
+              onClick={loadPublicMemosLocal}
               className="refresh-button"
               title="公開メモを更新"
             >
@@ -490,7 +501,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                   setPublicMemoSearchTerm("");
                   setFilterByDate(null);
                   setCurrentPage(1);
-                  loadPublicMemos();
+                  loadPublicMemosLocal();
                 }}
                 className="reset-button"
                 title="フィルターをリセット"

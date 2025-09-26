@@ -264,8 +264,10 @@ function App({
   // HeaderComponent内で状態を管理することで、状態の分散を防ぐ
   // const [showBugReportModal, setShowBugReportModal] = useState(false); // HeaderComponentで管理
 
-  // 各機能のローディング状態（LoadingStateManagerで管理）
-  const [publicMemosLoading, setPublicMemosLoading] = useState(false);
+  // 注意: publicMemosLoadingはPublicMemosComponent内で管理される
+  // 理由: 公開メモのローディング状態はPublicMemosComponent内でのみ使用されるため、
+  // PublicMemosComponent内で状態を管理することで、状態の分散を防ぐ
+  // const [publicMemosLoading, setPublicMemosLoading] = useState(false); // PublicMemosComponentで管理
   const [projectsLoading, setProjectsLoading] = useState(false);
   const [booksLoading, setBooksLoading] = useState(false);
   const [workRecordsLoading, setWorkRecordsLoading] = useState(false);
@@ -4884,7 +4886,6 @@ User Agent: ${userAgent}
 
   // 公開メモ関連の関数
   const loadPublicMemos = async () => {
-    setPublicMemosLoading(true);
     try {
       const params = new URLSearchParams();
       if (selectedPublicMemoCategory !== "all") {
@@ -4924,8 +4925,6 @@ User Agent: ${userAgent}
           `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
-    } finally {
-      setPublicMemosLoading(false);
     }
   };
 
@@ -6144,7 +6143,6 @@ User Agent: ${userAgent}
                   <PublicMemosComponent
                     key={feature.id}
                     publicMemos={publicMemos}
-                    publicMemosLoading={publicMemosLoading}
                     showPublicMemos={showPublicMemos}
                     setShowPublicMemos={setShowPublicMemos}
                     user={user}
