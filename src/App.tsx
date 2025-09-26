@@ -216,11 +216,10 @@ function App({
   >(undefined);
 
 
-  // 注意: currentTimeEntryはTimeTrackingComponent内で管理される
-  // 理由: 現在の時間記録エントリはTimeTrackingComponent内でのみ使用されるため、
+  // 注意: isTrackingはTimeTrackingComponent内で管理される
+  // 理由: 時間記録の追跡状態はTimeTrackingComponent内でのみ使用されるため、
   // TimeTrackingComponent内で状態を管理することで、状態の分散を防ぐ
-  // const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(null); // TimeTrackingComponentで管理
-  const [isTracking, setIsTracking] = useState(false);
+  // const [isTracking, setIsTracking] = useState(false); // TimeTrackingComponentで管理
   const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
