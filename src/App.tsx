@@ -6,17 +6,41 @@ import { useAuth } from "./hooks/useAuth";
 import { useErrorHandling } from "./hooks/useErrorHandling";
 import { useDataFetching } from "./hooks/useDataFetching";
 import { useUIState } from "./hooks/useUIState";
-import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
-import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
+import {
+  LoadingStateProvider,
+  useLoadingState,
+} from "./components/LoadingStateManager";
+import {
+  TimeTrackingStateProvider,
+  useTimeTrackingState,
+  useTimeTrackingHelpers,
+} from "./components/TimeTrackingStateManager";
 import { TimerPresetProvider } from "./components/TimerPresetManager";
-import { FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
+import {
+  FontSettings,
+  DEFAULT_FONT_SETTINGS,
+  generateFontCSS,
+} from "./constants/fonts";
 import LanguageFontSettings from "./components/LanguageFontSettings";
-import { MoodLogProvider, useMoodLogState, useMoodLogHelpers } from "./components/MoodLogManager";
+import {
+  MoodLogProvider,
+  useMoodLogState,
+  useMoodLogHelpers,
+} from "./components/MoodLogManager";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
 import UpdateRequestModal from "./components/UpdateRequestModal";
 import BugReportModal from "./components/BugReportModal";
 import { setErrorReportCallback } from "./utils/apiClient";
-import { User, TimeEntry, Project, Book, Memo, IncomeExpenseRecord, WorkDiary, AdminUser } from "./types";
+import {
+  User,
+  TimeEntry,
+  Project,
+  Book,
+  Memo,
+  IncomeExpenseRecord,
+  WorkDiary,
+  AdminUser,
+} from "./types";
 
 // 機能の型定義
 interface Feature {
@@ -48,13 +72,13 @@ interface WorkRecord {
 function App() {
   // ローディング状態の管理
   const loadingState = useLoadingState();
-  
+
   // 時間記録状態の管理
   const timeTrackingState = useTimeTrackingState();
   const timeTrackingHelpers = useTimeTrackingHelpers();
-  
+
   // タイマープリセット状態の管理（TimerPresetProviderから提供される）
-  
+
   // 感情ログ状態の管理
   const moodLogState = useMoodLogState();
   const moodLogHelpers = useMoodLogHelpers();
@@ -66,35 +90,62 @@ function App() {
   const uiState = useUIState();
 
   // データフェッチングの状態（useDataFetchingフックから取得）
-  const { 
-    projects, 
-    setProjects, 
-    books, 
-    setBooks, 
-    memos, 
-    setMemos, 
-    publicMemos, 
-    setPublicMemos, 
-    workRecords, 
-    setWorkRecords, 
-    incomeExpenseRecords, 
-    setIncomeExpenseRecords, 
-    workDiaries, 
-    setWorkDiaries, 
-    adminUsers, 
-    setAdminUsers, 
-    reportSummary, 
+  const {
+    projects,
+    setProjects,
+    books,
+    setBooks,
+    memos,
+    setMemos,
+    publicMemos,
+    setPublicMemos,
+    incomeExpenseRecords,
+    setIncomeExpenseRecords,
+    workDiaries,
+    setWorkDiaries,
+    adminUsers,
+    setAdminUsers,
+    reportSummary,
     setReportSummary,
     loadMemos,
     loadPublicMemos,
     loadProjects,
     loadBooks,
-    loadWorkRecords,
     loadIncomeExpenseRecords,
     loadWorkDiaries,
     loadAdminUsers,
-    loadReportSummary
+    loadReportSummary,
   } = dataFetching;
+
+  // workRecordsの状態を独自に定義
+  const [workRecords, setWorkRecords] = useState<WorkRecord[]>([]);
+
+  // loadWorkRecords関数を独自に定義（必要な場合）
+  const loadWorkRecords = async () => {
+    console.log("App.tsx - Loading work records");
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/work-records", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setWorkRecords(data.records || []);
+      }
+    } catch (error) {
+      console.error("Failed to load work records:", error);
+    }
+  };
+
+  // loadTimeEntries関数も定義（必要な場合）
+  const loadTimeEntries = async () => {
+    console.log("App.tsx - Loading time entries");
+    // 実装は後で追加
+  };
 
   // 追加の状態変数（App_backup.tsxから復元）
   const [selectedProject, setSelectedProject] = useState<string>("");
@@ -111,11 +162,14 @@ function App() {
   const [customTimerActive, setCustomTimerActive] = useState(false);
   const [customTimerPaused, setCustomTimerPaused] = useState(false);
   const [customTimerTime, setCustomTimerTime] = useState(0);
-  const [customTimerInterval, setCustomTimerInterval] = useState<NodeJS.Timeout | null>(null);
+  const [customTimerInterval, setCustomTimerInterval] =
+    useState<NodeJS.Timeout | null>(null);
   const [customTimerMinutes, setCustomTimerMinutes] = useState(5);
   const [customTimerSeconds, setCustomTimerSeconds] = useState(0);
   const [customTimerName, setCustomTimerName] = useState("");
-  const [customTimerSound, setCustomTimerSound] = useState<"bell" | "chime" | "beep" | "alarm">("bell");
+  const [customTimerSound, setCustomTimerSound] = useState<
+    "bell" | "chime" | "beep" | "alarm"
+  >("bell");
   const [customTimerOriginalTime, setCustomTimerOriginalTime] = useState(0);
 
   // タイマープリセットの状態
@@ -128,35 +182,49 @@ function App() {
   ]);
 
   // タイマー履歴の状態
-  const [timerHistory, setTimerHistory] = useState<Array<{
-    id: string;
-    name: string;
-    duration: number;
-    completedAt: Date;
-    type: "custom" | "egg" | "preset";
-  }>>([]);
+  const [timerHistory, setTimerHistory] = useState<
+    Array<{
+      id: string;
+      name: string;
+      duration: number;
+      completedAt: Date;
+      type: "custom" | "egg" | "preset";
+    }>
+  >([]);
 
   // 料理タイマーの状態
   const [selectedRecipe, setSelectedRecipe] = useState<string>("egg");
-  const [selectedEggType, setSelectedEggType] = useState<"soft" | "medium" | "hard">("medium");
+  const [selectedEggType, setSelectedEggType] = useState<
+    "soft" | "medium" | "hard"
+  >("medium");
   const [eggTimerActive, setEggTimerActive] = useState(false);
   const [eggTimerPaused, setEggTimerPaused] = useState(false);
   const [eggTimerTime, setEggTimerTime] = useState(0);
-  const [eggTimerInterval, setEggTimerInterval] = useState<NodeJS.Timeout | null>(null);
-  const [eggTimerType, setEggTimerType] = useState<"soft" | "medium" | "hard">("medium");
-  const [eggTimerSound, setEggTimerSound] = useState<"bell" | "chime" | "beep" | "alarm">("bell");
+  const [eggTimerInterval, setEggTimerInterval] =
+    useState<NodeJS.Timeout | null>(null);
+  const [eggTimerType, setEggTimerType] = useState<"soft" | "medium" | "hard">(
+    "medium"
+  );
+  const [eggTimerSound, setEggTimerSound] = useState<
+    "bell" | "chime" | "beep" | "alarm"
+  >("bell");
   const [eggTimerOriginalTime, setEggTimerOriginalTime] = useState(0);
-  const [eggTimerPhase, setEggTimerPhase] = useState<"heating" | "boiling" | "cooking">("heating");
+  const [eggTimerPhase, setEggTimerPhase] = useState<
+    "heating" | "boiling" | "cooking"
+  >("heating");
   const [eggTimerPhaseTime, setEggTimerPhaseTime] = useState(0);
   const [eggTimerPhaseName, setEggTimerPhaseName] = useState("");
 
   // 音声ループ再生の状態
-  const [soundLoopInterval, setSoundLoopInterval] = useState<NodeJS.Timeout | null>(null);
+  const [soundLoopInterval, setSoundLoopInterval] =
+    useState<NodeJS.Timeout | null>(null);
   const [isSoundPlaying, setIsSoundPlaying] = useState(false);
 
   // バックグラウンドタイマー関連の状態
   const [backgroundTimerActive, setBackgroundTimerActive] = useState(false);
-  const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(null);
+  const [serviceWorker, setServiceWorker] = useState<ServiceWorker | null>(
+    null
+  );
   const [isMannerMode, setIsMannerMode] = useState(false);
 
   // タイマー設定の状態
@@ -178,9 +246,12 @@ function App() {
 
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
-  const [fontSettings, setFontSettings] = useState<FontSettings>(DEFAULT_FONT_SETTINGS);
+  const [fontSettings, setFontSettings] = useState<FontSettings>(
+    DEFAULT_FONT_SETTINGS
+  );
   const [showFontSettings, setShowFontSettings] = useState(false);
-  const [showLanguageFontSettings, setShowLanguageFontSettings] = useState(false);
+  const [showLanguageFontSettings, setShowLanguageFontSettings] =
+    useState(false);
 
   // テーマ設定関連の状態
   const [selectedTheme, setSelectedTheme] = useState("default");
@@ -244,12 +315,15 @@ function App() {
     { value: "MS Gothic", label: "MS ゴシック" },
     { value: "MS Mincho", label: "MS 明朝" },
   ];
-  
+
   // 追加のUI状態（App_backup.tsxから復元）
-  const [showDiaryReminderSettings, setShowDiaryReminderSettings] = useState(false);
+  const [showDiaryReminderSettings, setShowDiaryReminderSettings] =
+    useState(false);
   const [showMoodForm, setShowMoodForm] = useState(false);
   const [showGoalForm, setShowGoalForm] = useState(false);
-  const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<number | null>(null);
+  const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<
+    number | null
+  >(null);
 
   // カスタムカテゴリ管理の状態
   const [customCategories, setCustomCategories] = useState<string[]>([]);
@@ -265,13 +339,16 @@ function App() {
   // お仕事記録の状態
   const [showIncomeExpenseForm, setShowIncomeExpenseForm] = useState(false);
   const [showDiaryForm, setShowDiaryForm] = useState(false);
-  const [editingIncomeExpenseRecord, setEditingIncomeExpenseRecord] = useState<any>(null);
+  const [editingIncomeExpenseRecord, setEditingIncomeExpenseRecord] =
+    useState<any>(null);
   const [editingDiary, setEditingDiary] = useState<any>(null);
 
   // 収入・支出記録フォームの状態
   const [incomeExpenseDate, setIncomeExpenseDate] = useState("");
   const [incomeExpenseAmount, setIncomeExpenseAmount] = useState("");
-  const [incomeExpenseType, setIncomeExpenseType] = useState<"income" | "expense">("income");
+  const [incomeExpenseType, setIncomeExpenseType] = useState<
+    "income" | "expense"
+  >("income");
   const [incomeExpenseNotes, setIncomeExpenseNotes] = useState("");
 
   // 日記フォームの状態
@@ -315,8 +392,10 @@ function App() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showRecordDetail, setShowRecordDetail] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
-  const [selectedRecordType, setSelectedRecordType] = useState<"income" | "expense" | "diary" | null>("income");
-  
+  const [selectedRecordType, setSelectedRecordType] = useState<
+    "income" | "expense" | "diary" | null
+  >("income");
+
   // 月収支メモの状態
   const [monthlyMemo, setMonthlyMemo] = useState("");
   const [editingMonthlyMemo, setEditingMonthlyMemo] = useState(false);
@@ -326,13 +405,11 @@ function App() {
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
   const [editingGenreName, setEditingGenreName] = useState("");
 
-
   // お仕事記録の状態
   const [showWorkRecords, setShowWorkRecords] = useState(false);
-  
+
   // EggTimerComponent用の状態
   const [showEggTimer, setShowEggTimer] = useState(false);
-
 
   // メモ関連の状態
   const [showMemos, setShowMemos] = useState(false);
@@ -351,9 +428,13 @@ function App() {
   // 公開メモ関連の状態
   const [showPublicMemos, setShowPublicMemos] = useState(false);
   const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
-  const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] = useState("all");
-  const [publicMemoCurrentDate, setPublicMemoCurrentDate] = useState(new Date());
-  const [publicMemoSelectedDate, setPublicMemoSelectedDate] = useState<Date | null>(null);
+  const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] =
+    useState("all");
+  const [publicMemoCurrentDate, setPublicMemoCurrentDate] = useState(
+    new Date()
+  );
+  const [publicMemoSelectedDate, setPublicMemoSelectedDate] =
+    useState<Date | null>(null);
 
   // 本棚関連の状態
   const [showBookshelf, setShowBookshelf] = useState(false);
@@ -362,7 +443,9 @@ function App() {
   const [bookTitle, setBookTitle] = useState("");
   const [bookAuthor, setBookAuthor] = useState("");
   const [bookIsbn, setBookIsbn] = useState("");
-  const [bookPublishedYear, setBookPublishedYear] = useState(new Date().getFullYear());
+  const [bookPublishedYear, setBookPublishedYear] = useState(
+    new Date().getFullYear()
+  );
   const [bookTotalPages, setBookTotalPages] = useState(0);
   const [bookCategory, setBookCategory] = useState("");
   const [bookNotes, setBookNotes] = useState("");
@@ -412,37 +495,41 @@ function App() {
   }, []);
 
   // 更新要望のハンドラー
-  const handleUpdateRequest = async (updateRequest: { title: string; content: string; priority: string; category: string }) => {
-    console.log('App.tsx - Update request submitted:', updateRequest);
+  const handleUpdateRequest = async (updateRequest: {
+    title: string;
+    content: string;
+    priority: string;
+    category: string;
+  }) => {
+    console.log("App.tsx - Update request submitted:", updateRequest);
     try {
       // API呼び出しの実装
-      console.log('Update request sent successfully');
+      console.log("Update request sent successfully");
     } catch (error) {
-      console.error('Failed to send update request:', error);
+      console.error("Failed to send update request:", error);
     }
   };
 
   // 不具合報告のハンドラー
-  const handleBugReport = async (bugReport: { title: string; content: string; severity: string; category: string }) => {
-    console.log('App.tsx - Bug report submitted:', bugReport);
+  const handleBugReport = async (bugReport: {
+    title: string;
+    content: string;
+    severity: string;
+    category: string;
+  }) => {
+    console.log("App.tsx - Bug report submitted:", bugReport);
     try {
       // API呼び出しの実装
-      console.log('Bug report sent successfully');
+      console.log("Bug report sent successfully");
     } catch (error) {
-      console.error('Failed to send bug report:', error);
+      console.error("Failed to send bug report:", error);
     }
   };
-
-
-
-
-
-
 
   // 収入・支出記録の作成（App_backup.tsxから復元）
   const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('App.tsx - Creating income/expense record');
+    console.log("App.tsx - Creating income/expense record");
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/work-records/salary", {
@@ -462,7 +549,7 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('Income/expense record created successfully');
+        console.log("Income/expense record created successfully");
         setIncomeExpenseDate("");
         setIncomeExpenseAmount("");
         setIncomeExpenseType("income");
@@ -470,17 +557,17 @@ function App() {
         setShowIncomeExpenseForm(false);
         loadIncomeExpenseRecords();
       } else {
-        console.error('Failed to create income/expense record:', data.message);
+        console.error("Failed to create income/expense record:", data.message);
       }
     } catch (error) {
-      console.error('Error creating income/expense record:', error);
+      console.error("Error creating income/expense record:", error);
     }
   };
 
   // 日記の作成（App_backup.tsxから復元）
   const handleCreateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('App.tsx - Creating diary');
+    console.log("App.tsx - Creating diary");
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/work-records/diary", {
@@ -495,7 +582,10 @@ function App() {
           content: diaryContent,
           mood: parseInt(diaryMood),
           activities: diaryActivities,
-          tags: diaryTags.split(",").map(tag => tag.trim()).filter(tag => tag),
+          tags: diaryTags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter((tag) => tag),
           isPrivate: diaryIsPrivate,
           workSummary: diaryWorkSummary,
           achievements: diaryAchievements,
@@ -516,7 +606,7 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('Diary created successfully');
+        console.log("Diary created successfully");
         setDiaryDate("");
         setDiaryTitle("");
         setDiaryContent("");
@@ -540,10 +630,10 @@ function App() {
         setShowDiaryForm(false);
         loadWorkDiaries();
       } else {
-        console.error('Failed to create diary:', data.message);
+        console.error("Failed to create diary:", data.message);
       }
     } catch (error) {
-      console.error('Error creating diary:', error);
+      console.error("Error creating diary:", error);
     }
   };
 
@@ -556,24 +646,27 @@ function App() {
 
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(`/api/work-records/salary/${editingIncomeExpenseRecord.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          date: incomeExpenseDate,
-          amount: parseFloat(incomeExpenseAmount) || 0,
-          type: incomeExpenseType,
-          notes: incomeExpenseNotes,
-        }),
-      });
+      const response = await fetch(
+        `/api/work-records/salary/${editingIncomeExpenseRecord.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            date: incomeExpenseDate,
+            amount: parseFloat(incomeExpenseAmount) || 0,
+            type: incomeExpenseType,
+            notes: incomeExpenseNotes,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (data.success) {
-        console.log('Income/expense record updated successfully');
+        console.log("Income/expense record updated successfully");
         setEditingIncomeExpenseRecord(null);
         setIncomeExpenseDate("");
         setIncomeExpenseAmount("");
@@ -582,10 +675,10 @@ function App() {
         setShowIncomeExpenseForm(false);
         loadIncomeExpenseRecords();
       } else {
-        console.error('Failed to update income/expense record:', data.message);
+        console.error("Failed to update income/expense record:", data.message);
       }
     } catch (error) {
-      console.error('Error updating income/expense record:', error);
+      console.error("Error updating income/expense record:", error);
     }
   };
 
@@ -598,40 +691,46 @@ function App() {
 
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(`/api/work-records/diary/${editingDiary.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          date: diaryDate,
-          title: diaryTitle,
-          content: diaryContent,
-          mood: parseInt(diaryMood),
-          activities: diaryActivities,
-          tags: diaryTags.split(",").map(tag => tag.trim()).filter(tag => tag),
-          isPrivate: diaryIsPrivate,
-          workSummary: diaryWorkSummary,
-          achievements: diaryAchievements,
-          challenges: diaryChallenges,
-          learnings: diaryLearnings,
-          nextGoals: diaryNextGoals,
-          energyLevel: diaryEnergyLevel,
-          stressLevel: diaryStressLevel,
-          workHours: diaryWorkHours,
-          breakTime: diaryBreakTime,
-          productivity: diaryProductivity,
-          notes: diaryNotes,
-          gratitude: diaryGratitude,
-          reflection: diaryReflection,
-        }),
-      });
+      const response = await fetch(
+        `/api/work-records/diary/${editingDiary.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            date: diaryDate,
+            title: diaryTitle,
+            content: diaryContent,
+            mood: parseInt(diaryMood),
+            activities: diaryActivities,
+            tags: diaryTags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter((tag) => tag),
+            isPrivate: diaryIsPrivate,
+            workSummary: diaryWorkSummary,
+            achievements: diaryAchievements,
+            challenges: diaryChallenges,
+            learnings: diaryLearnings,
+            nextGoals: diaryNextGoals,
+            energyLevel: diaryEnergyLevel,
+            stressLevel: diaryStressLevel,
+            workHours: diaryWorkHours,
+            breakTime: diaryBreakTime,
+            productivity: diaryProductivity,
+            notes: diaryNotes,
+            gratitude: diaryGratitude,
+            reflection: diaryReflection,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (data.success) {
-        console.log('Diary updated successfully');
+        console.log("Diary updated successfully");
         setEditingDiary(null);
         setDiaryDate("");
         setDiaryTitle("");
@@ -656,16 +755,16 @@ function App() {
         setShowDiaryForm(false);
         loadWorkDiaries();
       } else {
-        console.error('Failed to update diary:', data.message);
+        console.error("Failed to update diary:", data.message);
       }
     } catch (error) {
-      console.error('Error updating diary:', error);
+      console.error("Error updating diary:", error);
     }
   };
 
   // 収入・支出記録の削除（App_backup.tsxから復元）
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
-    if (!confirm('この記録を削除しますか？')) {
+    if (!confirm("この記録を削除しますか？")) {
       return;
     }
 
@@ -681,19 +780,19 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('Income/expense record deleted successfully');
+        console.log("Income/expense record deleted successfully");
         loadIncomeExpenseRecords();
       } else {
-        console.error('Failed to delete income/expense record:', data.message);
+        console.error("Failed to delete income/expense record:", data.message);
       }
     } catch (error) {
-      console.error('Error deleting income/expense record:', error);
+      console.error("Error deleting income/expense record:", error);
     }
   };
 
   // 日記の削除（App_backup.tsxから復元）
   const handleDeleteDiary = async (id: string) => {
-    if (!confirm('この日記を削除しますか？')) {
+    if (!confirm("この日記を削除しますか？")) {
       return;
     }
 
@@ -709,19 +808,19 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('Diary deleted successfully');
+        console.log("Diary deleted successfully");
         loadWorkDiaries();
       } else {
-        console.error('Failed to delete diary:', data.message);
+        console.error("Failed to delete diary:", data.message);
       }
     } catch (error) {
-      console.error('Error deleting diary:', error);
+      console.error("Error deleting diary:", error);
     }
   };
 
   // 時間記録ハンドラー（App_backup.tsxから復元）
   const handleStartTracking = async () => {
-    console.log('App.tsx - Starting time tracking');
+    console.log("App.tsx - Starting time tracking");
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/time/start", {
@@ -739,18 +838,18 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('Time tracking started successfully');
+        console.log("Time tracking started successfully");
         loadTimeEntries();
       } else {
-        console.error('Failed to start time tracking:', data.message);
+        console.error("Failed to start time tracking:", data.message);
       }
     } catch (error) {
-      console.error('Error starting time tracking:', error);
+      console.error("Error starting time tracking:", error);
     }
   };
 
   const handleStopTracking = async () => {
-    console.log('App.tsx - Stopping time tracking');
+    console.log("App.tsx - Stopping time tracking");
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/time/stop", {
@@ -764,25 +863,25 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('Time tracking stopped successfully');
+        console.log("Time tracking stopped successfully");
         loadTimeEntries();
       } else {
-        console.error('Failed to stop time tracking:', data.message);
+        console.error("Failed to stop time tracking:", data.message);
       }
     } catch (error) {
-      console.error('Error stopping time tracking:', error);
+      console.error("Error stopping time tracking:", error);
     }
   };
 
   const handleResetTracking = () => {
-    console.log('App.tsx - Resetting time tracking');
+    console.log("App.tsx - Resetting time tracking");
     // 時間記録リセット処理
   };
 
   // プロジェクト作成ハンドラー（App_backup.tsxから復元）
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('App.tsx - Creating project');
+    console.log("App.tsx - Creating project");
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/projects/create", {
@@ -801,24 +900,24 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('Project created successfully');
+        console.log("Project created successfully");
         setProjectName("");
         setProjectDescription("");
         setProjectColor("#3b82f6");
         setShowProjectForm(false);
         loadProjects();
       } else {
-        console.error('Failed to create project:', data.message);
+        console.error("Failed to create project:", data.message);
       }
     } catch (error) {
-      console.error('Error creating project:', error);
+      console.error("Error creating project:", error);
     }
   };
 
   // 本作成ハンドラー（App_backup.tsxから復元）
   const handleCreateBook = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('App.tsx - Creating book');
+    console.log("App.tsx - Creating book");
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/books", {
@@ -841,7 +940,7 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('Book created successfully');
+        console.log("Book created successfully");
         setBookTitle("");
         setBookAuthor("");
         setBookIsbn("");
@@ -852,10 +951,10 @@ function App() {
         setShowBookForm(false);
         loadBooks();
       } else {
-        console.error('Failed to create book:', data.message);
+        console.error("Failed to create book:", data.message);
       }
     } catch (error) {
-      console.error('Error creating book:', error);
+      console.error("Error creating book:", error);
     }
   };
 
@@ -916,7 +1015,7 @@ function App() {
   };
 
   const handleDeleteBook = async (bookId: string) => {
-    if (!confirm('この本を削除しますか？')) {
+    if (!confirm("この本を削除しますか？")) {
       return;
     }
 
@@ -947,7 +1046,7 @@ function App() {
     if (!book.totalPages || book.totalPages === 0) {
       return 0;
     }
-    return Math.round((book.currentPage || 0) / book.totalPages * 100);
+    return Math.round(((book.currentPage || 0) / book.totalPages) * 100);
   };
 
   // 料理タイマー関連のハンドラー関数
@@ -987,7 +1086,9 @@ function App() {
 
   const resetEggTimer = () => {
     stopEggTimer();
-    setEggTimerTime(getEggTimerDuration(eggTimerType as "soft" | "medium" | "hard"));
+    setEggTimerTime(
+      getEggTimerDuration(eggTimerType as "soft" | "medium" | "hard")
+    );
   };
 
   // 音響関連のハンドラー関数
@@ -1005,7 +1106,10 @@ function App() {
 
     oscillator.type = "sine";
     gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 1.0
+    );
 
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 1.0);
@@ -1025,7 +1129,10 @@ function App() {
 
     oscillator.type = "sine";
     gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 0.8
+    );
 
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 0.8);
@@ -1071,7 +1178,10 @@ function App() {
 
     oscillator.type = "square";
     gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 1.0
+    );
 
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 1.0);
@@ -1162,15 +1272,15 @@ function App() {
     };
 
     // ユーザーの最初の操作でAudioContextを初期化
-    const events = ['click', 'touchstart', 'keydown'];
+    const events = ["click", "touchstart", "keydown"];
     const initOnce = () => {
       initAudioOnUserGesture();
-      events.forEach(event => {
+      events.forEach((event) => {
         document.removeEventListener(event, initOnce);
       });
     };
 
-    events.forEach(event => {
+    events.forEach((event) => {
       document.addEventListener(event, initOnce, { once: true });
     });
   };
@@ -1256,7 +1366,9 @@ function App() {
     const allElements = document.querySelectorAll("*");
     allElements.forEach((element) => {
       const text = element.textContent || "";
-      const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+      const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(
+        text
+      );
       const hasEnglish = /[a-zA-Z]/.test(text);
 
       if (hasJapanese && hasEnglish) {
@@ -1492,7 +1604,7 @@ function App() {
   // メモ作成ハンドラー（App_backup.tsxから復元）
   const handleCreateMemo = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('App.tsx - Creating memo');
+    console.log("App.tsx - Creating memo");
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/memos", {
@@ -1515,7 +1627,7 @@ function App() {
       const data = await response.json();
 
       if (data.success) {
-        console.log('Memo created successfully');
+        console.log("Memo created successfully");
         setMemoTitle("");
         setMemoContent("");
         setMemoCategory("");
@@ -1526,10 +1638,10 @@ function App() {
         setShowMemoForm(false);
         loadMemos();
       } else {
-        console.error('Failed to create memo:', data.message);
+        console.error("Failed to create memo:", data.message);
       }
     } catch (error) {
-      console.error('Error creating memo:', error);
+      console.error("Error creating memo:", error);
     }
   };
 
@@ -1663,18 +1775,11 @@ function App() {
     }
   };
 
-
-
-
-
-
-
-
-
   const playEggTimerSound = async () => {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+
       switch (eggTimerSound) {
         case "bell":
           playBellSound(audioContext);
@@ -1700,11 +1805,13 @@ function App() {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${secs
+        .toString()
+        .padStart(2, "0")}`;
     }
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+    return `${minutes}:${secs.toString().padStart(2, "0")}`;
   };
 
   const formatEggTimerTime = (seconds: number) => {
@@ -1714,13 +1821,17 @@ function App() {
   };
 
   // タイマー履歴の管理
-  const addToTimerHistory = (name: string, duration: number, type: "custom" | "egg" | "preset") => {
+  const addToTimerHistory = (
+    name: string,
+    duration: number,
+    type: "custom" | "egg" | "preset"
+  ) => {
     const newEntry = {
       id: Date.now().toString(),
       name,
       duration,
       completedAt: new Date(),
-      type
+      type,
     };
     const newHistory = [newEntry, ...timerHistory.slice(0, 49)]; // 最新50件まで保持
     setTimerHistory(newHistory);
@@ -1809,10 +1920,16 @@ function App() {
 
   // カスタムカテゴリ管理の関数（App_backup.tsxから復元）
   const handleAddCategory = () => {
-    if (newGenreName.trim() && !customCategories.includes(newGenreName.trim())) {
+    if (
+      newGenreName.trim() &&
+      !customCategories.includes(newGenreName.trim())
+    ) {
       const updatedCategories = [...customCategories, newGenreName.trim()];
       setCustomCategories(updatedCategories);
-      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
+      localStorage.setItem(
+        "customCategories",
+        JSON.stringify(updatedCategories)
+      );
       setNewGenreName("");
     }
   };
@@ -1847,7 +1964,7 @@ function App() {
 
   // ユーザー設定の読み込み
   const loadUserSettings = async () => {
-    console.log('App.tsx - Loading user settings');
+    console.log("App.tsx - Loading user settings");
     // ユーザー設定の読み込み
   };
 
@@ -1883,7 +2000,7 @@ function App() {
     { id: "timers", name: "タイマー", icon: "⏲️" },
     { id: "public-memos", name: "公開メモ", icon: "🌐" },
     { id: "work-records", name: "勤務記録", icon: "💼" },
-    { id: "sound-app", name: "サウンドアプリ", icon: "🎵" }
+    { id: "sound-app", name: "サウンドアプリ", icon: "🎵" },
   ];
 
   // 表示する機能を取得
@@ -1942,367 +2059,367 @@ function App() {
       onResetTimer={resetCustomTimer}
       isTimerActive={customTimerActive}
     >
-    <MainLayout
-      user={auth.user}
-      isLoggedIn={auth.isLoggedIn}
-      showCharacterHome={uiState.showCharacterHome}
-      showProjects={uiState.showProjects}
-      showCookingTimer={uiState.showCookingTimer}
-      showSelfAnalysis={uiState.showSelfAnalysis}
-      showBookshelf={uiState.showBookshelf}
-      showMemos={uiState.showMemos}
-      showReports={uiState.showReports}
-      showAdminPanel={uiState.showAdminPanel}
-      showTimeTracking={uiState.showTimeTracking}
-      showTimers={uiState.showTimers}
-      showEggTimer={showEggTimer}
-      showPublicMemos={uiState.showPublicMemos}
-      showWorkRecords={uiState.showWorkRecords}
-      showSoundApp={uiState.showSoundApp}
-      showNotifications={uiState.showNotifications}
-      showVersionInfo={uiState.showVersionInfo}
-      showThemeSettings={uiState.showThemeSettings}
-      showFontSettings={uiState.showFontSettings}
-      showFeatureSettings={uiState.showFeatureSettings}
-      showDiaryReminderSettings={showDiaryReminderSettings}
-      setShowDiaryReminderSettings={setShowDiaryReminderSettings}
-      showMoodForm={showMoodForm}
-      setShowMoodForm={setShowMoodForm}
-      showGoalForm={showGoalForm}
-      setShowGoalForm={setShowGoalForm}
-      // 日記リマインダー関連
-      diaryReminderSnoozeUntil={diaryReminderSnoozeUntil}
-      setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
-      openDiaryForm={openDiaryForm}
-      // UI設定関連
-      selectedTheme={selectedTheme}
-      selectedFont={selectedFont}
-      fontSettings={fontSettings}
-      showLanguageFontSettings={showLanguageFontSettings}
-      setShowLanguageFontSettings={setShowLanguageFontSettings}
-      handleThemeChange={handleThemeChange}
-      handleFontChange={handleFontChange}
-      handleLanguageFontSave={handleLanguageFontSave}
-      availableThemes={availableThemes}
-      availableFonts={availableFonts}
-      // お仕事記録関連の状態
-      showIncomeExpenseForm={showIncomeExpenseForm}
-      setShowIncomeExpenseForm={setShowIncomeExpenseForm}
-      showDiaryForm={showDiaryForm}
-      setShowDiaryForm={setShowDiaryForm}
-      editingIncomeExpenseRecord={editingIncomeExpenseRecord}
-      setEditingIncomeExpenseRecord={setEditingIncomeExpenseRecord}
-      editingDiary={editingDiary}
-      setEditingDiary={setEditingDiary}
-      // 収入・支出記録フォームの状態
-      incomeExpenseDate={incomeExpenseDate}
-      setIncomeExpenseDate={setIncomeExpenseDate}
-      incomeExpenseAmount={incomeExpenseAmount}
-      setIncomeExpenseAmount={setIncomeExpenseAmount}
-      incomeExpenseType={incomeExpenseType}
-      setIncomeExpenseType={setIncomeExpenseType}
-      incomeExpenseNotes={incomeExpenseNotes}
-      setIncomeExpenseNotes={setIncomeExpenseNotes}
-      // 日記フォームの状態
-      diaryDate={diaryDate}
-      setDiaryDate={setDiaryDate}
-      diaryTitle={diaryTitle}
-      setDiaryTitle={setDiaryTitle}
-      diaryContent={diaryContent}
-      setDiaryContent={setDiaryContent}
-      diaryMood={diaryMood}
-      setDiaryMood={setDiaryMood}
-      diaryActivities={diaryActivities}
-      setDiaryActivities={setDiaryActivities}
-      diaryTags={diaryTags}
-      setDiaryTags={setDiaryTags}
-      diaryIsPrivate={diaryIsPrivate}
-      setDiaryIsPrivate={setDiaryIsPrivate}
-      // 新しい日記項目の状態
-      diaryWorkSummary={diaryWorkSummary}
-      setDiaryWorkSummary={setDiaryWorkSummary}
-      diaryAchievements={diaryAchievements}
-      setDiaryAchievements={setDiaryAchievements}
-      diaryChallenges={diaryChallenges}
-      setDiaryChallenges={setDiaryChallenges}
-      diaryLearnings={diaryLearnings}
-      setDiaryLearnings={setDiaryLearnings}
-      diaryNextGoals={diaryNextGoals}
-      setDiaryNextGoals={setDiaryNextGoals}
-      diaryEnergyLevel={diaryEnergyLevel}
-      setDiaryEnergyLevel={setDiaryEnergyLevel}
-      diaryStressLevel={diaryStressLevel}
-      setDiaryStressLevel={setDiaryStressLevel}
-      diaryWorkHours={diaryWorkHours}
-      setDiaryWorkHours={setDiaryWorkHours}
-      diaryBreakTime={diaryBreakTime}
-      setDiaryBreakTime={setDiaryBreakTime}
-      diaryProductivity={diaryProductivity}
-      setDiaryProductivity={setDiaryProductivity}
-      diaryNotes={diaryNotes}
-      setDiaryNotes={setDiaryNotes}
-      diaryGratitude={diaryGratitude}
-      setDiaryGratitude={setDiaryGratitude}
-      diaryReflection={diaryReflection}
-      setDiaryReflection={setDiaryReflection}
-      // 配列項目の一時入力状態
-      newAchievement={newAchievement}
-      setNewAchievement={setNewAchievement}
-      newChallenge={newChallenge}
-      setNewChallenge={setNewChallenge}
-      newLearning={newLearning}
-      setNewLearning={setNewLearning}
-      newNextGoal={newNextGoal}
-      setNewNextGoal={setNewNextGoal}
-      // メモ関連の状態
-      setShowMemos={uiState.setShowMemos}
-      showMemoForm={showMemoForm}
-      setShowMemoForm={setShowMemoForm}
-      editingMemo={editingMemo}
-      setEditingMemo={setEditingMemo}
-      memoTitle={memoTitle}
-      setMemoTitle={setMemoTitle}
-      memoContent={memoContent}
-      setMemoContent={setMemoContent}
-      memoCategory={memoCategory}
-      setMemoCategory={setMemoCategory}
-      memoTags={memoTags}
-      setMemoTags={setMemoTags}
-      memoIsPublic={memoIsPublic}
-      setMemoIsPublic={setMemoIsPublic}
-      memoIsFamilyOnly={memoIsFamilyOnly}
-      setMemoIsFamilyOnly={setMemoIsFamilyOnly}
-      memoIsAdminOnly={memoIsAdminOnly}
-      setMemoIsAdminOnly={setMemoIsAdminOnly}
-      memoSearchTerm={memoSearchTerm}
-      setMemoSearchTerm={setMemoSearchTerm}
-      selectedMemoCategory={selectedMemoCategory}
-      setSelectedMemoCategory={setSelectedMemoCategory}
-      // 公開メモ関連の状態
-      setShowPublicMemos={uiState.setShowPublicMemos}
-      publicMemoSearchTerm={publicMemoSearchTerm}
-      setPublicMemoSearchTerm={setPublicMemoSearchTerm}
-      selectedPublicMemoCategory={selectedPublicMemoCategory}
-      setSelectedPublicMemoCategory={setSelectedPublicMemoCategory}
-      publicMemoCurrentDate={publicMemoCurrentDate}
-      setPublicMemoCurrentDate={setPublicMemoCurrentDate}
-      publicMemoSelectedDate={publicMemoSelectedDate}
-      setPublicMemoSelectedDate={setPublicMemoSelectedDate}
-      // 返信機能の状態
-      replyingToMemo={replyingToMemo}
-      setReplyingToMemo={setReplyingToMemo}
-      replyContent={replyContent}
-      setReplyContent={setReplyContent}
-      editingReply={editingReply}
-      setEditingReply={setEditingReply}
-      editReplyContent={editReplyContent}
-      setEditReplyContent={setEditReplyContent}
-      // 本棚関連の状態
-      setShowBookshelf={uiState.setShowBookshelf}
-      showBookForm={showBookForm}
-      setShowBookForm={setShowBookForm}
-      editingBook={editingBook}
-      setEditingBook={setEditingBook}
-      bookTitle={bookTitle}
-      setBookTitle={setBookTitle}
-      bookAuthor={bookAuthor}
-      setBookAuthor={setBookAuthor}
-      bookIsbn={bookIsbn}
-      setBookIsbn={setBookIsbn}
-      bookPublishedYear={bookPublishedYear}
-      setBookPublishedYear={setBookPublishedYear}
-      bookTotalPages={bookTotalPages}
-      setBookTotalPages={setBookTotalPages}
-      bookCategory={bookCategory}
-      setBookCategory={setBookCategory}
-      bookNotes={bookNotes}
-      setBookNotes={setBookNotes}
-      selectedBookCategory={selectedBookCategory}
-      setSelectedBookCategory={setSelectedBookCategory}
-      // カレンダー関連の状態
-      showCalendar={showCalendar}
-      setShowCalendar={setShowCalendar}
-      currentDate={currentDate}
-      setCurrentDate={setCurrentDate}
-      currentMonth={currentMonth}
-      setCurrentMonth={setCurrentMonth}
-      selectedDate={selectedDate}
-      setSelectedDate={setSelectedDate}
-      showRecordDetail={showRecordDetail}
-      setShowRecordDetail={setShowRecordDetail}
-      selectedRecord={selectedRecord}
-      setSelectedRecord={setSelectedRecord}
-      selectedRecordType={selectedRecordType}
-      setSelectedRecordType={setSelectedRecordType}
-      // 月収支メモの状態
-      monthlyMemo={monthlyMemo}
-      setMonthlyMemo={setMonthlyMemo}
-      editingMonthlyMemo={editingMonthlyMemo}
-      setEditingMonthlyMemo={setEditingMonthlyMemo}
-      // 料理タイマー関連の状態
-      selectedRecipe={selectedRecipe}
-      setSelectedRecipe={setSelectedRecipe}
-      selectedEggType={selectedEggType}
-      setSelectedEggType={setSelectedEggType}
-      eggTimerActive={eggTimerActive}
-      setEggTimerActive={setEggTimerActive}
-      eggTimerPaused={eggTimerPaused}
-      setEggTimerPaused={setEggTimerPaused}
-      eggTimerTime={eggTimerTime}
-      setEggTimerTime={setEggTimerTime}
-      eggTimerInterval={eggTimerInterval}
-      setEggTimerInterval={setEggTimerInterval}
-      eggTimerSound={eggTimerSound}
-      setEggTimerSound={setEggTimerSound}
-      eggTimerOriginalTime={eggTimerOriginalTime}
-      setEggTimerOriginalTime={setEggTimerOriginalTime}
-      eggTimerPhase={eggTimerPhase}
-      setEggTimerPhase={setEggTimerPhase}
-      eggTimerPhaseTime={eggTimerPhaseTime}
-      setEggTimerPhaseTime={setEggTimerPhaseTime}
-      eggTimerPhaseName={eggTimerPhaseName}
-      setEggTimerPhaseName={setEggTimerPhaseName}
-      pauseEggTimer={pauseEggTimer}
-      stopEggTimer={stopEggTimer}
-      resetEggTimer={resetEggTimer}
-      getEggTimerDuration={getEggTimerDuration}
-      // 音響関連のハンドラー関数
-      playBellSound={playBellSound}
-      playChimeSound={playChimeSound}
-      playBeepSound={playBeepSound}
-      playAlarmSound={playAlarmSound}
-      startSoundLoop={startSoundLoop}
-      stopSoundLoop={stopSoundLoop}
-      showBugReportModal={errorHandling.showBugReportModal}
-      showUpdateRequestModal={errorHandling.showUpdateRequestModal}
-      setShowCharacterHome={uiState.setShowCharacterHome}
-      setShowProjects={uiState.setShowProjects}
-      setShowCookingTimer={uiState.setShowCookingTimer}
-      setShowSelfAnalysis={uiState.setShowSelfAnalysis}
-      setShowReports={uiState.setShowReports}
-      setShowAdminPanel={uiState.setShowAdminPanel}
-      setShowTimeTracking={uiState.setShowTimeTracking}
-      setShowTimers={uiState.setShowTimers}
-      setShowEggTimer={setShowEggTimer}
-      setShowWorkRecords={uiState.setShowWorkRecords}
-      setShowSoundApp={uiState.setShowSoundApp}
-      setShowNotifications={uiState.setShowNotifications}
-      setShowVersionInfo={uiState.setShowVersionInfo}
-      setShowThemeSettings={uiState.setShowThemeSettings}
-      setShowFontSettings={uiState.setShowFontSettings}
-      setShowFeatureSettings={uiState.setShowFeatureSettings}
-      setShowBugReportModal={errorHandling.setShowBugReportModal}
-      setShowUpdateRequestModal={errorHandling.setShowUpdateRequestModal}
-      closeOtherFeatures={uiState.closeOtherFeatures}
-      onUpdateRequestSubmit={handleUpdateRequest}
-      onBugReportSubmit={handleBugReport}
-      loadProjects={loadProjects}
-      loadTimeEntries={loadTimeEntries}
-      loadBooks={loadBooks}
-      loadMemos={loadMemos}
-      loadPublicMemos={loadPublicMemos}
-      loadAdminUsers={loadAdminUsers}
-      loadReportSummary={loadReportSummary}
-      loadIncomeExpenseRecords={loadIncomeExpenseRecords}
-      loadWorkDiaries={loadWorkDiaries}
-      handleStartTracking={handleStartTracking}
-      handleStopTracking={handleStopTracking}
-      handleResetTracking={handleResetTracking}
-      handleCreateIncomeExpenseRecord={handleCreateIncomeExpenseRecord}
-      handleCreateDiary={handleCreateDiary}
-      handleUpdateIncomeExpenseRecord={handleUpdateIncomeExpenseRecord}
-      handleUpdateDiary={handleUpdateDiary}
-      handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
-      handleDeleteDiary={handleDeleteDiary}
-      loadUserSettings={loadUserSettings}
-      getVisibleFeatures={getVisibleFeatures}
-      // 追加のプロパティ（App_backup.tsxから復元）
-      projects={projects}
-      books={books}
-      memos={memos}
-      publicMemos={publicMemos}
-      adminUsers={adminUsers}
-      reportSummary={reportSummary}
-      selectedProject={selectedProject}
-      setSelectedProject={setSelectedProject}
-      showProjectForm={showProjectForm}
-      setShowProjectForm={setShowProjectForm}
-      projectName={projectName}
-      setProjectName={setProjectName}
-      projectDescription={projectDescription}
-      setProjectDescription={setProjectDescription}
-      projectColor={projectColor}
-      setProjectColor={setProjectColor}
-      handleCreateProject={handleCreateProject}
-      handleCreateBook={handleCreateBook}
-      handleUpdateBook={handleUpdateBook}
-      handleEditBook={handleEditBook}
-      handleDeleteBook={handleDeleteBook}
-      handleBookCategoryChange={handleBookCategoryChange}
-      getReadingProgress={getReadingProgress}
-      handleCreateMemo={handleCreateMemo}
-      // タイマー関連のプロパティ
-      customTimerActive={customTimerActive}
-      setCustomTimerActive={setCustomTimerActive}
-      customTimerPaused={customTimerPaused}
-      setCustomTimerPaused={setCustomTimerPaused}
-      customTimerTime={customTimerTime}
-      setCustomTimerTime={setCustomTimerTime}
-      customTimerInterval={customTimerInterval}
-      setCustomTimerInterval={setCustomTimerInterval}
-      customTimerMinutes={customTimerMinutes}
-      setCustomTimerMinutes={setCustomTimerMinutes}
-      customTimerSeconds={customTimerSeconds}
-      setCustomTimerSeconds={setCustomTimerSeconds}
-      customTimerName={customTimerName}
-      setCustomTimerName={setCustomTimerName}
-      customTimerSound={customTimerSound}
-      setCustomTimerSound={setCustomTimerSound}
-      customTimerOriginalTime={customTimerOriginalTime}
-      setCustomTimerOriginalTime={setCustomTimerOriginalTime}
-      startCustomTimer={startCustomTimer}
-      pauseCustomTimer={pauseCustomTimer}
-      stopCustomTimer={stopCustomTimer}
-      resetCustomTimer={resetCustomTimer}
-      // 料理タイマー関連のプロパティ
-      eggTimerType={eggTimerType}
-      setEggTimerType={setEggTimerType}
-      startEggTimer={startEggTimer}
-      // 音声関連のプロパティ
-      soundLoopInterval={soundLoopInterval}
-      setSoundLoopInterval={setSoundLoopInterval}
-      isSoundPlaying={isSoundPlaying}
-      setIsSoundPlaying={setIsSoundPlaying}
-      playEggTimerSound={playEggTimerSound}
-      // タイマープリセット関連のプロパティ
-      timerPresets={timerPresets}
-      setTimerPresets={setTimerPresets}
-      timerHistory={timerHistory}
-      setTimerHistory={setTimerHistory}
-      addToTimerHistory={addToTimerHistory}
-      // 時間フォーマット関数
-      formatTime={formatTime}
-      formatEggTimerTime={formatEggTimerTime}
-      // 通知機能
-      sendNotification={sendNotification}
-      // 月収支メモ関連のプロパティ
-      loadMonthlyMemo={loadMonthlyMemo}
-      saveMonthlyMemo={saveMonthlyMemo}
-      startEditingMonthlyMemo={startEditingMonthlyMemo}
-      cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
-      // カレンダー操作関数
-      navigateMonth={navigateMonth}
-      openIncomeExpenseForm={openIncomeExpenseForm}
-      // カスタムカテゴリ管理
-      customCategories={customCategories}
-      setCustomCategories={setCustomCategories}
-      newGenreName={newGenreName}
-      setNewGenreName={setNewGenreName}
-      handleAddCategory={handleAddCategory}
-      handleDeleteCategory={handleDeleteCategory}
-      getAllGenres={getAllGenres}
-      timerSettings={timerSettings}
-    />
+      <MainLayout
+        user={auth.user}
+        isLoggedIn={auth.isLoggedIn}
+        showCharacterHome={uiState.showCharacterHome}
+        showProjects={uiState.showProjects}
+        showCookingTimer={uiState.showCookingTimer}
+        showSelfAnalysis={uiState.showSelfAnalysis}
+        showBookshelf={uiState.showBookshelf}
+        showMemos={uiState.showMemos}
+        showReports={uiState.showReports}
+        showAdminPanel={uiState.showAdminPanel}
+        showTimeTracking={uiState.showTimeTracking}
+        showTimers={uiState.showTimers}
+        showEggTimer={showEggTimer}
+        showPublicMemos={uiState.showPublicMemos}
+        showWorkRecords={uiState.showWorkRecords}
+        showSoundApp={uiState.showSoundApp}
+        showNotifications={uiState.showNotifications}
+        showVersionInfo={uiState.showVersionInfo}
+        showThemeSettings={uiState.showThemeSettings}
+        showFontSettings={uiState.showFontSettings}
+        showFeatureSettings={uiState.showFeatureSettings}
+        showDiaryReminderSettings={showDiaryReminderSettings}
+        setShowDiaryReminderSettings={setShowDiaryReminderSettings}
+        showMoodForm={showMoodForm}
+        setShowMoodForm={setShowMoodForm}
+        showGoalForm={showGoalForm}
+        setShowGoalForm={setShowGoalForm}
+        // 日記リマインダー関連
+        diaryReminderSnoozeUntil={diaryReminderSnoozeUntil}
+        setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
+        openDiaryForm={openDiaryForm}
+        // UI設定関連
+        selectedTheme={selectedTheme}
+        selectedFont={selectedFont}
+        fontSettings={fontSettings}
+        showLanguageFontSettings={showLanguageFontSettings}
+        setShowLanguageFontSettings={setShowLanguageFontSettings}
+        handleThemeChange={handleThemeChange}
+        handleFontChange={handleFontChange}
+        handleLanguageFontSave={handleLanguageFontSave}
+        availableThemes={availableThemes}
+        availableFonts={availableFonts}
+        // お仕事記録関連の状態
+        showIncomeExpenseForm={showIncomeExpenseForm}
+        setShowIncomeExpenseForm={setShowIncomeExpenseForm}
+        showDiaryForm={showDiaryForm}
+        setShowDiaryForm={setShowDiaryForm}
+        editingIncomeExpenseRecord={editingIncomeExpenseRecord}
+        setEditingIncomeExpenseRecord={setEditingIncomeExpenseRecord}
+        editingDiary={editingDiary}
+        setEditingDiary={setEditingDiary}
+        // 収入・支出記録フォームの状態
+        incomeExpenseDate={incomeExpenseDate}
+        setIncomeExpenseDate={setIncomeExpenseDate}
+        incomeExpenseAmount={incomeExpenseAmount}
+        setIncomeExpenseAmount={setIncomeExpenseAmount}
+        incomeExpenseType={incomeExpenseType}
+        setIncomeExpenseType={setIncomeExpenseType}
+        incomeExpenseNotes={incomeExpenseNotes}
+        setIncomeExpenseNotes={setIncomeExpenseNotes}
+        // 日記フォームの状態
+        diaryDate={diaryDate}
+        setDiaryDate={setDiaryDate}
+        diaryTitle={diaryTitle}
+        setDiaryTitle={setDiaryTitle}
+        diaryContent={diaryContent}
+        setDiaryContent={setDiaryContent}
+        diaryMood={diaryMood}
+        setDiaryMood={setDiaryMood}
+        diaryActivities={diaryActivities}
+        setDiaryActivities={setDiaryActivities}
+        diaryTags={diaryTags}
+        setDiaryTags={setDiaryTags}
+        diaryIsPrivate={diaryIsPrivate}
+        setDiaryIsPrivate={setDiaryIsPrivate}
+        // 新しい日記項目の状態
+        diaryWorkSummary={diaryWorkSummary}
+        setDiaryWorkSummary={setDiaryWorkSummary}
+        diaryAchievements={diaryAchievements}
+        setDiaryAchievements={setDiaryAchievements}
+        diaryChallenges={diaryChallenges}
+        setDiaryChallenges={setDiaryChallenges}
+        diaryLearnings={diaryLearnings}
+        setDiaryLearnings={setDiaryLearnings}
+        diaryNextGoals={diaryNextGoals}
+        setDiaryNextGoals={setDiaryNextGoals}
+        diaryEnergyLevel={diaryEnergyLevel}
+        setDiaryEnergyLevel={setDiaryEnergyLevel}
+        diaryStressLevel={diaryStressLevel}
+        setDiaryStressLevel={setDiaryStressLevel}
+        diaryWorkHours={diaryWorkHours}
+        setDiaryWorkHours={setDiaryWorkHours}
+        diaryBreakTime={diaryBreakTime}
+        setDiaryBreakTime={setDiaryBreakTime}
+        diaryProductivity={diaryProductivity}
+        setDiaryProductivity={setDiaryProductivity}
+        diaryNotes={diaryNotes}
+        setDiaryNotes={setDiaryNotes}
+        diaryGratitude={diaryGratitude}
+        setDiaryGratitude={setDiaryGratitude}
+        diaryReflection={diaryReflection}
+        setDiaryReflection={setDiaryReflection}
+        // 配列項目の一時入力状態
+        newAchievement={newAchievement}
+        setNewAchievement={setNewAchievement}
+        newChallenge={newChallenge}
+        setNewChallenge={setNewChallenge}
+        newLearning={newLearning}
+        setNewLearning={setNewLearning}
+        newNextGoal={newNextGoal}
+        setNewNextGoal={setNewNextGoal}
+        // メモ関連の状態
+        setShowMemos={uiState.setShowMemos}
+        showMemoForm={showMemoForm}
+        setShowMemoForm={setShowMemoForm}
+        editingMemo={editingMemo}
+        setEditingMemo={setEditingMemo}
+        memoTitle={memoTitle}
+        setMemoTitle={setMemoTitle}
+        memoContent={memoContent}
+        setMemoContent={setMemoContent}
+        memoCategory={memoCategory}
+        setMemoCategory={setMemoCategory}
+        memoTags={memoTags}
+        setMemoTags={setMemoTags}
+        memoIsPublic={memoIsPublic}
+        setMemoIsPublic={setMemoIsPublic}
+        memoIsFamilyOnly={memoIsFamilyOnly}
+        setMemoIsFamilyOnly={setMemoIsFamilyOnly}
+        memoIsAdminOnly={memoIsAdminOnly}
+        setMemoIsAdminOnly={setMemoIsAdminOnly}
+        memoSearchTerm={memoSearchTerm}
+        setMemoSearchTerm={setMemoSearchTerm}
+        selectedMemoCategory={selectedMemoCategory}
+        setSelectedMemoCategory={setSelectedMemoCategory}
+        // 公開メモ関連の状態
+        setShowPublicMemos={uiState.setShowPublicMemos}
+        publicMemoSearchTerm={publicMemoSearchTerm}
+        setPublicMemoSearchTerm={setPublicMemoSearchTerm}
+        selectedPublicMemoCategory={selectedPublicMemoCategory}
+        setSelectedPublicMemoCategory={setSelectedPublicMemoCategory}
+        publicMemoCurrentDate={publicMemoCurrentDate}
+        setPublicMemoCurrentDate={setPublicMemoCurrentDate}
+        publicMemoSelectedDate={publicMemoSelectedDate}
+        setPublicMemoSelectedDate={setPublicMemoSelectedDate}
+        // 返信機能の状態
+        replyingToMemo={replyingToMemo}
+        setReplyingToMemo={setReplyingToMemo}
+        replyContent={replyContent}
+        setReplyContent={setReplyContent}
+        editingReply={editingReply}
+        setEditingReply={setEditingReply}
+        editReplyContent={editReplyContent}
+        setEditReplyContent={setEditReplyContent}
+        // 本棚関連の状態
+        setShowBookshelf={uiState.setShowBookshelf}
+        showBookForm={showBookForm}
+        setShowBookForm={setShowBookForm}
+        editingBook={editingBook}
+        setEditingBook={setEditingBook}
+        bookTitle={bookTitle}
+        setBookTitle={setBookTitle}
+        bookAuthor={bookAuthor}
+        setBookAuthor={setBookAuthor}
+        bookIsbn={bookIsbn}
+        setBookIsbn={setBookIsbn}
+        bookPublishedYear={bookPublishedYear}
+        setBookPublishedYear={setBookPublishedYear}
+        bookTotalPages={bookTotalPages}
+        setBookTotalPages={setBookTotalPages}
+        bookCategory={bookCategory}
+        setBookCategory={setBookCategory}
+        bookNotes={bookNotes}
+        setBookNotes={setBookNotes}
+        selectedBookCategory={selectedBookCategory}
+        setSelectedBookCategory={setSelectedBookCategory}
+        // カレンダー関連の状態
+        showCalendar={showCalendar}
+        setShowCalendar={setShowCalendar}
+        currentDate={currentDate}
+        setCurrentDate={setCurrentDate}
+        currentMonth={currentMonth}
+        setCurrentMonth={setCurrentMonth}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        showRecordDetail={showRecordDetail}
+        setShowRecordDetail={setShowRecordDetail}
+        selectedRecord={selectedRecord}
+        setSelectedRecord={setSelectedRecord}
+        selectedRecordType={selectedRecordType}
+        setSelectedRecordType={setSelectedRecordType}
+        // 月収支メモの状態
+        monthlyMemo={monthlyMemo}
+        setMonthlyMemo={setMonthlyMemo}
+        editingMonthlyMemo={editingMonthlyMemo}
+        setEditingMonthlyMemo={setEditingMonthlyMemo}
+        // 料理タイマー関連の状態
+        selectedRecipe={selectedRecipe}
+        setSelectedRecipe={setSelectedRecipe}
+        selectedEggType={selectedEggType}
+        setSelectedEggType={setSelectedEggType}
+        eggTimerActive={eggTimerActive}
+        setEggTimerActive={setEggTimerActive}
+        eggTimerPaused={eggTimerPaused}
+        setEggTimerPaused={setEggTimerPaused}
+        eggTimerTime={eggTimerTime}
+        setEggTimerTime={setEggTimerTime}
+        eggTimerInterval={eggTimerInterval}
+        setEggTimerInterval={setEggTimerInterval}
+        eggTimerSound={eggTimerSound}
+        setEggTimerSound={setEggTimerSound}
+        eggTimerOriginalTime={eggTimerOriginalTime}
+        setEggTimerOriginalTime={setEggTimerOriginalTime}
+        eggTimerPhase={eggTimerPhase}
+        setEggTimerPhase={setEggTimerPhase}
+        eggTimerPhaseTime={eggTimerPhaseTime}
+        setEggTimerPhaseTime={setEggTimerPhaseTime}
+        eggTimerPhaseName={eggTimerPhaseName}
+        setEggTimerPhaseName={setEggTimerPhaseName}
+        pauseEggTimer={pauseEggTimer}
+        stopEggTimer={stopEggTimer}
+        resetEggTimer={resetEggTimer}
+        getEggTimerDuration={getEggTimerDuration}
+        // 音響関連のハンドラー関数
+        playBellSound={playBellSound}
+        playChimeSound={playChimeSound}
+        playBeepSound={playBeepSound}
+        playAlarmSound={playAlarmSound}
+        startSoundLoop={startSoundLoop}
+        stopSoundLoop={stopSoundLoop}
+        showBugReportModal={errorHandling.showBugReportModal}
+        showUpdateRequestModal={errorHandling.showUpdateRequestModal}
+        setShowCharacterHome={uiState.setShowCharacterHome}
+        setShowProjects={uiState.setShowProjects}
+        setShowCookingTimer={uiState.setShowCookingTimer}
+        setShowSelfAnalysis={uiState.setShowSelfAnalysis}
+        setShowReports={uiState.setShowReports}
+        setShowAdminPanel={uiState.setShowAdminPanel}
+        setShowTimeTracking={uiState.setShowTimeTracking}
+        setShowTimers={uiState.setShowTimers}
+        setShowEggTimer={setShowEggTimer}
+        setShowWorkRecords={uiState.setShowWorkRecords}
+        setShowSoundApp={uiState.setShowSoundApp}
+        setShowNotifications={uiState.setShowNotifications}
+        setShowVersionInfo={uiState.setShowVersionInfo}
+        setShowThemeSettings={uiState.setShowThemeSettings}
+        setShowFontSettings={uiState.setShowFontSettings}
+        setShowFeatureSettings={uiState.setShowFeatureSettings}
+        setShowBugReportModal={errorHandling.setShowBugReportModal}
+        setShowUpdateRequestModal={errorHandling.setShowUpdateRequestModal}
+        closeOtherFeatures={uiState.closeOtherFeatures}
+        onUpdateRequestSubmit={handleUpdateRequest}
+        onBugReportSubmit={handleBugReport}
+        loadProjects={loadProjects}
+        loadTimeEntries={loadTimeEntries}
+        loadBooks={loadBooks}
+        loadMemos={loadMemos}
+        loadPublicMemos={loadPublicMemos}
+        loadAdminUsers={loadAdminUsers}
+        loadReportSummary={loadReportSummary}
+        loadIncomeExpenseRecords={loadIncomeExpenseRecords}
+        loadWorkDiaries={loadWorkDiaries}
+        handleStartTracking={handleStartTracking}
+        handleStopTracking={handleStopTracking}
+        handleResetTracking={handleResetTracking}
+        handleCreateIncomeExpenseRecord={handleCreateIncomeExpenseRecord}
+        handleCreateDiary={handleCreateDiary}
+        handleUpdateIncomeExpenseRecord={handleUpdateIncomeExpenseRecord}
+        handleUpdateDiary={handleUpdateDiary}
+        handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
+        handleDeleteDiary={handleDeleteDiary}
+        loadUserSettings={loadUserSettings}
+        getVisibleFeatures={getVisibleFeatures}
+        // 追加のプロパティ（App_backup.tsxから復元）
+        projects={projects}
+        books={books}
+        memos={memos}
+        publicMemos={publicMemos}
+        adminUsers={adminUsers}
+        reportSummary={reportSummary}
+        selectedProject={selectedProject}
+        setSelectedProject={setSelectedProject}
+        showProjectForm={showProjectForm}
+        setShowProjectForm={setShowProjectForm}
+        projectName={projectName}
+        setProjectName={setProjectName}
+        projectDescription={projectDescription}
+        setProjectDescription={setProjectDescription}
+        projectColor={projectColor}
+        setProjectColor={setProjectColor}
+        handleCreateProject={handleCreateProject}
+        handleCreateBook={handleCreateBook}
+        handleUpdateBook={handleUpdateBook}
+        handleEditBook={handleEditBook}
+        handleDeleteBook={handleDeleteBook}
+        handleBookCategoryChange={handleBookCategoryChange}
+        getReadingProgress={getReadingProgress}
+        handleCreateMemo={handleCreateMemo}
+        // タイマー関連のプロパティ
+        customTimerActive={customTimerActive}
+        setCustomTimerActive={setCustomTimerActive}
+        customTimerPaused={customTimerPaused}
+        setCustomTimerPaused={setCustomTimerPaused}
+        customTimerTime={customTimerTime}
+        setCustomTimerTime={setCustomTimerTime}
+        customTimerInterval={customTimerInterval}
+        setCustomTimerInterval={setCustomTimerInterval}
+        customTimerMinutes={customTimerMinutes}
+        setCustomTimerMinutes={setCustomTimerMinutes}
+        customTimerSeconds={customTimerSeconds}
+        setCustomTimerSeconds={setCustomTimerSeconds}
+        customTimerName={customTimerName}
+        setCustomTimerName={setCustomTimerName}
+        customTimerSound={customTimerSound}
+        setCustomTimerSound={setCustomTimerSound}
+        customTimerOriginalTime={customTimerOriginalTime}
+        setCustomTimerOriginalTime={setCustomTimerOriginalTime}
+        startCustomTimer={startCustomTimer}
+        pauseCustomTimer={pauseCustomTimer}
+        stopCustomTimer={stopCustomTimer}
+        resetCustomTimer={resetCustomTimer}
+        // 料理タイマー関連のプロパティ
+        eggTimerType={eggTimerType}
+        setEggTimerType={setEggTimerType}
+        startEggTimer={startEggTimer}
+        // 音声関連のプロパティ
+        soundLoopInterval={soundLoopInterval}
+        setSoundLoopInterval={setSoundLoopInterval}
+        isSoundPlaying={isSoundPlaying}
+        setIsSoundPlaying={setIsSoundPlaying}
+        playEggTimerSound={playEggTimerSound}
+        // タイマープリセット関連のプロパティ
+        timerPresets={timerPresets}
+        setTimerPresets={setTimerPresets}
+        timerHistory={timerHistory}
+        setTimerHistory={setTimerHistory}
+        addToTimerHistory={addToTimerHistory}
+        // 時間フォーマット関数
+        formatTime={formatTime}
+        formatEggTimerTime={formatEggTimerTime}
+        // 通知機能
+        sendNotification={sendNotification}
+        // 月収支メモ関連のプロパティ
+        loadMonthlyMemo={loadMonthlyMemo}
+        saveMonthlyMemo={saveMonthlyMemo}
+        startEditingMonthlyMemo={startEditingMonthlyMemo}
+        cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
+        // カレンダー操作関数
+        navigateMonth={navigateMonth}
+        openIncomeExpenseForm={openIncomeExpenseForm}
+        // カスタムカテゴリ管理
+        customCategories={customCategories}
+        setCustomCategories={setCustomCategories}
+        newGenreName={newGenreName}
+        setNewGenreName={setNewGenreName}
+        handleAddCategory={handleAddCategory}
+        handleDeleteCategory={handleDeleteCategory}
+        getAllGenres={getAllGenres}
+        timerSettings={timerSettings}
+      />
     </TimerPresetProvider>
   );
 }
@@ -2311,9 +2428,9 @@ const AppWithProviders = () => {
   return (
     <LoadingStateProvider>
       <TimeTrackingStateProvider user={null}>
-          <MoodLogProvider>
-            <App />
-          </MoodLogProvider>
+        <MoodLogProvider>
+          <App />
+        </MoodLogProvider>
       </TimeTrackingStateProvider>
     </LoadingStateProvider>
   );
