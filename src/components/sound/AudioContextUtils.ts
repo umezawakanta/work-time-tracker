@@ -19,6 +19,9 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
       const newContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       // Tone.jsのコンテキストを更新
       Tone.setContext(newContext);
+      
+      // 新しいコンテキストが開始されるまで少し待つ
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
     
     // AudioContextが正常に動作しているか確認

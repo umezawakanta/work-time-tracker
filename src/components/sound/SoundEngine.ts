@@ -266,6 +266,9 @@ export const initializeTone = async (): Promise<boolean> => {
       console.log("Starting Tone.js after user interaction...");
       await Tone.start();
       
+      // 初期化が完了するまで少し待つ
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
       console.log("Tone.js started successfully");
       globalToneInitialized = true;
       return true;
