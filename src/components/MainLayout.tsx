@@ -21,6 +21,8 @@ import UpdateRequestModal from './UpdateRequestModal';
 import BugReportModal from './BugReportModal';
 import EggTimerComponent from './EggTimerComponent';
 import HetamaIconComponent from './HetamaIconComponent';
+import LanguageFontSettings from './LanguageFontSettings';
+import DiaryReminderIntegration from './DiaryReminderIntegration';
 import { User } from '../types';
 
 interface MainLayoutProps {
@@ -50,6 +52,9 @@ interface MainLayoutProps {
   setShowMoodForm: (show: boolean) => void;
   showGoalForm: boolean;
   setShowGoalForm: (show: boolean) => void;
+  // 日記リマインダー関連
+  diaryReminderSnoozeUntil: number | null;
+  setDiaryReminderSnoozeUntil: (time: number | null) => void;
   // UI設定関連
   selectedTheme: string;
   selectedFont: string;
@@ -63,6 +68,10 @@ interface MainLayoutProps {
     value: string;
     label: string;
     preview: string;
+  }>;
+  availableFonts: Array<{
+    value: string;
+    label: string;
   }>;
   // お仕事記録関連の状態
   showIncomeExpenseForm: boolean;
@@ -441,6 +450,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   handleFontChange,
   handleLanguageFontSave,
   availableThemes,
+  availableFonts,
   showSoundApp,
   showNotifications,
   showVersionInfo,
@@ -456,6 +466,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setShowMoodForm,
   showGoalForm,
   setShowGoalForm,
+  // 日記リマインダー関連
+  diaryReminderSnoozeUntil,
+  setDiaryReminderSnoozeUntil,
   // お仕事記録関連の状態
   showIncomeExpenseForm,
   setShowIncomeExpenseForm,
@@ -1106,6 +1119,224 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           color: #3b82f6;
           font-weight: 600;
         }
+        
+        .header-buttons {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+        }
+        
+        .language-font-button {
+          background: #f8f9fa;
+          border: 1px solid #dee2e6;
+          border-radius: 4px;
+          padding: 8px 12px;
+          cursor: pointer;
+          font-size: 0.9em;
+          transition: all 0.2s ease;
+        }
+        
+        .language-font-button:hover {
+          background: #e9ecef;
+          border-color: #adb5bd;
+        }
+        
+        .font-preview {
+          margin-bottom: 20px;
+          padding: 15px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          text-align: center;
+        }
+        
+        .font-preview p {
+          margin: 8px 0;
+          font-size: 1.1em;
+        }
+        
+        .font-options {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 10px;
+          max-height: 400px;
+          overflow-y: auto;
+        }
+        
+        .font-option {
+          display: flex;
+          align-items: center;
+          padding: 10px;
+          border: 1px solid #e5e7eb;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .font-option:hover {
+          border-color: #3b82f6;
+          background-color: #f8fafc;
+        }
+        
+        .font-option input[type="radio"] {
+          margin-right: 10px;
+        }
+        
+        .font-option span {
+          font-size: 1em;
+          font-weight: 500;
+        }
+        
+        .font-option input[type="radio"]:checked + span {
+          color: #3b82f6;
+          font-weight: 600;
+        }
+        
+        .feature-settings-section {
+          margin-bottom: 30px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .feature-settings-section:last-child {
+          border-bottom: none;
+        }
+        
+        .feature-settings-section h4 {
+          margin: 0 0 15px 0;
+          color: #374151;
+          font-size: 1.1em;
+        }
+        
+        .reminder-settings-btn,
+        .settings-option-btn {
+          background: #f8f9fa;
+          border: 1px solid #dee2e6;
+          border-radius: 6px;
+          padding: 10px 15px;
+          cursor: pointer;
+          font-size: 0.95em;
+          transition: all 0.2s ease;
+          margin-right: 10px;
+          margin-bottom: 10px;
+        }
+        
+        .reminder-settings-btn:hover,
+        .settings-option-btn:hover {
+          background: #e9ecef;
+          border-color: #3b82f6;
+        }
+        
+        .feature-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        
+        .feature-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          background: #f8f9fa;
+        }
+        
+        .feature-item-content {
+          flex: 1;
+        }
+        
+        .feature-info {
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .feature-name {
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 4px;
+        }
+        
+        .feature-description {
+          font-size: 0.9em;
+          color: #6b7280;
+        }
+        
+        .feature-controls {
+          display: flex;
+          align-items: center;
+        }
+        
+        .toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 50px;
+          height: 24px;
+        }
+        
+        .toggle-switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        
+        .toggle-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          transition: 0.4s;
+          border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+          position: absolute;
+          content: "";
+          height: 18px;
+          width: 18px;
+          left: 3px;
+          bottom: 3px;
+          background-color: white;
+          transition: 0.4s;
+          border-radius: 50%;
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+          background-color: #3b82f6;
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+          transform: translateX(26px);
+        }
+        
+        .settings-options {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        
+        .feature-settings-actions {
+          margin-top: 20px;
+          text-align: center;
+        }
+        
+        .save-button {
+          background: #3b82f6;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          padding: 12px 24px;
+          cursor: pointer;
+          font-size: 1em;
+          transition: all 0.2s ease;
+        }
+        
+        .save-button:hover {
+          background: #2563eb;
+        }
       `}</style>
       <div className="app">
       <div className="dashboard">
@@ -1670,16 +1901,68 @@ const MainLayout: React.FC<MainLayoutProps> = ({
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                   <h3>🔤 フォント設定</h3>
-                  <button 
-                    className="close-button"
-                    onClick={() => setShowFontSettings(false)}
-                  >
-                    ✕
-                  </button>
+                  <div className="header-buttons">
+                    <button
+                      onClick={() => {
+                        setShowFontSettings(false);
+                        setShowLanguageFontSettings(true);
+                      }}
+                      className="language-font-button"
+                    >
+                      🌐 言語別設定
+                    </button>
+                    <button 
+                      className="close-button"
+                      onClick={() => setShowFontSettings(false)}
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </div>
                 <div className="modal-body">
-                  <p>フォント設定機能は準備中です。</p>
-                  <p>近日中に利用可能になります。</p>
+                  <div className="font-preview">
+                    <p
+                      style={{
+                        fontFamily: selectedFont === "system" ? "" : selectedFont,
+                      }}
+                    >
+                      時間記録 | プロジェクト | レポート | 管理者パネル
+                    </p>
+                    <p
+                      style={{
+                        fontFamily: selectedFont === "system" ? "" : selectedFont,
+                      }}
+                    >
+                      本棚 | メモ | 公開メモ | お仕事記録
+                    </p>
+                    <p
+                      style={{
+                        fontFamily: selectedFont === "system" ? "" : selectedFont,
+                      }}
+                    >
+                      作業内容を入力してください | ▶ 記録開始
+                    </p>
+                  </div>
+                  <div className="font-options">
+                    {availableFonts.map((font) => (
+                      <label key={font.value} className="font-option">
+                        <input
+                          type="radio"
+                          name="font"
+                          value={font.value}
+                          checked={selectedFont === font.value}
+                          onChange={(e) => handleFontChange(e.target.value)}
+                        />
+                        <span
+                          style={{
+                            fontFamily: font.value === "system" ? "" : font.value,
+                          }}
+                        >
+                          {font.label}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1700,13 +1983,105 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                   </button>
                 </div>
                 <div className="modal-body">
-                  <p>機能設定機能は準備中です。</p>
-                  <p>近日中に利用可能になります。</p>
+                  <div className="feature-settings-section">
+                    <h4>📝 日記リマインダー設定</h4>
+                    <button
+                      onClick={() => {
+                        setShowFeatureSettings(false);
+                        setShowDiaryReminderSettings(true);
+                      }}
+                      className="reminder-settings-btn"
+                    >
+                      📝 リマインダー設定を開く
+                    </button>
+                  </div>
+
+                  <div className="feature-settings-section">
+                    <h4>🎯 利用可能な機能</h4>
+                    <p>各機能の表示/非表示を設定できます</p>
+                    <div className="feature-list">
+                      {getVisibleFeaturesList().map((feature) => (
+                        <div key={feature.id} className="feature-item">
+                          <div className="feature-item-content">
+                            <div className="feature-info">
+                              <div className="feature-name">{feature.name}</div>
+                              <div className="feature-description">
+                                {feature.description}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="feature-controls">
+                            <div className="feature-toggle">
+                              <label className="toggle-switch">
+                                <input
+                                  type="checkbox"
+                                  checked={true} // 簡易実装：すべて有効
+                                  onChange={() => {
+                                    // 簡易実装：機能の切り替えは今後実装
+                                    console.log(`Toggle feature: ${feature.id}`);
+                                  }}
+                                />
+                                <span className="toggle-slider"></span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="feature-settings-section">
+                    <h4>🔧 その他の設定</h4>
+                    <div className="settings-options">
+                      <button
+                        onClick={() => {
+                          setShowFeatureSettings(false);
+                          setShowThemeSettings(true);
+                        }}
+                        className="settings-option-btn"
+                      >
+                        🎨 テーマ設定
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowFeatureSettings(false);
+                          setShowFontSettings(true);
+                        }}
+                        className="settings-option-btn"
+                      >
+                        🔤 フォント設定
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="feature-settings-actions">
+                    <button
+                      onClick={() => setShowFeatureSettings(false)}
+                      className="save-button"
+                    >
+                      💾 設定を保存
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         )}
+
+        <LanguageFontSettings
+          isOpen={showLanguageFontSettings}
+          onClose={() => setShowLanguageFontSettings(false)}
+          onSave={handleLanguageFontSave}
+          currentSettings={fontSettings}
+        />
+
+        <DiaryReminderIntegration
+          showDiaryReminderSettings={showDiaryReminderSettings}
+          setShowDiaryReminderSettings={setShowDiaryReminderSettings}
+          diaryReminderSnoozeUntil={diaryReminderSnoozeUntil}
+          setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
+          onOpenDiaryForm={openDiaryForm}
+        />
 
       </main>
 

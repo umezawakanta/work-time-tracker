@@ -182,11 +182,55 @@ function App() {
     { value: "neon", label: "ネオン", preview: "💡" },
     { value: "simple", label: "シンプル", preview: "📝" },
   ];
+
+  // 利用可能なフォントの定義
+  const availableFonts = [
+    { value: "system", label: "システムフォント" },
+    { value: "Arial", label: "Arial" },
+    { value: "Helvetica", label: "Helvetica" },
+    { value: "Times New Roman", label: "Times New Roman" },
+    { value: "Georgia", label: "Georgia" },
+    { value: "Verdana", label: "Verdana" },
+    { value: "Tahoma", label: "Tahoma" },
+    { value: "Trebuchet MS", label: "Trebuchet MS" },
+    { value: "Arial Black", label: "Arial Black" },
+    { value: "Impact", label: "Impact" },
+    { value: "Comic Sans MS", label: "Comic Sans MS" },
+    { value: "Courier New", label: "Courier New" },
+    { value: "Lucida Console", label: "Lucida Console" },
+    { value: "Palatino", label: "Palatino" },
+    { value: "Garamond", label: "Garamond" },
+    { value: "Bookman", label: "Bookman" },
+    { value: "Avant Garde", label: "Avant Garde" },
+    { value: "Helvetica Neue", label: "Helvetica Neue" },
+    { value: "Futura", label: "Futura" },
+    { value: "Gill Sans", label: "Gill Sans" },
+    { value: "Optima", label: "Optima" },
+    { value: "Baskerville", label: "Baskerville" },
+    { value: "Didot", label: "Didot" },
+    { value: "Bodoni", label: "Bodoni" },
+    { value: "Calibri", label: "Calibri" },
+    { value: "Cambria", label: "Cambria" },
+    { value: "Candara", label: "Candara" },
+    { value: "Consolas", label: "Consolas" },
+    { value: "Constantia", label: "Constantia" },
+    { value: "Corbel", label: "Corbel" },
+    { value: "Franklin Gothic", label: "Franklin Gothic" },
+    { value: "Segoe UI", label: "Segoe UI" },
+    { value: "Tahoma", label: "Tahoma" },
+    { value: "Yu Gothic", label: "游ゴシック" },
+    { value: "Hiragino Sans", label: "ヒラギノ角ゴ" },
+    { value: "Noto Sans JP", label: "Noto Sans JP" },
+    { value: "Meiryo", label: "メイリオ" },
+    { value: "MS Gothic", label: "MS ゴシック" },
+    { value: "MS Mincho", label: "MS 明朝" },
+  ];
   
   // 追加のUI状態（App_backup.tsxから復元）
   const [showDiaryReminderSettings, setShowDiaryReminderSettings] = useState(false);
   const [showMoodForm, setShowMoodForm] = useState(false);
   const [showGoalForm, setShowGoalForm] = useState(false);
+  const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<number | null>(null);
 
   // カスタムカテゴリ管理の状態
   const [customCategories, setCustomCategories] = useState<string[]>([]);
@@ -244,7 +288,6 @@ function App() {
   // 機能設定の状態
   const [userSettings, setUserSettings] = useState<any>(null);
   const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
-  const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<number | null>(null);
 
   // カレンダーの状態
   const [showCalendar, setShowCalendar] = useState(false);
@@ -2058,7 +2101,7 @@ function App() {
       onResetTimer={resetCustomTimer}
       isTimerActive={customTimerActive}
     >
-      <MainLayout
+    <MainLayout
       user={auth.user}
       isLoggedIn={auth.isLoggedIn}
       showCharacterHome={uiState.showCharacterHome}
@@ -2086,6 +2129,10 @@ function App() {
       setShowMoodForm={setShowMoodForm}
       showGoalForm={showGoalForm}
       setShowGoalForm={setShowGoalForm}
+      // 日記リマインダー関連
+      diaryReminderSnoozeUntil={diaryReminderSnoozeUntil}
+      setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
+      openDiaryForm={openDiaryForm}
       // UI設定関連
       selectedTheme={selectedTheme}
       selectedFont={selectedFont}
@@ -2096,6 +2143,7 @@ function App() {
       handleFontChange={handleFontChange}
       handleLanguageFontSave={handleLanguageFontSave}
       availableThemes={availableThemes}
+      availableFonts={availableFonts}
       // お仕事記録関連の状態
       showIncomeExpenseForm={showIncomeExpenseForm}
       setShowIncomeExpenseForm={setShowIncomeExpenseForm}
@@ -2425,9 +2473,9 @@ const AppWithProviders = () => {
   return (
     <LoadingStateProvider>
       <TimeTrackingStateProvider user={null}>
-        <MoodLogProvider>
-          <App />
-        </MoodLogProvider>
+          <MoodLogProvider>
+            <App />
+          </MoodLogProvider>
       </TimeTrackingStateProvider>
     </LoadingStateProvider>
   );
