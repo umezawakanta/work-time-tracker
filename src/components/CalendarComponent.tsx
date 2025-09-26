@@ -25,6 +25,29 @@ interface CalendarComponentProps {
   onEditDiary?: (diary: any) => void;
   onDeleteIncomeExpense?: (id: string) => void;
   onDeleteDiary?: (id: string) => void;
+  // 月次統計表示用のprops
+  monthlySummary?: any;
+  weeklySummary?: any;
+  calendarViewMode?: 'month' | 'week';
+  isSummaryExpanded?: boolean;
+  onToggleSummary?: () => void;
+  // 月次メモ表示用のprops
+  monthlyMemo?: string;
+  weeklyMemo?: string;
+  editingMonthlyMemo?: boolean;
+  editingWeeklyMemo?: boolean;
+  isMemoExpanded?: boolean;
+  onToggleMemo?: () => void;
+  onStartEditingMonthlyMemo?: () => void;
+  onCancelEditingMonthlyMemo?: () => void;
+  onSaveMonthlyMemo?: () => void;
+  onStartEditingWeeklyMemo?: () => void;
+  onCancelEditingWeeklyMemo?: () => void;
+  onSaveWeeklyMemo?: () => void;
+  onMonthlyMemoChange?: (memo: string) => void;
+  onWeeklyMemoChange?: (memo: string) => void;
+  // アクションボタン用のprops
+  onRefresh?: () => void;
 }
 
 const CalendarComponent: React.FC<CalendarComponentProps> = ({
@@ -44,7 +67,27 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
   onEditIncomeExpense,
   onEditDiary,
   onDeleteIncomeExpense,
-  onDeleteDiary
+  onDeleteDiary,
+  monthlySummary,
+  weeklySummary,
+  calendarViewMode,
+  isSummaryExpanded,
+  onToggleSummary,
+  monthlyMemo,
+  weeklyMemo,
+  editingMonthlyMemo,
+  editingWeeklyMemo,
+  isMemoExpanded,
+  onToggleMemo,
+  onStartEditingMonthlyMemo,
+  onCancelEditingMonthlyMemo,
+  onSaveMonthlyMemo,
+  onStartEditingWeeklyMemo,
+  onCancelEditingWeeklyMemo,
+  onSaveWeeklyMemo,
+  onMonthlyMemoChange,
+  onWeeklyMemoChange,
+  onRefresh
 }) => {
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
   const [currentWeek, setCurrentWeek] = useState(0);
@@ -415,6 +458,161 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
             >
               <i className="bi bi-journal-plus"></i>
               <span>日記追加</span>
+            </button>
+          </div>
+        )}
+        
+        {/* 月次統計表示 */}
+        {monthlySummary && (
+          <div className="calendar-monthly-summary">
+            <div 
+              className="summary-header"
+              onClick={onToggleSummary}
+              style={{ cursor: 'pointer' }}
+            >
+              <h3>
+                <i className="bi bi-graph-up"></i> 
+                {calendarViewMode === 'month' 
+                  ? `${currentMonth.getFullYear()}年${currentMonth.getMonth() + 1}月の統計`
+                  : `週の統計`
+                }
+              </h3>
+              <i className={`bi bi-chevron-${isSummaryExpanded ? 'up' : 'down'} summary-toggle-icon`}></i>
+            </div>
+            {isSummaryExpanded && (
+              <div className="summary-grid">
+                <div className="summary-item">
+                  <span className="summary-label">総収入</span>
+                  <span className="summary-value income">
+                    ¥{((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.totalIncome || 0).toLocaleString()}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">総支出</span>
+                  <span className="summary-value expense">
+                    ¥{((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.totalExpense || 0).toLocaleString()}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">収支</span>
+                  <span className={`summary-value ${((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.netBalance || 0) >= 0 ? 'positive' : 'negative'}`}>
+                    {((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.netBalance || 0) >= 0 ? '+' : ''}¥{((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.netBalance || 0).toLocaleString()}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">平均気分</span>
+                  <span className="summary-value">
+                    {((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.averageMood || 0) > 0 ? (
+                      <>
+                        <i className="bi bi-emoji-smile"></i> {((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.averageMood || 0).toFixed(1)}
+                      </>
+                    ) : 'なし'}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">収入記録</span>
+                  <span className="summary-value">{((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.incomeRecordsCount || 0)}件</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">支出記録</span>
+                  <span className="summary-value">{((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.expenseRecordsCount || 0)}件</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">日記</span>
+                  <span className="summary-value">{((calendarViewMode === 'month' ? monthlySummary : weeklySummary)?.diariesCount || 0)}件</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* 月次メモ表示 */}
+        {monthlyMemo !== undefined && (
+          <div className="calendar-monthly-memo">
+            <div 
+              className="memo-header"
+              onClick={onToggleMemo}
+              style={{ cursor: 'pointer' }}
+            >
+              <h3>
+                <i className="bi bi-journal-text"></i> 
+                {calendarViewMode === 'month' 
+                  ? `${currentMonth.getMonth() + 1}月の目標と振り返り`
+                  : `週の目標と振り返り`
+                }
+              </h3>
+              <i className={`bi bi-chevron-${isMemoExpanded ? 'up' : 'down'} memo-toggle-icon`}></i>
+            </div>
+            {isMemoExpanded && (
+              <div className="memo-content">
+                {calendarViewMode === 'month' ? (
+                  // 月次メモ
+                  editingMonthlyMemo ? (
+                    <div className="memo-edit">
+                      <textarea
+                        value={monthlyMemo}
+                        onChange={(e) => onMonthlyMemoChange?.(e.target.value)}
+                        placeholder="今月の振り返りや来月の目標を書いてください"
+                        rows={4}
+                      />
+                      <div className="memo-actions">
+                        <button onClick={onSaveMonthlyMemo} className="save-button">
+                          保存
+                        </button>
+                        <button onClick={onCancelEditingMonthlyMemo} className="cancel-button">
+                          キャンセル
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="memo-display">
+                      <p>{monthlyMemo || '月次メモがありません'}</p>
+                      <button onClick={onStartEditingMonthlyMemo} className="edit-button">
+                        編集
+                      </button>
+                    </div>
+                  )
+                ) : (
+                  // 週次メモ
+                  editingWeeklyMemo ? (
+                    <div className="memo-edit">
+                      <textarea
+                        value={weeklyMemo}
+                        onChange={(e) => onWeeklyMemoChange?.(e.target.value)}
+                        placeholder="今週の振り返りや来週の目標を書いてください"
+                        rows={4}
+                      />
+                      <div className="memo-actions">
+                        <button onClick={onSaveWeeklyMemo} className="save-button">
+                          保存
+                        </button>
+                        <button onClick={onCancelEditingWeeklyMemo} className="cancel-button">
+                          キャンセル
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="memo-display">
+                      <p>{weeklyMemo || '週次メモがありません'}</p>
+                      <button onClick={onStartEditingWeeklyMemo} className="edit-button">
+                        編集
+                      </button>
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* アクションボタン */}
+        {onRefresh && (
+          <div className="calendar-action-buttons-bottom">
+            <button
+              onClick={onRefresh}
+              className="action-button refresh-button"
+            >
+              <i className="bi bi-arrow-clockwise"></i> 更新
             </button>
           </div>
         )}

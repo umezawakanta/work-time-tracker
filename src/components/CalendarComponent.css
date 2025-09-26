@@ -801,6 +801,251 @@
   margin: 0;
 }
 
+/* カレンダー内の月次統計 */
+.calendar-monthly-summary {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e9ecef);
+}
+
+.calendar-monthly-summary .summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--card-background, #ffffff);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e9ecef);
+  transition: all 0.2s ease;
+}
+
+.calendar-monthly-summary .summary-header:hover {
+  background: var(--hover-background, #f8f9fa);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-monthly-summary .summary-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-monthly-summary .summary-toggle-icon {
+  font-size: 1rem;
+  color: var(--text-muted, #6c757d);
+  transition: transform 0.2s ease;
+}
+
+.calendar-monthly-summary .summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.calendar-monthly-summary .summary-item {
+  background: var(--card-background, #ffffff);
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.calendar-monthly-summary .summary-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.calendar-monthly-summary .summary-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted, #6c757d);
+  margin-bottom: 0.25rem;
+}
+
+.calendar-monthly-summary .summary-value {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+}
+
+.calendar-monthly-summary .summary-value.income {
+  color: var(--success-color, #28a745);
+}
+
+.calendar-monthly-summary .summary-value.expense {
+  color: var(--danger-color, #dc3545);
+}
+
+.calendar-monthly-summary .summary-value.positive {
+  color: var(--success-color, #28a745);
+}
+
+.calendar-monthly-summary .summary-value.negative {
+  color: var(--danger-color, #dc3545);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* カレンダー内の月次メモ */
+.calendar-monthly-memo {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e9ecef);
+}
+
+.calendar-monthly-memo .memo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--card-background, #ffffff);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e9ecef);
+  transition: all 0.2s ease;
+}
+
+.calendar-monthly-memo .memo-header:hover {
+  background: var(--hover-background, #f8f9fa);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-monthly-memo .memo-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-monthly-memo .memo-toggle-icon {
+  font-size: 1rem;
+  color: var(--text-muted, #6c757d);
+  transition: transform 0.2s ease;
+}
+
+.calendar-monthly-memo .memo-content {
+  animation: slideDown 0.3s ease-out;
+}
+
+.calendar-monthly-memo .memo-display {
+  background: var(--card-background, #ffffff);
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 8px;
+  padding: 1rem;
+  position: relative;
+}
+
+.calendar-monthly-memo .memo-display p {
+  margin: 0 0 1rem 0;
+  color: var(--text-color, #333);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.calendar-monthly-memo .memo-display .edit-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--info-color, #17a2b8);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-monthly-memo .memo-display .edit-button:hover {
+  background: var(--info-hover, #138496);
+}
+
+.calendar-monthly-memo .memo-edit {
+  background: var(--card-background, #ffffff);
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.calendar-monthly-memo .memo-edit textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+  margin-bottom: 1rem;
+}
+
+.calendar-monthly-memo .memo-edit textarea:focus {
+  outline: none;
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.calendar-monthly-memo .memo-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.calendar-monthly-memo .save-button,
+.calendar-monthly-memo .cancel-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-monthly-memo .save-button {
+  background: var(--success-color, #28a745);
+  color: white;
+}
+
+.calendar-monthly-memo .save-button:hover {
+  background: var(--success-hover, #218838);
+}
+
+.calendar-monthly-memo .cancel-button {
+  background: var(--secondary-color, #6c757d);
+  color: white;
+}
+
+.calendar-monthly-memo .cancel-button:hover {
+  background: var(--secondary-hover, #5a6268);
+}
+
 /* カレンダーアクションボタン */
 .calendar-action-buttons {
   display: flex;
@@ -811,6 +1056,18 @@
   background: var(--section-background, #f8f9fa);
   border-radius: 10px;
   border-top: 2px solid var(--border-color, #e9ecef);
+}
+
+/* カレンダー下部のアクションボタン */
+.calendar-action-buttons-bottom {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e9ecef);
 }
 
 .calendar-action-button {
