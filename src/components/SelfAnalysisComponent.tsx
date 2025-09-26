@@ -3,7 +3,7 @@ import './SelfAnalysisComponent.css';
 import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
 import HetamaIconComponent from './HetamaIconComponent';
 import { useTimeTrackingHelpers } from './TimeTrackingStateManager';
-import { useMoodLogState, useMoodLogHelpers } from './MoodLogStateManager';
+import { useMoodLogState, useMoodLogHelpers } from './MoodLogManager';
 
 export interface PersonalProfile {
   values: string[];
@@ -247,18 +247,18 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
       sleep: 0,
       createdAt: new Date().toISOString(),
     };
-    setMoodLogs((prev) => [...prev, newMoodLog]);
+    setMoodLogs([...moodLogs, newMoodLog]);
     resetMoodForm();
   };
 
   const updateMoodLog = (moodLogId: string, updates: Partial<MoodLog>) => {
-    setMoodLogs((prev) =>
-      prev.map((log) => (log.id === moodLogId ? { ...log, ...updates } : log))
+    setMoodLogs(
+      moodLogs.map((log) => (log.id === moodLogId ? { ...log, ...updates } : log))
     );
   };
 
   const deleteMoodLog = (moodLogId: string) => {
-    setMoodLogs((prev) => prev.filter((log) => log.id !== moodLogId));
+    setMoodLogs(moodLogs.filter((log) => log.id !== moodLogId));
   };
 
   const resetMoodForm = () => {
@@ -681,8 +681,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             <div className="productivity-graph">
                               <div className="graph-container">
                                 {productivityData.map((day, index) => {
-                                  const maxHours = Math.max(...productivityData.map(d => d.workHours));
-                                  const height = maxHours > 0 ? (day.workHours / maxHours) * 100 : 0;
+                                  const maxHours = Math.max(...productivityData.map(d => d.totalTime));
+                                  const height = maxHours > 0 ? (day.totalTime / maxHours) * 100 : 0;
+                                  const dayOfWeek = new Date(day.date).toLocaleDateString('ja-JP', { weekday: 'short' });
                                   
                                   return (
                                     <div key={day.date} className="graph-bar">
@@ -693,10 +694,10 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                                             el.style.setProperty('--bar-height', `${height}%`);
                                           }
                                         }}
-                                        title={`${day.dayOfWeek} ${day.workHours.toFixed(1)}h`}
+                                        title={`${dayOfWeek} ${day.totalTime.toFixed(1)}h`}
                                       ></div>
-                                      <div className="bar-label">{day.dayOfWeek}</div>
-                                      <div className="bar-value">{day.workHours > 0 ? `${day.workHours.toFixed(1)}h` : ''}</div>
+                                      <div className="bar-label">{dayOfWeek}</div>
+                                      <div className="bar-value">{day.totalTime > 0 ? `${day.totalTime.toFixed(1)}h` : ''}</div>
                                     </div>
                                   );
                                 })}
