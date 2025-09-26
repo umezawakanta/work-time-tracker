@@ -216,7 +216,6 @@ function App({
   >(undefined);
 
 
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
   const [currentProject, setCurrentProject] = useState<string>("");
