@@ -109,9 +109,10 @@ function App() {
   // 理由: 各コンポーネントで個別のタイマープリセット機能を管理することで、状態の分散を防ぐ
   // const timerPresetState = useTimerPresetState(); // 削除
 
-  // 感情ログ状態の管理
-  const moodLogState = useMoodLogState();
-  const moodLogHelpers = useMoodLogHelpers();
+  // 注意: moodLogStateは各コンポーネントで個別に使用される
+  // 理由: 各コンポーネントで個別の感情ログ機能を管理することで、状態の分散を防ぐ
+  // const moodLogState = useMoodLogState(); // 削除
+  // const moodLogHelpers = useMoodLogHelpers(); // 削除
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -495,70 +496,16 @@ function App() {
   });
   const [newMilestone, setNewMilestone] = useState("");
 
-  // 感情ログ管理関数（MoodLogManagerで管理）
-  const addMoodLog = () => {
-    if (!moodForm.date) {
-      return;
-    }
-
-    const moodLogId = Date.now().toString();
-    const newMoodLog: MoodLog = {
-      id: moodLogId,
-      date: moodForm.date,
-      mood: moodForm.mood,
-      energy: moodForm.energy,
-      stress: moodForm.stress,
-      notes: moodForm.notes,
-      activities: moodForm.activities,
-      weather: moodForm.weather,
-      sleep: moodForm.sleep,
-      createdAt: new Date().toISOString(),
-    };
-
-    moodLogState.setMoodLogs([...moodLogState.moodLogs, newMoodLog]);
-    moodLogState.resetMoodForm();
-  };
-
-  const updateMoodLog = (moodLogId: string, updates: Partial<MoodLog>) => {
-    moodLogState.updateMoodLog(moodLogId, updates);
-  };
-
-  const deleteMoodLog = (moodLogId: string) => {
-    moodLogState.deleteMoodLog(moodLogId);
-  };
-
-  const resetMoodForm = () => {
-    moodLogState.resetMoodForm();
-  };
-
-  const addActivity = () => {
-    moodLogState.addActivity();
-  };
-
-  const removeActivity = (index: number) => {
-    moodLogState.removeActivity(index);
-  };
-
-  const editMoodLog = (log: MoodLog) => {
-    moodLogState.editMoodLog(log);
-  };
-
-  const saveMoodLog = () => {
-    if (editingMoodLog) {
-      updateMoodLog(editingMoodLog, {
-        date: moodForm.date,
-        mood: moodForm.mood,
-        energy: moodForm.energy,
-        stress: moodForm.stress,
-        notes: moodForm.notes,
-        activities: moodForm.activities,
-        weather: moodForm.weather,
-        sleep: moodForm.sleep,
-      });
-    } else {
-      addMoodLog();
-    }
-  };
+  // 注意: 感情ログ関連の関数は各コンポーネントで個別に定義される
+  // 理由: 各コンポーネントで個別の感情ログ機能を管理することで、状態の分散を防ぐ
+  // const addMoodLog = () => { ... }; // 削除
+  // const updateMoodLog = () => { ... }; // 削除
+  // const deleteMoodLog = () => { ... }; // 削除
+  // const resetMoodForm = () => { ... }; // 削除
+  // const addActivity = () => { ... }; // 削除
+  // const removeActivity = () => { ... }; // 削除
+  // const editMoodLog = () => { ... }; // 削除
+  // const saveMoodLog = () => { ... }; // 削除
 
   const getMoodEmoji = (mood: number) => {
     if (mood <= 2) {
@@ -6350,12 +6297,6 @@ User Agent: ${userAgent}
                     setHabitHistory={setHabitHistory}
                     habitStreak={habitStreak}
                     setHabitStreak={setHabitStreak}
-                    moodLogs={moodLogState.moodLogs}
-                    setMoodLogs={
-                      moodLogState.setMoodLogs as React.Dispatch<
-                        React.SetStateAction<MoodLog[]>
-                      >
-                    }
                     goals={goals}
                     setGoals={setGoals}
                     learningRecords={learningRecords}

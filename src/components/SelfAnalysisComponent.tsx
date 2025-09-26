@@ -3,6 +3,7 @@ import './SelfAnalysisComponent.css';
 import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
 import HetamaIconComponent from './HetamaIconComponent';
 import { useTimeTrackingHelpers } from './TimeTrackingStateManager';
+import { useMoodLogState, useMoodLogHelpers } from './MoodLogStateManager';
 
 export interface PersonalProfile {
   values: string[];
@@ -35,8 +36,6 @@ interface SelfAnalysisComponentProps {
   setHabitHistory: React.Dispatch<React.SetStateAction<{ [habitId: string]: string[] }>>;
   habitStreak: { [habitId: string]: number };
   setHabitStreak: React.Dispatch<React.SetStateAction<{ [habitId: string]: number }>>;
-  moodLogs: any[];
-  setMoodLogs: React.Dispatch<React.SetStateAction<any[]>>;
   goals: Goal[];
   setGoals: (goals: Goal[]) => void;
   learningRecords: LearningRecord[];
@@ -58,8 +57,6 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   setHabitHistory,
   habitStreak,
   setHabitStreak,
-  moodLogs,
-  setMoodLogs,
   goals,
   setGoals,
   learningRecords,
@@ -69,6 +66,12 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 }) => {
   // 時間記録関連のヘルパーをコンポーネント内で使用
   const timeTrackingHelpers = useTimeTrackingHelpers();
+  
+  // 感情ログ状態をコンポーネント内で管理
+  const moodLogState = useMoodLogState();
+  const moodLogHelpers = useMoodLogHelpers();
+  
+  const { moodLogs, setMoodLogs } = moodLogState;
   
   // 時間記録関連の関数をコンポーネント内で定義
   const calculateTimeBreakdown = () => {
