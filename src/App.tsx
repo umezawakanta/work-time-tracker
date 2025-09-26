@@ -118,9 +118,27 @@ function App() {
   const loadingState = useLoadingState();
 
   // 時間記録状態の管理（TimeTrackingComponent内で管理）
+  // 注意: timeTrackingHelpersをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. App.tsx内の複数の関数でtimeTrackingHelpersを使用している
+  //    - handleStartTracking: startTimeTracking()
+  //    - handleStopTracking: stopTimeTracking()
+  //    - handleResetTracking: resetTimeTracking()
+  // 2. 時間記録の開始・停止・リセットはApp.tsxレベルでの制御が必要
+  // 3. 複数のコンポーネント（TimeTrackingComponent, SelfAnalysisComponent等）で
+  //    時間記録データを共有する必要がある
+  // 4. グローバルな時間記録状態の管理が必要で、Context Providerを使用している
   const timeTrackingHelpers = useTimeTrackingHelpers();
 
   // タイマープリセット状態の管理
+  // 注意: timerPresetStateをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. timerPresetStateは現在App.tsxで定義されているが、実際には使用されていない
+  // 2. 代わりに、timerPresetsはuseStateで直接管理されている
+  // 3. timerPresetsは複数のタイマー機能（カスタムタイマー、プリセットタイマー等）で
+  //    共有される必要がある
+  // 4. startPresetTimer関数でtimerPresetsを参照している
+  // 5. 将来的に複数のコンポーネント間でタイマープリセットを共有する可能性がある
   const timerPresetState = useTimerPresetState();
 
   // 感情ログ状態の管理
@@ -3935,6 +3953,17 @@ ${errorInfo.stack}
     }
   };
 
+  // 注意: loadReportSummaryをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. App.tsx内の複数の場所で呼び出されている
+  //    - ログイン後の初期データ読み込み（useEffect内）
+  //    - ログイン成功時のデータ読み込み（handleLogin内）
+  // 2. グローバルな状態（reportSummary）を更新する必要がある
+  //    - setReportSummaryはApp.tsx内で定義されている
+  // 3. グローバルなローディング状態（loadingState）を管理する必要がある
+  //    - loadingStateは複数のコンポーネント間で共有されている
+  // 4. サブコンポーネント側で定義すると、状態の管理が分散し、データの整合性が保てなくなる
+  // 5. 認証トークンの取得やAPI呼び出しは、アプリケーション全体の認証状態に依存する
   const loadReportSummary = async () => {
     loadingState.setReportsLoading(true);
     try {
@@ -3957,6 +3986,19 @@ ${errorInfo.stack}
     }
   };
 
+  // 注意: loadAdminUsersをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. App.tsx内の複数の場所で呼び出されている
+  //    - handleUpdateUser内でユーザー更新後に再読み込み
+  //    - handleDeleteUser内で楽観的更新の失敗時に元に戻す処理
+  // 2. グローバルな状態（adminUsers）を更新する必要がある
+  //    - setAdminUsersはApp.tsx内で定義されている
+  // 3. グローバルなローディング状態（loadingState）を管理する必要がある
+  //    - loadingStateは複数のコンポーネント間で共有されている
+  // 4. グローバルなメッセージ状態（setMessage）を更新する必要がある
+  //    - エラーメッセージや成功メッセージの表示
+  // 5. サブコンポーネント側で定義すると、状態の管理が分散し、データの整合性が保てなくなる
+  // 6. 認証トークンの取得やAPI呼び出しは、アプリケーション全体の認証状態に依存する
   const loadAdminUsers = async () => {
     loadingState.setAdminUsersLoading(true);
     try {
@@ -4270,6 +4312,30 @@ ${errorInfo.stack}
   };
 
   // メモ関連の関数
+  // 注意: loadMemosをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. App.tsx内の複数の場所で呼び出されている
+  //    - ログイン後の初期データ読み込み（useEffect内）
+  //    - メモ作成後の再読み込み（handleCreateMemo内）
+  //    - メモ更新後の再読み込み（handleUpdateMemo内）
+  //    - メモ削除後の再読み込み（handleDeleteMemo内）
+  //    - 返信作成後の再読み込み（handleCreateReply内）
+  //    - 返信更新後の再読み込み（handleUpdateReply内）
+  //    - 返信削除後の再読み込み（handleDeleteReply内）
+  //    - エラー報告送信後の再読み込み（handleErrorReport内）
+  //    - メモ検索時（handleMemoSearch内）
+  //    - カテゴリ変更時（handleMemoCategoryChange内）
+  //    - 通知からのナビゲーション時（NotificationComponent内）
+  // 2. グローバルな状態（memos）を更新する必要がある
+  //    - setMemosはApp.tsx内で定義されている
+  // 3. グローバルなローディング状態（loadingState）を管理する必要がある
+  //    - loadingStateは複数のコンポーネント間で共有されている
+  // 4. グローバルなメッセージ状態（setMessage）を更新する必要がある
+  //    - エラーメッセージや成功メッセージの表示
+  // 5. グローバルな検索・フィルタ状態に依存している
+  //    - selectedMemoCategory, memoSearchTermはApp.tsx内で管理されている
+  // 6. サブコンポーネント側で定義すると、状態の管理が分散し、データの整合性が保てなくなる
+  // 7. 認証トークンの取得やAPI呼び出しは、アプリケーション全体の認証状態に依存する
   const loadMemos = async () => {
     loadingState.setMemosLoading(true);
     try {
