@@ -222,7 +222,10 @@ function App({
     { x: number; y: number } | undefined
   >(undefined);
 
-  const [booksLoading, setBooksLoading] = useState(false);
+  // 注意: booksLoadingはBookshelfComponent内で管理される
+  // 理由: 本棚のローディング状態はBookshelfComponent内でのみ使用されるため、
+  // BookshelfComponent内で状態を管理することで、状態の分散を防ぐ
+  // const [booksLoading, setBooksLoading] = useState(false); // BookshelfComponentで管理
   const [workRecordsLoading, setWorkRecordsLoading] = useState(false);
   const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
   const [diaryLoading, setDiaryLoading] = useState(false);
@@ -3983,7 +3986,6 @@ ${errorInfo.stack}
 
   // 本棚関連の関数
   const loadBooks = async () => {
-    setBooksLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/books", {
@@ -4013,8 +4015,6 @@ ${errorInfo.stack}
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
-    } finally {
-      setBooksLoading(false);
     }
   };
 
@@ -6010,7 +6010,6 @@ User Agent: ${userAgent}
                     setShowBookshelf={setShowBookshelf}
                     closeOtherFeatures={closeOtherFeatures}
                     books={books}
-                    booksLoading={booksLoading}
                     showBookForm={showBookForm}
                     setShowBookForm={setShowBookForm}
                     editingBook={editingBook}

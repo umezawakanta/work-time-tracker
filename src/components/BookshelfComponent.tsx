@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './BookshelfComponent.css';
 import type { Book } from '../types';
 
@@ -7,7 +7,6 @@ interface BookshelfComponentProps {
   setShowBookshelf: (show: boolean) => void;
   closeOtherFeatures: (activeFeature: string) => void;
   books: Book[];
-  booksLoading: boolean;
   showBookForm: boolean;
   setShowBookForm: (show: boolean) => void;
   editingBook: Book | null;
@@ -30,7 +29,7 @@ interface BookshelfComponentProps {
   setSelectedBookCategory: (category: string) => void;
   getBookCategories: () => string[];
   loading: boolean;
-  loadBooks: () => void;
+  loadBooks: () => Promise<void>;
   handleCreateBook: (e: React.FormEvent) => void;
   handleUpdateBook: (e: React.FormEvent) => void;
   handleEditBook: (book: Book) => void;
@@ -45,7 +44,6 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
     setShowBookshelf,
     closeOtherFeatures,
     books,
-    booksLoading,
     showBookForm,
     setShowBookForm,
     editingBook,
@@ -76,6 +74,19 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
     handleBookCategoryChange,
     getReadingProgress,
   } = props;
+
+  // 本棚のローディング状態をBookshelfComponent内で管理
+  const [booksLoading, setBooksLoading] = useState(false);
+
+  // 本棚読み込み関数をBookshelfComponent内で定義
+  const loadBooksLocal = async () => {
+    setBooksLoading(true);
+    try {
+      await loadBooks();
+    } finally {
+      setBooksLoading(false);
+    }
+  };
   return (
     <div className="bookshelf-section">
       <div className="section-header">
@@ -120,7 +131,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
                 closeOtherFeatures("bookshelf");
                 setShowBookshelf(true);
                 if (books.length === 0) {
-                  loadBooks();
+                  loadBooksLocal();
                 }
               }}
               className="show-section-button"
@@ -156,7 +167,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
                 </select>
               </div>
               <button
-                onClick={loadBooks}
+                onClick={loadBooksLocal}
                 className="refresh-button"
                 title="本棚を更新"
               >
@@ -166,7 +177,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
                 <button
                   onClick={() => {
                     setSelectedBookCategory("all");
-                    loadBooks();
+                    loadBooksLocal();
                   }}
                   className="reset-button"
                   title="フィルターをリセット"
