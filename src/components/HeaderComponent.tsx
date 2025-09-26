@@ -13,23 +13,6 @@ import VersionInfoComponent from "./VersionInfo";
 
 interface HeaderComponentProps {
   user: User | null;
-  isLoggedIn: boolean;
-  onShowCharacterHome: () => void;
-  onShowProjects: () => void;
-  onShowCookingTimer: () => void;
-  onShowSelfAnalysis: () => void;
-  onShowBookshelf: () => void;
-  onShowMemos: () => void;
-  onShowReports: () => void;
-  onShowAdminPanel: () => void;
-  onShowTimeTracking: () => void;
-  onShowTimers: () => void;
-  onShowEggTimer: () => void;
-  onShowPublicMemos: () => void;
-  onShowWorkRecords: () => void;
-  onShowSoundApp: () => void;
-  onShowNotifications: () => void;
-  onShowVersionInfo: () => void;
   currentCharacter: Character | null;
   showThemeSettings: boolean;
   showFontSettings: boolean;
@@ -48,23 +31,6 @@ interface HeaderComponentProps {
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
   user,
-  isLoggedIn,
-  onShowCharacterHome,
-  onShowProjects,
-  onShowCookingTimer,
-  onShowSelfAnalysis,
-  onShowBookshelf,
-  onShowMemos,
-  onShowReports,
-  onShowAdminPanel,
-  onShowTimeTracking,
-  onShowTimers,
-  onShowEggTimer,
-  onShowPublicMemos,
-  onShowWorkRecords,
-  onShowSoundApp,
-  onShowNotifications,
-  onShowVersionInfo,
   currentCharacter,
   showThemeSettings,
   showFontSettings,
@@ -104,27 +70,22 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             onCharacterHomeToggle={handleCharacterHomeToggle}
             showThemeSettings={showThemeSettings}
             onThemeSettingsToggle={() => {
-              console.log('HeaderComponent - Theme settings button clicked');
-              if (closeOtherFeatures) {
-                console.log('HeaderComponent - Calling closeOtherFeatures with theme-settings');
+              if (!showThemeSettings) {
                 closeOtherFeatures("theme-settings");
-              } else {
-                console.log('HeaderComponent - closeOtherFeatures is not available');
               }
+              setShowThemeSettings(!showThemeSettings);
             }}
             showFontSettings={showFontSettings}
             onFontSettingsToggle={() => {
-              if (closeOtherFeatures) {
+              if (!showFontSettings) {
                 closeOtherFeatures("font-settings");
               }
+              setShowFontSettings(!showFontSettings);
             }}
             onFeatureSettingsToggle={() => {
-              if (closeOtherFeatures) {
-                closeOtherFeatures("feature-settings");
-              }
-              if (loadUserSettings) {
-                loadUserSettings();
-              }
+              closeOtherFeatures("feature-settings");
+              setShowFeatureSettings(true);
+              loadUserSettings();
             }}
             closeOtherFeatures={closeOtherFeatures}
             setShowThemeSettings={setShowThemeSettings}
@@ -132,55 +93,6 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
           />
-          
-          {/* メインナビゲーションボタン */}
-          <div className="main-navigation">
-            <button onClick={onShowProjects} className="nav-button" title="プロジェクト">
-              📁
-            </button>
-            <button onClick={onShowMemos} className="nav-button" title="メモ">
-              📝
-            </button>
-            <button onClick={onShowReports} className="nav-button" title="レポート">
-              📊
-            </button>
-            <button onClick={onShowSelfAnalysis} className="nav-button" title="自己分析">
-              🔍
-            </button>
-            <button onClick={onShowBookshelf} className="nav-button" title="本棚">
-              📚
-            </button>
-            <button onClick={onShowCookingTimer} className="nav-button" title="料理タイマー">
-              ⏰
-            </button>
-            <button onClick={onShowTimeTracking} className="nav-button" title="時間追跡">
-              ⏱️
-            </button>
-            <button onClick={onShowTimers} className="nav-button" title="タイマー">
-              ⏲️
-            </button>
-            <button onClick={onShowEggTimer} className="nav-button" title="ゆでたまごタイマー">
-              🥚
-            </button>
-            <button onClick={onShowPublicMemos} className="nav-button" title="公開メモ">
-              🌐
-            </button>
-            <button onClick={onShowWorkRecords} className="nav-button" title="仕事記録">
-              💼
-            </button>
-            <button onClick={onShowSoundApp} className="nav-button" title="音アプリ">
-              🎵
-            </button>
-            <button onClick={onShowAdminPanel} className="nav-button" title="管理パネル">
-              ⚙️
-            </button>
-            <button onClick={onShowNotifications} className="nav-button" title="通知">
-              🔔
-            </button>
-            <button onClick={onShowVersionInfo} className="nav-button" title="バージョン情報">
-              ℹ️
-            </button>
-          </div>
         </div>
       </div>
 

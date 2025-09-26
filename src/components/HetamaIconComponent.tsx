@@ -1,40 +1,128 @@
 import React from "react";
-import "./HetamaIconComponent.css";
+import "./HeaderComponent.css";
+import HeaderLeftComponent from "./HeaderLeftComponent";
+import HetamaCharacterComponent from "./HetamaCharacterComponent";
+import DogCharacterComponent from "./DogCharacterComponent";
+import HeaderTitleComponent from "./HeaderTitleComponent";
+import LogoutButtonComponent from "./LogoutButtonComponent";
+import UserInfoComponent from "./UserInfoComponent";
+import UserGreetingComponent from "./UserGreetingComponent";
+import ShareButtonComponent from "./ShareButtonComponent";
+import type { User, Character } from "../types";
+import VersionInfoComponent from "./VersionInfo";
 
-interface HetamaIconComponentProps {
-  featureId: string;
-  size?: "small" | "medium" | "large";
-  className?: string;
+interface HeaderComponentProps {
+  user: User | null;
+  currentCharacter: Character | null;
+  showThemeSettings: boolean;
+  showFontSettings: boolean;
+  showFeatureSettings: boolean;
+  handleCharacterHomeToggle: () => void;
+  handleLogout: () => void;
+  closeOtherFeatures: (activeFeature: string) => void;
+  setShowThemeSettings: (show: boolean) => void;
+  setShowFontSettings: (show: boolean) => void;
+  setShowFeatureSettings: (show: boolean) => void;
+  loadUserSettings: () => void;
+  isTimeTrackingActive: boolean;
+  onUpdateRequestClick: () => void;
+  onBugReportClick: () => void;
 }
 
-const HetamaIconComponent: React.FC<HetamaIconComponentProps> = ({
-  featureId,
-  size = "medium",
-  className = "",
+const HeaderComponent: React.FC<HeaderComponentProps> = ({
+  user,
+  currentCharacter,
+  showThemeSettings,
+  showFontSettings,
+  showFeatureSettings,
+  handleCharacterHomeToggle,
+  handleLogout,
+  closeOtherFeatures,
+  setShowThemeSettings,
+  setShowFontSettings,
+  setShowFeatureSettings,
+  loadUserSettings,
+  isTimeTrackingActive,
+  onUpdateRequestClick,
+  onBugReportClick,
 }) => {
   return (
-    <span className="section-icon">
-      <div className="mini-character">
-        <div className="mini-character-halo"></div>
-        <div className="mini-character-wings">
-          <div className="mini-wing left-mini-wing"></div>
-          <div className="mini-wing right-mini-wing"></div>
-        </div>
-        <div className="mini-character-face">
-          <div className="mini-character-eyes">
-            <div className="mini-eye left-mini-eye"></div>
-            <div className="mini-eye right-mini-eye"></div>
-          </div>
-          <div className="mini-character-mouth"></div>
-        </div>
-        <div className="mini-character-body"></div>
-        <div className="mini-sparkles">
-          <div className="mini-sparkle mini-sparkle-1"></div>
-          <div className="mini-sparkle mini-sparkle-2"></div>
+    <header className="dashboard-header">
+      {/* 左側：キャラクター（絶対保持） */}
+      <HeaderLeftComponent isTimeTrackingActive={isTimeTrackingActive} />
+      
+      {/* 中央：タイトルと挨拶 */}
+      <div className="header-center">
+        <HeaderTitleComponent />
+        <UserGreetingComponent
+          user={user}
+          currentCharacter={currentCharacter}
+        />
+        <VersionInfoComponent />
+      </div>
+      
+      {/* 右側：ナビゲーション要素 */}
+      <div className="header-right">
+        <div className="header-navigation">
+          <UserInfoComponent
+            user={user}
+            currentCharacter={currentCharacter}
+            onCharacterHomeToggle={handleCharacterHomeToggle}
+            showThemeSettings={showThemeSettings}
+            onThemeSettingsToggle={() => {
+              if (!showThemeSettings) {
+                closeOtherFeatures("theme-settings");
+              }
+              setShowThemeSettings(!showThemeSettings);
+            }}
+            showFontSettings={showFontSettings}
+            onFontSettingsToggle={() => {
+              if (!showFontSettings) {
+                closeOtherFeatures("font-settings");
+              }
+              setShowFontSettings(!showFontSettings);
+            }}
+            onFeatureSettingsToggle={() => {
+              closeOtherFeatures("feature-settings");
+              setShowFeatureSettings(true);
+              loadUserSettings();
+            }}
+            closeOtherFeatures={closeOtherFeatures}
+            setShowThemeSettings={setShowThemeSettings}
+            setShowFontSettings={setShowFontSettings}
+            setShowFeatureSettings={setShowFeatureSettings}
+            loadUserSettings={loadUserSettings}
+          />
         </div>
       </div>
-    </span>
+
+      {/* 右上固定：シェアボタン、不具合報告ボタン、更新要望ボタン、ログアウトボタン */}
+      <div className="header-top-right">
+        <ShareButtonComponent />
+        <button
+          onClick={onBugReportClick}
+          className="bug-report-button"
+          title="不具合を報告"
+        >
+          <i className="bi bi-bug"></i>
+          <span>不具合報告</span>
+        </button>
+        <button
+          onClick={onUpdateRequestClick}
+          className="update-request-button"
+          title="更新要望を送信"
+        >
+          <i className="bi bi-lightbulb"></i>
+          <span>更新要望</span>
+        </button>
+        <LogoutButtonComponent onLogout={handleLogout} />
+      </div>
+
+      {/* 背景キャラクター（絶対保持） */}
+      <HetamaCharacterComponent />
+      <DogCharacterComponent />
+    </header>
   );
 };
 
-export default HetamaIconComponent;
+export default HeaderComponent;
