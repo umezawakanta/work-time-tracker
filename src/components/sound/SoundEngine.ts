@@ -124,7 +124,7 @@ export const create8bitEffects = async () => {
 // 明和電機風の8bit音色を作成（エフェクト付き）
 export const createMeiwaInstrument = async (categoryId: string) => {
   // Tone.jsが初期化されているか確認
-  if (!globalToneInitialized) {
+  if (!toneStateManager.isInitialized) {
     const initialized = await initializeTone();
     if (!initialized) {
       console.warn("Tone.js not initialized for creating Meiwa instrument");

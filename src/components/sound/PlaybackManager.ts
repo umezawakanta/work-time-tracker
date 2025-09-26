@@ -3,7 +3,7 @@ import { MusicGenre, CategoryRatio } from './types';
 import { foodCategories } from './types';
 import { createInitialMeal, updateCategoryCount, resetMeal, getTotalItems } from './MealLogic';
 import { PLAYBACK_DURATION, REPEAT_OPTIONS } from './constants';
-import { initializeTone, globalToneInitialized } from './SoundEngine';
+import { initializeTone, toneStateManager } from './SoundEngine';
 import { generateMusic, calculateBalanceScore } from './MusicGenerator';
 import { generateMeiwaRhythm } from './MeiwaSoundGenerator';
 
@@ -51,7 +51,7 @@ export const usePlaybackManager = (
 
   // メイン再生関数
   const playMealBalance = async (musicGenres: MusicGenre[]) => {
-    if (!globalToneInitialized) {
+    if (!toneStateManager.isInitialized) {
       const success = await initializeTone();
       if (!success) {
         showMessage("音声システムの初期化に失敗しました", 3000);

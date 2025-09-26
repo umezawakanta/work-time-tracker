@@ -7,7 +7,7 @@ import SoundAppLayout from "./sound/SoundAppLayout";
 import { musicGenres } from "./sound/MusicGenres";
 import { createInstrumentForCategory } from "./sound/InstrumentFactory";
 import { usePlaybackManager, PlaybackState, PlaybackCallbacks } from "./sound/PlaybackManager";
-import { initializeTone, createMeiwaInstrument, playSound, globalToneInitialized } from "./sound/SoundEngine";
+import { initializeTone, createMeiwaInstrument, playSound, toneStateManager } from "./sound/SoundEngine";
 import { generateMeiwaRhythm } from "./sound/MeiwaSoundGenerator";
 import { generateMusic } from "./sound/MusicGenerator";
 import { createInitialMeal } from "./sound/MealLogic";
@@ -65,7 +65,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       return null;
     }
 
-    if (!globalToneInitialized) {
+    if (!toneStateManager.isInitialized) {
       // Tone.jsを初期化
       const initialized = await initializeTone();
       if (!initialized) {
@@ -97,7 +97,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       }
 
       // Tone.jsが初期化されていない場合は初期化
-      if (!globalToneInitialized) {
+      if (!toneStateManager.isInitialized) {
         const initialized = await initializeTone();
         if (!initialized) {
           console.warn("Failed to initialize Tone.js for sound playback");
@@ -178,7 +178,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       }
 
       // 初期化が完了したことを確認
-      if (globalToneInitialized) {
+      if (toneStateManager.isInitialized) {
         showMessage("音アプリが起動しました！", 2000);
       } else {
         showMessage("初期化に失敗しました", 3000);
@@ -215,7 +215,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           onResetMeal={handleResetMeal}
           isPlaying={isPlaying}
           isLooping={isLooping}
-          globalToneInitialized={globalToneInitialized}
+          toneStateManager.isInitialized={toneStateManager.isInitialized}
           onPlay={() => playMealBalance(musicGenres)}
           onStop={stopPlayback}
           disabled={

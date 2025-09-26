@@ -18,7 +18,7 @@ interface SoundAppLayoutProps {
   onResetMeal: () => void;
   isPlaying: boolean;
   isLooping: boolean;
-  globalToneInitialized: boolean;
+  toneStateManager: any;
   onPlay: () => void;
   onStop: () => void;
   disabled: boolean;
@@ -40,7 +40,7 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
   onResetMeal,
   isPlaying,
   isLooping,
-  globalToneInitialized,
+  toneStateManager,
   onPlay,
   onStop,
   disabled,
@@ -57,7 +57,7 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
     <div className="sound-app-content">
       <div className="app-description">
         <p>食事のバランスを音と楽譜で表現します 🎼</p>
-        {!globalToneInitialized && (
+        {!toneStateManager.isInitialized && (
           <p className="tone-init-hint">初回は音ボタンをクリックしてください</p>
         )}
       </div>
@@ -105,7 +105,7 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
           <SoundControls
             isPlaying={isPlaying}
             isLooping={isLooping}
-            globalToneInitialized={globalToneInitialized}
+            toneStateManager.isInitialized={toneStateManager.isInitialized}
             onPlay={onPlay}
             onStop={onStop}
             disabled={disabled}
