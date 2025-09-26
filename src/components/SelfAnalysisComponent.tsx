@@ -722,7 +722,22 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                       <div className="mood-average">
                         <span className="mood-label">平均気分</span>
                         <div className="mood-scale">
-                          <div className="mood-indicator" data-position="70">😊</div>
+                          {/*
+                            Use a variable for mood position and set inline style for cross-browser compatibility.
+                            For demonstration, we'll use a constant. In a real app, this should be dynamic.
+                          */}
+                          {(() => {
+                            const moodPosition = 70; // This should be dynamic in a real app
+                            return (
+                              <div
+                                className="mood-indicator"
+                                data-position={moodPosition}
+                                style={{ left: `${moodPosition}%` }}
+                              >
+                                😊
+                              </div>
+                            );
+                          })()}
                           <div className="scale-line"></div>
                         </div>
                         <span className="mood-value">7.2/10</span>
