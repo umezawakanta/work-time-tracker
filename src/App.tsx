@@ -105,6 +105,16 @@ import type {
 
 function App() {
   // ローディング状態の管理
+  // 注意: loadingStateをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. 複数のコンポーネント間でローディング状態を共有する必要がある
+  //    - ReportsComponent: reportsLoading
+  //    - MemosComponent: memosLoading
+  //    - その他のコンポーネントでも同様
+  // 2. App.tsx内の複数の関数（loadReportSummary, loadAdminUsers, loadMemos等）で
+  //    ローディング状態を設定・更新している
+  // 3. グローバルな状態管理が必要で、Context Providerを使用している
+  // 4. 各コンポーネントで個別に管理すると状態の同期が困難になる
   const loadingState = useLoadingState();
 
   // 時間記録状態の管理（TimeTrackingComponent内で管理）
