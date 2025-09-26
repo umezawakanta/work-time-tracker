@@ -19,6 +19,7 @@ import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import SoundAppComponent from "./components/SoundAppComponent";
 import NotificationComponent from "./components/NotificationComponent";
+import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
   getErrorInfo,
@@ -97,6 +98,8 @@ import type {
 } from "./types";
 
 function App() {
+  // 認証状態をAuthContextProviderから取得
+  const { user, isLoggedIn, isCheckingAuth, email, password, displayName, setUser, setIsLoggedIn, setEmail, setPassword, setDisplayName, verifyToken, setIsCheckingAuth, handleLogin, handleRegister, handleLogout } = useAuthContext();
   // 注意: loadingStateは各コンポーネントで個別に管理される
   // 理由: 各コンポーネントで個別のローディング状態を管理することで、状態の分散を防ぐ
   // const loadingState = useLoadingState(); // 削除
@@ -114,31 +117,14 @@ function App() {
   // const moodLogState = useMoodLogState(); // 削除
   // const moodLogHelpers = useMoodLogHelpers(); // 削除
 
-  // 注意: isLoggedInをサブコンポーネント側で定義することはできません
-  // 理由:
-  // 1. isLoggedInはアプリケーション全体の認証状態を管理するグローバルな状態
-  // 2. 複数のコンポーネント（LoginComponent、各種機能コンポーネント等）で
-  //    認証状態を共有する必要がある
-  // 3. ログイン状態に基づいてアプリケーション全体の表示を制御している
-  //    - ログインしていない場合はLoginComponentを表示
-  //    - ログインしている場合はメインのダッシュボードを表示
-  // 4. 認証トークンの検証、ログイン処理、ログアウト処理でisLoggedInを更新している
-  // 5. ログイン状態が変更された時にデータを読み込むuseEffectで使用している
-  // 6. サブコンポーネント側で定義すると、アプリケーション全体の認証状態管理が
-  //    分散し、一貫性が保てなくなる
-  // 
-  // サブコンポーネント側で定義するために必要な対応:
-  // 1. 認証状態を管理する専用のContext Providerを作成
-  // 2. 認証状態を複数のコンポーネント間で共有する仕組みを構築
-  // 3. ログイン・ログアウト処理を認証Context内で管理
-  // 4. アプリケーション全体の表示制御ロジックを認証Context内で管理
-  // 5. 各コンポーネントで認証状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  // 注意: 認証状態はAuthContextProviderで管理される
+  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
+  // const [isLoggedIn, setIsLoggedIn] = useState(false); // AuthContextProviderで管理
+  // const [isCheckingAuth, setIsCheckingAuth] = useState(true); // AuthContextProviderで管理
+  // const [user, setUser] = useState<User | null>(null); // AuthContextProviderで管理
+  // const [email, setEmail] = useState(""); // AuthContextProviderで管理
+  // const [password, setPassword] = useState(""); // AuthContextProviderで管理
+  // const [displayName, setDisplayName] = useState(""); // AuthContextProviderで管理
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [isRegisterMode, setIsRegisterMode] = useState(false);
@@ -3660,40 +3646,9 @@ ${errorInfo.stack}
     }
   }, [currentDate, showCalendar]);
 
-  const verifyToken = async (token: string) => {
-    try {
-      // トークンの有効性を検証
-      const userResponse = await fetch("/api/auth/verify", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
-
-        if (userData.success && userData.user) {
-          setUser(userData.user);
-          setIsLoggedIn(true);
-        } else {
-          // トークンが無効な場合は削除
-          localStorage.removeItem("access_token");
-          setIsLoggedIn(false);
-          setUser(null);
-        }
-      } else {
-        // トークンが無効な場合は削除
-        localStorage.removeItem("access_token");
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-    } catch (error) {
-      console.error("Token verification failed:", error);
-      localStorage.removeItem("access_token");
-      setIsLoggedIn(false);
-      setUser(null);
-    }
-  };
+  // 注意: 認証関連の関数はAuthContextProviderで管理される
+  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
+  // const verifyToken = async (token: string) => { ... }; // AuthContextProviderで管理
 
   // 経過時間の更新
   useEffect(() => {
@@ -3714,82 +3669,13 @@ ${errorInfo.stack}
     };
   }, [isTracking, currentTimeEntry]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  // 注意: 認証関連の関数はAuthContextProviderで管理される
+  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
+  // const handleLogin = async (e: React.FormEvent) => { ... }; // AuthContextProviderで管理
 
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setMessage("ログイン成功！");
-        setUser(data.user);
-        setIsLoggedIn(true);
-        if (data.token) {
-          localStorage.setItem("access_token", data.token);
-        }
-
-        // ユーザー情報を設定してからデータを読み込み
-        const userId = data.user.id;
-        loadProjects(); // プロジェクトを読み込み
-        loadReportSummary(); // レポートを読み込み
-        loadIncomeExpenseRecordsWithUserId(userId); // 収入・支出記録を読み込み
-        loadWorkDiariesWithUserId(userId); // 日記を読み込み
-        loadUserSettings(); // ユーザー設定を読み込み
-      } else {
-        setMessage(`ログイン失敗: ${data.message}`);
-      }
-    } catch (error) {
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password, displayName }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setMessage("アカウントが作成されました！ログインしてください。");
-        setIsRegisterMode(false);
-        setEmail("");
-        setPassword("");
-        setDisplayName("");
-      } else {
-        setMessage(`登録失敗: ${data.message}`);
-      }
-    } catch (error) {
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 注意: 認証関連の関数はAuthContextProviderで管理される
+  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
+  // const handleRegister = async (e: React.FormEvent) => { ... }; // AuthContextProviderで管理
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -4124,7 +4010,9 @@ ${errorInfo.stack}
   const handleUpdateBook = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!editingBook) return;
+    if (!editingBook) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem("access_token");
@@ -4935,27 +4823,9 @@ User Agent: ${userAgent}
     return Array.from(new Set(allCategories)).sort();
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    setIsLoggedIn(false);
-    setUser(null);
-    setMessage("");
-    setCurrentTimeEntry(null);
-    setIsTracking(false);
-    setElapsedTime(0);
-    setDescription("");
-    setProjects([]);
-    setSelectedProject("");
-    // その他の状態もリセット
-    setIncomeExpenseRecords([]);
-    setWorkDiaries([]);
-    setReportSummary(null);
-    setUserSettings(null);
-    setBooks([]);
-    setMemos([]);
-    setPublicMemos([]);
-    setAdminUsers([]);
-  };
+  // 注意: 認証関連の関数はAuthContextProviderで管理される
+  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
+  // const handleLogout = () => { ... }; // AuthContextProviderで管理
 
   // 注意: 時間記録関連の関数は各コンポーネントで個別に定義される
   // 理由: 各コンポーネントで個別の時間記録機能を管理することで、状態の分散を防ぐ
@@ -5915,7 +5785,7 @@ User Agent: ${userAgent}
       <div className="app">
         <div className="dashboard">
           <HeaderComponent
-            user={user}
+            user={user!}
             currentCharacter={currentCharacter}
             showThemeSettings={showThemeSettings}
             showFontSettings={showFontSettings}
@@ -6763,27 +6633,50 @@ const AppWithProviders = () => {
   const [customTimerActive, setCustomTimerActive] = useState(false);
 
   return (
-    <TimeTrackingStateProvider user={user}>
-      <TimerPresetProvider
-        onStartTimer={(minutes, seconds, name) => {
-          // カスタムタイマーを開始する処理
-          console.log(`Starting timer: ${name} for ${minutes}:${seconds}`);
-        }}
-        onStopTimer={() => {
-          // カスタムタイマーを停止する処理
-          console.log("Stopping timer");
-        }}
-        onResetTimer={() => {
-          // カスタムタイマーをリセットする処理
-          console.log("Resetting timer");
-        }}
-        isTimerActive={customTimerActive}
-      >
-        <MoodLogProvider>
-          <App />
-        </MoodLogProvider>
-      </TimerPresetProvider>
-    </TimeTrackingStateProvider>
+    <AuthProvider
+      onLogin={async (e: React.FormEvent) => {
+        // ログイン処理はApp.tsx内で実装
+        console.log("Login requested");
+      }}
+      onRegister={async (e: React.FormEvent) => {
+        // 登録処理はApp.tsx内で実装
+        console.log("Register requested");
+      }}
+      onLogout={() => {
+        // ログアウト処理はApp.tsx内で実装
+        console.log("Logout requested");
+      }}
+      onVerifyToken={async (token: string) => {
+        // トークン検証処理はApp.tsx内で実装
+        console.log("Token verification requested");
+      }}
+      setMessage={(message: string) => {
+        // メッセージ設定はApp.tsx内で実装
+        console.log("Message:", message);
+      }}
+    >
+      <TimeTrackingStateProvider user={user}>
+        <TimerPresetProvider
+          onStartTimer={(minutes, seconds, name) => {
+            // カスタムタイマーを開始する処理
+            console.log(`Starting timer: ${name} for ${minutes}:${seconds}`);
+          }}
+          onStopTimer={() => {
+            // カスタムタイマーを停止する処理
+            console.log("Stopping timer");
+          }}
+          onResetTimer={() => {
+            // カスタムタイマーをリセットする処理
+            console.log("Resetting timer");
+          }}
+          isTimerActive={customTimerActive}
+        >
+          <MoodLogProvider>
+            <App />
+          </MoodLogProvider>
+        </TimerPresetProvider>
+      </TimeTrackingStateProvider>
+    </AuthProvider>
   );
 };
 
