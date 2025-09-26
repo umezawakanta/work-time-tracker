@@ -60,9 +60,11 @@ AudioContextの初期化に失敗しました。
 
 エラー詳細:
 - エラーメッセージ: ${error instanceof Error ? error.message : "Unknown error"}
+- エラータイプ: AudioContext初期化エラー
 - 時刻: ${new Date().toISOString()}
 - ユーザーエージェント: ${navigator.userAgent}
 - 現在のAudioContext状態: ${Tone.context.state}
+- ブラウザ: ${navigator.userAgent.includes('Chrome') ? 'Chrome' : navigator.userAgent.includes('Firefox') ? 'Firefox' : 'Other'}
 
 このエラーは自動的に検出されました。
     `.trim();
@@ -70,7 +72,7 @@ AudioContextの初期化に失敗しました。
     // グローバルな状態更新関数を呼び出すためのイベントを発火
     window.dispatchEvent(new CustomEvent('showErrorReport', {
       detail: {
-        category: '不具合報告',
+        category: '音声エラー',
         content: errorDetails
       }
     }));

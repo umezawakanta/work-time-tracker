@@ -331,9 +331,11 @@ export const initializeTone = async (): Promise<boolean> => {
 
 エラー詳細:
 - エラーメッセージ: ${error instanceof Error ? error.message : "Unknown error"}
+- エラータイプ: 音声初期化エラー
 - 時刻: ${new Date().toISOString()}
 - ユーザーエージェント: ${navigator.userAgent}
 - AudioContext状態: ${Tone.context.state}
+- ブラウザ: ${navigator.userAgent.includes('Chrome') ? 'Chrome' : navigator.userAgent.includes('Firefox') ? 'Firefox' : 'Other'}
 
 このエラーは自動的に検出されました。
       `.trim();
@@ -341,7 +343,7 @@ export const initializeTone = async (): Promise<boolean> => {
       // グローバルな状態更新関数を呼び出すためのイベントを発火
       window.dispatchEvent(new CustomEvent('showErrorReport', {
         detail: {
-          category: '不具合報告',
+          category: '音声エラー',
           content: errorDetails
         }
       }));
@@ -419,9 +421,11 @@ export const playSound = async (
 - 音量: ${volume}
 - ジャンル: ${genre || '未指定'}
 - エラーメッセージ: ${error instanceof Error ? error.message : "Unknown error"}
+- エラータイプ: 音声再生エラー
 - 時刻: ${new Date().toISOString()}
 - ユーザーエージェント: ${navigator.userAgent}
 - AudioContext状態: ${Tone.context.state}
+- ブラウザ: ${navigator.userAgent.includes('Chrome') ? 'Chrome' : navigator.userAgent.includes('Firefox') ? 'Firefox' : 'Other'}
 
 このエラーは自動的に検出されました。
     `.trim();
@@ -429,7 +433,7 @@ export const playSound = async (
     // グローバルな状態更新関数を呼び出すためのイベントを発火
     window.dispatchEvent(new CustomEvent('showErrorReport', {
       detail: {
-        category: '不具合報告',
+        category: '音声エラー',
         content: errorDetails
       }
     }));
