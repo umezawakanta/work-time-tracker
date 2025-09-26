@@ -6631,29 +6631,126 @@ User Agent: ${userAgent}
 const AppWithProviders = () => {
   const [user, setUser] = useState<User | null>(null);
   const [customTimerActive, setCustomTimerActive] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
 
   return (
     <AuthProvider
       onLogin={async (e: React.FormEvent) => {
-        // ログイン処理はApp.tsx内で実装
-        console.log("Login requested");
+        e.preventDefault();
+        setLoading(true);
+        setMessage("");
+
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            setMessage("ログイン成功！");
+            setUser(data.user);
+            setIsLoggedIn(true);
+            if (data.token) {
+              localStorage.setItem("access_token", data.token);
+            }
+
+            // ユーザー情報を設定してからデータを読み込み
+            const userId = data.user.id;
+            // データの読み込みはAppコンポーネント内で実行される
+          } else {
+            setMessage(`ログイン失敗: ${data.message}`);
+          }
+        } catch (error) {
+          setMessage(
+            `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+          );
+        } finally {
+          setLoading(false);
+        }
       }}
       onRegister={async (e: React.FormEvent) => {
-        // 登録処理はApp.tsx内で実装
-        console.log("Register requested");
+        e.preventDefault();
+        setLoading(true);
+        setMessage("");
+
+        try {
+          const response = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password, displayName }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            setMessage("アカウントが作成されました！ログインしてください。");
+            setIsRegisterMode(false);
+            setEmail("");
+            setPassword("");
+            setDisplayName("");
+          } else {
+            setMessage(`登録失敗: ${data.message}`);
+          }
+        } catch (error) {
+          setMessage(
+            `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+          );
+        } finally {
+          setLoading(false);
+        }
       }}
       onLogout={() => {
-        // ログアウト処理はApp.tsx内で実装
-        console.log("Logout requested");
+        localStorage.removeItem("access_token");
+        setIsLoggedIn(false);
+        setUser(null);
+        setMessage("");
+        // その他の状態のリセットはAppコンポーネント内で実行される
       }}
       onVerifyToken={async (token: string) => {
-        // トークン検証処理はApp.tsx内で実装
-        console.log("Token verification requested");
+        try {
+          const userResponse = await fetch("/api/auth/verify", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+
+            if (userData.success && userData.user) {
+              setUser(userData.user);
+              setIsLoggedIn(true);
+            } else {
+              localStorage.removeItem("access_token");
+              setIsLoggedIn(false);
+              setUser(null);
+            }
+          } else {
+            localStorage.removeItem("access_token");
+            setIsLoggedIn(false);
+            setUser(null);
+          }
+        } catch (error) {
+          console.error("Token verification failed:", error);
+          localStorage.removeItem("access_token");
+          setIsLoggedIn(false);
+          setUser(null);
+        }
       }}
-      setMessage={(message: string) => {
-        // メッセージ設定はApp.tsx内で実装
-        console.log("Message:", message);
-      }}
+      setMessage={setMessage}
     >
       <TimeTrackingStateProvider user={user}>
         <TimerPresetProvider
