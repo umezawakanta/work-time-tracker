@@ -216,10 +216,10 @@ function App({
   >(undefined);
 
 
-  // 時間記録関連の状態（TimeTrackingStateManagerで管理）
-  const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(
-    null
-  );
+  // 注意: currentTimeEntryはTimeTrackingComponent内で管理される
+  // 理由: 現在の時間記録エントリはTimeTrackingComponent内でのみ使用されるため、
+  // TimeTrackingComponent内で状態を管理することで、状態の分散を防ぐ
+  // const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(null); // TimeTrackingComponentで管理
   const [isTracking, setIsTracking] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
@@ -3709,24 +3709,10 @@ ${errorInfo.stack}
   // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
   // const verifyToken = async (token: string) => { ... }; // AuthContextProviderで管理
 
-  // 経過時間の更新
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isTracking && currentTimeEntry) {
-      interval = setInterval(() => {
-        const now = new Date();
-        const elapsed = Math.floor(
-          (now.getTime() - currentTimeEntry.startTime.getTime()) / 1000
-        );
-        setElapsedTime(elapsed);
-      }, 1000);
-    }
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [isTracking, currentTimeEntry]);
+  // 注意: 経過時間の更新はTimeTrackingComponent内で管理される
+  // 理由: 時間記録の経過時間更新はTimeTrackingComponent内でのみ使用されるため、
+  // TimeTrackingComponent内で状態を管理することで、状態の分散を防ぐ
+  // useEffect(() => { ... }, [isTracking, currentTimeEntry]); // TimeTrackingComponentで管理
 
   // 注意: 認証関連の関数はAuthContextProviderで管理される
   // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため

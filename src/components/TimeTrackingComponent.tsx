@@ -23,6 +23,9 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
   // プロジェクトのローディング状態をTimeTrackingComponent内で管理
   const [projectsLoading, setProjectsLoading] = useState(false);
 
+  // 現在の時間記録エントリをTimeTrackingComponent内で管理
+  const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(null);
+
   // プロジェクト読み込み関数をTimeTrackingComponent内で定義
   const loadProjectsLocal = async () => {
     setProjectsLoading(true);
