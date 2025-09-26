@@ -161,6 +161,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // カレンダーモーダルの状態管理（デフォルトで拡大表示）
   const [showCalendarModal, setShowCalendarModal] = useState(true);
 
+  // 記録詳細モーダルの状態管理
+  const [showRecordDetailsModal, setShowRecordDetailsModal] = useState(false);
+
   // 統計表示のアコーディオン状態管理
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(true);
 
@@ -474,6 +477,21 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         </div>
       </div>
 
+      {/* カレンダー（常に拡大表示） - work-records-section直下 */}
+      {showWorkRecords && (
+        <CalendarComponent
+          currentMonth={currentMonth}
+          onMonthChange={handleMonthChange}
+          selectedDate={selectedDate}
+          onDateClick={handleDateClick}
+          getRecordsForDate={getRecordsForDate}
+          isModal={true}
+          onClose={() => setShowCalendarModal(false)}
+          onViewModeChange={setCalendarViewMode}
+          onWeekChange={setCurrentWeekStart}
+        />
+      )}
+
       {showWorkRecords && (
         <div className="work-records-content">
           {/* 統計表示（月/週切り替え） */}
@@ -614,19 +632,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               </div>
             )}
           </div>
-
-          {/* カレンダー（常に拡大表示） */}
-          <CalendarComponent
-            currentMonth={currentMonth}
-            onMonthChange={handleMonthChange}
-            selectedDate={selectedDate}
-            onDateClick={handleDateClick}
-            getRecordsForDate={getRecordsForDate}
-            isModal={true}
-            onClose={() => setShowCalendarModal(false)}
-            onViewModeChange={setCalendarViewMode}
-            onWeekChange={setCurrentWeekStart}
-          />
 
           {/* 選択された記録の詳細 */}
           {selectedRecord && (

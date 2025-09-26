@@ -5756,6 +5756,12 @@ User Agent: ${userAgent}
 
   // コンポーネントマウント時に音声と通知を初期化
   React.useEffect(() => {
+    // body要素のスタイルをリセット（緊急修正）
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.height = '';
+    
     initializeAudio();
     initializeNotifications();
     loadTimerSettings();
