@@ -1140,9 +1140,11 @@ ${methodInfo ? `- ${methodInfo}` : ""}
         // エラー詳細を構築
         // ApiErrorInfoをErrorInfoに変換してからフォーマット
         const convertedErrorInfo = getErrorInfo(errorInfo);
+        console.log("変換されたエラー情報:", convertedErrorInfo);
         const { statusInfo, methodInfo } = formatErrorInfo(
           convertedErrorInfo || {}
         );
+        console.log("フォーマットされたエラー情報:", { statusInfo, methodInfo });
         const errorDetails = `
 APIエラーが発生しました。
 
@@ -4314,10 +4316,10 @@ User Agent: ${userAgent}
     const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
     return formatGenericErrorReportContent({
       errorType: "APIエラー",
-      url: errorInfo.url,
-      statusInfo,
-      methodInfo,
-      message: errorInfo.message,
+      url: errorInfo.url || "Unknown URL",
+      statusInfo: statusInfo || "ステータス: Unknown",
+      methodInfo: methodInfo || "メソッド: Unknown",
+      message: errorInfo.message || "エラーメッセージが取得できませんでした",
       userAgent: errorInfo.userAgent ?? "",
       timestamp: errorInfo.timestamp ?? "",
     });
@@ -4460,7 +4462,7 @@ User Agent: ${userAgent}
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: `[エラー報告] API Error - ${errorInfo.status}`,
+          title: `[エラー報告] API Error - ${errorInfo.status || 'Unknown'}`,
           content: formatApiErrorReportContent(errorInfo),
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
