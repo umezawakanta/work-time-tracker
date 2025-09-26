@@ -2020,6 +2020,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                                     // 簡易実装：機能の切り替えは今後実装
                                     console.log(`Toggle feature: ${feature.id}`);
                                   }}
+                                  aria-label={`${feature.name}の表示/非表示を切り替え`}
                                 />
                                 <span className="toggle-slider"></span>
                               </label>

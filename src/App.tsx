@@ -2452,7 +2452,6 @@ function App() {
       cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
       // カレンダー操作関数
       navigateMonth={navigateMonth}
-      openDiaryForm={openDiaryForm}
       openIncomeExpenseForm={openIncomeExpenseForm}
       // カスタムカテゴリ管理
       customCategories={customCategories}
