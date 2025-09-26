@@ -12,7 +12,11 @@ try {
     Tone.context.dispose();
   }
 } catch (error) {
-  console.log("Tone.js context already disposed or not initialized");
+  console.log(
+    "Failed to dispose Tone.js context. It may already be disposed or not initialized. Error details:",
+    error,
+    "\nThis is usually safe to ignore unless you experience audio issues. If problems persist, try reloading the page."
+  );
 }
 
 // カテゴリに応じた音符を取得する関数
