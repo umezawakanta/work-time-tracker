@@ -140,38 +140,6 @@ function App({
   handleLogout,
   verifyToken
 }: AppProps) {
-  // 注意: 認証状態はAppWithProvidersからpropsとして受け取る
-  // 理由: AuthContextProviderはAppWithProviders内でラップされているため、
-  // Appコンポーネント内では直接アクセスできない
-  // 注意: loadingStateは各コンポーネントで個別に管理される
-  // 理由: 各コンポーネントで個別のローディング状態を管理することで、状態の分散を防ぐ
-  // const loadingState = useLoadingState(); // 削除
-
-  // 注意: timeTrackingHelpersは各コンポーネントで個別に使用される
-  // 理由: 各コンポーネントで個別の時間記録機能を管理することで、状態の分散を防ぐ
-  // const timeTrackingHelpers = useTimeTrackingHelpers(); // 削除
-
-  // 注意: timerPresetStateは各コンポーネントで個別に使用される
-  // 理由: 各コンポーネントで個別のタイマープリセット機能を管理することで、状態の分散を防ぐ
-  // const timerPresetState = useTimerPresetState(); // 削除
-
-  // 注意: moodLogStateは各コンポーネントで個別に使用される
-  // 理由: 各コンポーネントで個別の感情ログ機能を管理することで、状態の分散を防ぐ
-  // const moodLogState = useMoodLogState(); // 削除
-  // const moodLogHelpers = useMoodLogHelpers(); // 削除
-
-  // 注意: 認証状態はAuthContextProviderで管理される
-  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
-  // const [isLoggedIn, setIsLoggedIn] = useState(false); // AuthContextProviderで管理
-  // const [isCheckingAuth, setIsCheckingAuth] = useState(true); // AuthContextProviderで管理
-  // const [user, setUser] = useState<User | null>(null); // AuthContextProviderで管理
-  // const [email, setEmail] = useState(""); // AuthContextProviderで管理
-  // const [password, setPassword] = useState(""); // AuthContextProviderで管理
-  // const [displayName, setDisplayName] = useState(""); // AuthContextProviderで管理
-  // 注意: loading, message, isRegisterModeはAppWithProvidersから受け取る
-  // const [loading, setLoading] = useState(false); // AppWithProvidersで管理
-  // const [message, setMessage] = useState(""); // AppWithProvidersで管理
-  // const [isRegisterMode, setIsRegisterMode] = useState(false); // AppWithProvidersで管理
 
   // 注意: showErrorModalをサブコンポーネント側で定義することはできません
   // 理由:
@@ -254,21 +222,6 @@ function App({
     { x: number; y: number } | undefined
   >(undefined);
 
-  // 注意: showUpdateRequestModalはHeaderComponent内で管理される
-  // 理由: 更新要望モーダルはHeaderComponent内のボタンから開かれるため、
-  // HeaderComponent内で状態を管理することで、状態の分散を防ぐ
-  // const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false); // HeaderComponentで管理
-
-  // 注意: showBugReportModalはHeaderComponent内で管理される
-  // 理由: 不具合報告モーダルはHeaderComponent内のボタンから開かれるため、
-  // HeaderComponent内で状態を管理することで、状態の分散を防ぐ
-  // const [showBugReportModal, setShowBugReportModal] = useState(false); // HeaderComponentで管理
-
-  // 注意: publicMemosLoadingはPublicMemosComponent内で管理される
-  // 理由: 公開メモのローディング状態はPublicMemosComponent内でのみ使用されるため、
-  // PublicMemosComponent内で状態を管理することで、状態の分散を防ぐ
-  // const [publicMemosLoading, setPublicMemosLoading] = useState(false); // PublicMemosComponentで管理
-  const [projectsLoading, setProjectsLoading] = useState(false);
   const [booksLoading, setBooksLoading] = useState(false);
   const [workRecordsLoading, setWorkRecordsLoading] = useState(false);
   const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
@@ -3842,7 +3795,6 @@ ${errorInfo.stack}
   };
 
   const loadProjects = async () => {
-    setProjectsLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/projects/list", {
@@ -3858,8 +3810,6 @@ ${errorInfo.stack}
       }
     } catch (error) {
       console.error("Failed to load projects:", error);
-    } finally {
-      setProjectsLoading(false);
     }
   };
 
@@ -5948,7 +5898,6 @@ User Agent: ${userAgent}
                     showTimeTracking={showTimeTracking}
                     setShowTimeTracking={setShowTimeTracking}
                     projects={projects}
-                    projectsLoading={projectsLoading}
                     loadProjects={loadProjects}
                     closeOtherFeatures={closeOtherFeatures}
                     setMessage={setMessage}
@@ -6008,7 +5957,6 @@ User Agent: ${userAgent}
                     showProjectForm={showProjectForm}
                     setShowProjectForm={setShowProjectForm}
                     projects={projects}
-                    projectsLoading={projectsLoading}
                     selectedProject={selectedProject}
                     setSelectedProject={setSelectedProject}
                     projectName={projectName}

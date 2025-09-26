@@ -7,8 +7,7 @@ interface TimeTrackingComponentProps {
   showTimeTracking: boolean;
   setShowTimeTracking: (show: boolean) => void;
   projects: Project[];
-  projectsLoading: boolean;
-  loadProjects: () => void;
+  loadProjects: () => Promise<void>;
   closeOtherFeatures: (activeFeature: string) => void;
   setMessage: (message: string) => void;
 }
@@ -17,11 +16,22 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
   showTimeTracking,
   setShowTimeTracking,
   projects,
-  projectsLoading,
   loadProjects,
   closeOtherFeatures,
   setMessage,
 }) => {
+  // プロジェクトのローディング状態をTimeTrackingComponent内で管理
+  const [projectsLoading, setProjectsLoading] = useState(false);
+
+  // プロジェクト読み込み関数をTimeTrackingComponent内で定義
+  const loadProjectsLocal = async () => {
+    setProjectsLoading(true);
+    try {
+      await loadProjects();
+    } finally {
+      setProjectsLoading(false);
+    }
+  };
   // 時間記録状態をコンポーネント内で管理
   const timeTrackingState = useTimeTrackingState();
   const timeTrackingHelpers = useTimeTrackingHelpers();
@@ -212,7 +222,7 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
       });
 
       if (response.ok) {
-        loadProjects();
+        loadProjectsLocal();
         setNewProjectName('');
         setShowProjectForm(false);
       }
@@ -242,7 +252,7 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
               onClick={() => {
                 closeOtherFeatures("time-tracking");
                 setShowTimeTracking(true);
-                loadProjects();
+                loadProjectsLocal();
                 loadTimeEntries();
               }}
               className="show-section-button"
@@ -259,7 +269,7 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
           <div className="time-tracking-header">
             <button
               onClick={() => {
-                loadProjects();
+                loadProjectsLocal();
                 loadTimeEntries();
               }}
               className="refresh-button"
