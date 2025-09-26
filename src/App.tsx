@@ -215,14 +215,6 @@ function App({
     { x: number; y: number } | undefined
   >(undefined);
 
-  // 注意: incomeExpenseLoadingはWorkRecordsComponent内で管理される
-  // 理由: 収支記録のローディング状態はWorkRecordsComponent内でのみ使用されるため、
-  // WorkRecordsComponent内で状態を管理することで、状態の分散を防ぐ
-  // const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false); // WorkRecordsComponentで管理
-  // 注意: diaryLoadingはWorkRecordsComponent内で管理される
-  // 理由: 日記のローディング状態はWorkRecordsComponent内でのみ使用されるため、
-  // WorkRecordsComponent内で状態を管理することで、状態の分散を防ぐ
-  // const [diaryLoading, setDiaryLoading] = useState(false); // WorkRecordsComponentで管理
 
   // 時間記録関連の状態（TimeTrackingStateManagerで管理）
   const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(
