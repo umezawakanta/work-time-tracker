@@ -173,16 +173,91 @@ function App({
   // const [message, setMessage] = useState(""); // AppWithProvidersで管理
   // const [isRegisterMode, setIsRegisterMode] = useState(false); // AppWithProvidersで管理
 
-  // エラー報告関連の状態
+  // 注意: showErrorModalをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. showErrorModalはグローバルエラーハンドリングで使用される
+  //    - WrappedXHR、WrappedFetch、handleReactError等のグローバルエラーハンドラーで使用
+  // 2. 複数のコンポーネントからアクセスされる
+  //    - エラー報告イベントリスナー（showErrorReport）で使用
+  //    - SimpleErrorReportingModalコンポーネントで表示制御
+  // 3. アプリケーション全体のエラー状態を管理する
+  //    - どのコンポーネントでエラーが発生しても統一されたエラー表示が必要
+  // 4. サブコンポーネント側で定義すると、グローバルエラーハンドリングが
+  //    分散し、一貫性が保てなくなる
+  //
+  // サブコンポーネント側で定義するために必要な対応:
+  // 1. グローバルエラーハンドリング用のContext Providerを作成
+  // 2. エラー状態を複数のコンポーネント間で共有する仕組みを構築
+  // 3. エラー報告イベントリスナーをエラーContext内で管理
+  // 4. 各コンポーネントでエラー状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
   const [showErrorModal, setShowErrorModal] = useState(false);
+  // 注意: currentErrorをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. currentErrorはグローバルエラーハンドリングで使用される
+  //    - WrappedXHR、WrappedFetch、handleReactError等のグローバルエラーハンドラーで使用
+  // 2. 複数のコンポーネントからアクセスされる
+  //    - エラー報告イベントリスナー（showErrorReport）で使用
+  //    - SimpleErrorReportingModalコンポーネントでgetErrorInfo(currentError)として使用
+  // 3. アプリケーション全体のエラー情報を管理する
+  //    - どのコンポーネントでエラーが発生しても統一されたエラー情報が必要
+  // 4. エラーの詳細情報を保持し、エラーモーダルに渡す役割
+  //    - エラーの種類、メッセージ、スタックトレース等の情報を管理
+  // 5. サブコンポーネント側で定義すると、グローバルエラーハンドリングが
+  //    分散し、一貫性が保てなくなる
+  //
+  // サブコンポーネント側で定義するために必要な対応:
+  // 1. グローバルエラーハンドリング用のContext Providerを作成
+  // 2. エラー状態とエラー情報を複数のコンポーネント間で共有する仕組みを構築
+  // 3. エラー報告イベントリスナーをエラーContext内で管理
+  // 4. 各コンポーネントでエラー状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
   const [currentError, setCurrentError] = useState<Error | null>(null);
+  // 注意: showSimpleErrorModalをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. showSimpleErrorModalはグローバルエラーハンドリングで使用される
+  //    - WrappedXHR、WrappedFetch、handleReactError等のグローバルエラーハンドラーで使用
+  // 2. 複数のコンポーネントからアクセスされる
+  //    - SimpleErrorReportingModalコンポーネントで表示制御
+  //    - handleSimpleErrorReport関数でエラー報告処理に使用
+  // 3. アプリケーション全体のエラー状態を管理する
+  //    - どのコンポーネントでエラーが発生しても統一されたエラー表示が必要
+  // 4. 独立したエラー報告モーダルとして使用
+  //    - showErrorModalとは別の独立したエラー報告モーダル
+  //    - エラー報告の送信成功時にモーダルを閉じる処理で使用
+  // 5. サブコンポーネント側で定義すると、グローバルエラーハンドリングが
+  //    分散し、一貫性が保てなくなる
+  //
+  // サブコンポーネント側で定義するために必要な対応:
+  // 1. グローバルエラーハンドリング用のContext Providerを作成
+  // 2. エラー状態を複数のコンポーネント間で共有する仕組みを構築
+  // 3. エラー報告イベントリスナーをエラーContext内で管理
+  // 4. 各コンポーネントでエラー状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
   const [showSimpleErrorModal, setShowSimpleErrorModal] = useState(false);
+  // 注意: errorModalButtonPositionをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. errorModalButtonPositionはグローバルエラーハンドリングで使用される
+  //    - WrappedXHR、WrappedFetch、handleReactError等のグローバルエラーハンドラーで使用
+  // 2. エラーモーダルの位置制御に使用される
+  //    - エラーが発生したボタンの位置を記録し、エラーモーダルの表示位置を制御
+  // 3. アプリケーション全体のUI状態を管理する
+  //    - どのコンポーネントでエラーが発生しても統一されたエラーモーダル表示が必要
+  // 4. ボタン位置のリセット処理で使用
+  //    - エラー処理時にボタン位置をundefinedにリセット
+  // 5. サブコンポーネント側で定義すると、グローバルエラーハンドリングが
+  //    分散し、一貫性が保てなくなる
+  //
+  // サブコンポーネント側で定義するために必要な対応:
+  // 1. グローバルエラーハンドリング用のContext Providerを作成
+  // 2. エラー状態とUI位置情報を複数のコンポーネント間で共有する仕組みを構築
+  // 3. エラー報告イベントリスナーをエラーContext内で管理
+  // 4. 各コンポーネントでエラー状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
   const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<
     { x: number; y: number } | undefined
   >(undefined);
 
-  // 更新要望関連の状態
-  const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
+  // 注意: showUpdateRequestModalはHeaderComponent内で管理される
+  // 理由: 更新要望モーダルはHeaderComponent内のボタンから開かれるため、
+  // HeaderComponent内で状態を管理することで、状態の分散を防ぐ
+  // const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false); // HeaderComponentで管理
 
   // 不具合報告関連の状態
   const [showBugReportModal, setShowBugReportModal] = useState(false);
@@ -4406,7 +4481,7 @@ User Agent: ${userAgent}
 
       if (response.ok) {
         setMessage("更新要望を送信しました。ありがとうございます。");
-        setShowUpdateRequestModal(false);
+        // モーダルの閉じる処理はHeaderComponent内で管理
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "更新要望の送信に失敗しました");
@@ -5842,8 +5917,8 @@ User Agent: ${userAgent}
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
             isTimeTrackingActive={isTimeTrackingActive}
-            onUpdateRequestClick={() => setShowUpdateRequestModal(true)}
             onBugReportClick={() => setShowBugReportModal(true)}
+            handleUpdateRequest={handleUpdateRequest}
           />
 
           {/* 通知コンポーネント */}
@@ -6620,12 +6695,7 @@ User Agent: ${userAgent}
           errorInfo={getErrorInfo(currentError)}
         />
 
-        {/* 更新要望モーダル */}
-        <UpdateRequestModal
-          isOpen={showUpdateRequestModal}
-          onClose={() => setShowUpdateRequestModal(false)}
-          onSubmit={handleUpdateRequest}
-        />
+        {/* 更新要望モーダルはHeaderComponent内で管理 */}
 
         {/* 不具合報告モーダル */}
         <BugReportModal

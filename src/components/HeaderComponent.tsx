@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./HeaderComponent.css";
 import HeaderLeftComponent from "./HeaderLeftComponent";
 import HetamaCharacterComponent from "./HetamaCharacterComponent";
@@ -8,6 +8,7 @@ import LogoutButtonComponent from "./LogoutButtonComponent";
 import UserInfoComponent from "./UserInfoComponent";
 import UserGreetingComponent from "./UserGreetingComponent";
 import ShareButtonComponent from "./ShareButtonComponent";
+import UpdateRequestModal from "./UpdateRequestModal";
 import type { User, Character } from "../types";
 import VersionInfoComponent from "./VersionInfo";
 
@@ -25,8 +26,8 @@ interface HeaderComponentProps {
   setShowFeatureSettings: (show: boolean) => void;
   loadUserSettings: () => void;
   isTimeTrackingActive: boolean;
-  onUpdateRequestClick: () => void;
   onBugReportClick: () => void;
+  handleUpdateRequest: (updateRequest: any) => Promise<void>;
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -43,9 +44,11 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   setShowFeatureSettings,
   loadUserSettings,
   isTimeTrackingActive,
-  onUpdateRequestClick,
   onBugReportClick,
+  handleUpdateRequest,
 }) => {
+  // 更新要望モーダルの状態をHeaderComponent内で管理
+  const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
   return (
     <header className="dashboard-header">
       {/* 左側：キャラクター（絶対保持） */}
@@ -108,7 +111,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
           <span>不具合報告</span>
         </button>
         <button
-          onClick={onUpdateRequestClick}
+          onClick={() => setShowUpdateRequestModal(true)}
           className="update-request-button"
           title="更新要望を送信"
         >
@@ -121,6 +124,16 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       {/* 背景キャラクター（絶対保持） */}
       <HetamaCharacterComponent />
       <DogCharacterComponent />
+
+      {/* 更新要望モーダル */}
+      <UpdateRequestModal
+        isOpen={showUpdateRequestModal}
+        onClose={() => setShowUpdateRequestModal(false)}
+        onSubmit={async (updateRequest) => {
+          await handleUpdateRequest(updateRequest);
+          setShowUpdateRequestModal(false);
+        }}
+      />
     </header>
   );
 };
