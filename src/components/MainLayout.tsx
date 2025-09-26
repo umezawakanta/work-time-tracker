@@ -59,6 +59,11 @@ interface MainLayoutProps {
   handleThemeChange: (theme: string) => void;
   handleFontChange: (font: string) => void;
   handleLanguageFontSave: (settings: any) => void;
+  availableThemes: Array<{
+    value: string;
+    label: string;
+    preview: string;
+  }>;
   // お仕事記録関連の状態
   showIncomeExpenseForm: boolean;
   setShowIncomeExpenseForm: (show: boolean) => void;
@@ -435,6 +440,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   handleThemeChange,
   handleFontChange,
   handleLanguageFontSave,
+  availableThemes,
   showSoundApp,
   showNotifications,
   showVersionInfo,
@@ -1053,6 +1059,53 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           margin: 10px 0;
           line-height: 1.5;
         }
+        
+        .theme-preview {
+          margin-bottom: 20px;
+          padding: 15px;
+          background: #f8f9fa;
+          border-radius: 8px;
+          text-align: center;
+        }
+        
+        .theme-options {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 15px;
+        }
+        
+        .theme-option {
+          display: flex;
+          align-items: center;
+          padding: 12px;
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .theme-option:hover {
+          border-color: #3b82f6;
+          background-color: #f8fafc;
+        }
+        
+        .theme-option input[type="radio"] {
+          margin-right: 10px;
+        }
+        
+        .theme-preview-icon {
+          font-size: 1.5em;
+          margin-right: 8px;
+        }
+        
+        .theme-label {
+          font-weight: 500;
+        }
+        
+        .theme-option input[type="radio"]:checked + .theme-preview-icon + .theme-label {
+          color: #3b82f6;
+          font-weight: 600;
+        }
       `}</style>
       <div className="app">
       <div className="dashboard">
@@ -1581,8 +1634,30 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                   </button>
                 </div>
                 <div className="modal-body">
-                  <p>テーマ設定機能は準備中です。</p>
-                  <p>近日中に利用可能になります。</p>
+                  <div className="theme-preview">
+                    <p>
+                      現在のテーマ:{" "}
+                      {availableThemes.find((t) => t.value === selectedTheme)?.preview}{" "}
+                      {availableThemes.find((t) => t.value === selectedTheme)?.label}
+                    </p>
+                  </div>
+                  <div className="theme-options">
+                    {availableThemes.map((theme) => (
+                      <label key={theme.value} className="theme-option">
+                        <input
+                          type="radio"
+                          name="theme"
+                          value={theme.value}
+                          checked={selectedTheme === theme.value}
+                          onChange={(e) => handleThemeChange(e.target.value)}
+                        />
+                        <span className="theme-preview-icon">
+                          {theme.preview}
+                        </span>
+                        <span className="theme-label">{theme.label}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

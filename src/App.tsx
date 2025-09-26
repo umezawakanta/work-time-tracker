@@ -167,6 +167,21 @@ function App() {
   const [selectedTheme, setSelectedTheme] = useState("default");
   const [showThemeSettings, setShowThemeSettings] = useState(false);
   const [showFeatureSettings, setShowFeatureSettings] = useState(false);
+
+  // 利用可能なテーマの定義
+  const availableThemes = [
+    { value: "default", label: "デフォルト", preview: "🎨" },
+    { value: "dark", label: "ダーク", preview: "🌙" },
+    { value: "ocean", label: "オーシャン", preview: "🌊" },
+    { value: "forest", label: "フォレスト", preview: "🌲" },
+    { value: "sunset", label: "サンセット", preview: "🌅" },
+    { value: "rainbow", label: "レインボー", preview: "🌈" },
+    { value: "space", label: "スペース", preview: "🚀" },
+    { value: "candy", label: "キャンディ", preview: "🍭" },
+    { value: "pastel", label: "パステル", preview: "🎀" },
+    { value: "neon", label: "ネオン", preview: "💡" },
+    { value: "simple", label: "シンプル", preview: "📝" },
+  ];
   
   // 追加のUI状態（App_backup.tsxから復元）
   const [showDiaryReminderSettings, setShowDiaryReminderSettings] = useState(false);
@@ -1497,6 +1512,61 @@ function App() {
         "--card-bg",
         "linear-gradient(145deg, #1e293b 0%, #334155 100%)"
       );
+    } else if (themeValue === "candy") {
+      root.style.setProperty(
+        "--primary-color",
+        "linear-gradient(135deg, #ec4899 0%, #db2777 50%, #f472b6 100%)"
+      );
+      root.style.setProperty(
+        "--secondary-color",
+        "linear-gradient(145deg, #db2777 0%, #f472b6 100%)"
+      );
+      root.style.setProperty("--accent-color", "#f472b6");
+      root.style.setProperty("--text-color", "#831843");
+      root.style.setProperty("--bg-color", "#fdf2f8");
+      root.style.setProperty(
+        "--card-bg",
+        "linear-gradient(145deg, #fce7f3 0%, #fbcfe8 100%)"
+      );
+    } else if (themeValue === "pastel") {
+      root.style.setProperty(
+        "--primary-color",
+        "linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #c4b5fd 100%)"
+      );
+      root.style.setProperty(
+        "--secondary-color",
+        "linear-gradient(145deg, #8b5cf6 0%, #c4b5fd 100%)"
+      );
+      root.style.setProperty("--accent-color", "#c4b5fd");
+      root.style.setProperty("--text-color", "#581c87");
+      root.style.setProperty("--bg-color", "#faf5ff");
+      root.style.setProperty(
+        "--card-bg",
+        "linear-gradient(145deg, #f3e8ff 0%, #ede9fe 100%)"
+      );
+    } else if (themeValue === "neon") {
+      root.style.setProperty(
+        "--primary-color",
+        "linear-gradient(135deg, #10b981 0%, #059669 50%, #34d399 100%)"
+      );
+      root.style.setProperty(
+        "--secondary-color",
+        "linear-gradient(145deg, #059669 0%, #34d399 100%)"
+      );
+      root.style.setProperty("--accent-color", "#34d399");
+      root.style.setProperty("--text-color", "#064e3b");
+      root.style.setProperty("--bg-color", "#ecfdf5");
+      root.style.setProperty(
+        "--card-bg",
+        "linear-gradient(145deg, #d1fae5 0%, #a7f3d0 100%)"
+      );
+    } else if (themeValue === "simple") {
+      root.style.setProperty("--primary-color", "#f8f6f0");
+      root.style.setProperty("--secondary-color", "#e0ddd6");
+      root.style.setProperty("--accent-color", "#6b7280");
+      root.style.setProperty("--text-color", "#333");
+      root.style.setProperty("--bg-color", "#ffffff");
+      root.style.setProperty("--card-bg", "#f9f9f9");
     } else {
       // デフォルトテーマ
       root.style.setProperty("--primary-color", "");
@@ -2025,6 +2095,7 @@ function App() {
       handleThemeChange={handleThemeChange}
       handleFontChange={handleFontChange}
       handleLanguageFontSave={handleLanguageFontSave}
+      availableThemes={availableThemes}
       // お仕事記録関連の状態
       showIncomeExpenseForm={showIncomeExpenseForm}
       setShowIncomeExpenseForm={setShowIncomeExpenseForm}
