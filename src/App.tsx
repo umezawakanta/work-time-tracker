@@ -2290,6 +2290,9 @@ function App() {
         playAlarmSound={playAlarmSound}
         startSoundLoop={startSoundLoop}
         stopSoundLoop={stopSoundLoop}
+        // データ関連のプロパティを追加
+        incomeExpenseRecords={incomeExpenseRecords}
+        workDiaries={workDiaries}
         showBugReportModal={errorHandling.showBugReportModal}
         showUpdateRequestModal={errorHandling.showUpdateRequestModal}
         setShowCharacterHome={uiState.setShowCharacterHome}

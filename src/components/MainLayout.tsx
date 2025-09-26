@@ -276,7 +276,9 @@ interface MainLayoutProps {
   loadUserSettings: () => Promise<void>;
   // 機能管理
   getVisibleFeatures: () => any[];
-  // 追加のプロパティ（App_backup.tsxから復元）
+  // データ関連のプロパティ（追加）
+  incomeExpenseRecords: any[];
+  workDiaries: any[];
   projects: any[];
   books: any[];
   memos: any[];
@@ -547,6 +549,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setDiaryBreakTime,
   diaryProductivity,
   setDiaryProductivity,
+  incomeExpenseRecords,  // 追加
+  workDiaries,  // 追加
   diaryNotes,
   setDiaryNotes,
   diaryGratitude,
@@ -1980,8 +1984,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                       showWorkRecords={showWorkRecords}
                       setShowWorkRecords={setShowWorkRecords}
                       closeOtherFeatures={closeOtherFeatures}
-                      incomeExpenseRecords={[]}
-                      workDiaries={[]}
+                      incomeExpenseRecords={incomeExpenseRecords || []}  // propsではなく直接参照
+                      workDiaries={workDiaries || []}  // propsではなく直接参照
                       incomeExpenseLoading={false}
                       diaryLoading={false}
                       workRecordsLoading={false}
