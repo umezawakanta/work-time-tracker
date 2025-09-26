@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TimersComponent.css';
 import { cookingRecipes, getRecipePhases } from '../constants/cookingRecipes';
-// import { useTimerPresetState } from './TimerPresetManager';
+import { useTimerPresetState } from './TimerPresetManager';
 // TimerPreset型を定義
 interface TimerPreset {
   id: string;
@@ -21,7 +21,9 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
   setShowTimers,
   closeOtherFeatures,
 }) => {
-  // TimerPresetManagerの状態を使用（プロパティとして受け取る）
+  // タイマープリセット状態をコンポーネント内で管理
+  const timerPresetState = useTimerPresetState();
+  
   // 内部状態
   const [customTimerTime, setCustomTimerTime] = useState(0);
   const [customTimerTimeLeft, setCustomTimerTimeLeft] = useState(0);
@@ -59,15 +61,8 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
   const [showHistory, setShowHistory] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  // プリセットタイマーの定義
-  const timerPresets: TimerPreset[] = [
-    { id: 'pomodoro', name: 'ポモドーロ', duration: 25 * 60, color: '#e74c3c' },
-    { id: 'short-break', name: '短い休憩', duration: 5 * 60, color: '#27ae60' },
-    { id: 'long-break', name: '長い休憩', duration: 15 * 60, color: '#3498db' },
-    { id: 'focus', name: '集中タイマー', duration: 45 * 60, color: '#9b59b6' },
-    { id: 'study', name: '学習タイマー', duration: 30 * 60, color: '#f39c12' },
-    { id: 'workout', name: '運動タイマー', duration: 20 * 60, color: '#e67e22' },
-  ];
+  // プリセットタイマーの定義（TimerPresetManagerから取得）
+  const { timerPresets } = timerPresetState;
 
   // 時間フォーマット関数
   const formatTime = (seconds: number) => {

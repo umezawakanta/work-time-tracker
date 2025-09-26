@@ -105,16 +105,9 @@ function App() {
   // 理由: 各コンポーネントで個別の時間記録機能を管理することで、状態の分散を防ぐ
   // const timeTrackingHelpers = useTimeTrackingHelpers(); // 削除
 
-  // タイマープリセット状態の管理
-  // 注意: timerPresetStateをサブコンポーネント側で定義することはできません
-  // 理由:
-  // 1. timerPresetStateは現在App.tsxで定義されているが、実際には使用されていない
-  // 2. 代わりに、timerPresetsはuseStateで直接管理されている
-  // 3. timerPresetsは複数のタイマー機能（カスタムタイマー、プリセットタイマー等）で
-  //    共有される必要がある
-  // 4. startPresetTimer関数でtimerPresetsを参照している
-  // 5. 将来的に複数のコンポーネント間でタイマープリセットを共有する可能性がある
-  const timerPresetState = useTimerPresetState();
+  // 注意: timerPresetStateは各コンポーネントで個別に使用される
+  // 理由: 各コンポーネントで個別のタイマープリセット機能を管理することで、状態の分散を防ぐ
+  // const timerPresetState = useTimerPresetState(); // 削除
 
   // 感情ログ状態の管理
   const moodLogState = useMoodLogState();
@@ -198,14 +191,9 @@ function App() {
   // タイマーセクションの表示状態
   const [showTimers, setShowTimers] = useState(false);
 
-  // タイマープリセットの状態（TimerPresetManagerで管理）
-  const [timerPresets, setTimerPresets] = useState([
-    { id: 1, name: "ポモドーロ", minutes: 25, seconds: 0, color: "#ef4444" },
-    { id: 2, name: "短い休憩", minutes: 5, seconds: 0, color: "#10b981" },
-    { id: 3, name: "長い休憩", minutes: 15, seconds: 0, color: "#3b82f6" },
-    { id: 4, name: "料理タイマー", minutes: 10, seconds: 0, color: "#f59e0b" },
-    { id: 5, name: "運動タイマー", minutes: 30, seconds: 0, color: "#8b5cf6" },
-  ]);
+  // 注意: timerPresetsは各コンポーネントで個別に管理される
+  // 理由: 各コンポーネントで個別のタイマープリセット機能を管理することで、状態の分散を防ぐ
+  // const [timerPresets, setTimerPresets] = useState([...]); // 削除
 
   // タイマー履歴の状態
   const [timerHistory, setTimerHistory] = useState<
@@ -5501,44 +5489,9 @@ User Agent: ${userAgent}
     }
   };
 
-  // プリセットタイマーの関数（TimerPresetManagerで管理）
-  const startPresetTimer = (preset: (typeof timerPresets)[0]) => {
-    if (customTimerActive) return;
-
-    const totalSeconds = preset.minutes * 60 + 0;
-    setCustomTimerTime(totalSeconds);
-    setCustomTimerActive(true);
-    setCustomTimerName(preset.name);
-
-    const interval = setInterval(() => {
-      setCustomTimerTime((prev) => {
-        if (prev <= 1) {
-          setCustomTimerActive(false);
-          clearInterval(interval);
-          setCustomTimerInterval(null);
-          setMessage(
-            `⏰ ${preset.name}終了！音を停止するには「音を停止」ボタンを押してください。`
-          );
-
-          // ブラウザ通知を送信
-          sendNotification(
-            "プリセットタイマー終了！",
-            `${preset.name}が終了しました！音を停止するには「音を停止」ボタンを押してください。`,
-            "⏰"
-          );
-
-          // ループ音声を開始
-          startSoundLoop(customTimerSound);
-
-          addToTimerHistory(preset.name, totalSeconds, "preset");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    setCustomTimerInterval(interval);
-  };
+  // 注意: プリセットタイマー関連の関数は各コンポーネントで個別に定義される
+  // 理由: 各コンポーネントで個別のタイマー機能を管理することで、状態の分散を防ぐ
+  // const startPresetTimer = (preset) => { ... }; // 削除
 
   // タイマー履歴に追加
   const addToTimerHistory = (
