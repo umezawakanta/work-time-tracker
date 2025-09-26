@@ -114,6 +114,25 @@ function App() {
   // const moodLogState = useMoodLogState(); // 削除
   // const moodLogHelpers = useMoodLogHelpers(); // 削除
 
+  // 注意: isLoggedInをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. isLoggedInはアプリケーション全体の認証状態を管理するグローバルな状態
+  // 2. 複数のコンポーネント（LoginComponent、各種機能コンポーネント等）で
+  //    認証状態を共有する必要がある
+  // 3. ログイン状態に基づいてアプリケーション全体の表示を制御している
+  //    - ログインしていない場合はLoginComponentを表示
+  //    - ログインしている場合はメインのダッシュボードを表示
+  // 4. 認証トークンの検証、ログイン処理、ログアウト処理でisLoggedInを更新している
+  // 5. ログイン状態が変更された時にデータを読み込むuseEffectで使用している
+  // 6. サブコンポーネント側で定義すると、アプリケーション全体の認証状態管理が
+  //    分散し、一貫性が保てなくなる
+  // 
+  // サブコンポーネント側で定義するために必要な対応:
+  // 1. 認証状態を管理する専用のContext Providerを作成
+  // 2. 認証状態を複数のコンポーネント間で共有する仕組みを構築
+  // 3. ログイン・ログアウト処理を認証Context内で管理
+  // 4. アプリケーション全体の表示制御ロジックを認証Context内で管理
+  // 5. 各コンポーネントで認証状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [user, setUser] = useState<User | null>(null);
