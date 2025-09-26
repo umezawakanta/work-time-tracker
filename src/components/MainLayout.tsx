@@ -43,6 +43,13 @@ interface MainLayoutProps {
   showFeatureSettings: boolean;
   showBugReportModal: boolean;
   showUpdateRequestModal: boolean;
+  // 追加のUI状態（App_backup.tsxから復元）
+  showDiaryReminderSettings: boolean;
+  setShowDiaryReminderSettings: (show: boolean) => void;
+  showMoodForm: boolean;
+  setShowMoodForm: (show: boolean) => void;
+  showGoalForm: boolean;
+  setShowGoalForm: (show: boolean) => void;
   // UI設定関連
   selectedTheme: string;
   selectedFont: string;
@@ -436,6 +443,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showFeatureSettings,
   showBugReportModal,
   showUpdateRequestModal,
+  // 追加のUI状態（App_backup.tsxから復元）
+  showDiaryReminderSettings,
+  setShowDiaryReminderSettings,
+  showMoodForm,
+  setShowMoodForm,
+  showGoalForm,
+  setShowGoalForm,
   // お仕事記録関連の状態
   showIncomeExpenseForm,
   setShowIncomeExpenseForm,

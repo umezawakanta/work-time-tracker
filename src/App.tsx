@@ -167,6 +167,11 @@ function App() {
   const [selectedTheme, setSelectedTheme] = useState("default");
   const [showThemeSettings, setShowThemeSettings] = useState(false);
   const [showFeatureSettings, setShowFeatureSettings] = useState(false);
+  
+  // 追加のUI状態（App_backup.tsxから復元）
+  const [showDiaryReminderSettings, setShowDiaryReminderSettings] = useState(false);
+  const [showMoodForm, setShowMoodForm] = useState(false);
+  const [showGoalForm, setShowGoalForm] = useState(false);
 
   // カスタムカテゴリ管理の状態
   const [customCategories, setCustomCategories] = useState<string[]>([]);
@@ -1242,24 +1247,34 @@ function App() {
     }
   };
 
-  // 音声再生の初期化
+  // 音声再生の初期化（ユーザージェスチャー後に実行）
   const initializeAudio = () => {
-    try {
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
-      if (audioContext.state === "suspended") {
-        // ユーザーの操作でAudioContextを再開
-        document.addEventListener(
-          "click",
-          () => {
-            audioContext.resume();
-          },
-          { once: true }
-        );
+    // AudioContextの初期化は遅延させる
+    const initAudioOnUserGesture = () => {
+      try {
+        const audioContext = new (window.AudioContext ||
+          (window as any).webkitAudioContext)();
+        if (audioContext.state === "suspended") {
+          audioContext.resume();
+        }
+        console.log("AudioContext初期化完了");
+      } catch (error) {
+        console.warn("AudioContext初期化エラー:", error);
       }
-    } catch (error) {
-      console.warn("AudioContext初期化エラー:", error);
-    }
+    };
+
+    // ユーザーの最初の操作でAudioContextを初期化
+    const events = ['click', 'touchstart', 'keydown'];
+    const initOnce = () => {
+      initAudioOnUserGesture();
+      events.forEach(event => {
+        document.removeEventListener(event, initOnce);
+      });
+    };
+
+    events.forEach(event => {
+      document.addEventListener(event, initOnce, { once: true });
+    });
   };
 
   // タイマー履歴の保存
@@ -1996,6 +2011,12 @@ function App() {
       showThemeSettings={uiState.showThemeSettings}
       showFontSettings={uiState.showFontSettings}
       showFeatureSettings={uiState.showFeatureSettings}
+      showDiaryReminderSettings={showDiaryReminderSettings}
+      setShowDiaryReminderSettings={setShowDiaryReminderSettings}
+      showMoodForm={showMoodForm}
+      setShowMoodForm={setShowMoodForm}
+      showGoalForm={showGoalForm}
+      setShowGoalForm={setShowGoalForm}
       // UI設定関連
       selectedTheme={selectedTheme}
       selectedFont={selectedFont}
