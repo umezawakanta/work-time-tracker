@@ -308,12 +308,20 @@ export const initializeTone = async (): Promise<boolean> => {
       console.log("Starting Tone.js after user interaction...");
       await Tone.start();
       
-      // 初期化が完了するまで少し待つ
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Tone.jsが確実に開始されるまで待つ
+      let attempts = 0;
+      while (Tone.context.state !== 'running' && attempts < 20) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
       
-      console.log("Tone.js started successfully");
-      toneStateManager.setInitialized(true);
-      return true;
+      if (Tone.context.state === 'running') {
+        console.log(`Tone.js started successfully after ${attempts} attempts`);
+        toneStateManager.setInitialized(true);
+        return true;
+      } else {
+        throw new Error(`Tone.js failed to start after ${attempts} attempts, state: ${Tone.context.state}`);
+      }
     } catch (error) {
       console.error("Failed to initialize Tone.js:", error);
       

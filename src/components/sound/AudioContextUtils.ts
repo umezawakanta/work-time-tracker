@@ -15,13 +15,31 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
       await Tone.context.resume();
     } else if (currentState === 'closed') {
       console.log("AudioContext is closed, creating new context...");
-      // 新しいAudioContextを作成（ユーザー操作後なので安全）
-      const newContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      // Tone.jsのコンテキストを更新
-      Tone.setContext(newContext);
-      
-      // 新しいコンテキストが開始されるまで少し待つ
-      await new Promise(resolve => setTimeout(resolve, 100));
+      try {
+        // 新しいAudioContextを作成（ユーザー操作後なので安全）
+        const newContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        
+        // Tone.jsのコンテキストを更新
+        Tone.setContext(newContext);
+        
+        // 新しいコンテキストが開始されるまで待つ
+        if (newContext.state === 'suspended') {
+          console.log("New AudioContext is suspended, attempting to resume...");
+          await newContext.resume();
+        }
+        
+        // コンテキストが確実に開始されるまで待つ
+        let attempts = 0;
+        while (newContext.state !== 'running' && attempts < 10) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+          attempts++;
+        }
+        
+        console.log(`AudioContext creation completed after ${attempts} attempts, state: ${newContext.state}`);
+      } catch (contextError) {
+        console.error("Failed to create new AudioContext:", contextError);
+        throw contextError;
+      }
     }
     
     // AudioContextが正常に動作しているか確認
