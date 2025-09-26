@@ -414,7 +414,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               <div className="summary-item">
                 <span className="summary-label">平均気分</span>
                 <span className="summary-value">
-                  {monthlySummary.averageMood > 0 ? `<i className="bi bi-emoji-smile"></i> ${monthlySummary.averageMood.toFixed(1)}` : 'なし'}
+                  {monthlySummary.averageMood > 0 ? (
+                    <>
+                      <i className="bi bi-emoji-smile"></i> {monthlySummary.averageMood.toFixed(1)}
+                    </>
+                  ) : 'なし'}
                 </span>
               </div>
               <div className="summary-item">
@@ -479,9 +483,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           })}
                         </span>
                       </div>
-                      {record.notes && record.notes.trim() && (
-                        <p className="record-notes">{record.notes}</p>
-                      )}
+                      <div className="record-content">
+                        {record.notes && record.notes.trim() ? (
+                          <p className="record-title">{record.notes}</p>
+                        ) : (
+                          <p className="record-title">収入記録</p>
+                        )}
+                      </div>
                       <div className="record-actions">
                         <button
                           onClick={() => {
@@ -531,9 +539,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           })}
                         </span>
                       </div>
-                      {record.notes && record.notes.trim() && (
-                        <p className="record-notes">{record.notes}</p>
-                      )}
+                      <div className="record-content">
+                        {record.notes && record.notes.trim() ? (
+                          <p className="record-title">{record.notes}</p>
+                        ) : (
+                          <p className="record-title">支出記録</p>
+                        )}
+                      </div>
                       <div className="record-actions">
                         <button
                           onClick={() => {
@@ -570,34 +582,42 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     日記 ({selectedRecord.workDiaries.length}件)
                   </h4>
                   {selectedRecord.workDiaries.map((diary: WorkDiary, index: number) => (
-                    <div key={diary._id || index} className="diary-record-detail">
-                      <h5>
-                        日記: {diary.title}
-                        <span className="diary-mood">
-                          {diary.mood && (
+                    <div key={diary._id || index} className="record-item">
+                      <div className="record-header">
+                        <span className="record-amount" style={{ color: 'var(--info-color, #17a2b8)' }}>
+                          <i className="bi bi-journal-text"></i>
+                        </span>
+                        <span className="record-time">
+                          {new Date(diary.date).toLocaleTimeString('ja-JP', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </span>
+                      </div>
+                      <div className="record-content">
+                        <p className="record-title">{diary.title}</p>
+                        <p className="diary-content-full">{diary.content}</p>
+                        {diary.mood && (
+                          <span className="diary-mood">
                             <i className={`bi bi-emoji-${diary.mood === '1' ? 'frown' : 
                               diary.mood === '2' ? 'meh' : 
                               diary.mood === '3' ? 'neutral' : 
                               diary.mood === '4' ? 'smile' : 'laughing'}`}></i>
-                          )}
-                        </span>
-                      </h5>
-                      <p><strong>タイトル:</strong> {diary.title}</p>
-                      <p><strong>日付:</strong> {new Date(diary.date).toLocaleDateString()}</p>
-                      <p><strong>気分:</strong> {diary.mood || '未設定'}</p>
-                      <p><strong>内容:</strong> {diary.content}</p>
+                          </span>
+                        )}
+                      </div>
                       <div className="record-actions">
                         <button
                           onClick={() => editDiary(diary)}
                           className="edit-button"
                         >
-                          編集
+                          <i className="bi bi-pencil"></i> 編集
                         </button>
                         <button
                           onClick={() => handleDeleteDiary(diary._id)}
                           className="delete-button"
                         >
-                          削除
+                          <i className="bi bi-trash"></i> 削除
                         </button>
                       </div>
                     </div>
