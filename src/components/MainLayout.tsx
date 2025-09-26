@@ -26,6 +26,9 @@ import DiaryReminderIntegration from './DiaryReminderIntegration';
 import SimpleErrorReportingModal from './SimpleErrorReportingModal';
 import { User } from '../types';
 
+// App_backup.tsxから復元するための追加インポート
+import { useState, useEffect } from 'react';
+
 interface MainLayoutProps {
   user: User | null;
   isLoggedIn: boolean;
@@ -1157,6 +1160,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           font-size: 1.1em;
         }
         
+        .font-preview-text {
+          margin: 8px 0;
+          font-size: 1.1em;
+        }
+        
+        .font-option-text {
+          font-size: 1em;
+          font-weight: 500;
+        }
+        
         .font-options {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1366,6 +1379,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           min-height: calc(100vh - 200px);
           position: relative;
           overflow-x: hidden;
+          overflow-y: auto;
         }
         
         /* 各機能コンポーネントの表示制御 */
@@ -1380,11 +1394,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           border: 1px solid rgba(255, 255, 255, 0.2);
           overflow: hidden;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          z-index: 1;
         }
         
         .feature-section:hover {
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
           transform: translateY(-2px);
+        }
+        
+        .feature-section:last-child {
+          margin-bottom: 0;
         }
         
         /* レスポンシブデザイン */
@@ -1426,6 +1446,25 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             box-shadow: none;
             border: 1px solid #ccc;
           }
+        }
+        
+        /* スクロールバーのスタイリング */
+        .dashboard-main::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        .dashboard-main::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+        }
+        
+        .dashboard-main::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 4px;
+        }
+        
+        .dashboard-main::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.5);
         }
       `}</style>
       <div className="app">
@@ -1533,13 +1572,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           <main className="dashboard-main">
             {/* キャラクター達のお家 */}
             {showCharacterHome && (
-              <CharacterHome
-                showCharacterHome={showCharacterHome}
-                setShowCharacterHome={setShowCharacterHome}
-                closeOtherFeatures={closeOtherFeatures}
-                onSelectCharacter={() => {}}
-                currentCharacter={null}
-              />
+              <div className="feature-section">
+                <CharacterHome
+                  showCharacterHome={showCharacterHome}
+                  setShowCharacterHome={setShowCharacterHome}
+                  closeOtherFeatures={closeOtherFeatures}
+                  onSelectCharacter={() => {}}
+                  currentCharacter={null}
+                />
+              </div>
             )}
 
             {/* 各機能コンポーネント */}
@@ -1967,6 +2008,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           <VersionInfo />
         )}
 
+        {/* App_backup.tsxから復元するための追加コンポーネント */}
+        <SimpleErrorReportingModal
+          isOpen={false}
+          onClose={() => {}}
+        />
+
         {showThemeSettings && (
           <div className="theme-settings-modal">
             <div className="modal-overlay" onClick={() => setShowThemeSettings(false)}>
@@ -2038,6 +2085,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 <div className="modal-body">
                   <div className="font-preview">
                     <p
+                      className="font-preview-text"
                       style={{
                         fontFamily: selectedFont === "system" ? "" : selectedFont,
                       }}
@@ -2045,6 +2093,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                       時間記録 | プロジェクト | レポート | 管理者パネル
                     </p>
                     <p
+                      className="font-preview-text"
                       style={{
                         fontFamily: selectedFont === "system" ? "" : selectedFont,
                       }}
@@ -2052,6 +2101,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                       本棚 | メモ | 公開メモ | お仕事記録
                     </p>
                     <p
+                      className="font-preview-text"
                       style={{
                         fontFamily: selectedFont === "system" ? "" : selectedFont,
                       }}
@@ -2070,6 +2120,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                           onChange={(e) => handleFontChange(e.target.value)}
                         />
                         <span
+                          className="font-option-text"
                           style={{
                             fontFamily: font.value === "system" ? "" : font.value,
                           }}
