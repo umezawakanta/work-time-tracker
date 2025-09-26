@@ -2290,8 +2290,6 @@ function App() {
         playAlarmSound={playAlarmSound}
         startSoundLoop={startSoundLoop}
         stopSoundLoop={stopSoundLoop}
-
-
         showBugReportModal={errorHandling.showBugReportModal}
         showUpdateRequestModal={errorHandling.showUpdateRequestModal}
         setShowCharacterHome={uiState.setShowCharacterHome}
@@ -2322,8 +2320,6 @@ function App() {
         loadPublicMemos={loadPublicMemos}
         loadAdminUsers={loadAdminUsers}
         loadReportSummary={loadReportSummary}
-        loadIncomeExpenseRecords={loadIncomeExpenseRecords}
-        loadWorkDiaries={loadWorkDiaries}
         handleStartTracking={handleStartTracking}
         handleStopTracking={handleStopTracking}
         handleResetTracking={handleResetTracking}
@@ -2342,8 +2338,6 @@ function App() {
         publicMemos={publicMemos}
         adminUsers={adminUsers}
         reportSummary={reportSummary}
-        incomeExpenseRecords={incomeExpenseRecords}
-        workDiaries={workDiaries}
         selectedProject={selectedProject}
         setSelectedProject={setSelectedProject}
         showProjectForm={showProjectForm}

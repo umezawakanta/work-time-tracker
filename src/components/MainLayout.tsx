@@ -260,8 +260,6 @@ interface MainLayoutProps {
   loadPublicMemos: () => Promise<void>;
   loadAdminUsers: () => Promise<void>;
   loadReportSummary: () => Promise<void>;
-  loadIncomeExpenseRecords: () => Promise<void>;
-  loadWorkDiaries: () => Promise<void>;
   // 時間記録ハンドラー
   handleStartTracking: () => void;
   handleStopTracking: () => void;
@@ -277,8 +275,6 @@ interface MainLayoutProps {
   // 機能管理
   getVisibleFeatures: () => any[];
   // データ関連のプロパティ（追加）
-  incomeExpenseRecords: any[];
-  workDiaries: any[];
   projects: any[];
   books: any[];
   memos: any[];
@@ -663,8 +659,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   loadPublicMemos,
   loadAdminUsers,
   loadReportSummary,
-  loadIncomeExpenseRecords,
-  loadWorkDiaries,
   handleStartTracking,
   handleStopTracking,
   handleResetTracking,
@@ -872,6 +866,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const [newMilestone, setNewMilestone] = React.useState("");
   
   // 不足している変数を追加（propsで受け取っていないもののみ）
+  const [incomeExpenseRecords, setIncomeExpenseRecords] = React.useState<any[]>([]);
+  const [workDiaries, setWorkDiaries] = React.useState<any[]>([]);
   
   // 機能の定義（App_backup.tsxから復元）
   const features = [
@@ -1419,6 +1415,51 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     setEditingReply(null);
     setEditReplyContent("");
   };
+
+  // データ読み込み関数
+  const loadIncomeExpenseRecords = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/work-records/salary?userId=${user?.id || 'temp-id'}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setIncomeExpenseRecords(data.records || []);
+      }
+    } catch (error) {
+      console.error("Failed to load income expense records:", error);
+    }
+  };
+
+  const loadWorkDiaries = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/work-records/diary?userId=${user?.id || 'temp-id'}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setWorkDiaries(data.diaries || []);
+      }
+    } catch (error) {
+      console.error("Failed to load work diaries:", error);
+    }
+  };
+
+  // コンポーネントマウント時にデータを読み込み
+  React.useEffect(() => {
+    if (isLoggedIn && user) {
+      loadIncomeExpenseRecords();
+      loadWorkDiaries();
+    }
+  }, [isLoggedIn, user]);
 
 
 
