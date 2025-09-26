@@ -9,6 +9,7 @@ import UserInfoComponent from "./UserInfoComponent";
 import UserGreetingComponent from "./UserGreetingComponent";
 import ShareButtonComponent from "./ShareButtonComponent";
 import UpdateRequestModal from "./UpdateRequestModal";
+import BugReportModal from "./BugReportModal";
 import type { User, Character } from "../types";
 import VersionInfoComponent from "./VersionInfo";
 
@@ -26,8 +27,8 @@ interface HeaderComponentProps {
   setShowFeatureSettings: (show: boolean) => void;
   loadUserSettings: () => void;
   isTimeTrackingActive: boolean;
-  onBugReportClick: () => void;
   handleUpdateRequest: (updateRequest: any) => Promise<void>;
+  handleBugReport: (bugReport: any) => Promise<void>;
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -44,11 +45,13 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   setShowFeatureSettings,
   loadUserSettings,
   isTimeTrackingActive,
-  onBugReportClick,
   handleUpdateRequest,
+  handleBugReport,
 }) => {
   // 更新要望モーダルの状態をHeaderComponent内で管理
   const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
+  // 不具合報告モーダルの状態をHeaderComponent内で管理
+  const [showBugReportModal, setShowBugReportModal] = useState(false);
   return (
     <header className="dashboard-header">
       {/* 左側：キャラクター（絶対保持） */}
@@ -103,7 +106,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       <div className="header-top-right">
         <ShareButtonComponent />
         <button
-          onClick={onBugReportClick}
+          onClick={() => setShowBugReportModal(true)}
           className="bug-report-button"
           title="不具合を報告"
         >
@@ -132,6 +135,16 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         onSubmit={async (updateRequest) => {
           await handleUpdateRequest(updateRequest);
           setShowUpdateRequestModal(false);
+        }}
+      />
+
+      {/* 不具合報告モーダル */}
+      <BugReportModal
+        isOpen={showBugReportModal}
+        onClose={() => setShowBugReportModal(false)}
+        onSubmit={async (bugReport) => {
+          await handleBugReport(bugReport);
+          setShowBugReportModal(false);
         }}
       />
     </header>

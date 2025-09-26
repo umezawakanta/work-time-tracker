@@ -259,8 +259,10 @@ function App({
   // HeaderComponent内で状態を管理することで、状態の分散を防ぐ
   // const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false); // HeaderComponentで管理
 
-  // 不具合報告関連の状態
-  const [showBugReportModal, setShowBugReportModal] = useState(false);
+  // 注意: showBugReportModalはHeaderComponent内で管理される
+  // 理由: 不具合報告モーダルはHeaderComponent内のボタンから開かれるため、
+  // HeaderComponent内で状態を管理することで、状態の分散を防ぐ
+  // const [showBugReportModal, setShowBugReportModal] = useState(false); // HeaderComponentで管理
 
   // 各機能のローディング状態（LoadingStateManagerで管理）
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
@@ -4519,7 +4521,7 @@ User Agent: ${userAgent}
 
       if (response.ok) {
         setMessage("不具合報告を送信しました。ありがとうございます。");
-        setShowBugReportModal(false);
+        // モーダルの閉じる処理はHeaderComponent内で管理
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "不具合報告の送信に失敗しました");
@@ -5917,8 +5919,8 @@ User Agent: ${userAgent}
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
             isTimeTrackingActive={isTimeTrackingActive}
-            onBugReportClick={() => setShowBugReportModal(true)}
             handleUpdateRequest={handleUpdateRequest}
+            handleBugReport={handleBugReport}
           />
 
           {/* 通知コンポーネント */}
@@ -6697,12 +6699,7 @@ User Agent: ${userAgent}
 
         {/* 更新要望モーダルはHeaderComponent内で管理 */}
 
-        {/* 不具合報告モーダル */}
-        <BugReportModal
-          isOpen={showBugReportModal}
-          onClose={() => setShowBugReportModal(false)}
-          onSubmit={handleBugReport}
-        />
+        {/* 不具合報告モーダルはHeaderComponent内で管理 */}
       </div>
     );
   }
