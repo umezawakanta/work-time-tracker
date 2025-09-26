@@ -71,9 +71,6 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
   const [eggTimerInterval, setEggTimerIntervalLocal] = useState<NodeJS.Timeout | null>(null);
   const [localEggTimerTime, setLocalEggTimerTime] = useState(eggTimerTime);
   
-  // プログレスバーの参照
-  const progressBarRef = useRef<HTMLDivElement>(null);
-
   // 親の状態と同期
   useEffect(() => {
     setLocalEggTimerTime(eggTimerTime);
@@ -84,12 +81,8 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
     ? Math.max(0, Math.min(100, ((eggTimerOriginalTime - localEggTimerTime) / eggTimerOriginalTime) * 100))
     : 0;
 
-  // プログレスバーの更新
-  useEffect(() => {
-    if (progressBarRef.current) {
-      progressBarRef.current.style.setProperty('--progress', `${progressPercentage}%`);
-    }
-  }, [progressPercentage]);
+  // プログレスバーの進捗率は計算済み（progressPercentage）なので、
+  // useEffectは不要。インラインスタイルで直接適用
 
   // タイマーの開始
   const startEggTimer = () => {
@@ -320,8 +313,8 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
         </div>
         <div className="timer-progress">
           <div 
-            ref={progressBarRef}
             className="progress-bar"
+            style={{ width: `${progressPercentage}%` }}
             data-progress={progressPercentage}
           />
         </div>
