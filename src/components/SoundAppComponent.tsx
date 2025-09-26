@@ -215,12 +215,12 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           onResetMeal={handleResetMeal}
           isPlaying={isPlaying}
           isLooping={isLooping}
-          toneStateManager.isInitialized={toneStateManager.isInitialized}
+          toneStateManager={toneStateManager}
           onPlay={() => playMealBalance(musicGenres)}
           onStop={stopPlayback}
           disabled={
             isPlaying ||
-            Object.values(currentMeal.categories).every((c) => c === 0)
+            Object.values(currentMeal.categories).every((c) => typeof c === 'number' && c === 0)
           }
           onInitialize={handleInitialize}
           currentScore={currentScore}
