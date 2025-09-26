@@ -530,8 +530,38 @@ function App() {
   const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("App.tsx - Creating income/expense record");
+    
+    // 必須フィールドの確認
+    if (!incomeExpenseDate || !incomeExpenseAmount) {
+      console.error("必須フィールドが不足しています");
+      return;
+    }
+    
     try {
       const token = localStorage.getItem("access_token");
+      
+      // ユーザーIDの取得（JWTデコード修正版）
+      let actualUserId = auth.user?.id || 'temp-id';
+      if (token) {
+        try {
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            let payload = parts[1];
+            // URL-safe base64の修正
+            payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = payload.length % 4;
+            if (pad) {
+              payload += new Array(5 - pad).join('=');
+            }
+            const decoded = JSON.parse(atob(payload));
+            actualUserId = decoded.userId || decoded.user_id || auth.user?.id;
+            console.log("App.tsx - handleCreateIncomeExpenseRecord actual user ID:", actualUserId);
+          }
+        } catch (e) {
+          console.warn("Token decode error:", e);
+        }
+      }
+      
       const response = await fetch("/api/work-records/salary", {
         method: "POST",
         headers: {
@@ -539,6 +569,7 @@ function App() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          userId: actualUserId,  // 実際のユーザーIDを使用
           date: incomeExpenseDate,
           amount: parseFloat(incomeExpenseAmount) || 0,
           type: incomeExpenseType,
@@ -550,6 +581,7 @@ function App() {
 
       if (data.success) {
         console.log("Income/expense record created successfully");
+        auth.setMessage("収入・支出記録を作成しました");
         setIncomeExpenseDate("");
         setIncomeExpenseAmount("");
         setIncomeExpenseType("income");
@@ -558,9 +590,11 @@ function App() {
         loadIncomeExpenseRecords();
       } else {
         console.error("Failed to create income/expense record:", data.message);
+        auth.setMessage(data.message || "収入・支出記録の作成に失敗しました");
       }
     } catch (error) {
       console.error("Error creating income/expense record:", error);
+      auth.setMessage("収入・支出記録の作成中にエラーが発生しました");
     }
   };
 
@@ -568,8 +602,39 @@ function App() {
   const handleCreateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("App.tsx - Creating diary");
+    
+    // 必須フィールドの確認
+    if (!diaryDate || !diaryTitle || !diaryContent) {
+      console.error("必須フィールドが不足しています");
+      auth.setMessage("日付、タイトル、内容は必須項目です");
+      return;
+    }
+    
     try {
       const token = localStorage.getItem("access_token");
+      
+      // ユーザーIDの取得（JWTデコード修正版）
+      let actualUserId = auth.user?.id || 'temp-id';
+      if (token) {
+        try {
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            let payload = parts[1];
+            // URL-safe base64の修正
+            payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = payload.length % 4;
+            if (pad) {
+              payload += new Array(5 - pad).join('=');
+            }
+            const decoded = JSON.parse(atob(payload));
+            actualUserId = decoded.userId || decoded.user_id || auth.user?.id;
+            console.log("App.tsx - handleCreateDiary actual user ID:", actualUserId);
+          }
+        } catch (e) {
+          console.warn("Token decode error:", e);
+        }
+      }
+      
       const response = await fetch("/api/work-records/diary", {
         method: "POST",
         headers: {
@@ -577,29 +642,30 @@ function App() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          userId: actualUserId,  // 実際のユーザーIDを使用
           date: diaryDate,
           title: diaryTitle,
           content: diaryContent,
-          mood: parseInt(diaryMood),
-          activities: diaryActivities,
+          mood: parseInt(diaryMood) || 5,
+          activities: diaryActivities || [],
           tags: diaryTags
             .split(",")
             .map((tag) => tag.trim())
             .filter((tag) => tag),
           isPrivate: diaryIsPrivate,
-          workSummary: diaryWorkSummary,
-          achievements: diaryAchievements,
-          challenges: diaryChallenges,
-          learnings: diaryLearnings,
-          nextGoals: diaryNextGoals,
-          energyLevel: diaryEnergyLevel,
-          stressLevel: diaryStressLevel,
-          workHours: diaryWorkHours,
-          breakTime: diaryBreakTime,
-          productivity: diaryProductivity,
-          notes: diaryNotes,
-          gratitude: diaryGratitude,
-          reflection: diaryReflection,
+          workSummary: diaryWorkSummary || "",
+          achievements: diaryAchievements || [],
+          challenges: diaryChallenges || [],
+          learnings: diaryLearnings || [],
+          nextGoals: diaryNextGoals || [],
+          energyLevel: diaryEnergyLevel || 5,
+          stressLevel: diaryStressLevel || 5,
+          workHours: diaryWorkHours || 0,
+          breakTime: diaryBreakTime || 0,
+          productivity: diaryProductivity || 5,
+          notes: diaryNotes || "",
+          gratitude: diaryGratitude || "",
+          reflection: diaryReflection || "",
         }),
       });
 
@@ -607,6 +673,7 @@ function App() {
 
       if (data.success) {
         console.log("Diary created successfully");
+        auth.setMessage("日記を作成しました");
         setDiaryDate("");
         setDiaryTitle("");
         setDiaryContent("");
@@ -631,9 +698,11 @@ function App() {
         loadWorkDiaries();
       } else {
         console.error("Failed to create diary:", data.message);
+        auth.setMessage(data.message || "日記の作成に失敗しました");
       }
     } catch (error) {
       console.error("Error creating diary:", error);
+      auth.setMessage("日記の作成中にエラーが発生しました");
     }
   };
 
@@ -644,8 +713,38 @@ function App() {
       return;
     }
 
+    // 必須フィールドの確認
+    if (!incomeExpenseDate || !incomeExpenseAmount) {
+      console.error("必須フィールドが不足しています");
+      auth.setMessage("日付、金額は必須項目です");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("access_token");
+      
+      // ユーザーIDの取得（JWTデコード修正版）
+      let actualUserId = auth.user?.id || 'temp-id';
+      if (token) {
+        try {
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            let payload = parts[1];
+            // URL-safe base64の修正
+            payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = payload.length % 4;
+            if (pad) {
+              payload += new Array(5 - pad).join('=');
+            }
+            const decoded = JSON.parse(atob(payload));
+            actualUserId = decoded.userId || decoded.user_id || auth.user?.id;
+            console.log("App.tsx - handleUpdateIncomeExpenseRecord actual user ID:", actualUserId);
+          }
+        } catch (e) {
+          console.warn("Token decode error:", e);
+        }
+      }
+      
       const response = await fetch(
         `/api/work-records/salary/${editingIncomeExpenseRecord.id}`,
         {
@@ -655,6 +754,7 @@ function App() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
+            userId: actualUserId,  // 実際のユーザーIDを使用
             date: incomeExpenseDate,
             amount: parseFloat(incomeExpenseAmount) || 0,
             type: incomeExpenseType,
@@ -689,8 +789,38 @@ function App() {
       return;
     }
 
+    // 必須フィールドの確認
+    if (!diaryDate || !diaryTitle || !diaryContent) {
+      console.error("必須フィールドが不足しています");
+      auth.setMessage("日付、タイトル、内容は必須項目です");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("access_token");
+      
+      // ユーザーIDの取得（JWTデコード修正版）
+      let actualUserId = auth.user?.id || 'temp-id';
+      if (token) {
+        try {
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            let payload = parts[1];
+            // URL-safe base64の修正
+            payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = payload.length % 4;
+            if (pad) {
+              payload += new Array(5 - pad).join('=');
+            }
+            const decoded = JSON.parse(atob(payload));
+            actualUserId = decoded.userId || decoded.user_id || auth.user?.id;
+            console.log("App.tsx - handleUpdateDiary actual user ID:", actualUserId);
+          }
+        } catch (e) {
+          console.warn("Token decode error:", e);
+        }
+      }
+      
       const response = await fetch(
         `/api/work-records/diary/${editingDiary.id}`,
         {
@@ -700,6 +830,7 @@ function App() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
+            userId: actualUserId,  // 実際のユーザーIDを使用
             date: diaryDate,
             title: diaryTitle,
             content: diaryContent,
