@@ -1,0 +1,596 @@
+/* カレンダーコンポーネント専用のスタイル */
+
+.work-records-calendar {
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  color: white;
+  border: 1px solid #333;
+}
+
+/* モーダル表示用のスタイル（常に表示モード） */
+.calendar-modal {
+  position: relative;
+  background: #1a1a1a;
+  border-radius: 16px;
+  margin: 0;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  /* 通常のカレンダーとして表示 */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin-bottom: 2rem;
+  color: white;
+  border: 1px solid #333;
+}
+
+.calendar-close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.calendar-close-button:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #333;
+  min-width: 350px;
+  position: relative;
+}
+
+.calendar-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+}
+
+.view-mode-toggle {
+  display: flex;
+  background: #333;
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.view-mode-btn {
+  background: transparent;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #999;
+  transition: all 0.2s ease;
+  min-width: 40px;
+}
+
+.view-mode-btn.active {
+  background: #007bff;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.view-mode-btn:hover:not(.active) {
+  background: #444;
+  color: #ccc;
+}
+
+.calendar-nav-button {
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 60px;
+}
+
+.calendar-nav-button:hover {
+  background: #444;
+  border-color: #666;
+  transform: translateY(-1px);
+}
+
+.calendar-grid {
+  background: #2a2a2a;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #444;
+  min-width: 350px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #333;
+  border-bottom: 1px solid #444;
+}
+
+.weekday {
+  padding: 0.75rem 0.25rem;
+  text-align: center;
+  font-weight: 600;
+  color: #ccc;
+  font-size: 0.9rem;
+  border-right: 1px solid #444;
+  min-width: 50px;
+}
+
+.weekday.sunday {
+  color: #ff6b6b;
+  background-color: #2a1a1a;
+  font-weight: 700;
+}
+
+.weekday.saturday {
+  color: #4dabf7;
+  background-color: #1a1a2a;
+  font-weight: 700;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(80px, auto);
+}
+
+/* 週表示モード */
+.calendar-days.week-view {
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(120px, auto);
+}
+
+.calendar-days.week-view .calendar-day {
+  min-height: 120px;
+  padding: 0.5rem;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.calendar-days.week-view .calendar-day:hover {
+  border-color: #007bff;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.calendar-days.week-view .calendar-day.today {
+  border-color: #ff9800;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+}
+
+.calendar-days.week-view .calendar-day.selected {
+  border-color: #007bff;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+}
+
+.calendar-day {
+  min-height: 80px;
+  padding: 0.5rem;
+  border-right: 1px solid #444;
+  border-bottom: 1px solid #444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: 50px;
+  background: #2a2a2a;
+  color: white;
+}
+
+.calendar-day.sunday {
+  background-color: #2a1a1a;
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+.calendar-day.saturday {
+  background-color: #1a1a2a;
+  color: #4dabf7;
+  font-weight: 600;
+}
+
+.calendar-day:hover {
+  background-color: #333;
+  transform: scale(1.02);
+}
+
+.calendar-day.other-month {
+  color: #666;
+  background-color: #1a1a1a;
+}
+
+.calendar-day.today {
+  background-color: #2a2a2a;
+  border: 2px solid #ff9800;
+  font-weight: 700;
+  position: relative;
+}
+
+.calendar-day.today::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: #ff9800;
+  border-radius: 50%;
+}
+
+.calendar-day.today .day-number {
+  color: #ff9800;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.calendar-day.selected {
+  background-color: #007bff;
+  color: white;
+  border: 2px solid #0056b3;
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.calendar-day.selected .day-number {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.day-number {
+  font-size: 1rem;
+  font-weight: 700;
+  display: block;
+  width: 100%;
+  text-align: left;
+  line-height: 1.2;
+  color: white;
+}
+
+.today-indicator {
+  font-size: 0.6rem;
+  background-color: #ff9800;
+  color: white;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+.day-amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-bottom: 0.2rem;
+  width: 100%;
+}
+
+.income-amount, .expense-amount {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  font-size: 0.65rem;
+  line-height: 1.1;
+}
+
+.amount-label {
+  font-weight: 600;
+}
+
+.amount-value {
+  font-weight: 500;
+}
+
+.income-amount .amount-label {
+  color: #51cf66;
+}
+
+.income-amount .amount-value {
+  color: #51cf66;
+}
+
+.expense-amount .amount-label {
+  color: #ff6b6b;
+}
+
+.expense-amount .amount-value {
+  color: #ff6b6b;
+}
+
+.day-diaries {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-bottom: 0.2rem;
+  width: 100%;
+}
+
+.diary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  font-size: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.2rem;
+  border-radius: 4px;
+  line-height: 1.1;
+  color: #ccc;
+}
+
+.diary-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.diary-icon {
+  font-size: 0.5rem;
+}
+
+.day-icons {
+  display: flex;
+  gap: 0.1rem;
+  margin-top: auto;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.icon {
+  font-size: 0.6rem;
+  opacity: 0.7;
+}
+
+.income-icon {
+  color: #51cf66;
+}
+
+.expense-icon {
+  color: #ff6b6b;
+}
+
+.diary-icon {
+  color: #4dabf7;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .work-records-calendar {
+    padding: 0.75rem;
+    margin: 0 -0.5rem;
+    /* スワイプ操作のためのタッチ最適化 */
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .calendar-modal {
+    padding: 0.5rem;
+    /* モバイルでの最適化 */
+    margin: 0 -0.5rem;
+    background: #1a1a1a;
+    border-radius: 12px;
+  }
+  
+  .calendar-close-button {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+  
+  /* モバイルでの週表示最適化 */
+  .calendar-days.week-view {
+    grid-auto-rows: minmax(100px, auto);
+  }
+  
+  .calendar-days.week-view .calendar-day {
+    min-height: 100px;
+    padding: 0.4rem;
+  }
+  
+  /* スワイプインジケーター */
+  .calendar-header::after {
+    content: '← スワイプで月移動 →';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: #6c757d;
+    opacity: 0.7;
+  }
+  
+  .calendar-header {
+    min-width: 320px;
+    margin-bottom: 0.75rem;
+  }
+  
+  .calendar-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .calendar-nav-button {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+  }
+  
+  .calendar-grid {
+    min-width: 320px;
+  }
+  
+  .weekday {
+    padding: 0.4rem 0.2rem;
+    font-size: 0.7rem;
+    min-width: 45px;
+  }
+  
+  .calendar-day {
+    min-height: 70px;
+    padding: 0.2rem;
+    min-width: 45px;
+  }
+  
+  .day-number {
+    font-size: 0.8rem;
+  }
+  
+  .today-indicator {
+    font-size: 0.55rem;
+    padding: 0.05rem 0.25rem;
+  }
+  
+  .amount-value {
+    font-size: 0.6rem;
+  }
+  
+  .diary-text {
+    font-size: 0.55rem;
+  }
+  
+  .icon {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .work-records-calendar {
+    padding: 0.5rem;
+    margin: 0 -0.25rem;
+    /* 超小型モバイルでの最適化 */
+    font-size: 14px;
+  }
+  
+  .calendar-modal {
+    padding: 0.4rem;
+    margin: 0 -0.25rem;
+    background: #1a1a1a;
+    border-radius: 8px;
+  }
+  
+  .calendar-header {
+    min-width: 300px;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .calendar-title-container {
+    order: 1;
+  }
+  
+  .calendar-nav-button {
+    order: 2;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+  }
+  
+  .calendar-grid {
+    min-width: 300px;
+  }
+  
+  .weekday {
+    min-width: 42px;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.1rem;
+  }
+  
+  .calendar-day {
+    min-height: 65px;
+    min-width: 42px;
+  }
+  
+  .day-number {
+    font-size: 0.75rem;
+  }
+  
+  .amount-value {
+    font-size: 0.55rem;
+  }
+  
+  .diary-text {
+    font-size: 0.5rem;
+  }
+  
+  /* 週表示モードでの超小型モバイル最適化 */
+  .calendar-days.week-view {
+    grid-auto-rows: minmax(80px, auto);
+  }
+  
+  .calendar-days.week-view .calendar-day {
+    min-height: 80px;
+    padding: 0.3rem;
+  }
+  
+  /* ビューモード切り替えボタンの最適化 */
+  .view-mode-toggle {
+    padding: 1px;
+  }
+  
+  .view-mode-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+    min-width: 35px;
+  }
+  
+  /* スワイプインジケーターの調整 */
+  .calendar-header::after {
+    font-size: 0.6rem;
+    bottom: -15px;
+  }
+}

@@ -112,13 +112,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
       setMemosLoading(false);
     }
   };
-  console.log('MemosComponent - Props received:', {
-    memos: memos?.length || 0,
-    publicMemos: publicMemos?.length || 0,
-    memosLoading,
-    showMemos,
-    user: user ? { id: user.id, email: user.email } : null
-  });
+  // デバッグ用のログを削除（頻繁な再レンダリングを防ぐため）
+  // console.log('MemosComponent - Props received:', {
+  //   memos: memos?.length || 0,
+  //   publicMemos: publicMemos?.length || 0,
+  //   memosLoading,
+  //   showMemos,
+  //   user: user ? { id: user.id, email: user.email } : null
+  // });
 
   // 内部状態
   const [showMemoForm, setShowMemoForm] = useState(false);

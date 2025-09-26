@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './WorkRecordsComponent.css';
 import type { IncomeExpenseRecord, WorkDiary, User } from '../types';
 import DeleteConfirmModal from './DeleteConfirmModal';
+import CalendarComponent from './CalendarComponent';
 
 interface WorkRecordsComponentProps {
   showWorkRecords: boolean;
@@ -157,6 +158,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 日記のローディング状態をWorkRecordsComponent内で管理
   const [diaryLoading, setDiaryLoading] = useState(false);
 
+  // カレンダーモーダルの状態管理（デフォルトで拡大表示）
+  const [showCalendarModal, setShowCalendarModal] = useState(true);
+
   // 収支記録読み込み関数をWorkRecordsComponent内で定義
   const loadIncomeExpenseRecordsLocal = async () => {
     setIncomeExpenseLoading(true);
@@ -189,10 +193,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   useEffect(() => {
     if (selectedDate) {
       const records = getRecordsForDate(selectedDate);
-      if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.diaryRecords.length > 0) {
+      if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.workDiaries.length > 0) {
         setSelectedRecord(records);
         // 複数の記録がある場合は、日記を優先表示
-        if (records.diaryRecords.length > 0) {
+        if (records.workDiaries.length > 0) {
           setSelectedRecordType("diary");
         } else if (records.incomeRecords.length > 0) {
           setSelectedRecordType("income");
@@ -206,24 +210,15 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     }
   }, [selectedDate, incomeExpenseRecords.length, workDiaries.length]);
 
-  // カレンダーの日付を生成
-  const getCalendarDays = () => {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
-    const days = [];
-    const currentDate = new Date(startDate);
-    
-    for (let i = 0; i < 42; i++) {
-      days.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
+  // カレンダー用の月移動ハンドラー
+  const handleMonthChange = (direction: 'prev' | 'next') => {
+    const newMonth = new Date(currentMonth);
+    if (direction === 'prev') {
+      newMonth.setMonth(newMonth.getMonth() - 1);
+    } else {
+      newMonth.setMonth(newMonth.getMonth() + 1);
     }
-    
-    return days;
+    setCurrentMonth(newMonth);
   };
 
   // 指定された日付の記録を取得
@@ -250,7 +245,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       return matches;
     });
     
-    return { incomeRecords, expenseRecords, diaryRecords };
+    return { incomeRecords, expenseRecords, workDiaries: diaryRecords };
   };
 
   // 月の統計を計算
@@ -296,10 +291,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     const records = getRecordsForDate(date);
-    if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.diaryRecords.length > 0) {
+    if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.workDiaries.length > 0) {
       setSelectedRecord(records);
       // 複数の記録がある場合は、日記を優先表示
-      if (records.diaryRecords.length > 0) {
+      if (records.workDiaries.length > 0) {
         setSelectedRecordType("diary");
       } else if (records.incomeRecords.length > 0) {
         setSelectedRecordType("income");
@@ -321,22 +316,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     } else if (type === "expense" && records.expenseRecords.length > 0) {
       setSelectedRecord(records);
       setSelectedRecordType("expense");
-    } else if (type === "diary" && records.diaryRecords.length > 0) {
+    } else if (type === "diary" && records.workDiaries.length > 0) {
       setSelectedRecord(records);
       setSelectedRecordType("diary");
     }
   };
 
-  // 月移動ハンドラー
-  const navigateMonth = (direction: "prev" | "next") => {
-    const newMonth = new Date(currentMonth);
-    if (direction === "prev") {
-      newMonth.setMonth(newMonth.getMonth() - 1);
-    } else {
-      newMonth.setMonth(newMonth.getMonth() + 1);
-    }
-    setCurrentMonth(newMonth);
-  };
 
   // 配列項目を管理する関数
   const addArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string, setValue: React.Dispatch<React.SetStateAction<string>>) => {
@@ -447,143 +432,30 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             </div>
           </div>
 
-          {/* カレンダー */}
-          <div className="work-records-calendar">
-            <div className="calendar-header">
-              <button
-                onClick={() => navigateMonth("prev")}
-                className="calendar-nav-button"
-              >
-                ← 前月
-              </button>
-              <h3>
-                {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}月
-              </h3>
-              <button
-                onClick={() => navigateMonth("next")}
-                className="calendar-nav-button"
-              >
-                次月 →
-              </button>
-            </div>
-            
-            <div className="calendar-grid">
-              <div className="calendar-weekdays">
-                {['日', '月', '火', '水', '木', '金', '土'].map(day => (
-                  <div key={day} className="weekday">{day}</div>
-                ))}
-              </div>
-              
-              <div className="calendar-days">
-                {getCalendarDays().map((date, index) => {
-                  const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
-                  const isToday = date.toDateString() === new Date().toDateString();
-                  const isSelected = selectedDate?.toDateString() === date.toDateString();
-                  const records = getRecordsForDate(date);
-                  
-                  return (
-                    <div
-                      key={index}
-                      className={`calendar-day ${isCurrentMonth ? 'current-month' : 'other-month'} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
-                      onClick={() => handleDateClick(date)}
-                    >
-                      <span className="day-number">{date.getDate()}</span>
-                      
-                      {/* 収入・支出の金額表示 */}
-                      <div className="day-amounts">
-                        {records.incomeRecords.length > 0 && (
-                          <div className="income-amount">
-                            <span className="amount-label">+</span>
-                            <span className="amount-value">
-                              ¥{records.incomeRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0).toLocaleString()}
-                            </span>
-                          </div>
-                        )}
-                        {records.expenseRecords.length > 0 && (
-                          <div className="expense-amount">
-                            <span className="amount-label">-</span>
-                            <span className="amount-value">
-                              ¥{records.expenseRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0).toLocaleString()}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* 日記のタイトル表示 */}
-                      {records.diaryRecords && records.diaryRecords.length > 0 && (
-                        <div className="diary-title">
-                          {records.diaryRecords.map((diary: WorkDiary, index: number) => (
-                            <span 
-                              key={diary._id || index}
-                              className="diary-title-text" 
-                              title={diary.title}
-                            >
-                              {diary.title.length > 8 
-                                ? diary.title.substring(0, 8) + '...' 
-                                : diary.title}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="day-indicators">
-                        {records.incomeRecords.length > 0 && (
-                          <span 
-                            className="income-indicator" 
-                            title="収入記録"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRecordClick("income", date);
-                            }}
-                          >
-                            💰
-                          </span>
-                        )}
-                        {records.expenseRecords.length > 0 && (
-                          <span 
-                            className="expense-indicator" 
-                            title="支出記録"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRecordClick("expense", date);
-                            }}
-                          >
-                            💸
-                          </span>
-                        )}
-                        {records.diaryRecords && records.diaryRecords.length > 0 && (
-                          <span 
-                            className="diary-indicator" 
-                            title={`日記 (${records.diaryRecords.length}件)`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRecordClick("diary", date);
-                            }}
-                          >
-                            <i className="bi bi-journal-text"></i>
-                            {records.diaryRecords.length > 1 && (
-                              <span className="diary-count">{records.diaryRecords.length}</span>
-                            )}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+          {/* カレンダー（常に拡大表示） */}
+          <CalendarComponent
+            currentMonth={currentMonth}
+            onMonthChange={handleMonthChange}
+            selectedDate={selectedDate}
+            onDateClick={handleDateClick}
+            getRecordsForDate={getRecordsForDate}
+            isModal={true}
+            onClose={() => setShowCalendarModal(false)}
+          />
 
           {/* 選択された記録の詳細 */}
           {selectedRecord && (
             <div className="record-details">
               <h3>
                 <i className="bi bi-calendar-check"></i>
-                {selectedDate ? selectedDate.toLocaleDateString('ja-JP', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                }) : '選択された日付'}の記録
+                {selectedDate ? (
+                  <>
+                    {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月{selectedDate.getDate()}日
+                    <span className="day-of-week">
+                      ({['日', '月', '火', '水', '木', '金', '土'][selectedDate.getDay()]})
+                    </span>
+                  </>
+                ) : '選択された日付'}の記録
               </h3>
               
               {/* 収入記録の表示 */}
@@ -691,13 +563,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               )}
               
               {/* 日記の表示 */}
-              {selectedRecord.diaryRecords && selectedRecord.diaryRecords.length > 0 && (
+              {selectedRecord.workDiaries && selectedRecord.workDiaries.length > 0 && (
                 <div className="diary-records-detail">
                   <h4>
                     <i className="bi bi-journal-text"></i>
-                    日記 ({selectedRecord.diaryRecords.length}件)
+                    日記 ({selectedRecord.workDiaries.length}件)
                   </h4>
-                  {selectedRecord.diaryRecords.map((diary: WorkDiary, index: number) => (
+                  {selectedRecord.workDiaries.map((diary: WorkDiary, index: number) => (
                     <div key={diary._id || index} className="diary-record-detail">
                       <h5>
                         日記: {diary.title}
@@ -730,6 +602,19 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+              
+              {/* 記録がない場合の表示 */}
+              {(!selectedRecord.incomeRecords || selectedRecord.incomeRecords.length === 0) &&
+               (!selectedRecord.expenseRecords || selectedRecord.expenseRecords.length === 0) &&
+               (!selectedRecord.workDiaries || selectedRecord.workDiaries.length === 0) && (
+                <div className="no-records">
+                  <div className="no-records-icon">
+                    <i className="bi bi-calendar-x"></i>
+                  </div>
+                  <h4>この日は記録がありません</h4>
+                  <p>収支記録や日記を追加してみましょう</p>
                 </div>
               )}
             </div>
