@@ -43,6 +43,15 @@ interface MainLayoutProps {
   showFeatureSettings: boolean;
   showBugReportModal: boolean;
   showUpdateRequestModal: boolean;
+  // UI設定関連
+  selectedTheme: string;
+  selectedFont: string;
+  fontSettings: any;
+  showLanguageFontSettings: boolean;
+  setShowLanguageFontSettings: (show: boolean) => void;
+  handleThemeChange: (theme: string) => void;
+  handleFontChange: (font: string) => void;
+  handleLanguageFontSave: (settings: any) => void;
   // お仕事記録関連の状態
   showIncomeExpenseForm: boolean;
   setShowIncomeExpenseForm: (show: boolean) => void;
@@ -410,6 +419,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showAdminPanel,
   showTimeTracking,
   showWorkRecords,
+  // UI設定関連
+  selectedTheme,
+  selectedFont,
+  fontSettings,
+  showLanguageFontSettings,
+  setShowLanguageFontSettings,
+  handleThemeChange,
+  handleFontChange,
+  handleLanguageFontSave,
   showSoundApp,
   showNotifications,
   showVersionInfo,

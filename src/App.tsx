@@ -9,6 +9,8 @@ import { useUIState } from "./hooks/useUIState";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
 import { TimerPresetProvider, useTimerPresetState } from "./components/TimerPresetManager";
+import { FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
+import LanguageFontSettings from "./components/LanguageFontSettings";
 import { MoodLogProvider, useMoodLogState, useMoodLogHelpers } from "./components/MoodLogManager";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
 import UpdateRequestModal from "./components/UpdateRequestModal";
@@ -158,13 +160,14 @@ function App() {
 
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
-  const [fontSettings, setFontSettings] = useState<any>({});
+  const [fontSettings, setFontSettings] = useState<FontSettings>(DEFAULT_FONT_SETTINGS);
   const [showFontSettings, setShowFontSettings] = useState(false);
   const [showLanguageFontSettings, setShowLanguageFontSettings] = useState(false);
 
   // テーマ設定関連の状態
   const [selectedTheme, setSelectedTheme] = useState("default");
   const [showThemeSettings, setShowThemeSettings] = useState(false);
+  const [showFeatureSettings, setShowFeatureSettings] = useState(false);
 
   // カスタムカテゴリ管理の状態
   const [customCategories, setCustomCategories] = useState<string[]>([]);
@@ -221,7 +224,6 @@ function App() {
 
   // 機能設定の状態
   const [userSettings, setUserSettings] = useState<any>(null);
-  const [showFeatureSettings, setShowFeatureSettings] = useState(false);
   const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
   const [showDiaryReminderSettings, setShowDiaryReminderSettings] = useState(false);
   const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<number | null>(null);
@@ -290,6 +292,44 @@ function App() {
   useEffect(() => {
     setErrorReportCallback(errorHandling.handleApiErrorReport);
   }, [errorHandling.handleApiErrorReport]);
+
+  // 音声とタイマー設定の初期化
+  useEffect(() => {
+    initializeAudio();
+    loadTimerSettings();
+    loadTimerHistory();
+  }, []);
+
+  // フォント設定の読み込みと適用
+  useEffect(() => {
+    const savedFont = localStorage.getItem("selectedFont");
+    const savedFontSettings = localStorage.getItem("fontSettings");
+
+    if (savedFontSettings) {
+      try {
+        const settings = JSON.parse(savedFontSettings);
+        setFontSettings(settings);
+        applyLanguageFonts(settings);
+      } catch (error) {
+        console.error("フォント設定の読み込みに失敗しました:", error);
+      }
+    } else if (savedFont) {
+      setSelectedFont(savedFont);
+      // 少し遅延してからフォントを適用（DOMが完全に読み込まれてから）
+      setTimeout(() => {
+        applyFont(savedFont);
+      }, 100);
+    }
+  }, []);
+
+  // テーマ設定の読み込みと適用
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("selectedTheme");
+    if (savedTheme) {
+      setSelectedTheme(savedTheme);
+      applyTheme(savedTheme);
+    }
+  }, []);
 
   // 更新要望のハンドラー
   const handleUpdateRequest = async (updateRequest: { title: string; content: string; priority: string; category: string }) => {
@@ -608,7 +648,9 @@ function App() {
   // 収入・支出記録の更新（App_backup.tsxから復元）
   const handleUpdateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingIncomeExpenseRecord) return;
+    if (!editingIncomeExpenseRecord) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem("access_token");
@@ -648,7 +690,9 @@ function App() {
   // 日記の更新（App_backup.tsxから復元）
   const handleUpdateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingDiary) return;
+    if (!editingDiary) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem("access_token");
@@ -719,7 +763,9 @@ function App() {
 
   // 収入・支出記録の削除（App_backup.tsxから復元）
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
-    if (!confirm('この記録を削除しますか？')) return;
+    if (!confirm('この記録を削除しますか？')) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem("access_token");
@@ -745,7 +791,9 @@ function App() {
 
   // 日記の削除（App_backup.tsxから復元）
   const handleDeleteDiary = async (id: string) => {
-    if (!confirm('この日記を削除しますか？')) return;
+    if (!confirm('この日記を削除しますか？')) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem("access_token");
@@ -911,7 +959,9 @@ function App() {
 
   const handleUpdateBook = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingBook || !bookTitle.trim()) return;
+    if (!editingBook || !bookTitle.trim()) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem("access_token");
@@ -964,7 +1014,9 @@ function App() {
   };
 
   const handleDeleteBook = async (bookId: string) => {
-    if (!confirm('この本を削除しますか？')) return;
+    if (!confirm('この本を削除しますか？')) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem("access_token");
@@ -990,7 +1042,9 @@ function App() {
   };
 
   const getReadingProgress = (book: any) => {
-    if (!book.totalPages || book.totalPages === 0) return 0;
+    if (!book.totalPages || book.totalPages === 0) {
+      return 0;
+    }
     return Math.round((book.currentPage || 0) / book.totalPages * 100);
   };
 
@@ -1122,7 +1176,9 @@ function App() {
   };
 
   const startSoundLoop = (soundType: "bell" | "chime" | "beep" | "alarm") => {
-    if (isSoundPlaying) return;
+    if (!timerSettings.enableSounds || isSoundPlaying) {
+      return;
+    }
 
     setIsSoundPlaying(true);
 
@@ -1152,6 +1208,7 @@ function App() {
         }
       } catch (error) {
         console.error("音声ループ再生エラー:", error);
+        playFallbackSound();
       }
     };
 
@@ -1169,6 +1226,300 @@ function App() {
       setSoundLoopInterval(null);
     }
     setIsSoundPlaying(false);
+  };
+
+  // フォールバック音声の再生
+  const playFallbackSound = () => {
+    try {
+      // より確実なフォールバック音声
+      const audio = new Audio(
+        "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU4k9n1unEiBS13yO/eizEIHWq+8+OWT"
+      );
+      audio.play().catch((error) => {
+        console.error("フォールバック音声再生エラー:", error);
+      });
+    } catch (error) {
+      console.error("フォールバック音声作成エラー:", error);
+    }
+  };
+
+  // 音声再生の初期化
+  const initializeAudio = () => {
+    try {
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+      if (audioContext.state === "suspended") {
+        // ユーザーの操作でAudioContextを再開
+        document.addEventListener(
+          "click",
+          () => {
+            audioContext.resume();
+          },
+          { once: true }
+        );
+      }
+    } catch (error) {
+      console.warn("AudioContext初期化エラー:", error);
+    }
+  };
+
+  // タイマー履歴の保存
+  const saveTimerHistory = (history: typeof timerHistory) => {
+    const serializedHistory = history.map((item) => ({
+      ...item,
+      completedAt: item.completedAt.toISOString(),
+    }));
+    localStorage.setItem("timerHistory", JSON.stringify(serializedHistory));
+  };
+
+  // タイマー履歴の読み込み
+  const loadTimerHistory = () => {
+    try {
+      const saved = localStorage.getItem("timerHistory");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setTimerHistory(
+          parsed.map((item: any) => ({
+            ...item,
+            completedAt: new Date(item.completedAt),
+          }))
+        );
+      }
+    } catch (error) {
+      console.error("タイマー履歴の読み込みエラー:", error);
+    }
+  };
+
+  // フォント適用関数
+  const applyFont = (fontValue: string) => {
+    const { documentElement: root, body } = document;
+
+    if (fontValue === "system") {
+      root.style.setProperty("--app-font-family", "");
+      body.style.fontFamily = "";
+      // すべての要素にフォントをリセット
+      const allElements = document.querySelectorAll("*");
+      allElements.forEach((el) => {
+        (el as HTMLElement).style.fontFamily = "";
+      });
+    } else {
+      root.style.setProperty("--app-font-family", fontValue);
+      body.style.fontFamily = fontValue;
+      // すべての要素に直接フォントを適用
+      const allElements = document.querySelectorAll("*");
+      allElements.forEach((el) => {
+        (el as HTMLElement).style.fontFamily = fontValue;
+      });
+    }
+  };
+
+  // 言語別フォント適用関数
+  const applyLanguageFonts = (settings: FontSettings) => {
+    const root = document.documentElement;
+    const css = generateFontCSS(settings);
+
+    // 既存のフォントCSSを削除
+    const existingStyle = document.getElementById("language-font-styles");
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+
+    // 新しいフォントCSSを追加
+    const style = document.createElement("style");
+    style.id = "language-font-styles";
+    style.textContent = css;
+    document.head.appendChild(style);
+
+    // 日本語テキストに日本語フォントを適用
+    const japaneseFont =
+      settings.japanese === "system"
+        ? "var(--japanese-font)"
+        : settings.japanese;
+
+    // 英語テキストに英語フォントを適用
+    const englishFont =
+      settings.english === "system" ? "var(--english-font)" : settings.english;
+
+    // 全要素に言語別フォントを適用
+    const allElements = document.querySelectorAll("*");
+    allElements.forEach((element) => {
+      const text = element.textContent || "";
+      const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+      const hasEnglish = /[a-zA-Z]/.test(text);
+
+      if (hasJapanese && hasEnglish) {
+        // 日本語と英語が混在する場合は日本語フォントを優先
+        (element as HTMLElement).style.fontFamily = japaneseFont;
+      } else if (hasJapanese) {
+        (element as HTMLElement).style.fontFamily = japaneseFont;
+      } else if (hasEnglish) {
+        (element as HTMLElement).style.fontFamily = englishFont;
+      }
+    });
+  };
+
+  // フォント変更ハンドラー
+  const handleFontChange = (fontValue: string) => {
+    setSelectedFont(fontValue);
+    applyFont(fontValue);
+    localStorage.setItem("selectedFont", fontValue);
+
+    // より強力なフォント適用 - 少し遅延して再適用
+    setTimeout(() => {
+      applyFont(fontValue);
+    }, 100);
+
+    // さらに遅延して最終確認
+    setTimeout(() => {
+      applyFont(fontValue);
+    }, 500);
+  };
+
+  // 言語別フォント設定保存ハンドラー
+  const handleLanguageFontSave = (settings: FontSettings) => {
+    setFontSettings(settings);
+    applyLanguageFonts(settings);
+    localStorage.setItem("fontSettings", JSON.stringify(settings));
+  };
+
+  // テーマ適用関数
+  const applyTheme = (themeValue: string) => {
+    const root = document.documentElement;
+    root.setAttribute("data-theme", themeValue);
+
+    // 強制的にCSS変数を適用
+    if (themeValue === "dark") {
+      root.style.setProperty(
+        "--primary-color",
+        "linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #68d391 100%)"
+      );
+      root.style.setProperty(
+        "--secondary-color",
+        "linear-gradient(145deg, #4a5568 0%, #68d391 100%)"
+      );
+      root.style.setProperty("--accent-color", "#68d391");
+      root.style.setProperty("--text-color", "#e2e8f0");
+      root.style.setProperty("--bg-color", "#1a202c");
+      root.style.setProperty(
+        "--card-bg",
+        "linear-gradient(145deg, #2d3748 0%, #4a5568 100%)"
+      );
+    } else if (themeValue === "ocean") {
+      root.style.setProperty(
+        "--primary-color",
+        "linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #06b6d4 100%)"
+      );
+      root.style.setProperty(
+        "--secondary-color",
+        "linear-gradient(145deg, #0284c7 0%, #06b6d4 100%)"
+      );
+      root.style.setProperty("--accent-color", "#06b6d4");
+      root.style.setProperty("--text-color", "#0f172a");
+      root.style.setProperty("--bg-color", "#f0f9ff");
+      root.style.setProperty(
+        "--card-bg",
+        "linear-gradient(145deg, #e0f2fe 0%, #bae6fd 100%)"
+      );
+    } else if (themeValue === "forest") {
+      root.style.setProperty(
+        "--primary-color",
+        "linear-gradient(135deg, #16a34a 0%, #15803d 50%, #22c55e 100%)"
+      );
+      root.style.setProperty(
+        "--secondary-color",
+        "linear-gradient(145deg, #15803d 0%, #22c55e 100%)"
+      );
+      root.style.setProperty("--accent-color", "#22c55e");
+      root.style.setProperty("--text-color", "#14532d");
+      root.style.setProperty("--bg-color", "#f0fdf4");
+      root.style.setProperty(
+        "--card-bg",
+        "linear-gradient(145deg, #dcfce7 0%, #bbf7d0 100%)"
+      );
+    } else if (themeValue === "sunset") {
+      root.style.setProperty(
+        "--primary-color",
+        "linear-gradient(135deg, #f97316 0%, #ea580c 50%, #fb923c 100%)"
+      );
+      root.style.setProperty(
+        "--secondary-color",
+        "linear-gradient(145deg, #ea580c 0%, #fb923c 100%)"
+      );
+      root.style.setProperty("--accent-color", "#fb923c");
+      root.style.setProperty("--text-color", "#9a3412");
+      root.style.setProperty("--bg-color", "#fff7ed");
+      root.style.setProperty(
+        "--card-bg",
+        "linear-gradient(145deg, #fed7aa 0%, #fdba74 100%)"
+      );
+    } else if (themeValue === "rainbow") {
+      root.style.setProperty(
+        "--primary-color",
+        "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #a78bfa 100%)"
+      );
+      root.style.setProperty(
+        "--secondary-color",
+        "linear-gradient(145deg, #7c3aed 0%, #a78bfa 100%)"
+      );
+      root.style.setProperty("--accent-color", "#a78bfa");
+      root.style.setProperty("--text-color", "#581c87");
+      root.style.setProperty("--bg-color", "#faf5ff");
+      root.style.setProperty(
+        "--card-bg",
+        "linear-gradient(145deg, #e9d5ff 0%, #ddd6fe 100%)"
+      );
+    } else if (themeValue === "space") {
+      root.style.setProperty(
+        "--primary-color",
+        "linear-gradient(135deg, #1e293b 0%, #334155 50%, #6366f1 100%)"
+      );
+      root.style.setProperty(
+        "--secondary-color",
+        "linear-gradient(145deg, #334155 0%, #6366f1 100%)"
+      );
+      root.style.setProperty("--accent-color", "#6366f1");
+      root.style.setProperty("--text-color", "#e2e8f0");
+      root.style.setProperty("--bg-color", "#0f172a");
+      root.style.setProperty(
+        "--card-bg",
+        "linear-gradient(145deg, #1e293b 0%, #334155 100%)"
+      );
+    } else {
+      // デフォルトテーマ
+      root.style.setProperty("--primary-color", "");
+      root.style.setProperty("--secondary-color", "");
+      root.style.setProperty("--accent-color", "");
+      root.style.setProperty("--text-color", "");
+      root.style.setProperty("--bg-color", "");
+      root.style.setProperty("--card-bg", "");
+    }
+  };
+
+  // テーマ変更ハンドラー
+  const handleThemeChange = (themeValue: string) => {
+    setSelectedTheme(themeValue);
+    applyTheme(themeValue);
+    localStorage.setItem("selectedTheme", themeValue);
+
+    // 強制的にスタイルを再適用
+    setTimeout(() => {
+      applyTheme(themeValue);
+      // さらに強制的にDOM要素のスタイルを更新
+      const { body } = document;
+      const dashboard = document.querySelector(".dashboard");
+      const header = document.querySelector(".dashboard-header");
+      const timeSection = document.querySelector(".time-tracking-section");
+
+      if (dashboard) {
+        (dashboard as HTMLElement).style.background = "";
+      }
+      if (header) {
+        (header as HTMLElement).style.background = "";
+      }
+      if (timeSection) {
+        (timeSection as HTMLElement).style.background = "";
+      }
+    }, 100);
   };
 
   // メモ作成ハンドラー（App_backup.tsxから復元）
@@ -1217,7 +1568,9 @@ function App() {
 
   // タイマー関連のハンドラー（App_backup.tsxから復元）
   const startCustomTimer = () => {
-    if (customTimerActive && !customTimerPaused) return;
+    if (customTimerActive && !customTimerPaused) {
+      return;
+    }
 
     if (customTimerPaused) {
       // 一時停止から再開
@@ -1296,7 +1649,9 @@ function App() {
 
   // 料理タイマーのハンドラー（App_backup.tsxから復元）
   const startEggTimer = () => {
-    if (eggTimerActive && !eggTimerPaused) return;
+    if (eggTimerActive && !eggTimerPaused) {
+      return;
+    }
 
     if (eggTimerPaused) {
       // 一時停止から再開
@@ -1369,6 +1724,7 @@ function App() {
       }
     } catch (error) {
       console.error("音声再生エラー:", error);
+      playFallbackSound();
     }
   };
 
@@ -1399,7 +1755,9 @@ function App() {
       completedAt: new Date(),
       type
     };
-    setTimerHistory(prev => [newEntry, ...prev.slice(0, 49)]); // 最新50件まで保持
+    const newHistory = [newEntry, ...timerHistory.slice(0, 49)]; // 最新50件まで保持
+    setTimerHistory(newHistory);
+    saveTimerHistory(newHistory);
   };
 
   // 通知機能
@@ -1639,6 +1997,15 @@ function App() {
       showThemeSettings={uiState.showThemeSettings}
       showFontSettings={uiState.showFontSettings}
       showFeatureSettings={uiState.showFeatureSettings}
+      // UI設定関連
+      selectedTheme={selectedTheme}
+      selectedFont={selectedFont}
+      fontSettings={fontSettings}
+      showLanguageFontSettings={showLanguageFontSettings}
+      setShowLanguageFontSettings={setShowLanguageFontSettings}
+      handleThemeChange={handleThemeChange}
+      handleFontChange={handleFontChange}
+      handleLanguageFontSave={handleLanguageFontSave}
       // お仕事記録関連の状態
       showIncomeExpenseForm={showIncomeExpenseForm}
       setShowIncomeExpenseForm={setShowIncomeExpenseForm}
