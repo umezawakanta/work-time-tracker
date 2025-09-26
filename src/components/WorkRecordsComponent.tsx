@@ -16,7 +16,6 @@ interface WorkRecordsComponentProps {
   workDiaries: WorkDiary[];
   incomeExpenseLoading: boolean;
   diaryLoading: boolean;
-  workRecordsLoading: boolean;
   currentMonth: Date;
   setCurrentMonth: (date: Date) => void;
   selectedDate: Date | null;
@@ -94,7 +93,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   workDiaries,
   incomeExpenseLoading,
   diaryLoading,
-  workRecordsLoading,
   currentMonth,
   setCurrentMonth,
   selectedDate,

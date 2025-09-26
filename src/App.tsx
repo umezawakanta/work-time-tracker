@@ -226,7 +226,10 @@ function App({
   // 理由: 本棚のローディング状態はBookshelfComponent内でのみ使用されるため、
   // BookshelfComponent内で状態を管理することで、状態の分散を防ぐ
   // const [booksLoading, setBooksLoading] = useState(false); // BookshelfComponentで管理
-  const [workRecordsLoading, setWorkRecordsLoading] = useState(false);
+  // 注意: workRecordsLoadingは現在使用されていないため削除
+  // 理由: WorkRecordsComponent内でworkRecordsLoadingが実際に使用されていないため、
+  // 不要な状態として削除する
+  // const [workRecordsLoading, setWorkRecordsLoading] = useState(false); // 削除
   const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
   const [diaryLoading, setDiaryLoading] = useState(false);
 
@@ -6121,7 +6124,6 @@ User Agent: ${userAgent}
                     workDiaries={workDiaries}
                     incomeExpenseLoading={incomeExpenseLoading}
                     diaryLoading={diaryLoading}
-                    workRecordsLoading={workRecordsLoading}
                     currentMonth={currentMonth}
                     setCurrentMonth={setCurrentMonth}
                     selectedDate={selectedDate}
