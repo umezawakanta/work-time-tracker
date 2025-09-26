@@ -23,7 +23,9 @@ export const getAuthToken = (setMessage: (message: string) => void): string | nu
  */
 export const createAuthHeaders = (token?: string): Record<string, string> => {
   const authToken = token || localStorage.getItem('access_token');
-  console.log('createAuthHeaders - Using token:', authToken ? authToken.substring(0, 20) + '...' : 'null');
+  if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production') {
+    console.log('createAuthHeaders - Using token:', authToken ? authToken.substring(0, 20) + '...' : 'null');
+  }
   
   return {
     'Authorization': `Bearer ${authToken}`,
