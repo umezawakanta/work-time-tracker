@@ -274,6 +274,28 @@ export const initializeTone = async (): Promise<boolean> => {
       return true;
     } catch (error) {
       console.error("Failed to initialize Tone.js:", error);
+      
+      // 音声初期化エラーを不具合報告フォームに送信
+      const errorDetails = `
+音声エンジンの初期化に失敗しました。
+
+エラー詳細:
+- エラーメッセージ: ${error instanceof Error ? error.message : "Unknown error"}
+- 時刻: ${new Date().toISOString()}
+- ユーザーエージェント: ${navigator.userAgent}
+- AudioContext状態: ${Tone.context.state}
+
+このエラーは自動的に検出されました。
+      `.trim();
+      
+      // グローバルな状態更新関数を呼び出すためのイベントを発火
+      window.dispatchEvent(new CustomEvent('showErrorReport', {
+        detail: {
+          category: '不具合報告',
+          content: errorDetails
+        }
+      }));
+      
       globalToneInitialized = false;
       return false;
     } finally {
@@ -333,6 +355,32 @@ export const playSound = async (
     instrument.triggerAttackRelease(noteToPlay, duration + "s");
   } catch (error) {
     console.error(`Could not play sound for ${categoryId}:`, error);
+    
+    // 音声再生エラーを不具合報告フォームに送信
+    const errorDetails = `
+音声再生に失敗しました。
+
+エラー詳細:
+- カテゴリID: ${categoryId}
+- 周波数: ${frequency}Hz
+- 再生時間: ${duration}秒
+- 音量: ${volume}
+- ジャンル: ${genre || '未指定'}
+- エラーメッセージ: ${error instanceof Error ? error.message : "Unknown error"}
+- 時刻: ${new Date().toISOString()}
+- ユーザーエージェント: ${navigator.userAgent}
+- AudioContext状態: ${Tone.context.state}
+
+このエラーは自動的に検出されました。
+    `.trim();
+    
+    // グローバルな状態更新関数を呼び出すためのイベントを発火
+    window.dispatchEvent(new CustomEvent('showErrorReport', {
+      detail: {
+        category: '不具合報告',
+        content: errorDetails
+      }
+    }));
   }
 };
 

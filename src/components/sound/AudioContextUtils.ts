@@ -35,6 +35,28 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
     }
   } catch (error) {
     console.error("Failed to ensure AudioContext is ready:", error);
+    
+    // AudioContextエラーを不具合報告フォームに送信
+    const errorDetails = `
+AudioContextの初期化に失敗しました。
+
+エラー詳細:
+- エラーメッセージ: ${error instanceof Error ? error.message : "Unknown error"}
+- 時刻: ${new Date().toISOString()}
+- ユーザーエージェント: ${navigator.userAgent}
+- 現在のAudioContext状態: ${Tone.context.state}
+
+このエラーは自動的に検出されました。
+    `.trim();
+    
+    // グローバルな状態更新関数を呼び出すためのイベントを発火
+    window.dispatchEvent(new CustomEvent('showErrorReport', {
+      detail: {
+        category: '不具合報告',
+        content: errorDetails
+      }
+    }));
+    
     return false;
   }
 };
