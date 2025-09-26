@@ -42,16 +42,12 @@ import {
 import EggTimerComponent from "./components/EggTimerComponent";
 import {
   TimeTrackingStateProvider,
-  useTimeTrackingHelpers,
 } from "./components/TimeTrackingStateManager";
 import {
   TimerPresetProvider,
-  useTimerPresetState,
 } from "./components/TimerPresetManager";
 import {
   MoodLogProvider,
-  useMoodLogState,
-  useMoodLogHelpers,
 } from "./components/MoodLogManager";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
@@ -64,8 +60,6 @@ import {
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
-import UpdateRequestModal from "./components/UpdateRequestModal";
-import BugReportModal from "./components/BugReportModal";
 import { setErrorReportCallback, reportApiError } from "./utils/apiClient";
 import {
   formatUpdateRequestContent,
@@ -92,7 +86,6 @@ import type {
   UserSettings,
   Feature,
   Habit,
-  MoodLog,
   Goal,
   LearningRecord,
 } from "./types";
@@ -222,15 +215,10 @@ function App({
     { x: number; y: number } | undefined
   >(undefined);
 
-  // 注意: booksLoadingはBookshelfComponent内で管理される
-  // 理由: 本棚のローディング状態はBookshelfComponent内でのみ使用されるため、
-  // BookshelfComponent内で状態を管理することで、状態の分散を防ぐ
-  // const [booksLoading, setBooksLoading] = useState(false); // BookshelfComponentで管理
-  // 注意: workRecordsLoadingは現在使用されていないため削除
-  // 理由: WorkRecordsComponent内でworkRecordsLoadingが実際に使用されていないため、
-  // 不要な状態として削除する
-  // const [workRecordsLoading, setWorkRecordsLoading] = useState(false); // 削除
-  const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
+  // 注意: incomeExpenseLoadingはWorkRecordsComponent内で管理される
+  // 理由: 収支記録のローディング状態はWorkRecordsComponent内でのみ使用されるため、
+  // WorkRecordsComponent内で状態を管理することで、状態の分散を防ぐ
+  // const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false); // WorkRecordsComponentで管理
   const [diaryLoading, setDiaryLoading] = useState(false);
 
   // 時間記録関連の状態（TimeTrackingStateManagerで管理）
@@ -2034,7 +2022,6 @@ ${errorInfo.stack}
 
   // お仕事記録の関数
   const loadIncomeExpenseRecords = async () => {
-    setIncomeExpenseLoading(true);
     try {
       if (!user?.id) {
         console.log("ユーザーIDがありません");
@@ -2069,8 +2056,6 @@ ${errorInfo.stack}
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
-    } finally {
-      setIncomeExpenseLoading(false);
     }
   };
 
@@ -6122,7 +6107,6 @@ User Agent: ${userAgent}
                     setShowCalendar={setShowCalendar}
                     incomeExpenseRecords={incomeExpenseRecords}
                     workDiaries={workDiaries}
-                    incomeExpenseLoading={incomeExpenseLoading}
                     diaryLoading={diaryLoading}
                     currentMonth={currentMonth}
                     setCurrentMonth={setCurrentMonth}

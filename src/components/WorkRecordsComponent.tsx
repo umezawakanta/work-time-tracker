@@ -14,7 +14,6 @@ interface WorkRecordsComponentProps {
   setShowCalendar: (show: boolean) => void;
   incomeExpenseRecords: IncomeExpenseRecord[];
   workDiaries: WorkDiary[];
-  incomeExpenseLoading: boolean;
   diaryLoading: boolean;
   currentMonth: Date;
   setCurrentMonth: (date: Date) => void;
@@ -91,7 +90,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   setShowCalendar,
   incomeExpenseRecords,
   workDiaries,
-  incomeExpenseLoading,
   diaryLoading,
   currentMonth,
   setCurrentMonth,
@@ -155,6 +153,19 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   cancelEditingMonthlyMemo,
   closeOtherFeatures,
 }) => {
+  // 収支記録のローディング状態をWorkRecordsComponent内で管理
+  const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
+
+  // 収支記録読み込み関数をWorkRecordsComponent内で定義
+  const loadIncomeExpenseRecordsLocal = async () => {
+    setIncomeExpenseLoading(true);
+    try {
+      await loadIncomeExpenseRecords();
+    } finally {
+      setIncomeExpenseLoading(false);
+    }
+  };
+
   // 削除確認モーダルの状態
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{
@@ -369,7 +380,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 closeOtherFeatures("work-records");
                 setShowWorkRecords(true);
                 if (incomeExpenseRecords.length === 0) {
-                  loadIncomeExpenseRecords();
+                  loadIncomeExpenseRecordsLocal();
                 }
                 if (workDiaries.length === 0) {
                   loadWorkDiaries();
@@ -1043,7 +1054,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             </button>
             <button
               onClick={() => {
-                loadIncomeExpenseRecords();
+                loadIncomeExpenseRecordsLocal();
                 loadWorkDiaries();
               }}
               className="action-button refresh-button"
