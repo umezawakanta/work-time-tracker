@@ -164,6 +164,32 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 統計表示のアコーディオン状態管理
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(true);
 
+  // 月次メモのアコーディオン状態管理
+  const [isMemoExpanded, setIsMemoExpanded] = useState(false);
+
+  // 週次メモの状態管理
+  const [weeklyMemo, setWeeklyMemo] = useState<string>('');
+  const [editingWeeklyMemo, setEditingWeeklyMemo] = useState(false);
+
+  // カレンダーの表示モード状態（CalendarComponentから取得）
+  const [calendarViewMode, setCalendarViewMode] = useState<'month' | 'week'>('month');
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(new Date());
+
+  // 週の開始日と終了日を計算
+  const getWeekRange = (date: Date) => {
+    const startOfWeek = new Date(date);
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day;
+    startOfWeek.setDate(diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+    
+    return { startOfWeek, endOfWeek };
+  };
+
   // 収支記録読み込み関数をWorkRecordsComponent内で定義
   const loadIncomeExpenseRecordsLocal = async () => {
     setIncomeExpenseLoading(true);
@@ -249,6 +275,41 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     });
     
     return { incomeRecords, expenseRecords, workDiaries: diaryRecords };
+  };
+
+  // 週の統計を計算
+  const getWeeklySummary = (startDate: Date, endDate: Date) => {
+    const weeklyIncomeRecords = (incomeExpenseRecords || []).filter(record => {
+      const recordDate = new Date(record.date);
+      return recordDate >= startDate && recordDate <= endDate && record.type === 'income';
+    });
+    
+    const weeklyExpenseRecords = (incomeExpenseRecords || []).filter(record => {
+      const recordDate = new Date(record.date);
+      return recordDate >= startDate && recordDate <= endDate && record.type === 'expense';
+    });
+    
+    const weeklyDiaries = (workDiaries || []).filter(diary => {
+      const diaryDate = new Date(diary.date);
+      return diaryDate >= startDate && diaryDate <= endDate;
+    });
+    
+    const totalIncome = weeklyIncomeRecords.length > 0 ? weeklyIncomeRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0) : 0;
+    const totalExpense = weeklyExpenseRecords.length > 0 ? weeklyExpenseRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0) : 0;
+    const netBalance = totalIncome - totalExpense;
+    const averageMood = weeklyDiaries.length > 0 
+      ? weeklyDiaries.reduce((sum: number, diary) => sum + (Number(diary.mood) || 0), 0) / weeklyDiaries.length 
+      : 0;
+    
+    return {
+      totalIncome,
+      totalExpense,
+      netBalance,
+      averageMood,
+      incomeRecordsCount: weeklyIncomeRecords.length,
+      expenseRecordsCount: weeklyExpenseRecords.length,
+      diariesCount: weeklyDiaries.length,
+    };
   };
 
   // 月の統計を計算
@@ -355,7 +416,26 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setDeleteTarget(null);
   };
 
+  // 週次メモの保存・編集関数
+  const saveWeeklyMemo = () => {
+    // TODO: API呼び出しで週次メモを保存
+    console.log('週次メモを保存:', weeklyMemo);
+    setEditingWeeklyMemo(false);
+  };
+
+  const startEditingWeeklyMemo = () => {
+    setEditingWeeklyMemo(true);
+  };
+
+  const cancelEditingWeeklyMemo = () => {
+    setEditingWeeklyMemo(false);
+  };
+
+  // 統計データの計算
   const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
+  
+  const weekRange = getWeekRange(currentWeekStart);
+  const weeklySummary = getWeeklySummary(weekRange.startOfWeek, weekRange.endOfWeek);
 
   return (
     <div className="work-records-section">
@@ -396,54 +476,141 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
       {showWorkRecords && (
         <div className="work-records-content">
-          {/* 月別統計 */}
+          {/* 統計表示（月/週切り替え） */}
           <div className="monthly-summary">
             <div 
               className="summary-header"
               onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}
               style={{ cursor: 'pointer' }}
             >
-              <h3><i className="bi bi-graph-up"></i> {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}月の統計</h3>
+              <h3>
+                <i className="bi bi-graph-up"></i> 
+                {calendarViewMode === 'month' 
+                  ? `${currentMonth.getFullYear()}年${currentMonth.getMonth() + 1}月の統計`
+                  : `${weekRange.startOfWeek.getMonth() + 1}月${weekRange.startOfWeek.getDate()}日〜${weekRange.endOfWeek.getMonth() + 1}月${weekRange.endOfWeek.getDate()}日の統計`
+                }
+              </h3>
               <i className={`bi bi-chevron-${isSummaryExpanded ? 'up' : 'down'} summary-toggle-icon`}></i>
             </div>
             {isSummaryExpanded && (
               <div className="summary-grid">
-              <div className="summary-item">
-                <span className="summary-label">総収入</span>
-                <span className="summary-value income">¥{(monthlySummary.totalIncome || 0).toLocaleString()}</span>
+                <div className="summary-item">
+                  <span className="summary-label">総収入</span>
+                  <span className="summary-value income">
+                    ¥{((calendarViewMode === 'month' ? monthlySummary : weeklySummary).totalIncome || 0).toLocaleString()}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">総支出</span>
+                  <span className="summary-value expense">
+                    ¥{((calendarViewMode === 'month' ? monthlySummary : weeklySummary).totalExpense || 0).toLocaleString()}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">収支</span>
+                  <span className={`summary-value ${(calendarViewMode === 'month' ? monthlySummary : weeklySummary).netBalance >= 0 ? 'positive' : 'negative'}`}>
+                    {(calendarViewMode === 'month' ? monthlySummary : weeklySummary).netBalance >= 0 ? '+' : ''}¥{((calendarViewMode === 'month' ? monthlySummary : weeklySummary).netBalance || 0).toLocaleString()}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">平均気分</span>
+                  <span className="summary-value">
+                    {(calendarViewMode === 'month' ? monthlySummary : weeklySummary).averageMood > 0 ? (
+                      <>
+                        <i className="bi bi-emoji-smile"></i> {(calendarViewMode === 'month' ? monthlySummary : weeklySummary).averageMood.toFixed(1)}
+                      </>
+                    ) : 'なし'}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">収入記録</span>
+                  <span className="summary-value">{(calendarViewMode === 'month' ? monthlySummary : weeklySummary).incomeRecordsCount}件</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">支出記録</span>
+                  <span className="summary-value">{(calendarViewMode === 'month' ? monthlySummary : weeklySummary).expenseRecordsCount}件</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">日記</span>
+                  <span className="summary-value">{(calendarViewMode === 'month' ? monthlySummary : weeklySummary).diariesCount}件</span>
+                </div>
               </div>
-              <div className="summary-item">
-                <span className="summary-label">総支出</span>
-                <span className="summary-value expense">¥{(monthlySummary.totalExpense || 0).toLocaleString()}</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">収支</span>
-                <span className={`summary-value ${monthlySummary.netBalance >= 0 ? 'positive' : 'negative'}`}>
-                  {monthlySummary.netBalance >= 0 ? '+' : ''}¥{(monthlySummary.netBalance || 0).toLocaleString()}
-                </span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">平均気分</span>
-                <span className="summary-value">
-                  {monthlySummary.averageMood > 0 ? (
-                    <>
-                      <i className="bi bi-emoji-smile"></i> {monthlySummary.averageMood.toFixed(1)}
-                    </>
-                  ) : 'なし'}
-                </span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">収入記録</span>
-                <span className="summary-value">{monthlySummary.incomeRecordsCount}件</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">支出記録</span>
-                <span className="summary-value">{monthlySummary.expenseRecordsCount}件</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">日記</span>
-                <span className="summary-value">{monthlySummary.diariesCount}件</span>
-              </div>
+            )}
+          </div>
+
+          {/* メモ表示（月/週切り替え） */}
+          <div className="monthly-memo">
+            <div 
+              className="memo-header"
+              onClick={() => setIsMemoExpanded(!isMemoExpanded)}
+              style={{ cursor: 'pointer' }}
+            >
+              <h3>
+                <i className="bi bi-journal-text"></i> 
+                {calendarViewMode === 'month' 
+                  ? `${currentMonth.getMonth() + 1}月の目標と振り返り`
+                  : `${weekRange.startOfWeek.getMonth() + 1}月${weekRange.startOfWeek.getDate()}日〜${weekRange.endOfWeek.getMonth() + 1}月${weekRange.endOfWeek.getDate()}日の目標と振り返り`
+                }
+              </h3>
+              <i className={`bi bi-chevron-${isMemoExpanded ? 'up' : 'down'} memo-toggle-icon`}></i>
+            </div>
+            {isMemoExpanded && (
+              <div className="memo-content">
+                {calendarViewMode === 'month' ? (
+                  // 月次メモ
+                  editingMonthlyMemo ? (
+                    <div className="memo-edit">
+                      <textarea
+                        value={monthlyMemo}
+                        onChange={(e) => setMonthlyMemo(e.target.value)}
+                        placeholder="今月の振り返りや来月の目標を書いてください"
+                        rows={4}
+                      />
+                      <div className="memo-actions">
+                        <button onClick={saveMonthlyMemo} className="save-button">
+                          保存
+                        </button>
+                        <button onClick={cancelEditingMonthlyMemo} className="cancel-button">
+                          キャンセル
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="memo-display">
+                      <p>{monthlyMemo || '月次メモがありません'}</p>
+                      <button onClick={startEditingMonthlyMemo} className="edit-button">
+                        編集
+                      </button>
+                    </div>
+                  )
+                ) : (
+                  // 週次メモ
+                  editingWeeklyMemo ? (
+                    <div className="memo-edit">
+                      <textarea
+                        value={weeklyMemo}
+                        onChange={(e) => setWeeklyMemo(e.target.value)}
+                        placeholder="今週の振り返りや来週の目標を書いてください"
+                        rows={4}
+                      />
+                      <div className="memo-actions">
+                        <button onClick={saveWeeklyMemo} className="save-button">
+                          保存
+                        </button>
+                        <button onClick={cancelEditingWeeklyMemo} className="cancel-button">
+                          キャンセル
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="memo-display">
+                      <p>{weeklyMemo || '週次メモがありません'}</p>
+                      <button onClick={startEditingWeeklyMemo} className="edit-button">
+                        編集
+                      </button>
+                    </div>
+                  )
+                )}
               </div>
             )}
           </div>
@@ -457,6 +624,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             getRecordsForDate={getRecordsForDate}
             isModal={true}
             onClose={() => setShowCalendarModal(false)}
+            onViewModeChange={setCalendarViewMode}
+            onWeekChange={setCurrentWeekStart}
           />
 
           {/* 選択された記録の詳細 */}
@@ -928,35 +1097,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             </div>
           )}
 
-          {/* 月次メモ */}
-          <div className="monthly-memo">
-            <h3><i className="bi bi-journal-text"></i> 月次メモ</h3>
-            {editingMonthlyMemo ? (
-              <div className="memo-edit">
-                <textarea
-                  value={monthlyMemo}
-                  onChange={(e) => setMonthlyMemo(e.target.value)}
-                  placeholder="今月の振り返りや来月の目標を書いてください"
-                  rows={4}
-                />
-                <div className="memo-actions">
-                  <button onClick={saveMonthlyMemo} className="save-button">
-                    保存
-                  </button>
-                  <button onClick={cancelEditingMonthlyMemo} className="cancel-button">
-                    キャンセル
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="memo-display">
-                <p>{monthlyMemo || '月次メモがありません'}</p>
-                <button onClick={startEditingMonthlyMemo} className="edit-button">
-                  編集
-                </button>
-              </div>
-            )}
-          </div>
 
           {/* アクションボタン */}
           <div className="action-buttons">

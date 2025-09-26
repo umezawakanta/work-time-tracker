@@ -1017,18 +1017,47 @@
 
 /* 月次メモ */
 .monthly-memo {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  border: 1px solid #e9ecef;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color, #e9ecef);
+  transition: all 0.3s ease;
 }
 
-.monthly-memo h3 {
-  margin: 0 0 1rem 0;
-  color: #333;
-  font-size: 1.1rem;
+.memo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.memo-header:hover {
+  background-color: var(--hover-background, #e9ecef);
+}
+
+.memo-header h3 {
+  margin: 0;
+  color: var(--text-color, #333);
+  font-size: 1rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.memo-toggle-icon {
+  font-size: 1.2rem;
+  color: var(--text-muted, #6c757d);
+  transition: transform 0.3s ease;
+}
+
+.memo-content {
+  animation: slideDown 0.3s ease-out;
 }
 
 .memo-edit textarea {
@@ -1262,6 +1291,18 @@
   
   .monthly-memo {
     padding: 1rem;
+  }
+  
+  .memo-header {
+    padding: 0.25rem;
+  }
+  
+  .memo-header h3 {
+    font-size: 0.9rem;
+  }
+  
+  .memo-toggle-icon {
+    font-size: 1rem;
   }
   
   /* モバイル用の詳細表示最適化 */

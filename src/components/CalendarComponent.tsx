@@ -13,6 +13,8 @@ interface CalendarComponentProps {
   };
   isModal?: boolean;
   onClose?: () => void;
+  onViewModeChange?: (mode: 'month' | 'week') => void;
+  onWeekChange?: (weekStart: Date) => void;
 }
 
 const CalendarComponent: React.FC<CalendarComponentProps> = ({
@@ -22,48 +24,12 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
   onDateClick,
   getRecordsForDate,
   isModal = false,
-  onClose
+  onClose,
+  onViewModeChange,
+  onWeekChange
 }) => {
-  const calendarRef = useRef<HTMLDivElement>(null);
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
-  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(null);
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
   const [currentWeek, setCurrentWeek] = useState(0);
-
-  // スワイプ操作の処理
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart({
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY
-    });
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd({
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY
-    });
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const deltaX = touchStart.x - touchEnd.x;
-    const deltaY = touchStart.y - touchEnd.y;
-    const minSwipeDistance = 50;
-
-    // 水平スワイプ（月移動）
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
-      if (deltaX > 0) {
-        onMonthChange('next'); // 左スワイプで次月
-      } else {
-        onMonthChange('prev'); // 右スワイプで前月
-      }
-    }
-
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
 
   // カレンダーの日付を生成
   const getCalendarDays = () => {
@@ -103,24 +69,26 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
     } else {
       setCurrentWeek(Math.min(5, currentWeek + 1));
     }
+    
+    // 週の開始日を計算してコールバックを呼び出し
+    const weekStart = new Date(currentMonth);
+    const firstDayOfMonth = new Date(weekStart.getFullYear(), weekStart.getMonth(), 1);
+    const firstMonday = new Date(firstDayOfMonth);
+    const dayOfWeek = firstMonday.getDay();
+    const daysToAdd = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
+    firstMonday.setDate(firstDayOfMonth.getDate() + daysToAdd);
+    
+    const targetWeekStart = new Date(firstMonday);
+    targetWeekStart.setDate(firstMonday.getDate() + (currentWeek * 7));
+    
+    onWeekChange?.(targetWeekStart);
   };
 
   return (
     <div 
       className={`work-records-calendar ${isModal ? 'calendar-modal' : ''}`}
-      ref={calendarRef}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       <div className="calendar-header">
-        {/* 閉じるボタンは非表示（常に表示モード） */}
-        <button
-          onClick={() => viewMode === 'month' ? onMonthChange("prev") : handleWeekChange("prev")}
-          className="calendar-nav-button"
-        >
-          ← {viewMode === 'month' ? '前月' : '前週'}
-        </button>
         <div className="calendar-title-container">
           <h3>
             {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}月
@@ -129,24 +97,38 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
           <div className="view-mode-toggle">
             <button
               className={`view-mode-btn ${viewMode === 'month' ? 'active' : ''}`}
-              onClick={() => setViewMode('month')}
+              onClick={() => {
+                setViewMode('month');
+                onViewModeChange?.('month');
+              }}
             >
               月
             </button>
             <button
               className={`view-mode-btn ${viewMode === 'week' ? 'active' : ''}`}
-              onClick={() => setViewMode('week')}
+              onClick={() => {
+                setViewMode('week');
+                onViewModeChange?.('week');
+              }}
             >
               週
             </button>
           </div>
         </div>
-        <button
-          onClick={() => viewMode === 'month' ? onMonthChange("next") : handleWeekChange("next")}
-          className="calendar-nav-button"
-        >
-          {viewMode === 'month' ? '次月' : '次週'} →
-        </button>
+        <div className="calendar-nav-buttons">
+          <button
+            onClick={() => viewMode === 'month' ? onMonthChange("prev") : handleWeekChange("prev")}
+            className="calendar-nav-button"
+          >
+            ← {viewMode === 'month' ? '前月' : '前週'}
+          </button>
+          <button
+            onClick={() => viewMode === 'month' ? onMonthChange("next") : handleWeekChange("next")}
+            className="calendar-nav-button"
+          >
+            {viewMode === 'month' ? '次月' : '次週'} →
+          </button>
+        </div>
       </div>
       
       <div className="calendar-grid">

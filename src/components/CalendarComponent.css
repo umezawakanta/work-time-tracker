@@ -67,11 +67,17 @@
 
 .calendar-title-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   flex: 1;
   justify-content: center;
+}
+
+.calendar-nav-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .calendar-header h3 {
@@ -119,14 +125,14 @@
   background: var(--section-background, #f8f9fa);
   color: var(--text-color, #333);
   border: 1px solid var(--border-color, #e9ecef);
-  padding: 0.3rem 0.6rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 500;
   transition: all 0.2s ease;
   white-space: nowrap;
-  min-width: 45px;
+  min-width: 60px;
 }
 
 .calendar-nav-button:hover {
@@ -417,9 +423,6 @@
   .work-records-calendar {
     padding: 0.75rem;
     margin: 0 -0.5rem;
-    /* スワイプ操作のためのタッチ最適化 */
-    touch-action: pan-x pan-y;
-    -webkit-overflow-scrolling: touch;
   }
   
   .calendar-modal {
@@ -448,17 +451,6 @@
     padding: 0.4rem;
   }
   
-  /* スワイプインジケーター */
-  .calendar-header::after {
-    content: '← スワイプで月移動 →';
-    position: absolute;
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.7rem;
-    color: var(--text-muted, #6c757d);
-    opacity: 0.7;
-  }
   
   .calendar-header {
     min-width: 320px;
@@ -472,14 +464,18 @@
     gap: 0.5rem;
   }
   
+  .calendar-nav-buttons {
+    gap: 0.25rem;
+  }
+  
   .calendar-header h3 {
     font-size: 1rem;
   }
   
   .calendar-nav-button {
-    padding: 0.2rem 0.4rem;
-    font-size: 0.65rem;
-    min-width: 35px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.6rem;
+    min-width: 50px;
   }
   
   .calendar-grid {
@@ -551,11 +547,15 @@
     order: 1;
   }
   
-  .calendar-nav-button {
+  .calendar-nav-buttons {
     order: 2;
-    padding: 0.2rem 0.4rem;
-    font-size: 0.65rem;
-    min-width: 30px;
+    gap: 0.25rem;
+  }
+  
+  .calendar-nav-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.55rem;
+    min-width: 45px;
   }
   
   .calendar-grid {
@@ -610,9 +610,4 @@
     min-width: 35px;
   }
   
-  /* スワイプインジケーターの調整 */
-  .calendar-header::after {
-    font-size: 0.6rem;
-    bottom: -15px;
-  }
 }
