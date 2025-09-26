@@ -19,7 +19,6 @@ import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import SoundAppComponent from "./components/SoundAppComponent";
 import NotificationComponent from "./components/NotificationComponent";
-import VersionInfo from "./components/VersionInfo";
 import {
   ErrorInfo,
   getErrorInfo,
@@ -27,7 +26,6 @@ import {
   createErrorInfo,
 } from "./types/errorTypes";
 import {
-  getAuthToken,
   createAuthHeaders,
   executeAuthenticatedRequest,
 } from "./utils/authUtils";
@@ -52,7 +50,6 @@ import {
 import {
   TimerPresetProvider,
   useTimerPresetState,
-  useTimerPresetHelpers,
 } from "./components/TimerPresetManager";
 import {
   MoodLogProvider,
