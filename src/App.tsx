@@ -47,7 +47,6 @@ import {
 } from "./components/LoadingStateManager";
 import {
   TimeTrackingStateProvider,
-  useTimeTrackingState,
   useTimeTrackingHelpers,
 } from "./components/TimeTrackingStateManager";
 import {
@@ -108,8 +107,7 @@ function App() {
   // ローディング状態の管理
   const loadingState = useLoadingState();
 
-  // 時間記録状態の管理
-  const timeTrackingState = useTimeTrackingState();
+  // 時間記録状態の管理（TimeTrackingComponent内で管理）
   const timeTrackingHelpers = useTimeTrackingHelpers();
 
   // タイマープリセット状態の管理
@@ -6047,15 +6045,6 @@ User Agent: ${userAgent}
                     setShowTimeTracking={setShowTimeTracking}
                     projects={projects}
                     projectsLoading={projectsLoading}
-                    timeEntries={timeTrackingState.timeEntries}
-                    timeEntriesLoading={timeTrackingState.timeEntriesLoading}
-                    currentProject={timeTrackingState.currentProject}
-                    setCurrentProject={timeTrackingState.setCurrentProject}
-                    description={timeTrackingState.description}
-                    setDescription={timeTrackingState.setDescription}
-                    isTracking={timeTrackingState.isTracking}
-                    startTime={timeTrackingState.startTime}
-                    elapsedTime={timeTrackingState.elapsedTime}
                     loadProjects={loadProjects}
                     loadTimeEntries={loadTimeEntries}
                     handleStartTracking={handleStartTracking}

@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './TimeTrackingComponent.css';
 import type { Project, TimeEntry } from '../types';
+import { useTimeTrackingState } from './TimeTrackingStateManager';
 
 interface TimeTrackingComponentProps {
   showTimeTracking: boolean;
   setShowTimeTracking: (show: boolean) => void;
   projects: Project[];
   projectsLoading: boolean;
-  timeEntries: TimeEntry[];
-  timeEntriesLoading: boolean;
-  currentProject: string;
-  setCurrentProject: (project: string) => void;
-  description: string;
-  setDescription: (description: string) => void;
-  isTracking: boolean;
-  startTime: Date | null;
-  elapsedTime: number;
   loadProjects: () => void;
   loadTimeEntries: () => void;
   handleStartTracking: () => void;
@@ -29,15 +21,6 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
   setShowTimeTracking,
   projects,
   projectsLoading,
-  timeEntries,
-  timeEntriesLoading,
-  currentProject,
-  setCurrentProject,
-  description,
-  setDescription,
-  isTracking,
-  startTime,
-  elapsedTime,
   loadProjects,
   loadTimeEntries,
   handleStartTracking,
@@ -45,6 +28,19 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
   handleResetTracking,
   closeOtherFeatures,
 }) => {
+  // 時間記録状態をコンポーネント内で管理
+  const timeTrackingState = useTimeTrackingState();
+  const {
+    timeEntries,
+    timeEntriesLoading,
+    currentProject,
+    setCurrentProject,
+    description,
+    setDescription,
+    isTracking,
+    startTime,
+    elapsedTime,
+  } = timeTrackingState;
   const [showTimeEntries, setShowTimeEntries] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
