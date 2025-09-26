@@ -229,7 +229,6 @@ function App() {
   // 機能設定の状態
   const [userSettings, setUserSettings] = useState<any>(null);
   const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
-  const [showDiaryReminderSettings, setShowDiaryReminderSettings] = useState(false);
   const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<number | null>(null);
 
   // カレンダーの状態
