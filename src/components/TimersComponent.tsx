@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TimersComponent.css';
 import { cookingRecipes, getRecipePhases } from '../constants/cookingRecipes';
-import { useTimerPresetState } from './TimerPresetManager';
+// import { useTimerPresetState } from './TimerPresetManager';
 // TimerPreset型を定義
 interface TimerPreset {
   id: string;
@@ -21,8 +21,7 @@ const TimersComponent: React.FC<TimersComponentProps> = ({
   setShowTimers,
   closeOtherFeatures,
 }) => {
-  // TimerPresetManagerの状態を使用
-  const timerPresetState = useTimerPresetState();
+  // TimerPresetManagerの状態を使用（プロパティとして受け取る）
   // 内部状態
   const [customTimerTime, setCustomTimerTime] = useState(0);
   const [customTimerTimeLeft, setCustomTimerTimeLeft] = useState(0);

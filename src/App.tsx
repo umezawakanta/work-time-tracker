@@ -8,7 +8,7 @@ import { useDataFetching } from "./hooks/useDataFetching";
 import { useUIState } from "./hooks/useUIState";
 import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
 import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
-import { TimerPresetProvider, useTimerPresetState } from "./components/TimerPresetManager";
+import { TimerPresetProvider } from "./components/TimerPresetManager";
 import { FontSettings, DEFAULT_FONT_SETTINGS, generateFontCSS } from "./constants/fonts";
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { MoodLogProvider, useMoodLogState, useMoodLogHelpers } from "./components/MoodLogManager";
@@ -53,8 +53,7 @@ function App() {
   const timeTrackingState = useTimeTrackingState();
   const timeTrackingHelpers = useTimeTrackingHelpers();
   
-  // タイマープリセット状態の管理
-  const timerPresetState = useTimerPresetState();
+  // タイマープリセット状態の管理（TimerPresetProviderから提供される）
   
   // 感情ログ状態の管理
   const moodLogState = useMoodLogState();
