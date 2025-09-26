@@ -784,6 +784,97 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   setShowEggTimer,
   timerSettings,
 }) => {
+  // App_backup.tsxから復元する追加の状態変数
+  const [isCheckingAuth, setIsCheckingAuth] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
+  const [isRegisterMode, setIsRegisterMode] = React.useState(false);
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [displayName, setDisplayName] = React.useState("");
+  
+  // エラー報告関連の状態
+  const [showErrorModal, setShowErrorModal] = React.useState(false);
+  const [currentError, setCurrentError] = React.useState<Error | null>(null);
+  const [showSimpleErrorModal, setShowSimpleErrorModal] = React.useState(false);
+  const [errorModalButtonPosition, setErrorModalButtonPosition] = React.useState<{ x: number; y: number } | undefined>(undefined);
+  
+  // 各機能のローディング状態
+  const [publicMemosLoading, setPublicMemosLoading] = React.useState(false);
+  const [projectsLoading, setProjectsLoading] = React.useState(false);
+  const [booksLoading, setBooksLoading] = React.useState(false);
+  const [workRecordsLoading, setWorkRecordsLoading] = React.useState(false);
+  const [incomeExpenseLoading, setIncomeExpenseLoading] = React.useState(false);
+  const [diaryLoading, setDiaryLoading] = React.useState(false);
+  
+  // 時間記録関連の状態
+  const [currentTimeEntry, setCurrentTimeEntry] = React.useState<any>(null);
+  const [isTracking, setIsTracking] = React.useState(false);
+  const [elapsedTime, setElapsedTime] = React.useState(0);
+  const [description, setDescription] = React.useState("");
+  const [currentProject, setCurrentProject] = React.useState<string>("");
+  
+  // 追加の状態変数（propsで受け取っていないもののみ）
+  
+  // バックグラウンドタイマー関連の状態
+  const [backgroundTimerActive, setBackgroundTimerActive] = React.useState(false);
+  const [serviceWorker, setServiceWorker] = React.useState<ServiceWorker | null>(null);
+  const [isMannerMode, setIsMannerMode] = React.useState(false);
+  
+  // 時間記録の進行状態
+  const [isTimeTrackingActive, setIsTimeTrackingActive] = React.useState(false);
+  
+  // ジャンル管理の状態
+  const [showGenreManagement, setShowGenreManagement] = React.useState(false);
+  const [editingGenre, setEditingGenre] = React.useState<string | null>(null);
+  const [editingGenreName, setEditingGenreName] = React.useState("");
+  
+  // キャラクター関連の状態
+  const [characters, setCharacters] = React.useState<any[]>([]);
+  const [currentCharacter, setCurrentCharacter] = React.useState<any>(null);
+  
+  // 機能設定の状態
+  const [userSettings, setUserSettings] = React.useState<any>(null);
+  const [draggedFeature, setDraggedFeature] = React.useState<string | null>(null);
+  
+  // 習慣トラッカー関連の状態
+  const [newHabit, setNewHabit] = React.useState("");
+  
+  // 感情ログ関連の状態（propsで受け取っていないもののみ）
+  const [editingMoodLog, setEditingMoodLog] = React.useState<string | null>(null);
+  const [moodForm, setMoodForm] = React.useState({
+    date: new Date().toISOString().split("T")[0],
+    mood: 5,
+    energy: 5,
+    stress: 5,
+    notes: "",
+    activities: [] as string[],
+    weather: "sunny",
+    sleep: 8,
+  });
+  const [newActivity, setNewActivity] = React.useState("");
+  
+  // 目標管理関連の状態（propsで受け取っていないもののみ）
+  const [editingGoal, setEditingGoal] = React.useState<string | null>(null);
+  const [goalForm, setGoalForm] = React.useState({
+    title: "",
+    description: "",
+    category: "personal",
+    priority: "medium" as "low" | "medium" | "high",
+    status: "not-started" as "not-started" | "in-progress" | "completed" | "paused",
+    startDate: new Date().toISOString().split("T")[0],
+    targetDate: "",
+    progress: 0,
+    milestones: [] as {
+      id: string;
+      title: string;
+      description: string;
+      completed: boolean;
+    }[],
+  });
+  const [newMilestone, setNewMilestone] = React.useState("");
+  
+  // 不足している変数を追加（propsで受け取っていないもののみ）
+  
   // 機能の定義（App_backup.tsxから復元）
   const features = [
     {
@@ -1016,6 +1107,319 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         .padStart(2, "0")}`;
     }
     return `${minutes}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  // App_backup.tsxから復元する関数群
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+    
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("authToken", data.access_token);
+        // Note: setUser and setIsLoggedIn should be passed as props from parent component
+        console.log("Login successful:", data.user);
+      } else {
+        setMessage(data.message || "ログインに失敗しました");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setMessage("ログイン中にエラーが発生しました");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+    
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, displayName }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMessage("登録に成功しました。ログインしてください。");
+        setIsRegisterMode(false);
+      } else {
+        setMessage(data.message || "登録に失敗しました");
+      }
+    } catch (error) {
+      console.error("Register error:", error);
+      setMessage("登録中にエラーが発生しました");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCharacterHomeToggle = () => {
+    setShowCharacterHome(!showCharacterHome);
+  };
+
+  const handleSelectCharacter = (character: any) => {
+    setCurrentCharacter(character);
+    setShowCharacterHome(false);
+  };
+
+  const handleDragStart = (e: React.DragEvent, featureId: string) => {
+    setDraggedFeature(featureId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e: React.DragEvent, targetFeatureId: string) => {
+    e.preventDefault();
+    if (!draggedFeature || draggedFeature === targetFeatureId) return;
+    
+    // 機能の並び順を更新する処理
+    console.log(`Moving ${draggedFeature} to ${targetFeatureId}`);
+    setDraggedFeature(null);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent, featureId: string) => {
+    setDraggedFeature(featureId);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    // タッチ移動の処理
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent, targetFeatureId: string) => {
+    if (draggedFeature && draggedFeature !== targetFeatureId) {
+      console.log(`Moving ${draggedFeature} to ${targetFeatureId}`);
+    }
+    setDraggedFeature(null);
+  };
+
+  const moveFeatureUp = (featureId: string) => {
+    // 機能を上に移動する処理
+    console.log(`Moving ${featureId} up`);
+  };
+
+  const moveFeatureDown = (featureId: string) => {
+    // 機能を下に移動する処理
+    console.log(`Moving ${featureId} down`);
+  };
+
+  const handleFeatureToggle = (featureId: string) => {
+    // 機能の表示/非表示を切り替える処理
+    console.log(`Toggling ${featureId}`);
+  };
+
+  const getFeatureOrder = () => {
+    return userSettings?.featureOrder || features.map(f => f.id);
+  };
+
+  const handleErrorReport = async (errorReport: {
+    title: string;
+    content: string;
+    errorDetails: string;
+    userAgent: string;
+    timestamp: string;
+  }) => {
+    try {
+      const response = await fetch("/api/admin/error-reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify(errorReport),
+      });
+      
+      if (response.ok) {
+        setMessage("エラーレポートを送信しました");
+        setShowErrorModal(false);
+        setCurrentError(null);
+      } else {
+        setMessage("エラーレポートの送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("Error reporting failed:", error);
+      setMessage("エラーレポートの送信中にエラーが発生しました");
+    }
+  };
+
+  const handleSimpleErrorReport = async (errorReport: {
+    title: string;
+    content: string;
+    errorDetails: string;
+    userAgent: string;
+    timestamp: string;
+  }) => {
+    try {
+      const response = await fetch("/api/admin/error-reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify(errorReport),
+      });
+      
+      if (response.ok) {
+        setMessage("エラーレポートを送信しました");
+        setShowSimpleErrorModal(false);
+        setCurrentError(null);
+      } else {
+        setMessage("エラーレポートの送信に失敗しました");
+      }
+    } catch (error) {
+      console.error("Error reporting failed:", error);
+      setMessage("エラーレポートの送信中にエラーが発生しました");
+    }
+  };
+
+  const getErrorInfo = (error: Error | null) => {
+    if (!error) return undefined;
+    
+    return {
+      message: error.message,
+      stack: error.stack || "",
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString(),
+      filename: "",
+      lineno: 0,
+      colno: 0,
+      type: "error",
+      url: window.location.href,
+    };
+  };
+
+  const editDiary = (diary: any) => {
+    setEditingDiary(diary);
+    setDiaryDate(diary.date);
+    setDiaryTitle(diary.title);
+    setDiaryContent(diary.content);
+    setDiaryMood(diary.mood?.toString() || "4");
+    setDiaryActivities(diary.activities || []);
+    setDiaryTags(diary.tags || "");
+    setDiaryIsPrivate(diary.isPrivate !== false);
+    setDiaryWorkSummary(diary.workSummary || "");
+    setDiaryAchievements(diary.achievements || []);
+    setDiaryChallenges(diary.challenges || []);
+    setDiaryLearnings(diary.learnings || []);
+    setDiaryNextGoals(diary.nextGoals || []);
+    setDiaryEnergyLevel(diary.energyLevel || 5);
+    setDiaryStressLevel(diary.stressLevel || 5);
+    setDiaryWorkHours(diary.workHours || 0);
+    setDiaryBreakTime(diary.breakTime || 0);
+    setDiaryProductivity(diary.productivity || 5);
+    setDiaryNotes(diary.notes || "");
+    setDiaryGratitude(diary.gratitude || "");
+    setDiaryReflection(diary.reflection || "");
+    setShowDiaryForm(true);
+  };
+
+  // メモ関連のハンドラー関数
+  const handleReplySubmit = async (memoId: string) => {
+    const content = replyContent;
+    try {
+      const response = await fetch(`/api/memos/reply`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({ memoId, content }),
+      });
+      
+      if (response.ok) {
+        setReplyContent("");
+        setReplyingToMemo(null);
+        loadMemos();
+      } else {
+        setMessage("返信の投稿に失敗しました");
+      }
+    } catch (error) {
+      console.error("Reply submit error:", error);
+      setMessage("返信の投稿中にエラーが発生しました");
+    }
+  };
+
+  const handleReplyCancel = () => {
+    setReplyContent("");
+    setReplyingToMemo(null);
+  };
+
+  const handleEditReply = (replyId: string, content: string) => {
+    setEditingReply(replyId);
+    setEditReplyContent(content);
+  };
+
+  const handleSaveEditReply = async (replyId: string) => {
+    try {
+      const response = await fetch(`/api/memos/reply/${replyId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({ content: editReplyContent }),
+      });
+      
+      if (response.ok) {
+        setEditingReply(null);
+        setEditReplyContent("");
+        loadMemos();
+      } else {
+        setMessage("返信の更新に失敗しました");
+      }
+    } catch (error) {
+      console.error("Edit reply error:", error);
+      setMessage("返信の更新中にエラーが発生しました");
+    }
+  };
+
+  const handleDeleteReply = async (replyId: string) => {
+    if (!confirm("この返信を削除しますか？")) return;
+    
+    try {
+      const response = await fetch(`/api/memos/reply/${replyId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+      
+      if (response.ok) {
+        loadMemos();
+      } else {
+        setMessage("返信の削除に失敗しました");
+      }
+    } catch (error) {
+      console.error("Delete reply error:", error);
+      setMessage("返信の削除中にエラーが発生しました");
+    }
+  };
+
+  const handleCancelEditReply = () => {
+    setEditingReply(null);
+    setEditReplyContent("");
   };
 
   // デバッグログの追加
@@ -1425,6 +1829,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           display: flex;
           flex-direction: column;
+          position: relative;
         }
         
         .dashboard {
@@ -1432,19 +1837,23 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           display: flex;
           flex-direction: column;
           min-height: 100vh;
+          position: relative;
         }
         
         .dashboard-main {
           flex: 1;
-          padding: 2rem;
+          padding: 1rem;
           max-width: 1200px;
           margin: 0 auto;
           width: 100%;
           box-sizing: border-box;
-          min-height: calc(100vh - 200px);
+          min-height: calc(100vh - 120px);
           position: relative;
           overflow-x: hidden;
           overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
         }
         
         /* 各機能コンポーネントの表示制御 */
@@ -1452,20 +1861,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           width: 100%;
           max-width: 100%;
           box-sizing: border-box;
-          margin-bottom: 1.5rem;
           background: rgba(255, 255, 255, 0.95);
-          border-radius: 15px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.2);
           overflow: hidden;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           z-index: 1;
+          flex-shrink: 0;
         }
         
         .feature-section:hover {
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-          transform: translateY(-2px);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+          transform: translateY(-1px);
         }
         
         .feature-section:last-child {
@@ -1475,12 +1884,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         /* レスポンシブデザイン */
         @media (max-width: 768px) {
           .dashboard-main {
-            padding: 1rem;
-            min-height: calc(100vh - 150px);
+            padding: 0.75rem;
+            min-height: calc(100vh - 100px);
+            gap: 0.75rem;
           }
           
           .feature-section {
-            margin-bottom: 1rem;
             border-radius: 8px;
           }
         }
@@ -1488,11 +1897,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         @media (max-width: 480px) {
           .dashboard-main {
             padding: 0.5rem;
-            min-height: calc(100vh - 120px);
+            min-height: calc(100vh - 80px);
+            gap: 0.5rem;
           }
           
           .feature-section {
-            margin-bottom: 0.5rem;
             border-radius: 6px;
           }
         }
@@ -1530,6 +1939,155 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         
         .dashboard-main::-webkit-scrollbar-thumb:hover {
           background: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* キャラクター達のお家モーダル */
+        .character-home-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 1000;
+        }
+        
+        .character-home-modal-content {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          max-width: 90vw;
+          max-height: 90vh;
+          width: 600px;
+          overflow: hidden;
+        }
+        
+        .character-home-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px;
+          border-bottom: 1px solid #eee;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+        }
+        
+        .character-home-modal-header h2 {
+          margin: 0;
+          font-size: 1.5em;
+        }
+        
+        .character-home-modal-header .close-button {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 1.5em;
+          cursor: pointer;
+          padding: 5px;
+          border-radius: 4px;
+        }
+        
+        .character-home-modal-header .close-button:hover {
+          background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 機能設定のドラッグ&ドロップスタイル */
+        .feature-item {
+          display: flex;
+          align-items: center;
+          padding: 15px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          background: #f8f9fa;
+          margin-bottom: 10px;
+          transition: all 0.2s ease;
+        }
+        
+        .feature-item.dragging {
+          opacity: 0.5;
+          transform: rotate(5deg);
+        }
+        
+        .feature-drag-handle {
+          cursor: grab;
+          color: #6b7280;
+          font-size: 1.2em;
+          margin-right: 10px;
+          padding: 5px;
+        }
+        
+        .feature-drag-handle:active {
+          cursor: grabbing;
+        }
+        
+        .feature-item-content {
+          display: flex;
+          align-items: center;
+          flex: 1;
+        }
+        
+        .feature-icon {
+          margin-right: 15px;
+        }
+        
+        .feature-info {
+          flex: 1;
+        }
+        
+        .feature-name {
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 4px;
+        }
+        
+        .feature-description {
+          font-size: 0.9em;
+          color: #6b7280;
+        }
+        
+        .feature-controls {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        
+        .feature-order-controls {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        
+        .order-button {
+          background: #f3f4f6;
+          border: 1px solid #d1d5db;
+          border-radius: 4px;
+          padding: 4px 8px;
+          cursor: pointer;
+          font-size: 0.8em;
+          transition: all 0.2s ease;
+        }
+        
+        .order-button:hover:not(:disabled) {
+          background: #e5e7eb;
+          border-color: #9ca3af;
+        }
+        
+        .order-button:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        
+        .up-button {
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+        
+        .down-button {
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
         }
       `}</style>
       <div className="app">
@@ -1863,12 +2421,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                       setMemoIsFamilyOnly={setMemoIsFamilyOnly}
                       memoIsAdminOnly={memoIsAdminOnly}
                       setMemoIsAdminOnly={setMemoIsAdminOnly}
-                      handleReplySubmit={() => {}}
-                      handleReplyCancel={() => {}}
-                      handleEditReply={() => {}}
-                      handleSaveEditReply={() => {}}
-                      handleDeleteReply={() => {}}
-                      handleCancelEditReply={() => {}}
+                      handleReplySubmit={handleReplySubmit}
+                      handleReplyCancel={handleReplyCancel}
+                      handleEditReply={handleEditReply}
+                      handleSaveEditReply={handleSaveEditReply}
+                      handleDeleteReply={handleDeleteReply}
+                      handleCancelEditReply={handleCancelEditReply}
                       replyContent={replyContent}
                       setReplyContent={setReplyContent}
                       replyingToMemo={replyingToMemo}
@@ -1966,12 +2524,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                       publicMemosLoading={false}
                       user={user}
                       loadPublicMemos={loadPublicMemos}
-                      handleReplySubmit={() => {}}
-                      handleReplyCancel={() => {}}
-                      handleEditReply={() => {}}
-                      handleSaveEditReply={() => {}}
-                      handleDeleteReply={() => {}}
-                      handleCancelEditReply={() => {}}
+                      handleReplySubmit={handleReplySubmit}
+                      handleReplyCancel={handleReplyCancel}
+                      handleEditReply={handleEditReply}
+                      handleSaveEditReply={handleSaveEditReply}
+                      handleDeleteReply={handleDeleteReply}
+                      handleCancelEditReply={handleCancelEditReply}
                       replyContent={replyContent}
                       setReplyContent={setReplyContent}
                     />
@@ -2043,7 +2601,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                         handleDeleteIncomeExpenseRecord
                       }
                       handleDeleteDiary={handleDeleteDiary}
-                      editDiary={() => {}}
+                      editDiary={editDiary}
                       showCalendar={showCalendar}
                       setShowCalendar={setShowCalendar}
                       currentMonth={currentMonth}
@@ -2087,14 +2645,48 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
         {showVersionInfo && <VersionInfo />}
 
-        {/* App_backup.tsxから復元するための追加コンポーネント */}
+        {/* キャラクター達のお家モーダル */}
+        {showCharacterHome && (
+          <div className="character-home-modal">
+            <div
+              className="modal-overlay"
+              onClick={handleCharacterHomeToggle}
+            ></div>
+            <div className="character-home-modal-content">
+              <div className="character-home-modal-header">
+                <h2><i className="bi bi-house"></i> キャラクター達のお家</h2>
+                <button
+                  onClick={handleCharacterHomeToggle}
+                  className="close-button"
+                >
+                  ✕
+                </button>
+              </div>
+              <CharacterHome
+                showCharacterHome={showCharacterHome}
+                setShowCharacterHome={setShowCharacterHome}
+                closeOtherFeatures={closeOtherFeatures}
+                onSelectCharacter={handleSelectCharacter}
+                currentCharacter={currentCharacter}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* エラー報告モーダル */}
         <SimpleErrorReportingModal
-          isOpen={false}
-          onClose={() => {}}
-          onSubmit={async (report) => {
-            // エラーレポート処理（実装不要）
-            console.log("Error report:", report);
-          }}
+          isOpen={showErrorModal}
+          onClose={() => setShowErrorModal(false)}
+          onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
+          errorInfo={getErrorInfo(currentError)}
+        />
+
+        {/* 独立したエラー報告モーダル */}
+        <SimpleErrorReportingModal
+          isOpen={showSimpleErrorModal}
+          onClose={() => setShowSimpleErrorModal(false)}
+          onSubmit={handleSimpleErrorReport}
+          errorInfo={getErrorInfo(currentError)}
         />
 
         {showThemeSettings && (
@@ -2278,36 +2870,87 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                     <h4>🎯 利用可能な機能</h4>
                     <p>各機能の表示/非表示を設定できます</p>
                     <div className="feature-list">
-                      {getVisibleFeaturesList().map((feature) => (
-                        <div key={feature.id} className="feature-item">
-                          <div className="feature-item-content">
-                            <div className="feature-info">
-                              <div className="feature-name">{feature.name}</div>
-                              <div className="feature-description">
-                                {feature.description}
+                      {getFeatureOrder().map((featureId: string) => {
+                        const feature = features.find((f) => f.id === featureId);
+                        if (!feature) return null;
+                        return (
+                          <div
+                            key={feature.id}
+                            className={`feature-item ${
+                              draggedFeature === feature.id ? "dragging" : ""
+                            }`}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, feature.id)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, feature.id)}
+                            onTouchStart={(e) => handleTouchStart(e, feature.id)}
+                            onTouchMove={handleTouchMove}
+                            onTouchEnd={(e) => handleTouchEnd(e, feature.id)}
+                          >
+                            <div className="feature-drag-handle">⋮⋮</div>
+                            <div className="feature-item-content">
+                              <div className="feature-icon">
+                                <HetamaIconComponent
+                                  featureId={feature.id}
+                                  size="medium"
+                                />
+                              </div>
+                              <div className="feature-info">
+                                <div className="feature-name">{feature.name}</div>
+                                <div className="feature-description">
+                                  {feature.description}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="feature-controls">
+                              <div className="feature-order-controls">
+                                <button
+                                  className="order-button up-button"
+                                  onClick={() => moveFeatureUp(feature.id)}
+                                  disabled={
+                                    userSettings?.featureOrder.indexOf(
+                                      feature.id
+                                    ) === 0
+                                  }
+                                  title="上に移動"
+                                >
+                                  ↑
+                                </button>
+                                <button
+                                  className="order-button down-button"
+                                  onClick={() => moveFeatureDown(feature.id)}
+                                  disabled={
+                                    userSettings?.featureOrder.indexOf(
+                                      feature.id
+                                    ) ===
+                                    (userSettings?.featureOrder.length || 0) - 1
+                                  }
+                                  title="下に移動"
+                                >
+                                  ↓
+                                </button>
+                              </div>
+                              <div className="feature-toggle">
+                                <label className="toggle-switch">
+                                  <input
+                                    type="checkbox"
+                                    checked={
+                                      !userSettings?.hiddenFeatures.includes(
+                                        feature.id
+                                      )
+                                    }
+                                    onChange={() =>
+                                      handleFeatureToggle(feature.id)
+                                    }
+                                    aria-label={`${feature.name}の表示/非表示を切り替え`}
+                                  />
+                                  <span className="toggle-slider"></span>
+                                </label>
                               </div>
                             </div>
                           </div>
-                          <div className="feature-controls">
-                            <div className="feature-toggle">
-                              <label className="toggle-switch">
-                                <input
-                                  type="checkbox"
-                                  checked={true} // 簡易実装：すべて有効
-                                  onChange={() => {
-                                    // 簡易実装：機能の切り替えは今後実装
-                                    console.log(
-                                      `Toggle feature: ${feature.id}`
-                                    );
-                                  }}
-                                  aria-label={`${feature.name}の表示/非表示を切り替え`}
-                                />
-                                <span className="toggle-slider"></span>
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
