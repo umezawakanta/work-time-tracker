@@ -1,10 +1,48 @@
 import * as Tone from "tone";
 import { ensureAudioContextReady } from "./AudioContextUtils";
 
-// グローバルでTone.jsの初期化状態を管理（ユーザー操作時のみ初期化）
-let globalToneInitialized = false;
-let toneInitializationPromise: Promise<boolean> | null = null;
-let isInitializing = false;
+// Tone.jsの状態管理クラス
+class ToneStateManager {
+  private static instance: ToneStateManager;
+  private globalToneInitialized = false;
+  private toneInitializationPromise: Promise<boolean> | null = null;
+  private isInitializing = false;
+
+  private constructor() {}
+
+  static getInstance(): ToneStateManager {
+    if (!ToneStateManager.instance) {
+      ToneStateManager.instance = new ToneStateManager();
+    }
+    return ToneStateManager.instance;
+  }
+
+  get isInitialized(): boolean {
+    return this.globalToneInitialized;
+  }
+
+  get isCurrentlyInitializing(): boolean {
+    return this.isInitializing;
+  }
+
+  setInitialized(value: boolean): void {
+    this.globalToneInitialized = value;
+  }
+
+  setInitializing(value: boolean): void {
+    this.isInitializing = value;
+  }
+
+  setInitializationPromise(promise: Promise<boolean> | null): void {
+    this.toneInitializationPromise = promise;
+  }
+
+  getInitializationPromise(): Promise<boolean> | null {
+    return this.toneInitializationPromise;
+  }
+}
+
+const toneStateManager = ToneStateManager.getInstance();
 
 // Tone.jsの自動初期化を防ぐ
 try {
@@ -42,7 +80,7 @@ const getNoteForCategory = (categoryId: string, genre?: string, frequency?: numb
 // 8bit風エフェクトチェーンを作成（遅延初期化）
 export const create8bitEffects = async () => {
   // Tone.jsが初期化されているか確認
-  if (!globalToneInitialized) {
+  if (!toneStateManager.isInitialized) {
     const initialized = await initializeTone();
     if (!initialized) {
       console.warn("Tone.js not initialized for creating effects");
@@ -242,23 +280,23 @@ export const createMeiwaInstrument = async (categoryId: string) => {
 
 // Tone.jsの初期化（ユーザー操作時のみ）
 export const initializeTone = async (): Promise<boolean> => {
-  if (globalToneInitialized) {
+  if (toneStateManager.isInitialized) {
     return true;
   }
 
   // 既に初期化中の場合は同じPromiseを返す
-  if (toneInitializationPromise) {
-    return toneInitializationPromise;
+  if (toneStateManager.getInitializationPromise()) {
+    return toneStateManager.getInitializationPromise()!;
   }
 
   // 初期化中フラグを設定
-  if (isInitializing) {
+  if (toneStateManager.isCurrentlyInitializing) {
     return false;
   }
 
-  isInitializing = true;
+  toneStateManager.setInitializing(true);
 
-  toneInitializationPromise = (async () => {
+  const initializationPromise = (async () => {
     try {
       // ユーザー操作後にAudioContextを確実に準備
       const audioReady = await ensureAudioContextReady();
@@ -274,7 +312,7 @@ export const initializeTone = async (): Promise<boolean> => {
       await new Promise(resolve => setTimeout(resolve, 200));
       
       console.log("Tone.js started successfully");
-      globalToneInitialized = true;
+      toneStateManager.setInitialized(true);
       return true;
     } catch (error) {
       console.error("Failed to initialize Tone.js:", error);
@@ -300,15 +338,17 @@ export const initializeTone = async (): Promise<boolean> => {
         }
       }));
       
-      globalToneInitialized = false;
+      toneStateManager.setInitialized(false);
       return false;
     } finally {
-      toneInitializationPromise = null;
-      isInitializing = false;
+      toneStateManager.setInitializationPromise(null);
+      toneStateManager.setInitializing(false);
     }
   })();
 
-  return toneInitializationPromise;
+  toneStateManager.setInitializationPromise(initializationPromise);
+
+  return initializationPromise;
 };
 
 // 音を再生
@@ -323,7 +363,7 @@ export const playSound = async (
   getOrCreateInstrument?: (categoryId: string) => Promise<any>
 ) => {
   // Tone.jsが初期化されているか確認
-  if (!globalToneInitialized) {
+  if (!toneStateManager.isInitialized) {
     const initialized = await initializeTone();
     if (!initialized) {
       console.warn("Tone.js not initialized, skipping sound playback");
@@ -388,4 +428,4 @@ export const playSound = async (
   }
 };
 
-export { globalToneInitialized };
+export { toneStateManager };

@@ -29,6 +29,15 @@ export interface ScoreData {
 // Voice.Modeの型安全なアクセス
 const VOICE_MODE_SOFT = Voice.Mode.SOFT; // VexFlowの公式定数を使用
 
+// 有効な調号を取得する関数
+const getValidKeySignature = (key: string): KeySignature => {
+  if (typeof key === "string" && 
+      SUPPORTED_KEY_SIGNATURES.includes(key as KeySignature)) {
+    return key as KeySignature;
+  }
+  return "C";
+};
+
 interface ScoreDisplayProps {
   currentScore: ScoreData | null;
   showScore: boolean;
@@ -82,13 +91,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
       const stave = new Stave(10, 40, 780);
 
       // 拍子記号と調号を追加（VexFlowが解釈できない場合はCにフォールバック）
-      const keyForVexflow = (() => {
-        if (typeof scoreData.key === "string" && 
-            SUPPORTED_KEY_SIGNATURES.includes(scoreData.key as typeof SUPPORTED_KEY_SIGNATURES[number])) {
-          return scoreData.key;
-        }
-        return "C";
-      })();
+      const keyForVexflow = getValidKeySignature(scoreData.key);
       stave
         .addClef("treble")
         .addTimeSignature(scoreData.timeSignature || "4/4")

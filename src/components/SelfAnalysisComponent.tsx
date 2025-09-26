@@ -1,6 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './SelfAnalysisComponent.css';
 import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
+
+// CSS変数を設定するカスタムフック
+const useProgressBarRef = (percentage: number) => {
+  return useCallback((el: HTMLDivElement | null) => {
+    if (el) {
+      el.style.setProperty('--progress-width', `${percentage}%`);
+    }
+  }, [percentage]);
+};
+
 import HetamaIconComponent from './HetamaIconComponent';
 import { useTimeTrackingHelpers } from './TimeTrackingStateManager';
 import { useMoodLogState, useMoodLogHelpers } from './MoodLogManager';
@@ -643,11 +653,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                               <div className="progress-bar">
                                 <div 
                                   className="progress-fill" 
-                                  ref={(el) => {
-                                    if (el) {
-                                      el.style.setProperty('--progress-width', `${percentage}%`);
-                                    }
-                                  }}
+                                  ref={useProgressBarRef(percentage)}
                                 ></div>
                               </div>
                               <span className="time-value">{hours.toFixed(1)}h</span>

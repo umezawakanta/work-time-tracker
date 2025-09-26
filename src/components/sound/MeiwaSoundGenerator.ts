@@ -5,6 +5,9 @@ import { CategoryRatio, RhythmPattern } from "./types";
 // 16分音符の倍率定数
 const SIXTEENTH_NOTE_MULTIPLIER = 0.25;
 
+// 音楽理論の定数
+const CENTS_PER_OCTAVE = 1200; // 1オクターブ = 1200セント
+
 // ミリ秒を秒に変換し、16分音符の倍率を適用する関数
 const convertMsToSeconds = (timeMs: number, beatDuration: number): number => {
   return (timeMs * beatDuration * SIXTEENTH_NOTE_MULTIPLIER) / 1000;
@@ -78,7 +81,7 @@ export const generateMeiwaRhythm = (
     const delay = convertMsToSeconds(pattern.time, beatDuration);
     const baseFrequency = Tone.Frequency(pattern.note).toFrequency();
     const frequency = pattern.detune ? 
-      baseFrequency * Math.pow(2, pattern.detune / 1200) : // セント単位のデチューン
+      baseFrequency * Math.pow(2, pattern.detune / CENTS_PER_OCTAVE) : // セント単位のデチューン
       baseFrequency;
     const duration = 0.05; // 短い8bit風の音
 
