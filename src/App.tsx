@@ -88,7 +88,6 @@ function App() {
   const [currentCharacter, setCurrentCharacter] = useState<any>(null);
 
   // タイマー関連の状態
-  const [showTimers, setShowTimers] = useState(false);
   const [customTimerActive, setCustomTimerActive] = useState(false);
   const [customTimerPaused, setCustomTimerPaused] = useState(false);
   const [customTimerTime, setCustomTimerTime] = useState(0);
@@ -298,13 +297,6 @@ function App() {
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [selectedRecordType, setSelectedRecordType] = useState<"income" | "expense" | "diary" | null>("income");
   
-  // 不足している状態変数を追加
-  const [showMemos, setShowMemos] = useState(false);
-  const [showBookshelf, setShowBookshelf] = useState(false);
-  const [showPublicMemos, setShowPublicMemos] = useState(false);
-  const [showTimers, setShowTimers] = useState(false);
-  const [showEggTimer, setShowEggTimer] = useState(false);
-
   // 月収支メモの状態
   const [monthlyMemo, setMonthlyMemo] = useState("");
   const [editingMonthlyMemo, setEditingMonthlyMemo] = useState(false);
@@ -2451,33 +2443,13 @@ function App() {
       formatEggTimerTime={formatEggTimerTime}
       // 通知機能
       sendNotification={sendNotification}
-      // カレンダー関連のプロパティ
-      showCalendar={showCalendar}
-      setShowCalendar={setShowCalendar}
-      currentDate={currentDate}
-      setCurrentDate={setCurrentDate}
-      currentMonth={currentMonth}
-      setCurrentMonth={setCurrentMonth}
-      selectedDate={selectedDate}
-      setSelectedDate={setSelectedDate}
-      showRecordDetail={showRecordDetail}
-      setShowRecordDetail={setShowRecordDetail}
-      selectedRecord={selectedRecord}
-      setSelectedRecord={setSelectedRecord}
-      selectedRecordType={selectedRecordType}
-      setSelectedRecordType={setSelectedRecordType}
       // 月収支メモ関連のプロパティ
-      monthlyMemo={monthlyMemo}
-      setMonthlyMemo={setMonthlyMemo}
-      editingMonthlyMemo={editingMonthlyMemo}
-      setEditingMonthlyMemo={setEditingMonthlyMemo}
       loadMonthlyMemo={loadMonthlyMemo}
       saveMonthlyMemo={saveMonthlyMemo}
       startEditingMonthlyMemo={startEditingMonthlyMemo}
       cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
       // カレンダー操作関数
       navigateMonth={navigateMonth}
-      openDiaryForm={openDiaryForm}
       openIncomeExpenseForm={openIncomeExpenseForm}
       // カスタムカテゴリ管理
       customCategories={customCategories}
@@ -2487,18 +2459,6 @@ function App() {
       handleAddCategory={handleAddCategory}
       handleDeleteCategory={handleDeleteCategory}
       getAllGenres={getAllGenres}
-      // 不足しているプロパティを追加
-      showMemos={showMemos}
-      setShowMemos={setShowMemos}
-      showBookshelf={showBookshelf}
-      setShowBookshelf={setShowBookshelf}
-      showPublicMemos={showPublicMemos}
-      setShowPublicMemos={setShowPublicMemos}
-      showTimers={showTimers}
-      setShowTimers={setShowTimers}
-      // EggTimerComponent用のプロパティ
-      showEggTimer={showEggTimer}
-      setShowEggTimer={setShowEggTimer}
       timerSettings={timerSettings}
     />
     </TimerPresetProvider>

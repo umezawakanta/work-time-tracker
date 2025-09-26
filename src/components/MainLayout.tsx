@@ -1484,11 +1484,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             {/* キャラクター達のお家 */}
             {showCharacterHome && (
               <CharacterHome
+                showCharacterHome={showCharacterHome}
+                setShowCharacterHome={setShowCharacterHome}
+                closeOtherFeatures={closeOtherFeatures}
+                onSelectCharacter={() => {}}
                 currentCharacter={null}
-                onCharacterSelect={() => {}}
-                onCharacterCreate={() => {}}
-                onCharacterUpdate={() => {}}
-                onCharacterDelete={() => {}}
               />
             )}
 
@@ -2122,23 +2122,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           </div>
         )}
 
-        <LanguageFontSettings
-          isOpen={showLanguageFontSettings}
-          onClose={() => setShowLanguageFontSettings(false)}
-          onSave={handleLanguageFontSave}
-          currentSettings={fontSettings}
-        />
-
-        <DiaryReminderIntegration
-          showDiaryReminderSettings={showDiaryReminderSettings}
-          setShowDiaryReminderSettings={setShowDiaryReminderSettings}
-          diaryReminderSnoozeUntil={diaryReminderSnoozeUntil}
-          setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
-          onOpenDiaryForm={openDiaryForm}
-        />
-
-        </main>
       </div>
+
+      <LanguageFontSettings
+        isOpen={showLanguageFontSettings}
+        onClose={() => setShowLanguageFontSettings(false)}
+        onSave={handleLanguageFontSave}
+        currentSettings={fontSettings}
+      />
+
+      <DiaryReminderIntegration
+        showDiaryReminderSettings={showDiaryReminderSettings}
+        setShowDiaryReminderSettings={setShowDiaryReminderSettings}
+        diaryReminderSnoozeUntil={diaryReminderSnoozeUntil}
+        setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
+        onOpenDiaryForm={openDiaryForm}
+      />
 
       <UpdateRequestModal
         isOpen={showUpdateRequestModal}
