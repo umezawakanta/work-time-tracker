@@ -14,7 +14,6 @@ interface WorkRecordsComponentProps {
   setShowCalendar: (show: boolean) => void;
   incomeExpenseRecords: IncomeExpenseRecord[];
   workDiaries: WorkDiary[];
-  diaryLoading: boolean;
   currentMonth: Date;
   setCurrentMonth: (date: Date) => void;
   selectedDate: Date | null;
@@ -90,7 +89,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   setShowCalendar,
   incomeExpenseRecords,
   workDiaries,
-  diaryLoading,
   currentMonth,
   setCurrentMonth,
   selectedDate,
@@ -156,6 +154,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 収支記録のローディング状態をWorkRecordsComponent内で管理
   const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
 
+  // 日記のローディング状態をWorkRecordsComponent内で管理
+  const [diaryLoading, setDiaryLoading] = useState(false);
+
   // 収支記録読み込み関数をWorkRecordsComponent内で定義
   const loadIncomeExpenseRecordsLocal = async () => {
     setIncomeExpenseLoading(true);
@@ -163,6 +164,16 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       await loadIncomeExpenseRecords();
     } finally {
       setIncomeExpenseLoading(false);
+    }
+  };
+
+  // 日記読み込み関数をWorkRecordsComponent内で定義
+  const loadWorkDiariesLocal = async () => {
+    setDiaryLoading(true);
+    try {
+      await loadWorkDiaries();
+    } finally {
+      setDiaryLoading(false);
     }
   };
 
@@ -383,7 +394,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   loadIncomeExpenseRecordsLocal();
                 }
                 if (workDiaries.length === 0) {
-                  loadWorkDiaries();
+                  loadWorkDiariesLocal();
                 }
               }}
               className="show-section-button"
@@ -1055,7 +1066,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             <button
               onClick={() => {
                 loadIncomeExpenseRecordsLocal();
-                loadWorkDiaries();
+                loadWorkDiariesLocal();
               }}
               className="action-button refresh-button"
             >
