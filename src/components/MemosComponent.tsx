@@ -6,7 +6,6 @@ import { EXCLUDED_MEMO_CATEGORIES } from '../utils/requestFormatters';
 interface MemosComponentProps {
   memos: Memo[];
   publicMemos: Memo[];
-  memosLoading: boolean;
   showMemos: boolean;
   setShowMemos: (show: boolean) => void;
   customCategories: string[];
@@ -48,7 +47,6 @@ interface MemosComponentProps {
 const MemosComponent: React.FC<MemosComponentProps> = ({
   memos,
   publicMemos,
-  memosLoading,
   showMemos,
   setShowMemos,
   customCategories,
@@ -86,7 +84,34 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   replyingToMemo,
   setReplyingToMemo,
 }) => {
-  // デバッグログを追加
+  // 個別のローディング状態を管理
+  const [memosLoading, setMemosLoading] = useState(false);
+  
+  // データ読み込み関数をコンポーネント内で定義
+  const loadMemosLocal = async () => {
+    setMemosLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      const params = new URLSearchParams();
+      // 検索条件の設定（必要に応じて）
+      
+      const response = await fetch(`/api/memos?${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        // 親コンポーネントの状態を更新
+        loadMemos();
+      }
+    } catch (error) {
+      console.error("Failed to load memos:", error);
+    } finally {
+      setMemosLoading(false);
+    }
+  };
   console.log('MemosComponent - Props received:', {
     memos: memos?.length || 0,
     publicMemos: publicMemos?.length || 0,
@@ -320,7 +345,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
             <div className="memos-header-right">
               <button
                 onClick={() => {
-                  loadMemos();
+                  loadMemosLocal();
                 }}
                 className="refresh-button"
                 title="メモを更新"

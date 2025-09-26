@@ -173,7 +173,6 @@ interface AdminPanelComponentProps {
   showAdminPanel: boolean;
   setShowAdminPanel: (show: boolean) => void;
   adminUsers: AdminUser[];
-  adminUsersLoading: boolean;
   editingUser: AdminUser | null;
   setEditingUser: (user: AdminUser | null) => void;
   loadAdminUsers: () => void;
@@ -187,7 +186,6 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   showAdminPanel,
   setShowAdminPanel,
   adminUsers,
-  adminUsersLoading,
   editingUser,
   setEditingUser,
   loadAdminUsers,
@@ -196,6 +194,31 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   handleDeleteUser,
   closeOtherFeatures,
 }) => {
+  // 個別のローディング状態を管理
+  const [adminUsersLoading, setAdminUsersLoading] = useState(false);
+  
+  // データ読み込み関数をコンポーネント内で定義
+  const loadAdminUsersLocal = async () => {
+    setAdminUsersLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/admin/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        // 親コンポーネントの状態を更新
+        loadAdminUsers();
+      }
+    } catch (error) {
+      console.error("Failed to load admin users:", error);
+    } finally {
+      setAdminUsersLoading(false);
+    }
+  };
   const [editingUserData, setEditingUserData] = useState<Partial<AdminUser>>({});
   const [showUserForm, setShowUserForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -394,6 +417,13 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
   useEffect(() => {
     setTabCounts(prev => ({ ...prev, users: adminUsers.length }));
   }, [adminUsers]);
+
+  // コンポーネントマウント時にデータを読み込み
+  useEffect(() => {
+    if (showAdminPanel) {
+      loadAdminUsersLocal();
+    }
+  }, [showAdminPanel]);
 
   // API一覧のエラー件数を「apilist」タブがアクティブなときのみ定期的に取得
   useEffect(() => {
@@ -802,7 +832,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
               onClick={() => {
                 closeOtherFeatures("admin-panel");
                 setShowAdminPanel(true);
-                loadAdminUsers();
+                loadAdminUsersLocal();
               }}
               className="show-section-button"
               title="セクションを表示"
@@ -924,7 +954,7 @@ const AdminPanelComponent: React.FC<AdminPanelComponentProps> = ({
                 <div className="tab-header">
                   <h3>ユーザー管理</h3>
                   <button
-                    onClick={loadAdminUsers}
+                    onClick={loadAdminUsersLocal}
                     className="refresh-button"
                     title="ユーザー一覧を更新"
                   >

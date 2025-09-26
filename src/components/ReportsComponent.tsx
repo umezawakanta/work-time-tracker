@@ -7,7 +7,6 @@ interface ReportsComponentProps {
   setShowReports: (show: boolean) => void;
   incomeExpenseRecords: IncomeExpenseRecord[];
   workDiaries: WorkDiary[];
-  reportsLoading: boolean;
   reportSummary: any;
   loadReportSummary: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
@@ -18,14 +17,38 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
   setShowReports,
   incomeExpenseRecords,
   workDiaries,
-  reportsLoading,
   reportSummary,
   loadReportSummary,
   closeOtherFeatures,
 }) => {
+  // 個別のローディング状態を管理
+  const [reportsLoading, setReportsLoading] = useState(false);
+  
   const [selectedPeriod, setSelectedPeriod] = useState('month');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+
+  // データ読み込み関数をコンポーネント内で定義
+  const loadReportSummaryLocal = async () => {
+    setReportsLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("/api/reports/summary", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        // 親コンポーネントの状態を更新
+        loadReportSummary();
+      }
+    } catch (error) {
+      console.error("Failed to load report summary:", error);
+    } finally {
+      setReportsLoading(false);
+    }
+  };
 
   // レポートデータを計算する関数
   const calculateReportData = () => {
@@ -93,9 +116,9 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
   // データの再計算
   useEffect(() => {
     if (showReports) {
-      loadReportSummary();
+      loadReportSummaryLocal();
     }
-  }, [showReports, selectedYear, selectedMonth, loadReportSummary]);
+  }, [showReports, selectedYear, selectedMonth]);
 
   // 日時フォーマット関数
   const formatDateTime = (dateString: string) => {
@@ -154,7 +177,7 @@ const ReportsComponent: React.FC<ReportsComponentProps> = ({
         <div className="reports-content">
           <div className="reports-header">
             <button
-              onClick={loadReportSummary}
+              onClick={loadReportSummaryLocal}
               className="refresh-button"
               title="レポートを更新"
             >

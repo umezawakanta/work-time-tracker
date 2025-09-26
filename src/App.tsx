@@ -40,10 +40,6 @@ import {
 } from "./utils/urlUtils";
 import EggTimerComponent from "./components/EggTimerComponent";
 import {
-  LoadingStateProvider,
-  useLoadingState,
-} from "./components/LoadingStateManager";
-import {
   TimeTrackingStateProvider,
   useTimeTrackingHelpers,
 } from "./components/TimeTrackingStateManager";
@@ -101,18 +97,9 @@ import type {
 } from "./types";
 
 function App() {
-  // ローディング状態の管理
-  // 注意: loadingStateをサブコンポーネント側で定義することはできません
-  // 理由:
-  // 1. 複数のコンポーネント間でローディング状態を共有する必要がある
-  //    - ReportsComponent: reportsLoading
-  //    - MemosComponent: memosLoading
-  //    - その他のコンポーネントでも同様
-  // 2. App.tsx内の複数の関数（loadReportSummary, loadAdminUsers, loadMemos等）で
-  //    ローディング状態を設定・更新している
-  // 3. グローバルな状態管理が必要で、Context Providerを使用している
-  // 4. 各コンポーネントで個別に管理すると状態の同期が困難になる
-  const loadingState = useLoadingState();
+  // 注意: loadingStateは各コンポーネントで個別に管理される
+  // 理由: 各コンポーネントで個別のローディング状態を管理することで、状態の分散を防ぐ
+  // const loadingState = useLoadingState(); // 削除
 
   // 時間記録状態の管理（TimeTrackingComponent内で管理）
   // 注意: timeTrackingHelpersをサブコンポーネント側で定義することはできません
@@ -3962,7 +3949,6 @@ ${errorInfo.stack}
   // 4. サブコンポーネント側で定義すると、状態の管理が分散し、データの整合性が保てなくなる
   // 5. 認証トークンの取得やAPI呼び出しは、アプリケーション全体の認証状態に依存する
   const loadReportSummary = async () => {
-    loadingState.setReportsLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/reports/summary", {
@@ -3978,8 +3964,6 @@ ${errorInfo.stack}
       }
     } catch (error) {
       console.error("Failed to load report summary:", error);
-    } finally {
-      loadingState.setReportsLoading(false);
     }
   };
 
@@ -3997,7 +3981,6 @@ ${errorInfo.stack}
   // 5. サブコンポーネント側で定義すると、状態の管理が分散し、データの整合性が保てなくなる
   // 6. 認証トークンの取得やAPI呼び出しは、アプリケーション全体の認証状態に依存する
   const loadAdminUsers = async () => {
-    loadingState.setAdminUsersLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/admin/users", {
@@ -4018,8 +4001,6 @@ ${errorInfo.stack}
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
-    } finally {
-      loadingState.setAdminUsersLoading(false);
     }
   };
 
@@ -4334,7 +4315,6 @@ ${errorInfo.stack}
   // 6. サブコンポーネント側で定義すると、状態の管理が分散し、データの整合性が保てなくなる
   // 7. 認証トークンの取得やAPI呼び出しは、アプリケーション全体の認証状態に依存する
   const loadMemos = async () => {
-    loadingState.setMemosLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const params = new URLSearchParams();
@@ -4379,8 +4359,6 @@ ${errorInfo.stack}
           `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
-    } finally {
-      loadingState.setMemosLoading(false);
     }
   };
 
@@ -6202,7 +6180,6 @@ User Agent: ${userAgent}
                     setShowReports={setShowReports}
                     incomeExpenseRecords={incomeExpenseRecords}
                     workDiaries={workDiaries}
-                    reportsLoading={loadingState.reportsLoading}
                     reportSummary={reportSummary}
                     loadReportSummary={loadReportSummary}
                     closeOtherFeatures={closeOtherFeatures}
@@ -6218,7 +6195,6 @@ User Agent: ${userAgent}
                     showAdminPanel={showAdminPanel}
                     setShowAdminPanel={setShowAdminPanel}
                     adminUsers={adminUsers}
-                    adminUsersLoading={adminUsersLoading}
                     editingUser={editingUser}
                     setEditingUser={setEditingUser}
                     loadAdminUsers={loadAdminUsers}
@@ -6274,7 +6250,6 @@ User Agent: ${userAgent}
                     key={feature.id}
                     memos={memos}
                     publicMemos={publicMemos}
-                    memosLoading={loadingState.memosLoading}
                     showMemos={showMemos}
                     setShowMemos={setShowMemos}
                     customCategories={customCategories}
@@ -6944,29 +6919,27 @@ const AppWithProviders = () => {
   const [customTimerActive, setCustomTimerActive] = useState(false);
 
   return (
-    <LoadingStateProvider>
-      <TimeTrackingStateProvider user={user}>
-        <TimerPresetProvider
-          onStartTimer={(minutes, seconds, name) => {
-            // カスタムタイマーを開始する処理
-            console.log(`Starting timer: ${name} for ${minutes}:${seconds}`);
-          }}
-          onStopTimer={() => {
-            // カスタムタイマーを停止する処理
-            console.log("Stopping timer");
-          }}
-          onResetTimer={() => {
-            // カスタムタイマーをリセットする処理
-            console.log("Resetting timer");
-          }}
-          isTimerActive={customTimerActive}
-        >
-          <MoodLogProvider>
-            <App />
-          </MoodLogProvider>
-        </TimerPresetProvider>
-      </TimeTrackingStateProvider>
-    </LoadingStateProvider>
+    <TimeTrackingStateProvider user={user}>
+      <TimerPresetProvider
+        onStartTimer={(minutes, seconds, name) => {
+          // カスタムタイマーを開始する処理
+          console.log(`Starting timer: ${name} for ${minutes}:${seconds}`);
+        }}
+        onStopTimer={() => {
+          // カスタムタイマーを停止する処理
+          console.log("Stopping timer");
+        }}
+        onResetTimer={() => {
+          // カスタムタイマーをリセットする処理
+          console.log("Resetting timer");
+        }}
+        isTimerActive={customTimerActive}
+      >
+        <MoodLogProvider>
+          <App />
+        </MoodLogProvider>
+      </TimerPresetProvider>
+    </TimeTrackingStateProvider>
   );
 };
 
