@@ -97,9 +97,37 @@ import type {
   LearningRecord,
 } from "./types";
 
-function App() {
+interface AppProps {
+  email: string;
+  setEmail: (email: string) => void;
+  password: string;
+  setPassword: (password: string) => void;
+  displayName: string;
+  setDisplayName: (displayName: string) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+  message: string;
+  setMessage: (message: string) => void;
+  isRegisterMode: boolean;
+  setIsRegisterMode: (isRegisterMode: boolean) => void;
+}
+
+function App({ 
+  email, 
+  setEmail, 
+  password, 
+  setPassword, 
+  displayName, 
+  setDisplayName, 
+  loading, 
+  setLoading, 
+  message, 
+  setMessage, 
+  isRegisterMode, 
+  setIsRegisterMode 
+}: AppProps) {
   // 認証状態をAuthContextProviderから取得
-  const { user, isLoggedIn, isCheckingAuth, email, password, displayName, setUser, setIsLoggedIn, setEmail, setPassword, setDisplayName, verifyToken, setIsCheckingAuth, handleLogin, handleRegister, handleLogout } = useAuthContext();
+  const { user, isLoggedIn, isCheckingAuth, setUser, setIsLoggedIn, verifyToken, setIsCheckingAuth, handleLogin, handleRegister, handleLogout } = useAuthContext();
   // 注意: loadingStateは各コンポーネントで個別に管理される
   // 理由: 各コンポーネントで個別のローディング状態を管理することで、状態の分散を防ぐ
   // const loadingState = useLoadingState(); // 削除
@@ -125,9 +153,10 @@ function App() {
   // const [email, setEmail] = useState(""); // AuthContextProviderで管理
   // const [password, setPassword] = useState(""); // AuthContextProviderで管理
   // const [displayName, setDisplayName] = useState(""); // AuthContextProviderで管理
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  // 注意: loading, message, isRegisterModeはAppWithProvidersから受け取る
+  // const [loading, setLoading] = useState(false); // AppWithProvidersで管理
+  // const [message, setMessage] = useState(""); // AppWithProvidersで管理
+  // const [isRegisterMode, setIsRegisterMode] = useState(false); // AppWithProvidersで管理
 
   // エラー報告関連の状態
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -6652,8 +6681,12 @@ const AppWithProviders = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ email: email, password: password }),
           });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
 
           const data = await response.json();
 
@@ -6669,12 +6702,19 @@ const AppWithProviders = () => {
             const userId = data.user.id;
             // データの読み込みはAppコンポーネント内で実行される
           } else {
-            setMessage(`ログイン失敗: ${data.message}`);
+            setMessage(`ログイン失敗: ${data.message || '認証に失敗しました'}`);
           }
         } catch (error) {
-          setMessage(
-            `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-          );
+          console.error("Login error:", error);
+          if (error instanceof Error && error.message.includes('404')) {
+            setMessage("ログインAPIが見つかりません。サーバーが起動しているか確認してください。");
+          } else if (error instanceof Error && error.message.includes('400')) {
+            setMessage("ログイン情報が正しくありません。メールアドレスとパスワードを確認してください。");
+          } else {
+            setMessage(
+              `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+            );
+          }
         } finally {
           setLoading(false);
         }
@@ -6690,7 +6730,7 @@ const AppWithProviders = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email, password, displayName }),
+            body: JSON.stringify({ email: email, password: password, displayName: displayName }),
           });
 
           const data = await response.json();
@@ -6769,7 +6809,20 @@ const AppWithProviders = () => {
           isTimerActive={customTimerActive}
         >
           <MoodLogProvider>
-            <App />
+            <App 
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              displayName={displayName}
+              setDisplayName={setDisplayName}
+              loading={loading}
+              setLoading={setLoading}
+              message={message}
+              setMessage={setMessage}
+              isRegisterMode={isRegisterMode}
+              setIsRegisterMode={setIsRegisterMode}
+            />
           </MoodLogProvider>
         </TimerPresetProvider>
       </TimeTrackingStateProvider>
