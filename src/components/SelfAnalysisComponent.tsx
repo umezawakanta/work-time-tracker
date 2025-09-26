@@ -653,6 +653,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                                       <div 
                                         className="bar-fill"
                                         data-height={height}
+                                        style={{ height: `${height}%` }}
                                         title={`${day.dayOfWeek} ${day.workHours.toFixed(1)}h`}
                                       ></div>
                                       <div className="bar-label">{day.dayOfWeek}</div>
