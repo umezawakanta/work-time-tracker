@@ -1429,16 +1429,35 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           const parts = token.split('.');
           console.log("MainLayout - loadIncomeExpenseRecords token parts length:", parts.length);
           if (parts.length === 3) {
-            console.log("MainLayout - loadIncomeExpenseRecords payload part:", parts[1]);
-            const payload = JSON.parse(atob(parts[1]));
-            console.log("MainLayout - loadIncomeExpenseRecords payload:", payload);
-            actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
+            let payload = parts[1];
+            console.log("MainLayout - loadIncomeExpenseRecords payload part:", payload);
+            
+            // JWT uses URL-safe base64, so we need to handle it properly
+            // Replace URL-safe characters
+            payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+            
+            // Add padding if necessary
+            const pad = payload.length % 4;
+            if (pad) {
+              if (pad === 1) {
+                throw new Error('Invalid token');
+              }
+              payload += new Array(5 - pad).join('=');
+            }
+            
+            // Now decode
+            const decoded = JSON.parse(atob(payload));
+            console.log("MainLayout - loadIncomeExpenseRecords Successfully decoded JWT payload:", decoded);
+            
+            actualUserId = decoded.userId || decoded.user_id || user?.id || 'temp-id';
             console.log("MainLayout - loadIncomeExpenseRecords actual user ID from token:", actualUserId);
           } else {
             console.warn("MainLayout - Invalid token format for income records");
           }
         } catch (e) {
           console.warn("MainLayout - Failed to decode token for income records:", e);
+          // Fall back to user.id
+          actualUserId = user?.id || 'temp-id';
         }
       }
       
@@ -1471,16 +1490,35 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           const parts = token.split('.');
           console.log("MainLayout - loadWorkDiaries token parts length:", parts.length);
           if (parts.length === 3) {
-            console.log("MainLayout - loadWorkDiaries payload part:", parts[1]);
-            const payload = JSON.parse(atob(parts[1]));
-            console.log("MainLayout - loadWorkDiaries payload:", payload);
-            actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
+            let payload = parts[1];
+            console.log("MainLayout - loadWorkDiaries payload part:", payload);
+            
+            // JWT uses URL-safe base64, so we need to handle it properly
+            // Replace URL-safe characters
+            payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+            
+            // Add padding if necessary
+            const pad = payload.length % 4;
+            if (pad) {
+              if (pad === 1) {
+                throw new Error('Invalid token');
+              }
+              payload += new Array(5 - pad).join('=');
+            }
+            
+            // Now decode
+            const decoded = JSON.parse(atob(payload));
+            console.log("MainLayout - loadWorkDiaries Successfully decoded JWT payload:", decoded);
+            
+            actualUserId = decoded.userId || decoded.user_id || user?.id || 'temp-id';
             console.log("MainLayout - loadWorkDiaries actual user ID from token:", actualUserId);
           } else {
             console.warn("MainLayout - Invalid token format");
           }
         } catch (e) {
           console.warn("MainLayout - Failed to decode token:", e);
+          // Fall back to user.id
+          actualUserId = user?.id || 'temp-id';
         }
       }
       

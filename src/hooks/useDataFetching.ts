@@ -6,24 +6,45 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
   // JWTトークンから実際のユーザーIDを取得する関数
   const getActualUserId = () => {
     const token = localStorage.getItem("access_token");
+    let actualUserId = user?.id || 'temp-id';
+    
     if (token) {
       try {
         console.log('useDataFetching - token:', token.substring(0, 50) + "...");
         const parts = token.split('.');
         console.log('useDataFetching - token parts length:', parts.length);
         if (parts.length === 3) {
-          console.log('useDataFetching - payload part:', parts[1]);
-          const payload = JSON.parse(atob(parts[1]));
-          console.log('useDataFetching - payload:', payload);
-          const actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
+          let payload = parts[1];
+          console.log('useDataFetching - payload part:', payload);
+          
+          // JWT uses URL-safe base64, so we need to handle it properly
+          // Replace URL-safe characters
+          payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+          
+          // Add padding if necessary
+          const pad = payload.length % 4;
+          if (pad) {
+            if (pad === 1) {
+              throw new Error('Invalid token');
+            }
+            payload += new Array(5 - pad).join('=');
+          }
+          
+          // Now decode
+          const decoded = JSON.parse(atob(payload));
+          console.log('useDataFetching - Successfully decoded JWT payload:', decoded);
+          
+          actualUserId = decoded.userId || decoded.user_id || user?.id || 'temp-id';
           console.log('useDataFetching - getActualUserId:', actualUserId);
-          return actualUserId;
         }
       } catch (e) {
         console.warn('useDataFetching - Failed to decode token:', e);
+        // Fall back to user.id
+        actualUserId = user?.id || 'temp-id';
       }
     }
-    return user?.id || 'temp-id';
+    
+    return actualUserId;
   };
 
   // デバッグログの追加
