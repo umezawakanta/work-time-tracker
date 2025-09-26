@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './SelfAnalysisComponent.css';
 import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
 import HetamaIconComponent from './HetamaIconComponent';
@@ -610,8 +610,11 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                               <div className="progress-bar">
                                 <div 
                                   className="progress-fill" 
-                                  data-width={percentage}
-                                  style={{ width: percentage + '%' }}
+                                  ref={(el) => {
+                                    if (el) {
+                                      el.style.setProperty('--progress-width', `${percentage}%`);
+                                    }
+                                  }}
                                 ></div>
                               </div>
                               <span className="time-value">{hours.toFixed(1)}h</span>
@@ -652,8 +655,11 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                                     <div key={day.date} className="graph-bar">
                                       <div 
                                         className="bar-fill"
-                                        data-height={height}
-                                        style={{ height: `${height}%` }}
+                                        ref={(el) => {
+                                          if (el) {
+                                            el.style.setProperty('--bar-height', `${height}%`);
+                                          }
+                                        }}
                                         title={`${day.dayOfWeek} ${day.workHours.toFixed(1)}h`}
                                       ></div>
                                       <div className="bar-label">{day.dayOfWeek}</div>
@@ -731,8 +737,11 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             return (
                               <div
                                 className="mood-indicator"
-                                data-position={moodPosition}
-                                style={{ left: `${moodPosition}%` }}
+                                ref={(el) => {
+                                  if (el) {
+                                    el.style.setProperty('--mood-position', `${moodPosition}%`);
+                                  }
+                                }}
                               >
                                 😊
                               </div>
@@ -1311,7 +1320,11 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             <div className="factor-bar">
                               <div 
                                 className="factor-fill" 
-                                data-percentage={(log.energy / 5) * 100}
+                                ref={(el) => {
+                                  if (el) {
+                                    el.style.setProperty('--factor-percentage', `${(log.energy / 5) * 100}%`);
+                                  }
+                                }}
                               ></div>
                             </div>
                             <span className="factor-value">{log.energy}/5</span>
@@ -1321,7 +1334,11 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             <div className="factor-bar">
                               <div 
                                 className="factor-fill stress" 
-                                data-percentage={(log.stress / 5) * 100}
+                                ref={(el) => {
+                                  if (el) {
+                                    el.style.setProperty('--factor-percentage', `${(log.stress / 5) * 100}%`);
+                                  }
+                                }}
                               ></div>
                             </div>
                             <span className="factor-value">{log.stress}/5</span>

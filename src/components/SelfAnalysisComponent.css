@@ -1908,19 +1908,23 @@
   }
 }
 
-/* Data attribute based styling */
-.progress-fill[data-width] {
-  width: calc(attr(data-width number) * 1%);
+/* Data attribute based styling - using CSS custom properties */
+.progress-fill {
+  width: var(--progress-width, 0%);
+  transition: width 0.3s ease;
 }
 
-.bar-fill[data-height] {
-  height: calc(attr(data-height number) * 1%);
+.bar-fill {
+  height: var(--bar-height, 0%);
+  transition: height 0.3s ease;
 }
 
-.mood-indicator[data-position] {
-  left: calc(attr(data-position number) * 1%);
+.mood-indicator {
+  left: var(--mood-position, 0%);
+  transition: left 0.3s ease;
 }
 
-.factor-fill[data-percentage] {
-  width: calc(attr(data-percentage number) * 1%);
+.factor-fill {
+  width: var(--factor-percentage, 0%);
+  transition: width 0.3s ease;
 }
