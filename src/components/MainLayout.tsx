@@ -1,33 +1,33 @@
-import React from 'react';
-import HeaderComponent from './HeaderComponent';
-import CharacterHome from './CharacterHome';
-import ProjectsSection from './ProjectsSection';
-import CookingTimerSection from './CookingTimerSection';
-import SelfAnalysisComponent from './SelfAnalysisComponent';
-import BookshelfComponent from './BookshelfComponent';
-import MemosComponent from './MemosComponent';
-import ReportsComponent from './ReportsComponent';
-import AdminPanelComponent from './AdminPanelComponent';
-import { PersonalProfile } from './SelfAnalysisComponent';
-import { Habit, Goal, LearningRecord } from '../types';
-import TimeTrackingComponent from './TimeTrackingComponent';
-import TimersComponent from './TimersComponent';
-import PublicMemosComponent from './PublicMemosComponent';
-import WorkRecordsComponent from './WorkRecordsComponent';
-import SoundAppComponent from './SoundAppComponent';
-import NotificationComponent from './NotificationComponent';
-import VersionInfo from './VersionInfo';
-import UpdateRequestModal from './UpdateRequestModal';
-import BugReportModal from './BugReportModal';
-import EggTimerComponent from './EggTimerComponent';
-import HetamaIconComponent from './HetamaIconComponent';
-import LanguageFontSettings from './LanguageFontSettings';
-import DiaryReminderIntegration from './DiaryReminderIntegration';
-import SimpleErrorReportingModal from './SimpleErrorReportingModal';
-import { User } from '../types';
+import React from "react";
+import HeaderComponent from "./HeaderComponent";
+import CharacterHome from "./CharacterHome";
+import ProjectsSection from "./ProjectsSection";
+import CookingTimerSection from "./CookingTimerSection";
+import SelfAnalysisComponent from "./SelfAnalysisComponent";
+import BookshelfComponent from "./BookshelfComponent";
+import MemosComponent from "./MemosComponent";
+import ReportsComponent from "./ReportsComponent";
+import AdminPanelComponent from "./AdminPanelComponent";
+import { PersonalProfile } from "./SelfAnalysisComponent";
+import { Habit, Goal, LearningRecord } from "../types";
+import TimeTrackingComponent from "./TimeTrackingComponent";
+import TimersComponent from "./TimersComponent";
+import PublicMemosComponent from "./PublicMemosComponent";
+import WorkRecordsComponent from "./WorkRecordsComponent";
+import SoundAppComponent from "./SoundAppComponent";
+import NotificationComponent from "./NotificationComponent";
+import VersionInfo from "./VersionInfo";
+import UpdateRequestModal from "./UpdateRequestModal";
+import BugReportModal from "./BugReportModal";
+import EggTimerComponent from "./EggTimerComponent";
+import HetamaIconComponent from "./HetamaIconComponent";
+import LanguageFontSettings from "./LanguageFontSettings";
+import DiaryReminderIntegration from "./DiaryReminderIntegration";
+import SimpleErrorReportingModal from "./SimpleErrorReportingModal";
+import { User } from "../types";
 
 // App_backup.tsxから復元するための追加インポート
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface MainLayoutProps {
   user: User | null;
@@ -240,8 +240,18 @@ interface MainLayoutProps {
   setShowUpdateRequestModal: (show: boolean) => void;
   // その他の関数
   closeOtherFeatures: (activeFeature: string) => void;
-  onUpdateRequestSubmit: (updateRequest: { title: string; content: string; priority: string; category: string }) => Promise<void>;
-  onBugReportSubmit: (bugReport: { title: string; content: string; severity: string; category: string }) => Promise<void>;
+  onUpdateRequestSubmit: (updateRequest: {
+    title: string;
+    content: string;
+    priority: string;
+    category: string;
+  }) => Promise<void>;
+  onBugReportSubmit: (bugReport: {
+    title: string;
+    content: string;
+    severity: string;
+    category: string;
+  }) => Promise<void>;
   // データローディング関数
   loadProjects: () => Promise<void>;
   loadTimeEntries: () => Promise<void>;
@@ -361,13 +371,15 @@ interface MainLayoutProps {
     seconds: number;
     color: string;
   }>;
-  setTimerPresets: (presets: Array<{
-    id: number;
-    name: string;
-    minutes: number;
-    seconds: number;
-    color: string;
-  }>) => void;
+  setTimerPresets: (
+    presets: Array<{
+      id: number;
+      name: string;
+      minutes: number;
+      seconds: number;
+      color: string;
+    }>
+  ) => void;
   timerHistory: Array<{
     id: string;
     name: string;
@@ -375,14 +387,20 @@ interface MainLayoutProps {
     completedAt: Date;
     type: "custom" | "egg" | "preset";
   }>;
-  setTimerHistory: (history: Array<{
-    id: string;
-    name: string;
-    duration: number;
-    completedAt: Date;
-    type: "custom" | "egg" | "preset";
-  }>) => void;
-  addToTimerHistory: (name: string, duration: number, type: "custom" | "egg" | "preset") => void;
+  setTimerHistory: (
+    history: Array<{
+      id: string;
+      name: string;
+      duration: number;
+      completedAt: Date;
+      type: "custom" | "egg" | "preset";
+    }>
+  ) => void;
+  addToTimerHistory: (
+    name: string,
+    duration: number,
+    type: "custom" | "egg" | "preset"
+  ) => void;
   // 時間フォーマット関数
   formatTime: (seconds: number) => string;
   formatEggTimerTime: (seconds: number) => string;
@@ -402,7 +420,9 @@ interface MainLayoutProps {
   selectedRecord: any;
   setSelectedRecord: (record: any) => void;
   selectedRecordType: "income" | "expense" | "diary" | null;
-  setSelectedRecordType: React.Dispatch<React.SetStateAction<"income" | "expense" | "diary" | null>>;
+  setSelectedRecordType: React.Dispatch<
+    React.SetStateAction<"income" | "expense" | "diary" | null>
+  >;
   // 月収支メモ関連のプロパティ
   monthlyMemo: string;
   setMonthlyMemo: (memo: string) => void;
@@ -428,7 +448,7 @@ interface MainLayoutProps {
   showEggTimer: boolean;
   setShowEggTimer: (show: boolean) => void;
   timerSettings: {
-    eggTimerSound: 'bell' | 'chime' | 'beep' | 'alarm';
+    eggTimerSound: "bell" | "chime" | "beep" | "alarm";
     enableSounds: boolean;
   };
 }
@@ -844,7 +864,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
   // 表示する機能を取得
   const getVisibleFeaturesList = () => {
-    return features.filter(feature => {
+    return features.filter((feature) => {
       // 管理者パネルは管理者のみ表示
       if (feature.id === "admin-panel" && user?.role !== "admin") {
         return false;
@@ -854,44 +874,54 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   };
   // CookingTimerSection の状態管理
   const [selectedRecipe, setSelectedRecipe] = React.useState("boiled-egg");
-  const [selectedEggType, setSelectedEggType] = React.useState<"soft" | "medium" | "hard">("medium");
+  const [selectedEggType, setSelectedEggType] = React.useState<
+    "soft" | "medium" | "hard"
+  >("medium");
   const [eggTimerActive, setEggTimerActive] = React.useState(false);
   const [eggTimerPaused, setEggTimerPaused] = React.useState(false);
   const [eggTimerTime, setEggTimerTime] = React.useState(0);
   const [eggTimerOriginalTime, setEggTimerOriginalTime] = React.useState(0);
-  const [eggTimerPhase, setEggTimerPhase] = React.useState<"heating" | "boiling" | "cooking">("heating");
+  const [eggTimerPhase, setEggTimerPhase] = React.useState<
+    "heating" | "boiling" | "cooking"
+  >("heating");
   const [eggTimerPhaseTime, setEggTimerPhaseTime] = React.useState(0);
   const [eggTimerPhaseName, setEggTimerPhaseName] = React.useState("");
-  const [eggTimerSound, setEggTimerSound] = React.useState<"bell" | "chime" | "beep" | "alarm">("bell");
-  const [eggTimerInterval, setEggTimerInterval] = React.useState<NodeJS.Timeout | null>(null);
+  const [eggTimerSound, setEggTimerSound] = React.useState<
+    "bell" | "chime" | "beep" | "alarm"
+  >("bell");
+  const [eggTimerInterval, setEggTimerInterval] =
+    React.useState<NodeJS.Timeout | null>(null);
   const [message, setMessage] = React.useState("");
-  
 
   // SelfAnalysisComponent の状態管理
   const [selfAnalysisTab, setSelfAnalysisTab] = React.useState("profile");
-  const [personalProfile, setPersonalProfile] = React.useState<PersonalProfile>({
-    values: [],
-    goals: [],
-    skills: [],
-    interests: [],
-    strengths: [],
-    weaknesses: [],
-    personality: "",
-    lifestyle: "",
-    workStyle: "",
-    learningStyle: "",
-    motivation: "",
-    challenges: [],
-    achievements: [],
-    futureVision: "",
-    notes: ""
-  });
+  const [personalProfile, setPersonalProfile] = React.useState<PersonalProfile>(
+    {
+      values: [],
+      goals: [],
+      skills: [],
+      interests: [],
+      strengths: [],
+      weaknesses: [],
+      personality: "",
+      lifestyle: "",
+      workStyle: "",
+      learningStyle: "",
+      motivation: "",
+      challenges: [],
+      achievements: [],
+      futureVision: "",
+      notes: "",
+    }
+  );
   const [habits, setHabits] = React.useState<Habit[]>([]);
   const [habitHistory, setHabitHistory] = React.useState({});
   const [habitStreak, setHabitStreak] = React.useState({});
   const [moodLogs, setMoodLogs] = React.useState<any[]>([]);
   const [goals, setGoals] = React.useState<Goal[]>([]);
-  const [learningRecords, setLearningRecords] = React.useState<LearningRecord[]>([]);
+  const [learningRecords, setLearningRecords] = React.useState<
+    LearningRecord[]
+  >([]);
   const [timeEntries, setTimeEntries] = React.useState([]);
 
   // SelfAnalysisComponent の関数
@@ -902,7 +932,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     maxHours: 0,
     totalHours: 0,
     productiveDays: 0,
-    productivityRate: 0
+    productivityRate: 0,
   });
 
   // CookingTimerSection の関数
@@ -917,7 +947,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     console.log(`Starting sound loop: ${soundType}`);
   };
 
-  const addToTimerHistory = (name: string, duration: number, type: "custom" | "egg" | "preset") => {
+  const addToTimerHistory = (
+    name: string,
+    duration: number,
+    type: "custom" | "egg" | "preset"
+  ) => {
     // タイマー履歴の追加（簡易版）
     console.log(`Added to timer history: ${name}, ${duration}s, ${type}`);
   };
@@ -957,29 +991,35 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     return durations[type];
   };
 
-  const getTotalCookingTime = (recipeKey: string, eggType?: "soft" | "medium" | "hard") => {
+  const getTotalCookingTime = (
+    recipeKey: string,
+    eggType?: "soft" | "medium" | "hard"
+  ) => {
     if (recipeKey === "boiled-egg" && eggType) {
       return getEggTimerDuration(eggType);
     }
     return 0;
   };
 
-
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${secs
+        .toString()
+        .padStart(2, "0")}`;
     }
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+    return `${minutes}:${secs.toString().padStart(2, "0")}`;
   };
 
   // デバッグログの追加
   React.useEffect(() => {
-    console.log('MainLayout - Props received:', {
-      user: user ? { id: user.id, email: user.email, displayName: user.displayName } : null,
+    console.log("MainLayout - Props received:", {
+      user: user
+        ? { id: user.id, email: user.email, displayName: user.displayName }
+        : null,
       isLoggedIn,
       showCharacterHome,
       showProjects,
@@ -1000,11 +1040,32 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       showFontSettings,
       showFeatureSettings,
     });
-  }, [user, isLoggedIn, showCharacterHome, showProjects, showCookingTimer, showSelfAnalysis, showBookshelf, showMemos, showReports, showAdminPanel, showTimeTracking, showTimers, showPublicMemos, showWorkRecords, showSoundApp, showNotifications, showVersionInfo, showThemeSettings, showFontSettings, showFeatureSettings]);
+  }, [
+    user,
+    isLoggedIn,
+    showCharacterHome,
+    showProjects,
+    showCookingTimer,
+    showSelfAnalysis,
+    showBookshelf,
+    showMemos,
+    showReports,
+    showAdminPanel,
+    showTimeTracking,
+    showTimers,
+    showPublicMemos,
+    showWorkRecords,
+    showSoundApp,
+    showNotifications,
+    showVersionInfo,
+    showThemeSettings,
+    showFontSettings,
+    showFeatureSettings,
+  ]);
 
   // 認証されていない場合は何も表示しない
   if (!isLoggedIn || !user) {
-    console.log('MainLayout - User not authenticated, not rendering content');
+    console.log("MainLayout - User not authenticated, not rendering content");
     return null;
   }
   return (
@@ -1473,67 +1534,67 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             user={user}
             isLoggedIn={isLoggedIn}
             onShowCharacterHome={() => {
-              closeOtherFeatures('character-home');
+              closeOtherFeatures("character-home");
             }}
             onShowProjects={() => {
-              closeOtherFeatures('projects');
+              closeOtherFeatures("projects");
             }}
             onShowCookingTimer={() => {
-              closeOtherFeatures('cooking-timer');
+              closeOtherFeatures("cooking-timer");
             }}
             onShowSelfAnalysis={() => {
-              closeOtherFeatures('self-analysis');
+              closeOtherFeatures("self-analysis");
             }}
             onShowBookshelf={() => {
-              closeOtherFeatures('bookshelf');
+              closeOtherFeatures("bookshelf");
             }}
             onShowMemos={() => {
-              closeOtherFeatures('memos');
+              closeOtherFeatures("memos");
             }}
             onShowReports={() => {
-              closeOtherFeatures('reports');
+              closeOtherFeatures("reports");
             }}
             onShowAdminPanel={() => {
-              closeOtherFeatures('admin-panel');
+              closeOtherFeatures("admin-panel");
             }}
             onShowTimeTracking={() => {
-              closeOtherFeatures('time-tracking');
+              closeOtherFeatures("time-tracking");
             }}
             onShowTimers={() => {
-              closeOtherFeatures('timers');
+              closeOtherFeatures("timers");
             }}
             onShowEggTimer={() => {
-              closeOtherFeatures('egg-timer');
+              closeOtherFeatures("egg-timer");
               setShowEggTimer(true);
             }}
             onShowPublicMemos={() => {
-              closeOtherFeatures('public-memos');
+              closeOtherFeatures("public-memos");
             }}
             onShowWorkRecords={() => {
-              closeOtherFeatures('work-records');
+              closeOtherFeatures("work-records");
             }}
             onShowSoundApp={() => {
-              closeOtherFeatures('sound-app');
+              closeOtherFeatures("sound-app");
             }}
             onShowNotifications={() => {
-              closeOtherFeatures('notifications');
+              closeOtherFeatures("notifications");
             }}
             onShowVersionInfo={() => {
-              closeOtherFeatures('version-info');
+              closeOtherFeatures("version-info");
             }}
             currentCharacter={null}
             showThemeSettings={false}
             showFontSettings={false}
             showFeatureSettings={false}
             handleCharacterHomeToggle={() => {
-              closeOtherFeatures('character-home');
+              closeOtherFeatures("character-home");
               setShowCharacterHome(true);
             }}
             handleLogout={() => {
-              console.log('MainLayout - Logout button clicked');
+              console.log("MainLayout - Logout button clicked");
               // ログアウト処理
-              localStorage.removeItem('access_token');
-              localStorage.removeItem('authToken');
+              localStorage.removeItem("access_token");
+              localStorage.removeItem("authToken");
               window.location.reload();
             }}
             closeOtherFeatures={closeOtherFeatures}
@@ -1543,18 +1604,18 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             loadUserSettings={loadUserSettings}
             isTimeTrackingActive={false}
             onUpdateRequestClick={() => {
-              console.log('MainLayout - Update request button clicked');
+              console.log("MainLayout - Update request button clicked");
               setShowUpdateRequestModal(true);
             }}
             onBugReportClick={() => {
-              console.log('MainLayout - Bug report button clicked');
+              console.log("MainLayout - Bug report button clicked");
               setShowBugReportModal(true);
             }}
           />
 
           {/* 通知コンポーネント */}
           <div className="notification-wrapper">
-            <NotificationComponent 
+            <NotificationComponent
               onNavigateToMemo={(memoId: string) => {
                 // メモセクションを表示
                 setShowMemos(true);
@@ -1563,7 +1624,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                 // 通知ドロップダウンを閉じる
                 setTimeout(() => {
                   // 該当するメモをハイライトする処理（必要に応じて実装）
-                  console.log('Navigating to memo:', memoId);
+                  console.log("Navigating to memo:", memoId);
                 }, 100);
               }}
             />
@@ -1586,441 +1647,465 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             {/* 各機能コンポーネント */}
             {getVisibleFeaturesList().map((feature) => {
               if (feature.id === "time-tracking" && showTimeTracking) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <TimeTrackingComponent
-                  showTimeTracking={showTimeTracking}
-                  setShowTimeTracking={setShowTimeTracking}
-                  closeOtherFeatures={closeOtherFeatures}
-                  projects={[]}
-                  projectsLoading={false}
-                  timeEntries={[]}
-                  timeEntriesLoading={false}
-                  startTime={null}
-                  description=""
-                  setDescription={() => {}}
-                  isTracking={false}
-                  currentProject=""
-                  setCurrentProject={() => {}}
-                  elapsedTime={0}
-                  loadProjects={loadProjects}
-                  loadTimeEntries={loadTimeEntries}
-                  handleStartTracking={handleStartTracking}
-                  handleStopTracking={handleStopTracking}
-                  handleResetTracking={handleResetTracking}
-                />
-              </div>
-            );
-          } else if (feature.id === "cooking-timer" && showCookingTimer) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <CookingTimerSection
-                  showCookingTimer={showCookingTimer}
-                  setShowCookingTimer={setShowCookingTimer}
-                  closeOtherFeatures={closeOtherFeatures}
-                  selectedRecipe={selectedRecipe}
-                  setSelectedRecipe={setSelectedRecipe}
-                  selectedEggType={selectedEggType}
-                  setSelectedEggType={setSelectedEggType}
-                  eggTimerActive={eggTimerActive}
-                  setEggTimerActive={setEggTimerActive}
-                  eggTimerPaused={eggTimerPaused}
-                  setEggTimerPaused={setEggTimerPaused}
-                  eggTimerTime={eggTimerTime}
-                  setEggTimerTime={setEggTimerTime}
-                  setEggTimerInterval={setEggTimerInterval}
-                  eggTimerSound={eggTimerSound}
-                  setEggTimerSound={setEggTimerSound}
-                  eggTimerOriginalTime={eggTimerOriginalTime}
-                  setEggTimerOriginalTime={setEggTimerOriginalTime}
-                  eggTimerPhase={eggTimerPhase}
-                  setEggTimerPhase={setEggTimerPhase}
-                  eggTimerPhaseTime={eggTimerPhaseTime}
-                  setEggTimerPhaseTime={setEggTimerPhaseTime}
-                  eggTimerPhaseName={eggTimerPhaseName}
-                  setEggTimerPhaseName={setEggTimerPhaseName}
-                  pauseEggTimer={pauseEggTimer}
-                  stopEggTimer={stopEggTimer}
-                  resetEggTimer={resetEggTimer}
-                  getEggTimerDuration={getEggTimerDuration}
-                  startSoundLoop={startSoundLoop}
-                  setMessage={() => {}}
-                  sendNotification={sendNotification}
-                  addToTimerHistory={addToTimerHistory}
-                  playEggTimerSound={playEggTimerSound}
-                  getTotalCookingTime={(recipeKey: string, eggType?: "soft" | "medium" | "hard") => {
-                    if (recipeKey === "boiled-egg" && eggType) {
-                      return getEggTimerDuration(eggType);
-                    }
-                    return 0;
-                  }}
-                  formatTime={formatTime}
-                  eggTimerType={selectedEggType}
-                />
-              </div>
-            );
-          } else if (feature.id === "projects" && showProjects) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <ProjectsSection
-                  showProjects={showProjects}
-                  setShowProjects={setShowProjects}
-                  closeOtherFeatures={closeOtherFeatures}
-                  showProjectForm={showProjectForm}
-                  setShowProjectForm={setShowProjectForm}
-                  projects={projects}
-                  projectsLoading={false}
-                  selectedProject={selectedProject}
-                  setSelectedProject={setSelectedProject}
-                  projectName={projectName}
-                  setProjectName={setProjectName}
-                  projectDescription={projectDescription}
-                  setProjectDescription={setProjectDescription}
-                  projectColor={projectColor}
-                  setProjectColor={setProjectColor}
-                  loading={false}
-                  handleCreateProject={handleCreateProject}
-                  loadProjects={loadProjects}
-                />
-              </div>
-            );
-          } else if (feature.id === "self-analysis" && showSelfAnalysis) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <SelfAnalysisComponent
-                  showSelfAnalysis={showSelfAnalysis}
-                  setShowSelfAnalysis={setShowSelfAnalysis}
-                  selfAnalysisTab={selfAnalysisTab}
-                  setSelfAnalysisTab={setSelfAnalysisTab}
-                  personalProfile={personalProfile}
-                  setPersonalProfile={setPersonalProfile}
-                  habits={habits}
-                  setHabits={setHabits}
-                  habitHistory={habitHistory}
-                  setHabitHistory={setHabitHistory}
-                  habitStreak={habitStreak}
-                  setHabitStreak={setHabitStreak}
-                  moodLogs={moodLogs}
-                  setMoodLogs={setMoodLogs}
-                  goals={goals}
-                  setGoals={setGoals}
-                  learningRecords={learningRecords}
-                  setLearningRecords={setLearningRecords}
-                  timeEntries={timeEntries}
-                  calculateTimeBreakdown={calculateTimeBreakdown}
-                  calculateProductivityTrend={calculateProductivityTrend}
-                  calculateProductivityStats={calculateProductivityStats}
-                  loadTimeEntries={loadTimeEntries}
-                  closeOtherFeatures={closeOtherFeatures}
-                />
-              </div>
-            );
-          } else if (feature.id === "bookshelf" && showBookshelf) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <BookshelfComponent
-                  showBookshelf={showBookshelf}
-                  setShowBookshelf={setShowBookshelf}
-                  closeOtherFeatures={closeOtherFeatures}
-                  books={books}
-                  booksLoading={false}
-                  showBookForm={showBookForm}
-                  setShowBookForm={setShowBookForm}
-                  editingBook={editingBook}
-                  setEditingBook={setEditingBook}
-                  bookTitle={bookTitle}
-                  setBookTitle={setBookTitle}
-                  bookAuthor={bookAuthor}
-                  setBookAuthor={setBookAuthor}
-                  bookIsbn={bookIsbn}
-                  setBookIsbn={setBookIsbn}
-                  bookPublishedYear={bookPublishedYear}
-                  setBookPublishedYear={setBookPublishedYear}
-                  bookTotalPages={bookTotalPages}
-                  setBookTotalPages={setBookTotalPages}
-                  bookCategory={bookCategory}
-                  setBookCategory={setBookCategory}
-                  bookNotes={bookNotes}
-                  setBookNotes={setBookNotes}
-                  selectedBookCategory={selectedBookCategory}
-                  setSelectedBookCategory={setSelectedBookCategory}
-                  getBookCategories={() => ['小説', '技術書', 'ビジネス', '自己啓発', 'その他']}
-                  loading={false}
-                  loadBooks={loadBooks}
-                  handleCreateBook={handleCreateBook}
-                  handleUpdateBook={handleUpdateBook}
-                  handleEditBook={handleEditBook}
-                  handleDeleteBook={handleDeleteBook}
-                  handleBookCategoryChange={handleBookCategoryChange}
-                  getReadingProgress={getReadingProgress}
-                />
-              </div>
-            );
-          } else if (feature.id === "memos" && showMemos) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <MemosComponent
-                  showMemos={showMemos}
-                  setShowMemos={setShowMemos}
-                  closeOtherFeatures={closeOtherFeatures}
-                  memos={memos}
-                  publicMemos={publicMemos}
-                  memosLoading={false}
-                  customCategories={customCategories}
-                  setCustomCategories={setCustomCategories}
-                  loadMemos={loadMemos}
-                  handleDeleteMemo={() => {}}
-                  user={user}
-                  handleCreateMemo={handleCreateMemo}
-                  handleUpdateMemo={() => {}}
-                  editingMemo={editingMemo}
-                  setEditingMemo={setEditingMemo}
-                  memoTitle={memoTitle}
-                  setMemoTitle={setMemoTitle}
-                  memoContent={memoContent}
-                  setMemoContent={setMemoContent}
-                  memoCategory={memoCategory}
-                  setMemoCategory={setMemoCategory}
-                  memoTags={memoTags}
-                  setMemoTags={setMemoTags}
-                  memoIsPublic={memoIsPublic}
-                  setMemoIsPublic={setMemoIsPublic}
-                  memoIsFamilyOnly={memoIsFamilyOnly}
-                  setMemoIsFamilyOnly={setMemoIsFamilyOnly}
-                  memoIsAdminOnly={memoIsAdminOnly}
-                  setMemoIsAdminOnly={setMemoIsAdminOnly}
-                  handleReplySubmit={() => {}}
-                  handleReplyCancel={() => {}}
-                  handleEditReply={() => {}}
-                  handleSaveEditReply={() => {}}
-                  handleDeleteReply={() => {}}
-                  handleCancelEditReply={() => {}}
-                  replyContent={replyContent}
-                  setReplyContent={setReplyContent}
-                  replyingToMemo={replyingToMemo}
-                  setReplyingToMemo={setReplyingToMemo}
-                />
-              </div>
-            );
-          } else if (feature.id === "reports" && showReports) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <ReportsComponent
-                  showReports={showReports}
-                  setShowReports={setShowReports}
-                  closeOtherFeatures={closeOtherFeatures}
-                  incomeExpenseRecords={[]}
-                  workDiaries={[]}
-                  reportsLoading={false}
-                  reportSummary={reportSummary}
-                  loadReportSummary={loadReportSummary}
-                />
-              </div>
-            );
-          } else if (feature.id === "admin-panel" && showAdminPanel) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <AdminPanelComponent
-                  showAdminPanel={showAdminPanel}
-                  setShowAdminPanel={setShowAdminPanel}
-                  closeOtherFeatures={closeOtherFeatures}
-                  adminUsers={adminUsers}
-                  adminUsersLoading={false}
-                  editingUser={null}
-                  setEditingUser={() => {}}
-                  loadAdminUsers={loadAdminUsers}
-                  handleEditUser={() => {}}
-                  handleUpdateUser={() => {}}
-                  handleDeleteUser={() => {}}
-                />
-              </div>
-            );
-          } else if (feature.id === "timers" && showTimers) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <TimersComponent
-                  showTimers={showTimers}
-                  setShowTimers={setShowTimers}
-                  closeOtherFeatures={closeOtherFeatures}
-                />
-              </div>
-            );
-          } else if (feature.id === "egg-timer" && showEggTimer) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <EggTimerComponent
-                  eggTimerActive={eggTimerActive}
-                  eggTimerPaused={eggTimerPaused}
-                  eggTimerTime={eggTimerTime}
-                  eggTimerOriginalTime={eggTimerOriginalTime}
-                  eggTimerPhase={eggTimerPhase}
-                  eggTimerPhaseTime={eggTimerPhaseTime}
-                  eggTimerPhaseName={eggTimerPhaseName}
-                  eggTimerSound={eggTimerSound}
-                  eggTimerType={selectedEggType}
-                  setEggTimerActive={setEggTimerActive}
-                  setEggTimerPaused={setEggTimerPaused}
-                  setEggTimerTime={setEggTimerTime}
-                  setEggTimerOriginalTime={setEggTimerOriginalTime}
-                  setEggTimerPhase={setEggTimerPhase}
-                  setEggTimerPhaseTime={setEggTimerPhaseTime}
-                  setEggTimerPhaseName={setEggTimerPhaseName}
-                  setEggTimerSound={setEggTimerSound}
-                  setEggTimerType={setSelectedEggType}
-                  setEggTimerInterval={setEggTimerInterval}
-                  getEggTimerDuration={getEggTimerDuration}
-                  getTotalCookingTime={(type: 'soft' | 'medium' | 'hard') => getEggTimerDuration(type)}
-                  formatTime={formatTime}
-                  playBellSound={playBellSound}
-                  playChimeSound={playChimeSound}
-                  playBeepSound={playBeepSound}
-                  playAlarmSound={playAlarmSound}
-                  timerSettings={timerSettings}
-                />
-              </div>
-            );
-          } else if (feature.id === "public-memos" && showPublicMemos) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <PublicMemosComponent
-                  showPublicMemos={showPublicMemos}
-                  setShowPublicMemos={setShowPublicMemos}
-                  closeOtherFeatures={closeOtherFeatures}
-                  publicMemos={publicMemos}
-                  publicMemosLoading={false}
-                  user={user}
-                  loadPublicMemos={loadPublicMemos}
-                  handleReplySubmit={() => {}}
-                  handleReplyCancel={() => {}}
-                  handleEditReply={() => {}}
-                  handleSaveEditReply={() => {}}
-                  handleDeleteReply={() => {}}
-                  handleCancelEditReply={() => {}}
-                  replyContent={replyContent}
-                  setReplyContent={setReplyContent}
-                />
-              </div>
-            );
-          } else if (feature.id === "work-records" && showWorkRecords) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <WorkRecordsComponent
-                  showWorkRecords={showWorkRecords}
-                  setShowWorkRecords={setShowWorkRecords}
-                  closeOtherFeatures={closeOtherFeatures}
-                  incomeExpenseRecords={[]}
-                  workDiaries={[]}
-                  incomeExpenseLoading={false}
-                  diaryLoading={false}
-                  workRecordsLoading={false}
-                  showIncomeExpenseForm={showIncomeExpenseForm}
-                  setShowIncomeExpenseForm={setShowIncomeExpenseForm}
-                  showDiaryForm={showDiaryForm}
-                  setShowDiaryForm={setShowDiaryForm}
-                  editingIncomeExpenseRecord={editingIncomeExpenseRecord}
-                  setEditingIncomeExpenseRecord={setEditingIncomeExpenseRecord}
-                  editingDiary={editingDiary}
-                  setEditingDiary={setEditingDiary}
-                  incomeExpenseDate={incomeExpenseDate}
-                  setIncomeExpenseDate={setIncomeExpenseDate}
-                  incomeExpenseAmount={incomeExpenseAmount}
-                  setIncomeExpenseAmount={setIncomeExpenseAmount}
-                  incomeExpenseType={incomeExpenseType}
-                  setIncomeExpenseType={setIncomeExpenseType}
-                  incomeExpenseNotes={incomeExpenseNotes}
-                  setIncomeExpenseNotes={setIncomeExpenseNotes}
-                  diaryDate={diaryDate}
-                  setDiaryDate={setDiaryDate}
-                  diaryTitle={diaryTitle}
-                  setDiaryTitle={setDiaryTitle}
-                  diaryContent={diaryContent}
-                  setDiaryContent={setDiaryContent}
-                  diaryMood={diaryMood}
-                  setDiaryMood={setDiaryMood}
-                  diaryActivities={diaryActivities}
-                  setDiaryActivities={setDiaryActivities}
-                  diaryAchievements={diaryAchievements}
-                  setDiaryAchievements={setDiaryAchievements}
-                  diaryChallenges={diaryChallenges}
-                  setDiaryChallenges={setDiaryChallenges}
-                  diaryNextGoals={diaryNextGoals}
-                  setDiaryNextGoals={setDiaryNextGoals}
-
-                  diaryNotes={diaryNotes}
-                  setDiaryNotes={setDiaryNotes}
-                  diaryGratitude={diaryGratitude}
-                  setDiaryGratitude={setDiaryGratitude}
-                  diaryReflection={diaryReflection}
-                  setDiaryReflection={setDiaryReflection}
-                  loadIncomeExpenseRecords={loadIncomeExpenseRecords}
-                  loadWorkDiaries={loadWorkDiaries}
-                  handleCreateIncomeExpenseRecord={handleCreateIncomeExpenseRecord}
-                  handleCreateDiary={handleCreateDiary}
-                  handleUpdateIncomeExpenseRecord={handleUpdateIncomeExpenseRecord}
-                  handleUpdateDiary={handleUpdateDiary}
-                  handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
-                  handleDeleteDiary={handleDeleteDiary}
-                  editDiary={() => {}}
-                  showCalendar={showCalendar}
-                  setShowCalendar={setShowCalendar}
-                  currentMonth={currentMonth}
-                  setCurrentMonth={setCurrentMonth}
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
-                  selectedRecord={selectedRecord}
-                  setSelectedRecord={setSelectedRecord}
-                  selectedRecordType={selectedRecordType}
-                  setSelectedRecordType={setSelectedRecordType}
-                  monthlyMemo={monthlyMemo}
-                  setMonthlyMemo={setMonthlyMemo}
-                  editingMonthlyMemo={editingMonthlyMemo}
-                  setEditingMonthlyMemo={setEditingMonthlyMemo}
-                  loadMonthlyMemo={loadMonthlyMemo}
-                  saveMonthlyMemo={saveMonthlyMemo}
-                  startEditingMonthlyMemo={startEditingMonthlyMemo}
-                  cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
-                  openDiaryForm={openDiaryForm}
-                  user={user}
-                />
-              </div>
-            );
-          } else if (feature.id === "sound-app" && showSoundApp) {
-            return (
-              <div key={feature.id} className="feature-section">
-                <SoundAppComponent
-                  showSoundApp={showSoundApp}
-                  setShowSoundApp={setShowSoundApp}
-                  closeOtherFeatures={closeOtherFeatures}
-                />
-              </div>
-            );
-          }
-          return null;
-        })}
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <TimeTrackingComponent
+                      showTimeTracking={showTimeTracking}
+                      setShowTimeTracking={setShowTimeTracking}
+                      closeOtherFeatures={closeOtherFeatures}
+                      projects={[]}
+                      projectsLoading={false}
+                      timeEntries={[]}
+                      timeEntriesLoading={false}
+                      startTime={null}
+                      description=""
+                      setDescription={() => {}}
+                      isTracking={false}
+                      currentProject=""
+                      setCurrentProject={() => {}}
+                      elapsedTime={0}
+                      loadProjects={loadProjects}
+                      loadTimeEntries={loadTimeEntries}
+                      handleStartTracking={handleStartTracking}
+                      handleStopTracking={handleStopTracking}
+                      handleResetTracking={handleResetTracking}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "cooking-timer" && showCookingTimer) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <CookingTimerSection
+                      showCookingTimer={showCookingTimer}
+                      setShowCookingTimer={setShowCookingTimer}
+                      closeOtherFeatures={closeOtherFeatures}
+                      selectedRecipe={selectedRecipe}
+                      setSelectedRecipe={setSelectedRecipe}
+                      selectedEggType={selectedEggType}
+                      setSelectedEggType={setSelectedEggType}
+                      eggTimerActive={eggTimerActive}
+                      setEggTimerActive={setEggTimerActive}
+                      eggTimerPaused={eggTimerPaused}
+                      setEggTimerPaused={setEggTimerPaused}
+                      eggTimerTime={eggTimerTime}
+                      setEggTimerTime={setEggTimerTime}
+                      setEggTimerInterval={setEggTimerInterval}
+                      eggTimerSound={eggTimerSound}
+                      setEggTimerSound={setEggTimerSound}
+                      eggTimerOriginalTime={eggTimerOriginalTime}
+                      setEggTimerOriginalTime={setEggTimerOriginalTime}
+                      eggTimerPhase={eggTimerPhase}
+                      setEggTimerPhase={setEggTimerPhase}
+                      eggTimerPhaseTime={eggTimerPhaseTime}
+                      setEggTimerPhaseTime={setEggTimerPhaseTime}
+                      eggTimerPhaseName={eggTimerPhaseName}
+                      setEggTimerPhaseName={setEggTimerPhaseName}
+                      pauseEggTimer={pauseEggTimer}
+                      stopEggTimer={stopEggTimer}
+                      resetEggTimer={resetEggTimer}
+                      getEggTimerDuration={getEggTimerDuration}
+                      startSoundLoop={startSoundLoop}
+                      setMessage={() => {}}
+                      sendNotification={sendNotification}
+                      addToTimerHistory={addToTimerHistory}
+                      playEggTimerSound={playEggTimerSound}
+                      getTotalCookingTime={(
+                        recipeKey: string,
+                        eggType?: "soft" | "medium" | "hard"
+                      ) => {
+                        if (recipeKey === "boiled-egg" && eggType) {
+                          return getEggTimerDuration(eggType);
+                        }
+                        return 0;
+                      }}
+                      formatTime={formatTime}
+                      eggTimerType={selectedEggType}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "projects" && showProjects) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <ProjectsSection
+                      showProjects={showProjects}
+                      setShowProjects={setShowProjects}
+                      closeOtherFeatures={closeOtherFeatures}
+                      showProjectForm={showProjectForm}
+                      setShowProjectForm={setShowProjectForm}
+                      projects={projects}
+                      projectsLoading={false}
+                      selectedProject={selectedProject}
+                      setSelectedProject={setSelectedProject}
+                      projectName={projectName}
+                      setProjectName={setProjectName}
+                      projectDescription={projectDescription}
+                      setProjectDescription={setProjectDescription}
+                      projectColor={projectColor}
+                      setProjectColor={setProjectColor}
+                      loading={false}
+                      handleCreateProject={handleCreateProject}
+                      loadProjects={loadProjects}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "self-analysis" && showSelfAnalysis) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <SelfAnalysisComponent
+                      showSelfAnalysis={showSelfAnalysis}
+                      setShowSelfAnalysis={setShowSelfAnalysis}
+                      selfAnalysisTab={selfAnalysisTab}
+                      setSelfAnalysisTab={setSelfAnalysisTab}
+                      personalProfile={personalProfile}
+                      setPersonalProfile={setPersonalProfile}
+                      habits={habits}
+                      setHabits={setHabits}
+                      habitHistory={habitHistory}
+                      setHabitHistory={setHabitHistory}
+                      habitStreak={habitStreak}
+                      setHabitStreak={setHabitStreak}
+                      moodLogs={moodLogs}
+                      setMoodLogs={setMoodLogs}
+                      goals={goals}
+                      setGoals={setGoals}
+                      learningRecords={learningRecords}
+                      setLearningRecords={setLearningRecords}
+                      timeEntries={timeEntries}
+                      calculateTimeBreakdown={calculateTimeBreakdown}
+                      calculateProductivityTrend={calculateProductivityTrend}
+                      calculateProductivityStats={calculateProductivityStats}
+                      loadTimeEntries={loadTimeEntries}
+                      closeOtherFeatures={closeOtherFeatures}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "bookshelf" && showBookshelf) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <BookshelfComponent
+                      showBookshelf={showBookshelf}
+                      setShowBookshelf={setShowBookshelf}
+                      closeOtherFeatures={closeOtherFeatures}
+                      books={books}
+                      booksLoading={false}
+                      showBookForm={showBookForm}
+                      setShowBookForm={setShowBookForm}
+                      editingBook={editingBook}
+                      setEditingBook={setEditingBook}
+                      bookTitle={bookTitle}
+                      setBookTitle={setBookTitle}
+                      bookAuthor={bookAuthor}
+                      setBookAuthor={setBookAuthor}
+                      bookIsbn={bookIsbn}
+                      setBookIsbn={setBookIsbn}
+                      bookPublishedYear={bookPublishedYear}
+                      setBookPublishedYear={setBookPublishedYear}
+                      bookTotalPages={bookTotalPages}
+                      setBookTotalPages={setBookTotalPages}
+                      bookCategory={bookCategory}
+                      setBookCategory={setBookCategory}
+                      bookNotes={bookNotes}
+                      setBookNotes={setBookNotes}
+                      selectedBookCategory={selectedBookCategory}
+                      setSelectedBookCategory={setSelectedBookCategory}
+                      getBookCategories={() => [
+                        "小説",
+                        "技術書",
+                        "ビジネス",
+                        "自己啓発",
+                        "その他",
+                      ]}
+                      loading={false}
+                      loadBooks={loadBooks}
+                      handleCreateBook={handleCreateBook}
+                      handleUpdateBook={handleUpdateBook}
+                      handleEditBook={handleEditBook}
+                      handleDeleteBook={handleDeleteBook}
+                      handleBookCategoryChange={handleBookCategoryChange}
+                      getReadingProgress={getReadingProgress}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "memos" && showMemos) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <MemosComponent
+                      showMemos={showMemos}
+                      setShowMemos={setShowMemos}
+                      closeOtherFeatures={closeOtherFeatures}
+                      memos={memos}
+                      publicMemos={publicMemos}
+                      memosLoading={false}
+                      customCategories={customCategories}
+                      setCustomCategories={setCustomCategories}
+                      loadMemos={loadMemos}
+                      handleDeleteMemo={() => {}}
+                      user={user}
+                      handleCreateMemo={handleCreateMemo}
+                      handleUpdateMemo={() => {}}
+                      editingMemo={editingMemo}
+                      setEditingMemo={setEditingMemo}
+                      memoTitle={memoTitle}
+                      setMemoTitle={setMemoTitle}
+                      memoContent={memoContent}
+                      setMemoContent={setMemoContent}
+                      memoCategory={memoCategory}
+                      setMemoCategory={setMemoCategory}
+                      memoTags={memoTags}
+                      setMemoTags={setMemoTags}
+                      memoIsPublic={memoIsPublic}
+                      setMemoIsPublic={setMemoIsPublic}
+                      memoIsFamilyOnly={memoIsFamilyOnly}
+                      setMemoIsFamilyOnly={setMemoIsFamilyOnly}
+                      memoIsAdminOnly={memoIsAdminOnly}
+                      setMemoIsAdminOnly={setMemoIsAdminOnly}
+                      handleReplySubmit={() => {}}
+                      handleReplyCancel={() => {}}
+                      handleEditReply={() => {}}
+                      handleSaveEditReply={() => {}}
+                      handleDeleteReply={() => {}}
+                      handleCancelEditReply={() => {}}
+                      replyContent={replyContent}
+                      setReplyContent={setReplyContent}
+                      replyingToMemo={replyingToMemo}
+                      setReplyingToMemo={setReplyingToMemo}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "reports" && showReports) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <ReportsComponent
+                      showReports={showReports}
+                      setShowReports={setShowReports}
+                      closeOtherFeatures={closeOtherFeatures}
+                      incomeExpenseRecords={[]}
+                      workDiaries={[]}
+                      reportsLoading={false}
+                      reportSummary={reportSummary}
+                      loadReportSummary={loadReportSummary}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "admin-panel" && showAdminPanel) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <AdminPanelComponent
+                      showAdminPanel={showAdminPanel}
+                      setShowAdminPanel={setShowAdminPanel}
+                      closeOtherFeatures={closeOtherFeatures}
+                      adminUsers={adminUsers}
+                      adminUsersLoading={false}
+                      editingUser={null}
+                      setEditingUser={() => {}}
+                      loadAdminUsers={loadAdminUsers}
+                      handleEditUser={() => {}}
+                      handleUpdateUser={() => {}}
+                      handleDeleteUser={() => {}}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "timers" && showTimers) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <TimersComponent
+                      showTimers={showTimers}
+                      setShowTimers={setShowTimers}
+                      closeOtherFeatures={closeOtherFeatures}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "egg-timer" && showEggTimer) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <EggTimerComponent
+                      eggTimerActive={eggTimerActive}
+                      eggTimerPaused={eggTimerPaused}
+                      eggTimerTime={eggTimerTime}
+                      eggTimerOriginalTime={eggTimerOriginalTime}
+                      eggTimerPhase={eggTimerPhase}
+                      eggTimerPhaseTime={eggTimerPhaseTime}
+                      eggTimerPhaseName={eggTimerPhaseName}
+                      eggTimerSound={eggTimerSound}
+                      eggTimerType={selectedEggType}
+                      setEggTimerActive={setEggTimerActive}
+                      setEggTimerPaused={setEggTimerPaused}
+                      setEggTimerTime={setEggTimerTime}
+                      setEggTimerOriginalTime={setEggTimerOriginalTime}
+                      setEggTimerPhase={setEggTimerPhase}
+                      setEggTimerPhaseTime={setEggTimerPhaseTime}
+                      setEggTimerPhaseName={setEggTimerPhaseName}
+                      setEggTimerSound={setEggTimerSound}
+                      setEggTimerType={setSelectedEggType}
+                      setEggTimerInterval={setEggTimerInterval}
+                      getEggTimerDuration={getEggTimerDuration}
+                      getTotalCookingTime={(type: "soft" | "medium" | "hard") =>
+                        getEggTimerDuration(type)
+                      }
+                      formatTime={formatTime}
+                      playBellSound={playBellSound}
+                      playChimeSound={playChimeSound}
+                      playBeepSound={playBeepSound}
+                      playAlarmSound={playAlarmSound}
+                      timerSettings={timerSettings}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "public-memos" && showPublicMemos) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <PublicMemosComponent
+                      showPublicMemos={showPublicMemos}
+                      setShowPublicMemos={setShowPublicMemos}
+                      closeOtherFeatures={closeOtherFeatures}
+                      publicMemos={publicMemos}
+                      publicMemosLoading={false}
+                      user={user}
+                      loadPublicMemos={loadPublicMemos}
+                      handleReplySubmit={() => {}}
+                      handleReplyCancel={() => {}}
+                      handleEditReply={() => {}}
+                      handleSaveEditReply={() => {}}
+                      handleDeleteReply={() => {}}
+                      handleCancelEditReply={() => {}}
+                      replyContent={replyContent}
+                      setReplyContent={setReplyContent}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "work-records" && showWorkRecords) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <WorkRecordsComponent
+                      showWorkRecords={showWorkRecords}
+                      setShowWorkRecords={setShowWorkRecords}
+                      closeOtherFeatures={closeOtherFeatures}
+                      incomeExpenseRecords={[]}
+                      workDiaries={[]}
+                      incomeExpenseLoading={false}
+                      diaryLoading={false}
+                      workRecordsLoading={false}
+                      showIncomeExpenseForm={showIncomeExpenseForm}
+                      setShowIncomeExpenseForm={setShowIncomeExpenseForm}
+                      showDiaryForm={showDiaryForm}
+                      setShowDiaryForm={setShowDiaryForm}
+                      editingIncomeExpenseRecord={editingIncomeExpenseRecord}
+                      setEditingIncomeExpenseRecord={
+                        setEditingIncomeExpenseRecord
+                      }
+                      editingDiary={editingDiary}
+                      setEditingDiary={setEditingDiary}
+                      incomeExpenseDate={incomeExpenseDate}
+                      setIncomeExpenseDate={setIncomeExpenseDate}
+                      incomeExpenseAmount={incomeExpenseAmount}
+                      setIncomeExpenseAmount={setIncomeExpenseAmount}
+                      incomeExpenseType={incomeExpenseType}
+                      setIncomeExpenseType={setIncomeExpenseType}
+                      incomeExpenseNotes={incomeExpenseNotes}
+                      setIncomeExpenseNotes={setIncomeExpenseNotes}
+                      diaryDate={diaryDate}
+                      setDiaryDate={setDiaryDate}
+                      diaryTitle={diaryTitle}
+                      setDiaryTitle={setDiaryTitle}
+                      diaryContent={diaryContent}
+                      setDiaryContent={setDiaryContent}
+                      diaryMood={diaryMood}
+                      setDiaryMood={setDiaryMood}
+                      diaryActivities={diaryActivities}
+                      setDiaryActivities={setDiaryActivities}
+                      diaryAchievements={diaryAchievements}
+                      setDiaryAchievements={setDiaryAchievements}
+                      diaryChallenges={diaryChallenges}
+                      setDiaryChallenges={setDiaryChallenges}
+                      diaryNextGoals={diaryNextGoals}
+                      setDiaryNextGoals={setDiaryNextGoals}
+                      diaryNotes={diaryNotes}
+                      setDiaryNotes={setDiaryNotes}
+                      diaryGratitude={diaryGratitude}
+                      setDiaryGratitude={setDiaryGratitude}
+                      diaryReflection={diaryReflection}
+                      setDiaryReflection={setDiaryReflection}
+                      loadIncomeExpenseRecords={loadIncomeExpenseRecords}
+                      loadWorkDiaries={loadWorkDiaries}
+                      handleCreateIncomeExpenseRecord={
+                        handleCreateIncomeExpenseRecord
+                      }
+                      handleCreateDiary={handleCreateDiary}
+                      handleUpdateIncomeExpenseRecord={
+                        handleUpdateIncomeExpenseRecord
+                      }
+                      handleUpdateDiary={handleUpdateDiary}
+                      handleDeleteIncomeExpenseRecord={
+                        handleDeleteIncomeExpenseRecord
+                      }
+                      handleDeleteDiary={handleDeleteDiary}
+                      editDiary={() => {}}
+                      showCalendar={showCalendar}
+                      setShowCalendar={setShowCalendar}
+                      currentMonth={currentMonth}
+                      setCurrentMonth={setCurrentMonth}
+                      selectedDate={selectedDate}
+                      setSelectedDate={setSelectedDate}
+                      selectedRecord={selectedRecord}
+                      setSelectedRecord={setSelectedRecord}
+                      selectedRecordType={selectedRecordType}
+                      setSelectedRecordType={setSelectedRecordType}
+                      monthlyMemo={monthlyMemo}
+                      setMonthlyMemo={setMonthlyMemo}
+                      editingMonthlyMemo={editingMonthlyMemo}
+                      setEditingMonthlyMemo={setEditingMonthlyMemo}
+                      loadMonthlyMemo={loadMonthlyMemo}
+                      saveMonthlyMemo={saveMonthlyMemo}
+                      startEditingMonthlyMemo={startEditingMonthlyMemo}
+                      cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
+                      openDiaryForm={openDiaryForm}
+                      user={user}
+                    />
+                  </div>
+                );
+              } else if (feature.id === "sound-app" && showSoundApp) {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <SoundAppComponent
+                      showSoundApp={showSoundApp}
+                      setShowSoundApp={setShowSoundApp}
+                      closeOtherFeatures={closeOtherFeatures}
+                    />
+                  </div>
+                );
+              }
+              return null;
+            })}
           </main>
         </div>
 
-        {showNotifications && (
-          <NotificationComponent />
-        )}
+        {showNotifications && <NotificationComponent />}
 
-        {showVersionInfo && (
-          <VersionInfo />
-        )}
+        {showVersionInfo && <VersionInfo />}
 
         {/* App_backup.tsxから復元するための追加コンポーネント */}
         <SimpleErrorReportingModal
           isOpen={false}
           onClose={() => {}}
+          onSubmit={async (report) => {
+            // エラーレポート処理（実装不要）
+            console.log("Error report:", report);
+          }}
         />
 
         {showThemeSettings && (
           <div className="theme-settings-modal">
-            <div className="modal-overlay" onClick={() => setShowThemeSettings(false)}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="modal-overlay"
+              onClick={() => setShowThemeSettings(false)}
+            >
+              <div
+                className="modal-content"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="modal-header">
                   <h3>🎨 テーマ設定</h3>
-                  <button 
+                  <button
                     className="close-button"
                     onClick={() => setShowThemeSettings(false)}
                   >
@@ -2031,8 +2116,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                   <div className="theme-preview">
                     <p>
                       現在のテーマ:{" "}
-                      {availableThemes.find((t) => t.value === selectedTheme)?.preview}{" "}
-                      {availableThemes.find((t) => t.value === selectedTheme)?.label}
+                      {
+                        availableThemes.find((t) => t.value === selectedTheme)
+                          ?.preview
+                      }{" "}
+                      {
+                        availableThemes.find((t) => t.value === selectedTheme)
+                          ?.label
+                      }
                     </p>
                   </div>
                   <div className="theme-options">
@@ -2060,8 +2151,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
         {showFontSettings && (
           <div className="font-settings-modal">
-            <div className="modal-overlay" onClick={() => setShowFontSettings(false)}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="modal-overlay"
+              onClick={() => setShowFontSettings(false)}
+            >
+              <div
+                className="modal-content"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="modal-header">
                   <h3>🔤 フォント設定</h3>
                   <div className="header-buttons">
@@ -2074,7 +2171,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                     >
                       🌐 言語別設定
                     </button>
-                    <button 
+                    <button
                       className="close-button"
                       onClick={() => setShowFontSettings(false)}
                     >
@@ -2087,7 +2184,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                     <p
                       className="font-preview-text"
                       style={{
-                        fontFamily: selectedFont === "system" ? "" : selectedFont,
+                        fontFamily:
+                          selectedFont === "system" ? "" : selectedFont,
                       }}
                     >
                       時間記録 | プロジェクト | レポート | 管理者パネル
@@ -2095,7 +2193,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                     <p
                       className="font-preview-text"
                       style={{
-                        fontFamily: selectedFont === "system" ? "" : selectedFont,
+                        fontFamily:
+                          selectedFont === "system" ? "" : selectedFont,
                       }}
                     >
                       本棚 | メモ | 公開メモ | お仕事記録
@@ -2103,7 +2202,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                     <p
                       className="font-preview-text"
                       style={{
-                        fontFamily: selectedFont === "system" ? "" : selectedFont,
+                        fontFamily:
+                          selectedFont === "system" ? "" : selectedFont,
                       }}
                     >
                       作業内容を入力してください | ▶ 記録開始
@@ -2122,7 +2222,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                         <span
                           className="font-option-text"
                           style={{
-                            fontFamily: font.value === "system" ? "" : font.value,
+                            fontFamily:
+                              font.value === "system" ? "" : font.value,
                           }}
                         >
                           {font.label}
@@ -2138,11 +2239,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
         {showFeatureSettings && (
           <div className="feature-settings-modal">
-            <div className="modal-overlay" onClick={() => setShowFeatureSettings(false)}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="modal-overlay"
+              onClick={() => setShowFeatureSettings(false)}
+            >
+              <div
+                className="modal-content"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="modal-header">
                   <h3>⚙️ 機能設定</h3>
-                  <button 
+                  <button
                     className="close-button"
                     onClick={() => setShowFeatureSettings(false)}
                   >
@@ -2185,7 +2292,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                                   checked={true} // 簡易実装：すべて有効
                                   onChange={() => {
                                     // 簡易実装：機能の切り替えは今後実装
-                                    console.log(`Toggle feature: ${feature.id}`);
+                                    console.log(
+                                      `Toggle feature: ${feature.id}`
+                                    );
                                   }}
                                   aria-label={`${feature.name}の表示/非表示を切り替え`}
                                 />
@@ -2235,7 +2344,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             </div>
           </div>
         )}
-
       </div>
 
       <LanguageFontSettings
