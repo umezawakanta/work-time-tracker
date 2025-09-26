@@ -613,3 +613,281 @@
   }
   
 }
+
+/* カレンダー内の記録詳細 */
+.calendar-record-details {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e9ecef);
+}
+
+.calendar-record-details h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-record-details .day-of-week {
+  font-size: 0.9rem;
+  color: var(--text-muted, #6c757d);
+  font-weight: normal;
+}
+
+.calendar-record-details .income-records-detail,
+.calendar-record-details .expense-records-detail,
+.calendar-record-details .diary-records-detail {
+  margin-bottom: 1rem;
+}
+
+.calendar-record-details .income-records-detail h4,
+.calendar-record-details .expense-records-detail h4,
+.calendar-record-details .diary-records-detail h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-record-details .total-amount {
+  margin-left: auto;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted, #6c757d);
+}
+
+.calendar-record-details .record-item {
+  background: var(--card-background, #ffffff);
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+}
+
+.calendar-record-details .record-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.calendar-record-details .record-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-width: 80px;
+}
+
+.calendar-record-details .record-amount {
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.calendar-record-details .record-amount.income {
+  color: var(--success-color, #28a745);
+}
+
+.calendar-record-details .record-amount.expense {
+  color: var(--danger-color, #dc3545);
+}
+
+.calendar-record-details .record-time {
+  font-size: 0.75rem;
+  color: var(--text-muted, #6c757d);
+}
+
+.calendar-record-details .record-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.calendar-record-details .record-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color, #333);
+  line-height: 1.4;
+}
+
+.calendar-record-details .diary-content-full {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6c757d);
+  margin: 0.25rem 0;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.calendar-record-details .diary-mood {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.calendar-record-details .record-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.calendar-record-details .edit-button,
+.calendar-record-details .delete-button {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.calendar-record-details .edit-button {
+  background: var(--info-color, #17a2b8);
+  color: white;
+}
+
+.calendar-record-details .edit-button:hover {
+  background: var(--info-hover, #138496);
+}
+
+.calendar-record-details .delete-button {
+  background: var(--danger-color, #dc3545);
+  color: white;
+}
+
+.calendar-record-details .delete-button:hover {
+  background: var(--danger-hover, #c82333);
+}
+
+.calendar-record-details .no-records {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted, #6c757d);
+}
+
+.calendar-record-details .no-records-icon {
+  font-size: 2rem;
+  color: var(--text-muted, #6c757d);
+  margin-bottom: 0.75rem;
+}
+
+.calendar-record-details .no-records h4 {
+  color: var(--text-color, #333);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-record-details .no-records p {
+  color: var(--text-muted, #6c757d);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* カレンダーアクションボタン */
+.calendar-action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 10px;
+  border-top: 2px solid var(--border-color, #e9ecef);
+}
+
+.calendar-action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 140px;
+  justify-content: center;
+}
+
+.calendar-action-button.income-expense-button {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+}
+
+.calendar-action-button.income-expense-button:hover {
+  background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.calendar-action-button.diary-button {
+  background: linear-gradient(135deg, #007bff 0%, #6f42c1 100%);
+  color: white;
+}
+
+.calendar-action-button.diary-button:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #5a32a3 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.calendar-action-button i {
+  font-size: 1.1rem;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .calendar-action-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .calendar-action-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    min-width: 120px;
+  }
+  
+  .calendar-action-button i {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-action-buttons {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+  
+  .calendar-action-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    min-width: 100px;
+  }
+  
+  .calendar-action-button i {
+    font-size: 0.9rem;
+  }
+}

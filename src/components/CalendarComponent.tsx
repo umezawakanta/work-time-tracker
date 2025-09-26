@@ -15,6 +15,16 @@ interface CalendarComponentProps {
   onClose?: () => void;
   onViewModeChange?: (mode: 'month' | 'week') => void;
   onWeekChange?: (weekStart: Date) => void;
+  // アクションボタン用のprops
+  onAddIncomeExpense?: () => void;
+  onAddDiary?: () => void;
+  // 記録詳細表示用のprops
+  selectedRecord?: any;
+  selectedRecordType?: "income" | "expense" | "diary" | null;
+  onEditIncomeExpense?: (record: any) => void;
+  onEditDiary?: (diary: any) => void;
+  onDeleteIncomeExpense?: (id: string) => void;
+  onDeleteDiary?: (id: string) => void;
 }
 
 const CalendarComponent: React.FC<CalendarComponentProps> = ({
@@ -26,7 +36,15 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
   isModal = false,
   onClose,
   onViewModeChange,
-  onWeekChange
+  onWeekChange,
+  onAddIncomeExpense,
+  onAddDiary,
+  selectedRecord,
+  selectedRecordType,
+  onEditIncomeExpense,
+  onEditDiary,
+  onDeleteIncomeExpense,
+  onDeleteDiary
 }) => {
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
   const [currentWeek, setCurrentWeek] = useState(0);
@@ -207,6 +225,199 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
             );
           })}
         </div>
+        
+        {/* 選択された記録の詳細 */}
+        {selectedRecord && selectedDate && (
+          <div className="calendar-record-details">
+            <h3>
+              <i className="bi bi-calendar-check"></i>
+              {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月{selectedDate.getDate()}日
+              <span className="day-of-week">
+                ({['日', '月', '火', '水', '木', '金', '土'][selectedDate.getDay()]})
+              </span>の記録
+            </h3>
+            
+            {/* 収入記録の表示 */}
+            {selectedRecord.incomeRecords && selectedRecord.incomeRecords.length > 0 && (
+              <div className="income-records-detail">
+                <h4>
+                  <i className="bi bi-arrow-up-circle-fill"></i>
+                  収入記録 ({selectedRecord.incomeRecords.length}件)
+                  <span className="total-amount">
+                    合計: ¥{selectedRecord.incomeRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0).toLocaleString()}
+                  </span>
+                </h4>
+                {selectedRecord.incomeRecords.map((record: any, index: number) => (
+                  <div key={index} className="record-item">
+                    <div className="record-header">
+                      <span className="record-amount income">¥{(record.amount || 0).toLocaleString()}</span>
+                      <span className="record-time">
+                        {new Date(record.date).toLocaleTimeString('ja-JP', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </span>
+                    </div>
+                    <div className="record-content">
+                      {record.notes && record.notes.trim() ? (
+                        <p className="record-title">{record.notes}</p>
+                      ) : (
+                        <p className="record-title">収入記録</p>
+                      )}
+                    </div>
+                    <div className="record-actions">
+                      <button
+                        onClick={() => onEditIncomeExpense?.(record)}
+                        className="edit-button"
+                      >
+                        <i className="bi bi-pencil"></i> 編集
+                      </button>
+                      <button
+                        onClick={() => onDeleteIncomeExpense?.(record._id)}
+                        className="delete-button"
+                      >
+                        <i className="bi bi-trash"></i> 削除
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 支出記録の表示 */}
+            {selectedRecord.expenseRecords && selectedRecord.expenseRecords.length > 0 && (
+              <div className="expense-records-detail">
+                <h4>
+                  <i className="bi bi-arrow-down-circle-fill"></i>
+                  支出記録 ({selectedRecord.expenseRecords.length}件)
+                  <span className="total-amount">
+                    合計: ¥{selectedRecord.expenseRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0).toLocaleString()}
+                  </span>
+                </h4>
+                {selectedRecord.expenseRecords.map((record: any, index: number) => (
+                  <div key={index} className="record-item">
+                    <div className="record-header">
+                      <span className="record-amount expense">¥{(record.amount || 0).toLocaleString()}</span>
+                      <span className="record-time">
+                        {new Date(record.date).toLocaleTimeString('ja-JP', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </span>
+                    </div>
+                    <div className="record-content">
+                      {record.notes && record.notes.trim() ? (
+                        <p className="record-title">{record.notes}</p>
+                      ) : (
+                        <p className="record-title">支出記録</p>
+                      )}
+                    </div>
+                    <div className="record-actions">
+                      <button
+                        onClick={() => onEditIncomeExpense?.(record)}
+                        className="edit-button"
+                      >
+                        <i className="bi bi-pencil"></i> 編集
+                      </button>
+                      <button
+                        onClick={() => onDeleteIncomeExpense?.(record._id)}
+                        className="delete-button"
+                      >
+                        <i className="bi bi-trash"></i> 削除
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* 日記の表示 */}
+            {selectedRecord.workDiaries && selectedRecord.workDiaries.length > 0 && (
+              <div className="diary-records-detail">
+                <h4>
+                  <i className="bi bi-journal-text"></i>
+                  日記 ({selectedRecord.workDiaries.length}件)
+                </h4>
+                {selectedRecord.workDiaries.map((diary: any, index: number) => (
+                  <div key={diary._id || index} className="record-item">
+                    <div className="record-header">
+                      <span className="record-amount" style={{ color: 'var(--info-color, #17a2b8)' }}>
+                        <i className="bi bi-journal-text"></i>
+                      </span>
+                      <span className="record-time">
+                        {new Date(diary.date).toLocaleTimeString('ja-JP', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </span>
+                    </div>
+                    <div className="record-content">
+                      <p className="record-title">{diary.title}</p>
+                      <p className="diary-content-full">{diary.content}</p>
+                      {diary.mood && (
+                        <span className="diary-mood">
+                          <i className={`bi bi-emoji-${diary.mood === '1' ? 'frown' : 
+                            diary.mood === '2' ? 'meh' : 
+                            diary.mood === '3' ? 'neutral' : 
+                            diary.mood === '4' ? 'smile' : 'laughing'}`}></i>
+                        </span>
+                      )}
+                    </div>
+                    <div className="record-actions">
+                      <button
+                        onClick={() => onEditDiary?.(diary)}
+                        className="edit-button"
+                      >
+                        <i className="bi bi-pencil"></i> 編集
+                      </button>
+                      <button
+                        onClick={() => onDeleteDiary?.(diary._id)}
+                        className="delete-button"
+                      >
+                        <i className="bi bi-trash"></i> 削除
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* 記録がない場合の表示 */}
+            {(!selectedRecord.incomeRecords || selectedRecord.incomeRecords.length === 0) &&
+             (!selectedRecord.expenseRecords || selectedRecord.expenseRecords.length === 0) &&
+             (!selectedRecord.workDiaries || selectedRecord.workDiaries.length === 0) && (
+              <div className="no-records">
+                <div className="no-records-icon">
+                  <i className="bi bi-calendar-x"></i>
+                </div>
+                <h4>この日は記録がありません</h4>
+                <p>収支記録や日記を追加してみましょう</p>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* アクションボタン */}
+        {selectedDate && (
+          <div className="calendar-action-buttons">
+            <button
+              onClick={onAddIncomeExpense}
+              className="calendar-action-button income-expense-button"
+              title="収支記録を追加"
+            >
+              <i className="bi bi-plus-circle"></i>
+              <span>収支記録</span>
+            </button>
+            <button
+              onClick={onAddDiary}
+              className="calendar-action-button diary-button"
+              title="日記を追加"
+            >
+              <i className="bi bi-journal-plus"></i>
+              <span>日記追加</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

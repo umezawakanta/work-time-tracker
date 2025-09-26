@@ -161,8 +161,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // カレンダーモーダルの状態管理（デフォルトで拡大表示）
   const [showCalendarModal, setShowCalendarModal] = useState(true);
 
-  // 記録詳細モーダルの状態管理
-  const [showRecordDetailsModal, setShowRecordDetailsModal] = useState(false);
 
   // 統計表示のアコーディオン状態管理
   const [isSummaryExpanded, setIsSummaryExpanded] = useState(true);
@@ -255,26 +253,32 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 指定された日付の記録を取得
   const getRecordsForDate = (date: Date) => {
-    // 選択された日付をUTCの開始時刻に設定
-    const selectedDateUTC = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
-    
+    // ローカル時間で日付を比較（UTC変換を避ける）
+    const selectedYear = date.getFullYear();
+    const selectedMonth = date.getMonth();
+    const selectedDay = date.getDate();
     
     const incomeRecords = (incomeExpenseRecords || []).filter(record => {
       const recordDate = new Date(record.date);
-      const recordDateStr = recordDate.toISOString().split("T")[0];
-      return recordDateStr === selectedDateUTCStr && record.type === 'income';
+      return recordDate.getFullYear() === selectedYear &&
+             recordDate.getMonth() === selectedMonth &&
+             recordDate.getDate() === selectedDay &&
+             record.type === 'income';
     });
+    
     const expenseRecords = (incomeExpenseRecords || []).filter(record => {
       const recordDate = new Date(record.date);
-      const recordDateStr = recordDate.toISOString().split("T")[0];
-      return recordDateStr === selectedDateUTCStr && record.type === 'expense';
+      return recordDate.getFullYear() === selectedYear &&
+             recordDate.getMonth() === selectedMonth &&
+             recordDate.getDate() === selectedDay &&
+             record.type === 'expense';
     });
+    
     const diaryRecords = (workDiaries || []).filter(diary => {
       const diaryDate = new Date(diary.date);
-      const diaryDateStr = diaryDate.toISOString().split("T")[0];
-      const matches = diaryDateStr === selectedDateUTCStr;
-      return matches;
+      return diaryDate.getFullYear() === selectedYear &&
+             diaryDate.getMonth() === selectedMonth &&
+             diaryDate.getDate() === selectedDay;
     });
     
     return { incomeRecords, expenseRecords, workDiaries: diaryRecords };
@@ -356,8 +360,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 日付クリックハンドラー
   const handleDateClick = (date: Date) => {
-    setSelectedDate(date);
-    const records = getRecordsForDate(date);
+    // ローカル時間で日付を正しく保存（UTC変換を避ける）
+    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    setSelectedDate(localDate);
+    const records = getRecordsForDate(localDate);
     if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.workDiaries.length > 0) {
       setSelectedRecord(records);
       // 複数の記録がある場合は、日記を優先表示
@@ -376,7 +382,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 記録クリックハンドラー
   const handleRecordClick = (type: "income" | "expense" | "diary", date: Date) => {
-    const records = getRecordsForDate(date);
+    // ローカル時間で日付を正しく保存（UTC変換を避ける）
+    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    setSelectedDate(localDate);
+    const records = getRecordsForDate(localDate);
     if (type === "income" && records.incomeRecords.length > 0) {
       setSelectedRecord(records);
       setSelectedRecordType("income");
@@ -489,6 +498,62 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           onClose={() => setShowCalendarModal(false)}
           onViewModeChange={setCalendarViewMode}
           onWeekChange={setCurrentWeekStart}
+          onAddIncomeExpense={() => {
+            setShowIncomeExpenseForm(true);
+            setShowDiaryForm(false);
+            setEditingIncomeExpenseRecord(null);
+            setIncomeExpenseType('income');
+            setIncomeExpenseAmount('');
+            setIncomeExpenseDate(selectedDate ? 
+              `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}` : '');
+            setIncomeExpenseNotes('');
+          }}
+          onAddDiary={() => {
+            setShowDiaryForm(true);
+            setShowIncomeExpenseForm(false);
+            setEditingDiary(null);
+            setDiaryTitle('');
+            setDiaryDate(selectedDate ? 
+              `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}` : '');
+            setDiaryContent('');
+            setDiaryMood('');
+            setDiaryActivities([]);
+            setDiaryNotes('');
+            setDiaryNextGoals([]);
+            setDiaryChallenges([]);
+            setDiaryAchievements([]);
+            setDiaryGratitude('');
+            setDiaryReflection('');
+          }}
+          selectedRecord={selectedRecord}
+          selectedRecordType={selectedRecordType}
+          onEditIncomeExpense={(record) => {
+            setEditingIncomeExpenseRecord(record);
+            setIncomeExpenseType(record.type === 'income' ? 'income' : 'expense');
+            setIncomeExpenseAmount(Math.abs(record.amount).toString());
+            setIncomeExpenseDate(record.date.split('T')[0]);
+            setIncomeExpenseNotes(record.notes || '');
+            setShowIncomeExpenseForm(true);
+            setShowDiaryForm(false);
+          }}
+          onEditDiary={(diary) => {
+            setEditingDiary(diary);
+            setDiaryTitle(diary.title || '');
+            setDiaryDate(diary.date.split('T')[0]);
+            setDiaryContent(diary.content || '');
+            setDiaryMood(diary.mood || '');
+            setDiaryActivities(diary.activities || []);
+            setDiaryNotes(diary.notes || '');
+            setDiaryNextGoals(diary.nextGoals || []);
+            setDiaryChallenges(diary.challenges || []);
+            setDiaryAchievements(diary.achievements || []);
+            setDiaryGratitude(diary.gratitude || '');
+            setDiaryReflection(diary.reflection || '');
+            setShowDiaryForm(true);
+            setShowIncomeExpenseForm(false);
+          }}
+          onDeleteIncomeExpense={handleDeleteIncomeExpenseRecord}
+          onDeleteDiary={handleDeleteDiary}
         />
       )}
 
@@ -633,198 +698,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             )}
           </div>
 
-          {/* 選択された記録の詳細 */}
-          {selectedRecord && (
-            <div className="record-details">
-              <h3>
-                <i className="bi bi-calendar-check"></i>
-                {selectedDate ? (
-                  <>
-                    {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月{selectedDate.getDate()}日
-                    <span className="day-of-week">
-                      ({['日', '月', '火', '水', '木', '金', '土'][selectedDate.getDay()]})
-                    </span>
-                  </>
-                ) : '選択された日付'}の記録
-              </h3>
-              
-              {/* 収入記録の表示 */}
-              {selectedRecord.incomeRecords && selectedRecord.incomeRecords.length > 0 && (
-                <div className="income-records-detail">
-                  <h4>
-                    <i className="bi bi-arrow-up-circle-fill"></i>
-                    収入記録 ({selectedRecord.incomeRecords.length}件)
-                    <span className="total-amount">
-                      合計: ¥{selectedRecord.incomeRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0).toLocaleString()}
-                    </span>
-                  </h4>
-                  {selectedRecord.incomeRecords.map((record: any, index: number) => (
-                    <div key={index} className="record-item">
-                      <div className="record-header">
-                        <span className="record-amount income">¥{(record.amount || 0).toLocaleString()}</span>
-                        <span className="record-time">
-                          {new Date(record.date).toLocaleTimeString('ja-JP', { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })}
-                        </span>
-                      </div>
-                      <div className="record-content">
-                        {record.notes && record.notes.trim() ? (
-                          <p className="record-title">{record.notes}</p>
-                        ) : (
-                          <p className="record-title">収入記録</p>
-                        )}
-                      </div>
-                      <div className="record-actions">
-                        <button
-                          onClick={() => {
-                            setEditingIncomeExpenseRecord(record);
-                            // 編集フォームを表示するための追加処理
-                            setIncomeExpenseType(record.type === 'income' ? 'income' : 'expense');
-                            setIncomeExpenseAmount(Math.abs(record.amount).toString());
-                            setIncomeExpenseDate(record.date.split('T')[0]);
-                            setIncomeExpenseNotes(record.notes || '');
-                            setShowIncomeExpenseForm(true);
-                            setShowDiaryForm(false);
-                          }}
-                          className="edit-button"
-                        >
-                          <i className="bi bi-pencil"></i> 編集
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(record._id, `収入記録 (¥${(record.amount || 0).toLocaleString()})`, '収入記録')}
-                          className="delete-button"
-                        >
-                          <i className="bi bi-trash"></i> 削除
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* 支出記録の表示 */}
-              {selectedRecord.expenseRecords && selectedRecord.expenseRecords.length > 0 && (
-                <div className="expense-records-detail">
-                  <h4>
-                    <i className="bi bi-arrow-down-circle-fill"></i>
-                    支出記録 ({selectedRecord.expenseRecords.length}件)
-                    <span className="total-amount">
-                      合計: ¥{selectedRecord.expenseRecords.reduce((sum: number, record: any) => sum + (record.amount || 0), 0).toLocaleString()}
-                    </span>
-                  </h4>
-                  {selectedRecord.expenseRecords.map((record: any, index: number) => (
-                    <div key={index} className="record-item">
-                      <div className="record-header">
-                        <span className="record-amount expense">¥{(record.amount || 0).toLocaleString()}</span>
-                        <span className="record-time">
-                          {new Date(record.date).toLocaleTimeString('ja-JP', { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })}
-                        </span>
-                      </div>
-                      <div className="record-content">
-                        {record.notes && record.notes.trim() ? (
-                          <p className="record-title">{record.notes}</p>
-                        ) : (
-                          <p className="record-title">支出記録</p>
-                        )}
-                      </div>
-                      <div className="record-actions">
-                        <button
-                          onClick={() => {
-                            setEditingIncomeExpenseRecord(record);
-                            // 編集フォームを表示するための追加処理
-                            setIncomeExpenseType(record.type === 'income' ? 'income' : 'expense');
-                            setIncomeExpenseAmount(Math.abs(record.amount).toString());
-                            setIncomeExpenseDate(record.date.split('T')[0]);
-                            setIncomeExpenseNotes(record.notes || '');
-                            setShowIncomeExpenseForm(true);
-                            setShowDiaryForm(false);
-                          }}
-                          className="edit-button"
-                        >
-                          <i className="bi bi-pencil"></i> 編集
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(record._id, `支出記録 (¥${(record.amount || 0).toLocaleString()})`, '支出記録')}
-                          className="delete-button"
-                        >
-                          <i className="bi bi-trash"></i> 削除
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              {/* 日記の表示 */}
-              {selectedRecord.workDiaries && selectedRecord.workDiaries.length > 0 && (
-                <div className="diary-records-detail">
-                  <h4>
-                    <i className="bi bi-journal-text"></i>
-                    日記 ({selectedRecord.workDiaries.length}件)
-                  </h4>
-                  {selectedRecord.workDiaries.map((diary: WorkDiary, index: number) => (
-                    <div key={diary._id || index} className="record-item">
-                      <div className="record-header">
-                        <span className="record-amount" style={{ color: 'var(--info-color, #17a2b8)' }}>
-                          <i className="bi bi-journal-text"></i>
-                        </span>
-                        <span className="record-time">
-                          {new Date(diary.date).toLocaleTimeString('ja-JP', { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })}
-                        </span>
-                      </div>
-                      <div className="record-content">
-                        <p className="record-title">{diary.title}</p>
-                        <p className="diary-content-full">{diary.content}</p>
-                        {diary.mood && (
-                          <span className="diary-mood">
-                            <i className={`bi bi-emoji-${diary.mood === '1' ? 'frown' : 
-                              diary.mood === '2' ? 'meh' : 
-                              diary.mood === '3' ? 'neutral' : 
-                              diary.mood === '4' ? 'smile' : 'laughing'}`}></i>
-                          </span>
-                        )}
-                      </div>
-                      <div className="record-actions">
-                        <button
-                          onClick={() => editDiary(diary)}
-                          className="edit-button"
-                        >
-                          <i className="bi bi-pencil"></i> 編集
-                        </button>
-                        <button
-                          onClick={() => handleDeleteDiary(diary._id)}
-                          className="delete-button"
-                        >
-                          <i className="bi bi-trash"></i> 削除
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              {/* 記録がない場合の表示 */}
-              {(!selectedRecord.incomeRecords || selectedRecord.incomeRecords.length === 0) &&
-               (!selectedRecord.expenseRecords || selectedRecord.expenseRecords.length === 0) &&
-               (!selectedRecord.workDiaries || selectedRecord.workDiaries.length === 0) && (
-                <div className="no-records">
-                  <div className="no-records-icon">
-                    <i className="bi bi-calendar-x"></i>
-                  </div>
-                  <h4>この日は記録がありません</h4>
-                  <p>収支記録や日記を追加してみましょう</p>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* 収入・支出記録フォーム */}
           {showIncomeExpenseForm && (
@@ -1103,28 +976,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           )}
 
 
-          {/* アクションボタン */}
+          {/* 更新ボタン */}
           <div className="action-buttons">
-            <button
-              onClick={() => {
-                setShowIncomeExpenseForm(true);
-                setShowDiaryForm(false);
-                setEditingIncomeExpenseRecord(null);
-                setIncomeExpenseType('income'); // デフォルト値を設定
-                setIncomeExpenseAmount('');
-                setIncomeExpenseDate('');
-                setIncomeExpenseNotes('');
-              }}
-              className="action-button income-expense-button"
-            >
-              💰 収支記録を追加
-            </button>
-            <button
-              onClick={openDiaryForm}
-              className="action-button diary-button"
-            >
-              <i className="bi bi-journal-plus"></i> 日記を追加
-            </button>
             <button
               onClick={() => {
                 loadIncomeExpenseRecordsLocal();

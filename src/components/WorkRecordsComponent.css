@@ -301,6 +301,127 @@
   margin: 0;
 }
 
+/* 記録詳細モーダル */
+.record-details-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.record-details-modal {
+  background: var(--card-background, #ffffff);
+  border-radius: 15px;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.record-details-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--border-color, #e9ecef);
+  background: var(--section-background, #f8f9fa);
+}
+
+.record-details-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.record-details-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted, #6c757d);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.record-details-modal-close:hover {
+  background-color: var(--hover-background, #f8f9fa);
+  color: var(--text-color, #333);
+}
+
+.record-details-modal-content {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .record-details-modal {
+    max-width: 95vw;
+    max-height: 95vh;
+    margin: 0.5rem;
+  }
+  
+  .record-details-modal-header {
+    padding: 1rem;
+  }
+  
+  .record-details-modal-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .record-details-modal-content {
+    padding: 1rem;
+  }
+  
+  .record-details-modal-close {
+    width: 35px;
+    height: 35px;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .record-details-modal {
+    max-width: 98vw;
+    max-height: 98vh;
+    margin: 0.25rem;
+  }
+  
+  .record-details-modal-header {
+    padding: 0.75rem;
+  }
+  
+  .record-details-modal-header h3 {
+    font-size: 1rem;
+  }
+  
+  .record-details-modal-content {
+    padding: 0.75rem;
+  }
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
