@@ -3,6 +3,25 @@ import { apiFetch } from '../utils/apiClient';
 import { User, Project, ReportSummary, AdminUser, Book, Memo, IncomeExpenseRecord, WorkDiary } from '../types';
 
 export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
+  // JWTトークンから実際のユーザーIDを取得する関数
+  const getActualUserId = () => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(atob(parts[1]));
+          const actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
+          console.log('useDataFetching - getActualUserId:', actualUserId);
+          return actualUserId;
+        }
+      } catch (e) {
+        console.warn('useDataFetching - Failed to decode token:', e);
+      }
+    }
+    return user?.id || 'temp-id';
+  };
+
   // デバッグログの追加
   useEffect(() => {
     console.log('useDataFetching - Initialized with:', {
@@ -60,10 +79,11 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
       return;
     }
     
-    console.log('useDataFetching - loadProjects: Starting to load projects for user:', user.id);
+    const actualUserId = getActualUserId();
+    console.log('useDataFetching - loadProjects: Starting to load projects for user:', actualUserId);
     setProjectsLoading(true);
     try {
-      const response = await apiFetch(`/api/projects/list?userId=${user.id}`);
+      const response = await apiFetch(`/api/projects/list?userId=${actualUserId}`);
       if (response.ok) {
         const data = await response.json();
         console.log('useDataFetching - loadProjects: Success, projects loaded:', data.projects?.length || 0);
@@ -84,8 +104,9 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
       return;
     }
     
+    const actualUserId = getActualUserId();
     try {
-      const response = await apiFetch(`/api/reports/summary?userId=${user.id}`);
+      const response = await apiFetch(`/api/reports/summary?userId=${actualUserId}`);
       if (response.ok) {
         const data = await response.json();
         setReportSummary(data);
@@ -101,8 +122,9 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
       return;
     }
     
+    const actualUserId = getActualUserId();
     try {
-      const response = await apiFetch(`/api/admin/users?userId=${user.id}`);
+      const response = await apiFetch(`/api/admin/users?userId=${actualUserId}`);
       if (response.ok) {
         const data = await response.json();
         setAdminUsers(data.users || []);
@@ -118,9 +140,10 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
       return;
     }
     
+    const actualUserId = getActualUserId();
     setBooksLoading(true);
     try {
-      const response = await apiFetch(`/api/books?userId=${user.id}`);
+      const response = await apiFetch(`/api/books?userId=${actualUserId}`);
       if (response.ok) {
         const data = await response.json();
         setBooks(data.books || []);
@@ -139,9 +162,10 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
       return;
     }
     
-    console.log('useDataFetching - loadMemos: Starting to load memos for user:', user.id);
+    const actualUserId = getActualUserId();
+    console.log('useDataFetching - loadMemos: Starting to load memos for user:', actualUserId);
     try {
-      const response = await apiFetch(`/api/memos?userId=${user.id}`);
+      const response = await apiFetch(`/api/memos?userId=${actualUserId}`);
       console.log('useDataFetching - loadMemos: API response status:', response.status);
       
       if (response.ok) {
@@ -187,9 +211,10 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
       return;
     }
     
+    const actualUserId = getActualUserId();
     setIncomeExpenseLoading(true);
     try {
-      const response = await apiFetch(`/api/work-records/salary?userId=${user.id}`);
+      const response = await apiFetch(`/api/work-records/salary?userId=${actualUserId}`);
       if (response.ok) {
         const data = await response.json();
         setIncomeExpenseRecords(data.records || []);
@@ -207,9 +232,10 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
       return;
     }
     
+    const actualUserId = getActualUserId();
     setDiaryLoading(true);
     try {
-      const response = await apiFetch(`/api/work-records/diary?userId=${user.id}`);
+      const response = await apiFetch(`/api/work-records/diary?userId=${actualUserId}`);
       if (response.ok) {
         const data = await response.json();
         setWorkDiaries(data.diaries || []);

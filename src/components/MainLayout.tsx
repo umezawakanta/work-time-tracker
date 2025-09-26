@@ -1425,10 +1425,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       let actualUserId = user?.id || 'temp-id';
       if (token) {
         try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            const payload = JSON.parse(atob(parts[1]));
+            actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
+            console.log("MainLayout - loadIncomeExpenseRecords actual user ID from token:", actualUserId);
+          } else {
+            console.warn("MainLayout - Invalid token format for income records");
+          }
         } catch (e) {
-          console.warn("MainLayout - Failed to decode token for income records, using fallback user ID");
+          console.warn("MainLayout - Failed to decode token for income records:", e);
         }
       }
       
@@ -1457,11 +1463,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       let actualUserId = user?.id || 'temp-id';
       if (token) {
         try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
-          console.log("MainLayout - loadWorkDiaries actual user ID from token:", actualUserId);
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            const payload = JSON.parse(atob(parts[1]));
+            actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
+            console.log("MainLayout - loadWorkDiaries actual user ID from token:", actualUserId);
+            console.log("MainLayout - loadWorkDiaries token payload:", payload);
+          } else {
+            console.warn("MainLayout - Invalid token format");
+          }
         } catch (e) {
-          console.warn("MainLayout - Failed to decode token, using fallback user ID");
+          console.warn("MainLayout - Failed to decode token:", e);
         }
       }
       
