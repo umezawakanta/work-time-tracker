@@ -611,6 +611,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                                 <div 
                                   className="progress-fill" 
                                   data-width={percentage}
+                                  style={{ width: percentage + '%' }}
                                 ></div>
                               </div>
                               <span className="time-value">{hours.toFixed(1)}h</span>
