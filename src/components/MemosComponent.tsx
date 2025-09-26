@@ -86,6 +86,15 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   replyingToMemo,
   setReplyingToMemo,
 }) => {
+  // デバッグログを追加
+  console.log('MemosComponent - Props received:', {
+    memos: memos?.length || 0,
+    publicMemos: publicMemos?.length || 0,
+    memosLoading,
+    showMemos,
+    user: user ? { id: user.id, email: user.email } : null
+  });
+
   // 内部状態
   const [showMemoForm, setShowMemoForm] = useState(false);
   const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");

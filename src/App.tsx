@@ -65,16 +65,36 @@ function App() {
   const dataFetching = useDataFetching(auth.isLoggedIn, auth.user);
   const uiState = useUIState();
 
-  // データフェッチングの状態
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [books, setBooks] = useState<Book[]>([]);
-  const [memos, setMemos] = useState<Memo[]>([]);
-  const [publicMemos, setPublicMemos] = useState<Memo[]>([]);
-  const [workRecords, setWorkRecords] = useState<WorkRecord[]>([]);
-  const [incomeExpenseRecords, setIncomeExpenseRecords] = useState<IncomeExpenseRecord[]>([]);
-  const [workDiaries, setWorkDiaries] = useState<WorkDiary[]>([]);
-  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
-  const [reportSummary, setReportSummary] = useState<any>({});
+  // データフェッチングの状態（useDataFetchingフックから取得）
+  const { 
+    projects, 
+    setProjects, 
+    books, 
+    setBooks, 
+    memos, 
+    setMemos, 
+    publicMemos, 
+    setPublicMemos, 
+    workRecords, 
+    setWorkRecords, 
+    incomeExpenseRecords, 
+    setIncomeExpenseRecords, 
+    workDiaries, 
+    setWorkDiaries, 
+    adminUsers, 
+    setAdminUsers, 
+    reportSummary, 
+    setReportSummary,
+    loadMemos,
+    loadPublicMemos,
+    loadProjects,
+    loadBooks,
+    loadWorkRecords,
+    loadIncomeExpenseRecords,
+    loadWorkDiaries,
+    loadAdminUsers,
+    loadReportSummary
+  } = dataFetching;
 
   // 追加の状態変数（App_backup.tsxから復元）
   const [selectedProject, setSelectedProject] = useState<string>("");
@@ -413,189 +433,11 @@ function App() {
     }
   };
 
-  // データローディング関数（App_backup.tsxから復元）
-  const loadProjects = async () => {
-    console.log('App.tsx - Loading projects');
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/projects/list", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      const data = await response.json();
 
-      if (data.success) {
-        setProjects(data.projects || []);
-      }
-    } catch (error) {
-      console.error('Failed to load projects:', error);
-    }
-  };
 
-  const loadTimeEntries = async () => {
-    console.log('App.tsx - Loading time entries');
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/time/entries", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      const data = await response.json();
 
-      if (data.success) {
-        // 時間記録データの処理
-        console.log('Time entries loaded:', data.entries);
-      }
-    } catch (error) {
-      console.error('Failed to load time entries:', error);
-    }
-  };
-
-  const loadBooks = async () => {
-    console.log('App.tsx - Loading books');
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/books", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setBooks(data.books || []);
-      }
-    } catch (error) {
-      console.error('Failed to load books:', error);
-    }
-  };
-
-  const loadMemos = async () => {
-    console.log('App.tsx - Loading memos');
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/memos", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setMemos(data.memos || []);
-      }
-    } catch (error) {
-      console.error('Failed to load memos:', error);
-    }
-  };
-
-  const loadPublicMemos = async () => {
-    console.log('App.tsx - Loading public memos');
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/memos/public", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setPublicMemos(data.memos || []);
-      }
-    } catch (error) {
-      console.error('Failed to load public memos:', error);
-    }
-  };
-
-  const loadAdminUsers = async () => {
-    console.log('App.tsx - Loading admin users');
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/admin/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setAdminUsers(data.users || []);
-      }
-    } catch (error) {
-      console.error('Failed to load admin users:', error);
-    }
-  };
-
-  const loadReportSummary = async () => {
-    console.log('App.tsx - Loading report summary');
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/reports/summary", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setReportSummary(data.summary || {});
-      }
-    } catch (error) {
-      console.error('Failed to load report summary:', error);
-    }
-  };
-
-  // 収入・支出記録の読み込み（App_backup.tsxから復元）
-  const loadIncomeExpenseRecords = async () => {
-    console.log('App.tsx - Loading income/expense records');
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/work-records/salary", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setIncomeExpenseRecords(data.records || []);
-      }
-    } catch (error) {
-      console.error('Failed to load income/expense records:', error);
-    }
-  };
-
-  // 日記の読み込み（App_backup.tsxから復元）
-  const loadWorkDiaries = async () => {
-    console.log('App.tsx - Loading work diaries');
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/work-records/diary", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setWorkDiaries(data.diaries || []);
-      }
-    } catch (error) {
-      console.error('Failed to load work diaries:', error);
-    }
-  };
 
   // 収入・支出記録の作成（App_backup.tsxから復元）
   const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {

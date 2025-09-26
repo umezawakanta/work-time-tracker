@@ -135,17 +135,25 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
   // メモ読み込み
   const loadMemos = async () => {
     if (!isLoggedIn || !user) {
+      console.log('useDataFetching - loadMemos: User not authenticated');
       return;
     }
     
+    console.log('useDataFetching - loadMemos: Starting to load memos for user:', user.id);
     try {
       const response = await apiFetch(`/api/memos?userId=${user.id}`);
+      console.log('useDataFetching - loadMemos: API response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('useDataFetching - loadMemos: Received data:', data);
         setMemos(data.memos || []);
+        console.log('useDataFetching - loadMemos: Set memos to:', data.memos || []);
+      } else {
+        console.error('useDataFetching - loadMemos: API response not ok:', response.status);
       }
     } catch (error) {
-      console.error('Failed to load memos:', error);
+      console.error('useDataFetching - loadMemos: Failed to load memos:', error);
     }
   };
 
