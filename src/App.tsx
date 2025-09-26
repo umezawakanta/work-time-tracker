@@ -110,6 +110,13 @@ interface AppProps {
   setMessage: (message: string) => void;
   isRegisterMode: boolean;
   setIsRegisterMode: (isRegisterMode: boolean) => void;
+  user: User | null;
+  isLoggedIn: boolean;
+  isCheckingAuth: boolean;
+  handleLogin: (e: React.FormEvent) => Promise<void>;
+  handleRegister: (e: React.FormEvent) => Promise<void>;
+  handleLogout: () => void;
+  verifyToken: (token: string) => Promise<void>;
 }
 
 function App({ 
@@ -124,10 +131,18 @@ function App({
   message, 
   setMessage, 
   isRegisterMode, 
-  setIsRegisterMode 
+  setIsRegisterMode,
+  user,
+  isLoggedIn,
+  isCheckingAuth,
+  handleLogin,
+  handleRegister,
+  handleLogout,
+  verifyToken
 }: AppProps) {
-  // 認証状態をAuthContextProviderから取得
-  const { user, isLoggedIn, isCheckingAuth, setUser, setIsLoggedIn, verifyToken, setIsCheckingAuth, handleLogin, handleRegister, handleLogout } = useAuthContext();
+  // 注意: 認証状態はAppWithProvidersからpropsとして受け取る
+  // 理由: AuthContextProviderはAppWithProviders内でラップされているため、
+  // Appコンポーネント内では直接アクセスできない
   // 注意: loadingStateは各コンポーネントで個別に管理される
   // 理由: 各コンポーネントで個別のローディング状態を管理することで、状態の分散を防ぐ
   // const loadingState = useLoadingState(); // 削除
@@ -3537,25 +3552,25 @@ ${errorInfo.stack}
     setReplyContent("");
   };
 
-  // ログイン状態をチェック
+  // 注意: ログイン状態のチェックはAppWithProviders内で実行される
+  // 理由: setIsLoggedInとsetUserはAppWithProviders内で管理されているため、
+  // Appコンポーネント内では直接アクセスできない
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     const token = localStorage.getItem("access_token");
+  //     if (token) {
+  //       await verifyToken(token);
+  //     } else {
+  //       setIsLoggedIn(false);
+  //       setUser(null);
+  //     }
+  //     setIsCheckingAuth(false);
+  //   };
+  //   checkAuth();
+  // }, [verifyToken]);
+
+  // エラー報告イベントをリッスン
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem("access_token");
-
-      if (token) {
-        // トークンの有効性を検証
-        await verifyToken(token);
-      } else {
-        // トークンがない場合は未ログイン状態に設定
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-      setIsCheckingAuth(false);
-    };
-
-    checkAuth();
-
-    // エラー報告イベントをリッスン
     const handleErrorReport = (event: CustomEvent) => {
       const { category, content } = event.detail;
       setShowErrorModal(true);
@@ -6822,6 +6837,124 @@ const AppWithProviders = () => {
               setMessage={setMessage}
               isRegisterMode={isRegisterMode}
               setIsRegisterMode={setIsRegisterMode}
+              user={user}
+              isLoggedIn={isLoggedIn}
+              isCheckingAuth={false}
+              handleLogin={async (e: React.FormEvent) => {
+                e.preventDefault();
+                setLoading(true);
+                setMessage("");
+
+                try {
+                  const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email: email, password: password }),
+                  });
+
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
+
+                  const data = await response.json();
+
+                  if (data.success) {
+                    setMessage("ログイン成功！");
+                    setUser(data.user);
+                    setIsLoggedIn(true);
+                    if (data.token) {
+                      localStorage.setItem("access_token", data.token);
+                    }
+                  } else {
+                    setMessage(`ログイン失敗: ${data.message || '認証に失敗しました'}`);
+                  }
+                } catch (error) {
+                  console.error("Login error:", error);
+                  if (error instanceof Error && error.message.includes('404')) {
+                    setMessage("ログインAPIが見つかりません。サーバーが起動しているか確認してください。");
+                  } else if (error instanceof Error && error.message.includes('400')) {
+                    setMessage("ログイン情報が正しくありません。メールアドレスとパスワードを確認してください。");
+                  } else {
+                    setMessage(
+                      `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+                    );
+                  }
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              handleRegister={async (e: React.FormEvent) => {
+                e.preventDefault();
+                setLoading(true);
+                setMessage("");
+
+                try {
+                  const response = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email: email, password: password, displayName: displayName }),
+                  });
+
+                  const data = await response.json();
+
+                  if (data.success) {
+                    setMessage("アカウントが作成されました！ログインしてください。");
+                    setIsRegisterMode(false);
+                    setEmail("");
+                    setPassword("");
+                    setDisplayName("");
+                  } else {
+                    setMessage(`登録失敗: ${data.message}`);
+                  }
+                } catch (error) {
+                  setMessage(
+                    `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+                  );
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              handleLogout={() => {
+                localStorage.removeItem("access_token");
+                setIsLoggedIn(false);
+                setUser(null);
+                setMessage("");
+              }}
+              verifyToken={async (token: string) => {
+                try {
+                  const userResponse = await fetch("/api/auth/verify", {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  });
+
+                  if (userResponse.ok) {
+                    const userData = await userResponse.json();
+
+                    if (userData.success && userData.user) {
+                      setUser(userData.user);
+                      setIsLoggedIn(true);
+                    } else {
+                      localStorage.removeItem("access_token");
+                      setIsLoggedIn(false);
+                      setUser(null);
+                    }
+                  } else {
+                    localStorage.removeItem("access_token");
+                    setIsLoggedIn(false);
+                    setUser(null);
+                  }
+                } catch (error) {
+                  console.error("Token verification failed:", error);
+                  localStorage.removeItem("access_token");
+                  setIsLoggedIn(false);
+                  setUser(null);
+                }
+              }}
             />
           </MoodLogProvider>
         </TimerPresetProvider>
