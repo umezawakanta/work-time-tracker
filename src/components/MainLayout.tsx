@@ -1420,7 +1420,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const loadIncomeExpenseRecords = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(`/api/work-records/salary?userId=${user?.id || 'temp-id'}`, {
+      
+      // JWTトークンから実際のユーザーIDを取得
+      let actualUserId = user?.id || 'temp-id';
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
+        } catch (e) {
+          console.warn("MainLayout - Failed to decode token for income records, using fallback user ID");
+        }
+      }
+      
+      const response = await fetch(`/api/work-records/salary?userId=${actualUserId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -1436,30 +1448,56 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   };
 
   const loadWorkDiaries = async () => {
+    console.log("MainLayout - loadWorkDiaries called with user:", user?.id);
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(`/api/work-records/diary?userId=${user?.id || 'temp-id'}`, {
+      console.log("MainLayout - loadWorkDiaries token exists:", !!token);
+      
+      // JWTトークンから実際のユーザーIDを取得
+      let actualUserId = user?.id || 'temp-id';
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
+          console.log("MainLayout - loadWorkDiaries actual user ID from token:", actualUserId);
+        } catch (e) {
+          console.warn("MainLayout - Failed to decode token, using fallback user ID");
+        }
+      }
+      
+      const response = await fetch(`/api/work-records/diary?userId=${actualUserId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       
+      console.log("MainLayout - loadWorkDiaries response status:", response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log("MainLayout - loadWorkDiaries data:", data);
         setWorkDiaries(data.diaries || []);
+        console.log("MainLayout - setWorkDiaries called with:", data.diaries || []);
+      } else {
+        console.error("MainLayout - loadWorkDiaries failed with status:", response.status);
       }
     } catch (error) {
-      console.error("Failed to load work diaries:", error);
+      console.error("MainLayout - Failed to load work diaries:", error);
     }
   };
 
   // コンポーネントマウント時にデータを読み込み
   React.useEffect(() => {
     if (isLoggedIn && user) {
+      console.log("MainLayout - useEffect triggered, loading data for user:", user.id);
       loadIncomeExpenseRecords();
       loadWorkDiaries();
     }
   }, [isLoggedIn, user]);
+
+  // workDiariesの状態変化を監視
+  React.useEffect(() => {
+    console.log("MainLayout - workDiaries state changed:", workDiaries);
+  }, [workDiaries]);
 
 
 
