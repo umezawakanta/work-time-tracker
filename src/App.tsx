@@ -2290,9 +2290,8 @@ function App() {
         playAlarmSound={playAlarmSound}
         startSoundLoop={startSoundLoop}
         stopSoundLoop={stopSoundLoop}
-        // データ関連のプロパティを追加
-        incomeExpenseRecords={incomeExpenseRecords}
-        workDiaries={workDiaries}
+
+
         showBugReportModal={errorHandling.showBugReportModal}
         showUpdateRequestModal={errorHandling.showUpdateRequestModal}
         setShowCharacterHome={uiState.setShowCharacterHome}
@@ -2343,6 +2342,8 @@ function App() {
         publicMemos={publicMemos}
         adminUsers={adminUsers}
         reportSummary={reportSummary}
+        incomeExpenseRecords={incomeExpenseRecords}
+        workDiaries={workDiaries}
         selectedProject={selectedProject}
         setSelectedProject={setSelectedProject}
         showProjectForm={showProjectForm}

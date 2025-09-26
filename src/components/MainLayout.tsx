@@ -872,8 +872,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const [newMilestone, setNewMilestone] = React.useState("");
   
   // 不足している変数を追加（propsで受け取っていないもののみ）
-  const [workDiaries, setWorkDiaries] = React.useState<any[]>([]);
-  const [incomeExpenseRecords, setIncomeExpenseRecords] = React.useState<any[]>([]);
   
   // 機能の定義（App_backup.tsxから復元）
   const features = [
@@ -1422,201 +1420,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     setEditReplyContent("");
   };
 
-  // 日記データの読み込み処理
-  const loadWorkDiariesData = async () => {
-    try {
-      console.log("MainLayout - Loading work diaries...");
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/work-records/diary", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log("MainLayout - Work diaries loaded:", data);
-        setWorkDiaries(data.diaries || []);
-      } else {
-        console.error("MainLayout - Failed to load work diaries:", response.status, response.statusText);
-      }
-    } catch (error) {
-      console.error("MainLayout - Failed to load work diaries:", error);
-    }
-  };
 
-  // 収入・支出記録の読み込み処理
-  const loadIncomeExpenseData = async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/work-records/salary", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setIncomeExpenseRecords(data.records || []);
-      }
-    } catch (error) {
-      console.error("Failed to load income expense records:", error);
-    }
-  };
-
-  // コンポーネントマウント時にデータを読み込み
-  React.useEffect(() => {
-    if (isLoggedIn && user) {
-      loadWorkDiariesData();
-      loadIncomeExpenseData();
-    }
-  }, [isLoggedIn, user]);
-
-  // 日記作成・更新・削除のハンドラー関数（MainLayout内での実装）
-  const handleCreateDiaryLocal = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("/api/work-records/diary", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          date: diaryDate,
-          title: diaryTitle,
-          content: diaryContent,
-          mood: parseInt(diaryMood),
-          activities: diaryActivities,
-          tags: diaryTags,
-          isPrivate: diaryIsPrivate,
-          workSummary: diaryWorkSummary,
-          achievements: diaryAchievements,
-          challenges: diaryChallenges,
-          learnings: diaryLearnings,
-          nextGoals: diaryNextGoals,
-          energyLevel: diaryEnergyLevel,
-          stressLevel: diaryStressLevel,
-          workHours: diaryWorkHours,
-          breakTime: diaryBreakTime,
-          productivity: diaryProductivity,
-          notes: diaryNotes,
-          gratitude: diaryGratitude,
-          reflection: diaryReflection,
-        }),
-      });
-      
-      if (response.ok) {
-        setMessage("日記を作成しました");
-        setShowDiaryForm(false);
-        // フォームをリセット
-        setDiaryDate(new Date().toISOString().split("T")[0]);
-        setDiaryTitle("");
-        setDiaryContent("");
-        setDiaryMood("4");
-        setDiaryActivities([]);
-        setDiaryTags("");
-        setDiaryIsPrivate(false);
-        setDiaryWorkSummary("");
-        setDiaryAchievements([]);
-        setDiaryChallenges([]);
-        setDiaryLearnings([]);
-        setDiaryNextGoals([]);
-        setDiaryEnergyLevel(5);
-        setDiaryStressLevel(5);
-        setDiaryWorkHours(0);
-        setDiaryBreakTime(0);
-        setDiaryProductivity(5);
-        setDiaryNotes("");
-        setDiaryGratitude("");
-        setDiaryReflection("");
-        // データを再読み込み
-        loadWorkDiariesData();
-      } else {
-        setMessage("日記の作成に失敗しました");
-      }
-    } catch (error) {
-      console.error("Create diary error:", error);
-      setMessage("日記の作成中にエラーが発生しました");
-    }
-  };
-
-  const handleUpdateDiaryLocal = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingDiary) return;
-    
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(`/api/work-records/diary/${editingDiary.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          date: diaryDate,
-          title: diaryTitle,
-          content: diaryContent,
-          mood: parseInt(diaryMood),
-          activities: diaryActivities,
-          tags: diaryTags,
-          isPrivate: diaryIsPrivate,
-          workSummary: diaryWorkSummary,
-          achievements: diaryAchievements,
-          challenges: diaryChallenges,
-          learnings: diaryLearnings,
-          nextGoals: diaryNextGoals,
-          energyLevel: diaryEnergyLevel,
-          stressLevel: diaryStressLevel,
-          workHours: diaryWorkHours,
-          breakTime: diaryBreakTime,
-          productivity: diaryProductivity,
-          notes: diaryNotes,
-          gratitude: diaryGratitude,
-          reflection: diaryReflection,
-        }),
-      });
-      
-      if (response.ok) {
-        setMessage("日記を更新しました");
-        setShowDiaryForm(false);
-        setEditingDiary(null);
-        // データを再読み込み
-        loadWorkDiariesData();
-      } else {
-        setMessage("日記の更新に失敗しました");
-      }
-    } catch (error) {
-      console.error("Update diary error:", error);
-      setMessage("日記の更新中にエラーが発生しました");
-    }
-  };
-
-  const handleDeleteDiaryLocal = async (id: string) => {
-    if (!confirm("この日記を削除しますか？")) return;
-    
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(`/api/work-records/diary/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
-      if (response.ok) {
-        setMessage("日記を削除しました");
-        // データを再読み込み
-        loadWorkDiariesData();
-      } else {
-        setMessage("日記の削除に失敗しました");
-      }
-    } catch (error) {
-      console.error("Delete diary error:", error);
-      setMessage("日記の削除中にエラーが発生しました");
-    }
-  };
 
   // デバッグログの追加
   React.useEffect(() => {
@@ -2788,15 +2592,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
                       handleCreateIncomeExpenseRecord={
                         handleCreateIncomeExpenseRecord
                       }
-                      handleCreateDiary={handleCreateDiaryLocal}
+                      handleCreateDiary={handleCreateDiary}
                       handleUpdateIncomeExpenseRecord={
                         handleUpdateIncomeExpenseRecord
                       }
-                      handleUpdateDiary={handleUpdateDiaryLocal}
+                      handleUpdateDiary={handleUpdateDiary}
                       handleDeleteIncomeExpenseRecord={
                         handleDeleteIncomeExpenseRecord
                       }
-                      handleDeleteDiary={handleDeleteDiaryLocal}
+                      handleDeleteDiary={handleDeleteDiary}
                       editDiary={editDiary}
                       showCalendar={showCalendar}
                       setShowCalendar={setShowCalendar}
