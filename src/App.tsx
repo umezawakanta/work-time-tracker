@@ -216,10 +216,6 @@ function App({
   >(undefined);
 
 
-  // 注意: isTrackingはTimeTrackingComponent内で管理される
-  // 理由: 時間記録の追跡状態はTimeTrackingComponent内でのみ使用されるため、
-  // TimeTrackingComponent内で状態を管理することで、状態の分散を防ぐ
-  // const [isTracking, setIsTracking] = useState(false); // TimeTrackingComponentで管理
   const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
@@ -4118,7 +4114,9 @@ ${errorInfo.stack}
   };
 
   const getReadingProgress = (book: Book) => {
-    if (book.totalPages === 0) return 0;
+    if (book.totalPages === 0) {
+      return 0;
+    }
     return Math.round((book.readPages / book.totalPages) * 100);
   };
 
