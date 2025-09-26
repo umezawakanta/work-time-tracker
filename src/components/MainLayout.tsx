@@ -1425,9 +1425,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       let actualUserId = user?.id || 'temp-id';
       if (token) {
         try {
+          console.log("MainLayout - loadIncomeExpenseRecords token:", token.substring(0, 50) + "...");
           const parts = token.split('.');
+          console.log("MainLayout - loadIncomeExpenseRecords token parts length:", parts.length);
           if (parts.length === 3) {
+            console.log("MainLayout - loadIncomeExpenseRecords payload part:", parts[1]);
             const payload = JSON.parse(atob(parts[1]));
+            console.log("MainLayout - loadIncomeExpenseRecords payload:", payload);
             actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
             console.log("MainLayout - loadIncomeExpenseRecords actual user ID from token:", actualUserId);
           } else {
@@ -1463,12 +1467,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       let actualUserId = user?.id || 'temp-id';
       if (token) {
         try {
+          console.log("MainLayout - loadWorkDiaries token:", token.substring(0, 50) + "...");
           const parts = token.split('.');
+          console.log("MainLayout - loadWorkDiaries token parts length:", parts.length);
           if (parts.length === 3) {
+            console.log("MainLayout - loadWorkDiaries payload part:", parts[1]);
             const payload = JSON.parse(atob(parts[1]));
+            console.log("MainLayout - loadWorkDiaries payload:", payload);
             actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
             console.log("MainLayout - loadWorkDiaries actual user ID from token:", actualUserId);
-            console.log("MainLayout - loadWorkDiaries token payload:", payload);
           } else {
             console.warn("MainLayout - Invalid token format");
           }

@@ -8,9 +8,13 @@ export const useDataFetching = (isLoggedIn: boolean, user: User | null) => {
     const token = localStorage.getItem("access_token");
     if (token) {
       try {
+        console.log('useDataFetching - token:', token.substring(0, 50) + "...");
         const parts = token.split('.');
+        console.log('useDataFetching - token parts length:', parts.length);
         if (parts.length === 3) {
+          console.log('useDataFetching - payload part:', parts[1]);
           const payload = JSON.parse(atob(parts[1]));
+          console.log('useDataFetching - payload:', payload);
           const actualUserId = payload.userId || payload.user_id || user?.id || 'temp-id';
           console.log('useDataFetching - getActualUserId:', actualUserId);
           return actualUserId;
