@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TimeTrackingComponent.css';
 import type { Project, TimeEntry } from '../types';
-import { useTimeTrackingState } from './TimeTrackingStateManager';
+import { useTimeTrackingState, useTimeTrackingHelpers } from './TimeTrackingStateManager';
 
 interface TimeTrackingComponentProps {
   showTimeTracking: boolean;
@@ -9,11 +9,8 @@ interface TimeTrackingComponentProps {
   projects: Project[];
   projectsLoading: boolean;
   loadProjects: () => void;
-  loadTimeEntries: () => void;
-  handleStartTracking: () => void;
-  handleStopTracking: () => void;
-  handleResetTracking: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
+  setMessage: (message: string) => void;
 }
 
 const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
@@ -22,14 +19,13 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
   projects,
   projectsLoading,
   loadProjects,
-  loadTimeEntries,
-  handleStartTracking,
-  handleStopTracking,
-  handleResetTracking,
   closeOtherFeatures,
+  setMessage,
 }) => {
   // 時間記録状態をコンポーネント内で管理
   const timeTrackingState = useTimeTrackingState();
+  const timeTrackingHelpers = useTimeTrackingHelpers();
+  
   const {
     timeEntries,
     timeEntriesLoading,
@@ -41,6 +37,39 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
     startTime,
     elapsedTime,
   } = timeTrackingState;
+
+  // 時間記録関連の関数をコンポーネント内で定義
+  const handleStartTracking = async () => {
+    if (!currentProject) {
+      setMessage("プロジェクトを選択してください");
+      return;
+    }
+
+    if (!description.trim()) {
+      setMessage("作業内容を入力してください");
+      return;
+    }
+
+    const result = await timeTrackingHelpers.startTimeTracking(
+      currentProject,
+      description
+    );
+    setMessage(result.message);
+  };
+
+  const handleStopTracking = async () => {
+    const result = await timeTrackingHelpers.stopTimeTracking();
+    setMessage(result.message);
+  };
+
+  const handleResetTracking = () => {
+    const result = timeTrackingHelpers.resetTimeTracking();
+    setMessage(result.message);
+  };
+
+  const loadTimeEntries = () => {
+    timeTrackingHelpers.loadTimeEntries();
+  };
   const [showTimeEntries, setShowTimeEntries] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');

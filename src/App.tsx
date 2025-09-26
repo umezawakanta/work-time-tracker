@@ -101,18 +101,9 @@ function App() {
   // 理由: 各コンポーネントで個別のローディング状態を管理することで、状態の分散を防ぐ
   // const loadingState = useLoadingState(); // 削除
 
-  // 時間記録状態の管理（TimeTrackingComponent内で管理）
-  // 注意: timeTrackingHelpersをサブコンポーネント側で定義することはできません
-  // 理由:
-  // 1. App.tsx内の複数の関数でtimeTrackingHelpersを使用している
-  //    - handleStartTracking: startTimeTracking()
-  //    - handleStopTracking: stopTimeTracking()
-  //    - handleResetTracking: resetTimeTracking()
-  // 2. 時間記録の開始・停止・リセットはApp.tsxレベルでの制御が必要
-  // 3. 複数のコンポーネント（TimeTrackingComponent, SelfAnalysisComponent等）で
-  //    時間記録データを共有する必要がある
-  // 4. グローバルな時間記録状態の管理が必要で、Context Providerを使用している
-  const timeTrackingHelpers = useTimeTrackingHelpers();
+  // 注意: timeTrackingHelpersは各コンポーネントで個別に使用される
+  // 理由: 各コンポーネントで個別の時間記録機能を管理することで、状態の分散を防ぐ
+  // const timeTrackingHelpers = useTimeTrackingHelpers(); // 削除
 
   // タイマープリセット状態の管理
   // 注意: timerPresetStateをサブコンポーネント側で定義することはできません
@@ -2167,36 +2158,9 @@ ${errorInfo.stack}
     }
   };
 
-  // 時間記録の履歴を取得（TimeTrackingStateManagerで管理）
-  const {
-    loadTimeEntries,
-    calculateTimeBreakdown,
-    calculateProductivityTrend,
-  } = timeTrackingHelpers;
-
-  // 生産性統計を計算
-  const calculateProductivityStats = () => {
-    const productivityData = calculateProductivityTrend();
-    const workHours = productivityData.map((day) => day.totalTime);
-
-    const totalHours =
-      workHours.length > 0
-        ? workHours.reduce((sum, hours) => sum + hours, 0)
-        : 0;
-    const averageHours = totalHours / workHours.length;
-    const maxHours = workHours.length > 0 ? Math.max(...workHours) : 0;
-    const productiveDays = (workHours || []).filter(
-      (hours) => hours > 0
-    ).length;
-
-    return {
-      averageHours: averageHours,
-      maxHours: maxHours,
-      totalHours: totalHours,
-      productiveDays: productiveDays,
-      productivityRate: (productiveDays / workHours.length) * 100,
-    };
-  };
+  // 注意: 時間記録関連の関数は各コンポーネントで個別に定義される
+  // 理由: 各コンポーネントで個別の時間記録機能を管理することで、状態の分散を防ぐ
+  // const calculateProductivityStats = () => { ... }; // 削除
 
   const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -3731,7 +3695,6 @@ ${errorInfo.stack}
       loadIncomeExpenseRecords();
       loadWorkDiaries();
       loadUserSettings();
-      loadTimeEntries();
       loadMemos();
     }
   }, [isLoggedIn, user?.id]);
@@ -5040,31 +5003,12 @@ User Agent: ${userAgent}
     setAdminUsers([]);
   };
 
-  // 時間記録を開始（TimeTrackingStateManagerで管理）
-  const handleStartTracking = async () => {
-    if (!description.trim()) {
-      setMessage("作業内容を入力してください");
-      return;
-    }
-
-    const result = await timeTrackingHelpers.startTimeTracking(
-      currentProject,
-      description
-    );
-    setMessage(result.message);
-  };
-
-  // 時間記録を停止（TimeTrackingStateManagerで管理）
-  const handleStopTracking = async () => {
-    const result = await timeTrackingHelpers.stopTimeTracking();
-    setMessage(result.message);
-  };
-
-  // 時間記録を強制的にリセットする関数（TimeTrackingStateManagerで管理）
-  const handleResetTracking = () => {
-    const result = timeTrackingHelpers.resetTimeTracking();
-    setMessage(result.message);
-  };
+  // 注意: 時間記録関連の関数は各コンポーネントで個別に定義される
+  // 理由: 各コンポーネントで個別の時間記録機能を管理することで、状態の分散を防ぐ
+  // const handleStartTracking = async () => { ... }; // 削除
+  // const handleStopTracking = async () => { ... }; // 削除
+  // const handleResetTracking = () => { ... }; // 削除
+  // const calculateProductivityStats = () => { ... }; // 削除
 
   // ゆでたまごタイマーの関数（EggTimerComponentで管理）
   const getEggTimerDuration = (type: "soft" | "medium" | "hard") => {
@@ -6097,11 +6041,8 @@ User Agent: ${userAgent}
                     projects={projects}
                     projectsLoading={projectsLoading}
                     loadProjects={loadProjects}
-                    loadTimeEntries={loadTimeEntries}
-                    handleStartTracking={handleStartTracking}
-                    handleStopTracking={handleStopTracking}
-                    handleResetTracking={handleResetTracking}
                     closeOtherFeatures={closeOtherFeatures}
+                    setMessage={setMessage}
                   />
                 );
               } else if (feature.id === "cooking-timer") {
@@ -6467,16 +6408,6 @@ User Agent: ${userAgent}
                     learningRecords={learningRecords}
                     setLearningRecords={setLearningRecords}
                     timeEntries={timeEntries}
-                    calculateTimeBreakdown={calculateTimeBreakdown}
-                    calculateProductivityTrend={
-                      calculateProductivityTrend as unknown as () => {
-                        date: string;
-                        workHours: number;
-                        dayOfWeek: string;
-                      }[]
-                    }
-                    calculateProductivityStats={calculateProductivityStats}
-                    loadTimeEntries={loadTimeEntries}
                     closeOtherFeatures={closeOtherFeatures}
                   />
                 );

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './SelfAnalysisComponent.css';
 import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
 import HetamaIconComponent from './HetamaIconComponent';
+import { useTimeTrackingHelpers } from './TimeTrackingStateManager';
 
 export interface PersonalProfile {
   values: string[];
@@ -41,10 +42,6 @@ interface SelfAnalysisComponentProps {
   learningRecords: LearningRecord[];
   setLearningRecords: React.Dispatch<React.SetStateAction<LearningRecord[]>>;
   timeEntries: any[];
-  calculateTimeBreakdown: () => { [key: string]: number };
-  calculateProductivityTrend: () => Array<{date: string, workHours: number, dayOfWeek: string}>;
-  calculateProductivityStats: () => {averageHours: number, maxHours: number, totalHours: number, productiveDays: number, productivityRate: number};
-  loadTimeEntries: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
 }
 
@@ -68,12 +65,45 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   learningRecords,
   setLearningRecords,
   timeEntries,
-  calculateTimeBreakdown,
-  calculateProductivityTrend,
-  calculateProductivityStats,
-  loadTimeEntries,
   closeOtherFeatures,
 }) => {
+  // 時間記録関連のヘルパーをコンポーネント内で使用
+  const timeTrackingHelpers = useTimeTrackingHelpers();
+  
+  // 時間記録関連の関数をコンポーネント内で定義
+  const calculateTimeBreakdown = () => {
+    return timeTrackingHelpers.calculateTimeBreakdown();
+  };
+
+  const calculateProductivityTrend = () => {
+    return timeTrackingHelpers.calculateProductivityTrend();
+  };
+
+  const calculateProductivityStats = () => {
+    const productivityData = calculateProductivityTrend();
+    const workHours = productivityData.map((day) => day.totalTime);
+
+    const totalHours =
+      workHours.length > 0
+        ? workHours.reduce((sum, hours) => sum + hours, 0)
+        : 0;
+    const averageHours = workHours.length > 0 ? totalHours / workHours.length : 0;
+    const maxHours = workHours.length > 0 ? Math.max(...workHours) : 0;
+    const productiveDays = workHours.filter((hours) => hours > 0).length;
+    const productivityRate = workHours.length > 0 ? (productiveDays / workHours.length) * 100 : 0;
+
+    return {
+      averageHours,
+      maxHours,
+      totalHours,
+      productiveDays,
+      productivityRate,
+    };
+  };
+
+  const loadTimeEntries = () => {
+    timeTrackingHelpers.loadTimeEntries();
+  };
   // 内部状態
   const [editingProfile, setEditingProfile] = useState(false);
   const [newValue, setNewValue] = useState("");
