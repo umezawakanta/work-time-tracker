@@ -6718,7 +6718,7 @@ User Agent: ${userAgent}
                           <div className="feature-drag-handle">⋮⋮</div>
                           <div className="feature-item-content">
                             <div className="feature-icon">
-                              <HetamaIconComponent />
+                              <HetamaIconComponent featureId={feature.id} />
                             </div>
                             <div className="feature-info">
                               <div className="feature-name">{feature.name}</div>
