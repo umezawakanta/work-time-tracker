@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.11";
+export const APP_VERSION = "1.0.12";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,23 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.0.12",
+    date: "2025-01-27",
+    changes: [
+      "GitHub自動イシュー作成機能を追加（エラー報告時に自動的にGitHubイシューを作成）",
+      "音声エラーとAPIエラーを区別して報告する機能を追加",
+      "ToneStateManagerクラスによる音声エンジンの状態管理改善",
+      "エラーハンドリングの強化（音声エラーとAPIエラーの分類と個別処理）",
+      "Copilot AIの提案に基づくコード品質向上（グローバル変数のカプセル化）",
+      "GitHub APIエンドポイントの修正（CORSエラーの解決）",
+      "型安全性の向上（TimeEntryインターフェースの改善）",
+      "音声システムの安定性向上（AudioContext初期化の改善）",
+      "環境変数の適切な処理（Viteプロジェクト用の環境変数定義）",
+      "開発サーバーポートの変更（9000番ポート）"
+    ],
+    type: "feature"
+  },
   {
     version: "1.0.11",
     date: "2024-12-22",

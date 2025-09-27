@@ -12,7 +12,7 @@ export const generateBuildInfo = (): Omit<VersionInfo, 'lastChecked'> => {
   const buildDate = new Date().toISOString();
   
   return {
-    version: '1.0.0', // package.jsonから取得する場合はimport.meta.env.VITE_APP_VERSION
+    version: '1.0.12', // package.jsonから取得する場合はimport.meta.env.VITE_APP_VERSION
     buildId,
     buildDate
   };
