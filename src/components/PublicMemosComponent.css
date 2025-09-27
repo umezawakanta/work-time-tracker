@@ -1498,3 +1498,85 @@
     justify-content: center;
   }
 }
+
+/* ソートコントロール */
+.sort-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.sort-select,
+.sort-order-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sort-select:hover,
+.sort-order-select:hover {
+  border-color: #4ecdc4;
+  box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.1);
+}
+
+.sort-select:focus,
+.sort-order-select:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+}
+
+.sort-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(78, 205, 196, 0.1);
+  color: #2c5f5a;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.sort-label i {
+  color: #4ecdc4;
+}
+
+.clear-filter-button {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+.clear-filter-button:hover {
+  background: rgba(220, 53, 69, 0.1);
+  color: #b02a37;
+}
+
+/* レスポンシブ対応 - ソートコントロール */
+@media (max-width: 768px) {
+  .sort-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .sort-select,
+  .sort-order-select {
+    width: 100%;
+  }
+  
+  .sort-label {
+    justify-content: center;
+  }
+}

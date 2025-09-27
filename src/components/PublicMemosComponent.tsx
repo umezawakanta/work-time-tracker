@@ -53,6 +53,10 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const [excludeTags, setExcludeTags] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   
+  // ソート状態
+  const [sortBy, setSortBy] = useState<'createdAt' | 'updatedAt'>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
   // ステータス・タグ編集状態
   const [editingMemoId, setEditingMemoId] = useState<string | null>(null);
   const [editingStatus, setEditingStatus] = useState<string>('');
@@ -129,15 +133,29 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       return true;
     });
     
+    // ソートを適用
+    const sorted = filtered.sort((a, b) => {
+      const aDate = new Date(a[sortBy]);
+      const bDate = new Date(b[sortBy]);
+      
+      if (sortOrder === 'asc') {
+        return aDate.getTime() - bDate.getTime();
+      } else {
+        return bDate.getTime() - aDate.getTime();
+      }
+    });
+    
     console.log('Filtered memos:', {
       totalMemos: publicMemos.length,
-      filteredMemos: filtered.length,
+      filteredMemos: sorted.length,
       statusFilter,
       tagFilter,
       excludeTags,
       filterByDate: filterByDate ? filterByDate.toISOString().split('T')[0] : null,
       selectedPublicMemoCategory,
-      publicMemoSearchTerm
+      publicMemoSearchTerm,
+      sortBy,
+      sortOrder
     });
     
     // 特定のメモの詳細をログ出力
@@ -151,7 +169,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       });
     }
     
-    return filtered;
+    return sorted;
   };
 
   // ステータス更新
@@ -710,44 +728,82 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
               </select>
             </div>
             
-            {(selectedPublicMemoCategory !== "all" || publicMemoSearchTerm || filterByDate) && (
+            <div className="sort-controls">
+              <select
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value as 'createdAt' | 'updatedAt');
+                  setCurrentPage(1);
+                }}
+                className="sort-select"
+                aria-label="ソート項目"
+              >
+                <option value="createdAt">作成日</option>
+                <option value="updatedAt">更新日</option>
+              </select>
+              
+              <select
+                value={sortOrder}
+                onChange={(e) => {
+                  setSortOrder(e.target.value as 'asc' | 'desc');
+                  setCurrentPage(1);
+                }}
+                className="sort-order-select"
+                aria-label="ソート順序"
+              >
+                <option value="desc">降順（新しい順）</option>
+                <option value="asc">昇順（古い順）</option>
+              </select>
+            </div>
+            
+            {(selectedPublicMemoCategory !== "all" || publicMemoSearchTerm || filterByDate || sortBy !== 'createdAt' || sortOrder !== 'desc') && (
               <button
                 onClick={() => {
                   setSelectedPublicMemoCategory("all");
                   setPublicMemoSearchTerm("");
                   setFilterByDate(null);
+                  setSortBy('createdAt');
+                  setSortOrder('desc');
                   setCurrentPage(1);
                   loadPublicMemosLocal();
                 }}
                 className="reset-button"
-                title="フィルターをリセット"
+                title="フィルターとソートをリセット"
               >
                 🔄 リセット
               </button>
             )}
           </div>
 
-          {/* フィルター情報表示 */}
-          {filterByDate && (
+          {/* フィルター・ソート情報表示 */}
+          {(filterByDate || sortBy !== 'createdAt' || sortOrder !== 'desc') && (
             <div className="filter-info">
-              <span className="filter-label">
-                <i className="bi bi-calendar"></i>
-                日付フィルター: {filterByDate.toLocaleDateString('ja-JP', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+              {filterByDate && (
+                <span className="filter-label">
+                  <i className="bi bi-calendar"></i>
+                  日付フィルター: {filterByDate.toLocaleDateString('ja-JP', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                  <button
+                    onClick={() => {
+                      setFilterByDate(null);
+                      setCurrentPage(1);
+                    }}
+                    className="clear-filter-button"
+                    title="日付フィルターをクリア"
+                  >
+                    <i className="bi bi-x"></i>
+                  </button>
+                </span>
+              )}
+              
+              <span className="sort-label">
+                <i className="bi bi-sort-down"></i>
+                ソート: {sortBy === 'createdAt' ? '作成日' : '更新日'} 
+                {sortOrder === 'desc' ? '（新しい順）' : '（古い順）'}
               </span>
-              <button
-                onClick={() => {
-                  setFilterByDate(null);
-                  setCurrentPage(1);
-                }}
-                className="clear-date-filter-button"
-                title="日付フィルターをクリア"
-              >
-                <i className="bi bi-x"></i>
-              </button>
             </div>
           )}
 
