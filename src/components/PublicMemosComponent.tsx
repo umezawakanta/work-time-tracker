@@ -74,6 +74,22 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   // フィルタリングされたメモを取得
   const getFilteredMemos = () => {
     const filtered = publicMemos.filter(memo => {
+      // 日付フィルター
+      if (filterByDate) {
+        const filterYear = filterByDate.getFullYear();
+        const filterMonth = filterByDate.getMonth();
+        const filterDay = filterByDate.getDate();
+        
+        const memoDate = new Date(memo.createdAt);
+        const memoYear = memoDate.getFullYear();
+        const memoMonth = memoDate.getMonth();
+        const memoDay = memoDate.getDate();
+        
+        if (!(memoYear === filterYear && memoMonth === filterMonth && memoDay === filterDay)) {
+          return false;
+        }
+      }
+      
       // ステータスフィルター
       if (statusFilter !== 'all' && memo.status !== statusFilter) {
         return false;
@@ -95,6 +111,21 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         return false;
       }
       
+      // カテゴリフィルター
+      if (selectedPublicMemoCategory !== "all" && memo.category !== selectedPublicMemoCategory) {
+        return false;
+      }
+      
+      // 検索語フィルター
+      if (publicMemoSearchTerm.trim()) {
+        const searchTerm = publicMemoSearchTerm.toLowerCase();
+        if (!memo.title.toLowerCase().includes(searchTerm) &&
+            !memo.content.toLowerCase().includes(searchTerm) &&
+            !memo.category.toLowerCase().includes(searchTerm)) {
+          return false;
+        }
+      }
+      
       return true;
     });
     
@@ -103,7 +134,10 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       filteredMemos: filtered.length,
       statusFilter,
       tagFilter,
-      excludeTags
+      excludeTags,
+      filterByDate: filterByDate ? filterByDate.toISOString().split('T')[0] : null,
+      selectedPublicMemoCategory,
+      publicMemoSearchTerm
     });
     
     // 特定のメモの詳細をログ出力
@@ -228,79 +262,14 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // ページネーション用の関数
   const getPaginatedMemos = () => {
-    let filteredMemos = publicMemos || [];
-    
-    // 日付でフィルタリング
-    if (filterByDate) {
-      const filterYear = filterByDate.getFullYear();
-      const filterMonth = filterByDate.getMonth();
-      const filterDay = filterByDate.getDate();
-      
-      filteredMemos = filteredMemos.filter(memo => {
-        const memoDate = new Date(memo.createdAt);
-        const memoYear = memoDate.getFullYear();
-        const memoMonth = memoDate.getMonth();
-        const memoDay = memoDate.getDate();
-        
-        return memoYear === filterYear && memoMonth === filterMonth && memoDay === filterDay;
-      });
-    }
-    
-    // カテゴリでフィルタリング
-    if (selectedPublicMemoCategory !== "all") {
-      filteredMemos = filteredMemos.filter(memo => memo.category === selectedPublicMemoCategory);
-    }
-    
-    // 検索語でフィルタリング
-    if (publicMemoSearchTerm.trim()) {
-      const searchTerm = publicMemoSearchTerm.toLowerCase();
-      filteredMemos = filteredMemos.filter(memo => 
-        memo.title.toLowerCase().includes(searchTerm) ||
-        memo.content.toLowerCase().includes(searchTerm) ||
-        memo.category.toLowerCase().includes(searchTerm)
-      );
-    }
-    
+    const filteredMemos = getFilteredMemos();
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filteredMemos.slice(startIndex, endIndex);
   };
 
   const getTotalPages = () => {
-    let filteredMemos = publicMemos || [];
-    
-    // 日付でフィルタリング
-    if (filterByDate) {
-      const filterYear = filterByDate.getFullYear();
-      const filterMonth = filterByDate.getMonth();
-      const filterDay = filterByDate.getDate();
-      
-      filteredMemos = filteredMemos.filter(memo => {
-        const memoDate = new Date(memo.createdAt);
-        const memoYear = memoDate.getFullYear();
-        const memoMonth = memoDate.getMonth();
-        const memoDay = memoDate.getDate();
-        
-        return memoYear === filterYear && memoMonth === filterMonth && memoDay === filterDay;
-      });
-    }
-    
-    // カテゴリでフィルタリング
-    if (selectedPublicMemoCategory !== "all") {
-      filteredMemos = filteredMemos.filter(memo => memo.category === selectedPublicMemoCategory);
-    }
-    
-    // 検索語でフィルタリング
-    if (publicMemoSearchTerm.trim()) {
-      const searchTerm = publicMemoSearchTerm.toLowerCase();
-      filteredMemos = filteredMemos.filter(memo => 
-        memo.title.toLowerCase().includes(searchTerm) ||
-        memo.content.toLowerCase().includes(searchTerm) ||
-        memo.category.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    return Math.ceil(filteredMemos.length / itemsPerPage);
+    return Math.ceil(getFilteredMemos().length / itemsPerPage);
   };
 
   const handlePageChange = (page: number) => {
@@ -806,9 +775,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
           {/* ページ情報（上部） */}
           <div className="pagination-info pagination-info-top">
-            {publicMemos.length > 0 && (
+            {getFilteredMemos().length > 0 && (
               <p>
-                {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, publicMemos.length)} / {publicMemos.length} 件
+                {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, getFilteredMemos().length)} / {getFilteredMemos().length} 件
               </p>
             )}
           </div>
