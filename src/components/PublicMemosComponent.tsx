@@ -18,6 +18,10 @@ interface PublicMemosComponentProps {
   handleDeleteReply: (replyId: string) => void;
   replyContent: string;
   setReplyContent: (content: string) => void;
+  onUpdateMemoStatus?: (memoId: string, status: string) => Promise<void>;
+  onUpdateMemoTags?: (memoId: string, tags: string[]) => Promise<void>;
+  onEditMemo?: (memo: Memo) => void;
+  onDeleteMemo?: (memoId: string) => Promise<void>;
 }
 
 const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
@@ -35,9 +39,27 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   handleDeleteReply,
   replyContent,
   setReplyContent,
+  onUpdateMemoStatus,
+  onUpdateMemoTags,
+  onEditMemo,
+  onDeleteMemo,
 }) => {
   // 公開メモのローディング状態をPublicMemosComponent内で管理
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
+  
+  // フィルタリング状態
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [tagFilter, setTagFilter] = useState<string>('');
+  const [excludeTags, setExcludeTags] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // ステータス・タグ編集状態
+  const [editingMemoId, setEditingMemoId] = useState<string | null>(null);
+  const [editingStatus, setEditingStatus] = useState<string>('');
+  const [editingTags, setEditingTags] = useState<string>('');
+  
+  // 削除確認ダイアログ状態
+  const [deleteConfirmMemo, setDeleteConfirmMemo] = useState<Memo | null>(null);
 
   // 公開メモの読み込み関数をPublicMemosComponent内で定義
   const loadPublicMemosLocal = async () => {
@@ -47,6 +69,115 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     } finally {
       setPublicMemosLoading(false);
     }
+  };
+
+  // フィルタリングされたメモを取得
+  const getFilteredMemos = () => {
+    return publicMemos.filter(memo => {
+      // ステータスフィルター
+      if (statusFilter !== 'all' && memo.status !== statusFilter) {
+        return false;
+      }
+      
+      // タグフィルター（含む）
+      if (tagFilter && !memo.tags.some(tag => 
+        tag.toLowerCase().includes(tagFilter.toLowerCase())
+      )) {
+        return false;
+      }
+      
+      // タグフィルター（除外）
+      if (excludeTags.length > 0 && memo.tags.some(tag => 
+        excludeTags.some(excludeTag => 
+          tag.toLowerCase().includes(excludeTag.toLowerCase())
+        )
+      )) {
+        return false;
+      }
+      
+      return true;
+    });
+  };
+
+  // ステータス更新
+  const handleStatusUpdate = async (memoId: string, newStatus: string) => {
+    if (onUpdateMemoStatus) {
+      try {
+        await onUpdateMemoStatus(memoId, newStatus);
+        setEditingMemoId(null);
+        setEditingStatus('');
+      } catch (error) {
+        console.error('ステータス更新エラー:', error);
+        alert('ステータス更新に失敗しました');
+      }
+    }
+  };
+
+  // タグ更新
+  const handleTagsUpdate = async (memoId: string, newTags: string) => {
+    if (onUpdateMemoTags) {
+      try {
+        const tagsArray = newTags.split(',').map(tag => tag.trim()).filter(tag => tag);
+        await onUpdateMemoTags(memoId, tagsArray);
+        setEditingMemoId(null);
+        setEditingTags('');
+      } catch (error) {
+        console.error('タグ更新エラー:', error);
+        alert('タグ更新に失敗しました');
+      }
+    }
+  };
+
+  // 編集開始
+  const startEditing = (memo: Memo) => {
+    setEditingMemoId(memo.id);
+    setEditingStatus(memo.status || 'pending');
+    setEditingTags(memo.tags.join(', '));
+  };
+
+  // 編集キャンセル
+  const cancelEditing = () => {
+    setEditingMemoId(null);
+    setEditingStatus('');
+    setEditingTags('');
+  };
+
+  // 除外タグの追加/削除
+  const toggleExcludeTag = (tag: string) => {
+    setExcludeTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+  // メモの所有者判定
+  const isMemoOwner = (memo: Memo) => {
+    if (!user) return false;
+    return memo.author === user.email || memo.author === user.displayName;
+  };
+
+  // 削除確認
+  const handleDeleteConfirm = (memo: Memo) => {
+    setDeleteConfirmMemo(memo);
+  };
+
+  // 削除実行
+  const handleDeleteExecute = async () => {
+    if (deleteConfirmMemo && onDeleteMemo) {
+      try {
+        await onDeleteMemo(deleteConfirmMemo.id);
+        setDeleteConfirmMemo(null);
+      } catch (error) {
+        console.error('削除エラー:', error);
+        alert('削除に失敗しました');
+      }
+    }
+  };
+
+  // 削除キャンセル
+  const handleDeleteCancel = () => {
+    setDeleteConfirmMemo(null);
   };
 
   // 内部状態
@@ -327,6 +458,15 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
           </div>
         </div>
         <div className="section-controls">
+          {showPublicMemos && (
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="filter-button"
+              title="フィルター"
+            >
+              🔍
+            </button>
+          )}
           {showPublicMemos ? (
             <button
               onClick={() => setShowPublicMemos(false)}
@@ -364,6 +504,68 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
               🔄
             </button>
           </div>
+
+          {/* フィルタリングUI */}
+          {showFilters && (
+            <div className="filter-panel">
+              <h3>🔍 フィルター設定</h3>
+              
+              {/* ステータスフィルター */}
+              <div className="filter-group">
+                <label>ステータス:</label>
+                <select 
+                  value={statusFilter} 
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">すべて</option>
+                  <option value="pending">保留中</option>
+                  <option value="in_progress">進行中</option>
+                  <option value="resolved">解決済み</option>
+                  <option value="closed">閉鎖</option>
+                </select>
+              </div>
+
+              {/* タグフィルター（含む） */}
+              <div className="filter-group">
+                <label>タグ（含む）:</label>
+                <input
+                  type="text"
+                  value={tagFilter}
+                  onChange={(e) => setTagFilter(e.target.value)}
+                  placeholder="タグ名を入力..."
+                />
+              </div>
+
+              {/* タグフィルター（除外） */}
+              <div className="filter-group">
+                <label>除外タグ:</label>
+                <div className="exclude-tags">
+                  {Array.from(new Set(publicMemos.flatMap(memo => memo.tags))).map(tag => (
+                    <button
+                      key={tag}
+                      className={`exclude-tag ${excludeTags.includes(tag) ? 'active' : ''}`}
+                      onClick={() => toggleExcludeTag(tag)}
+                    >
+                      {tag} {excludeTags.includes(tag) ? '✓' : ''}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="filter-actions">
+                <button 
+                  onClick={() => {
+                    setStatusFilter('all');
+                    setTagFilter('');
+                    setExcludeTags([]);
+                  }}
+                  className="clear-filters-button"
+                >
+                  フィルタークリア
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* 月別統計 */}
           <div className="monthly-stats">
@@ -586,11 +788,11 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                 <div className="spinner"></div>
                 <p>公開メモを読み込み中...</p>
               </div>
-            ) : getPaginatedMemos().length === 0 ? (
-              <p className="no-memos">公開メモがありません</p>
+            ) : getFilteredMemos().length === 0 ? (
+              <p className="no-memos">フィルター条件に合う公開メモがありません</p>
             ) : (
               <>
-                {getPaginatedMemos().map((memo) => (
+                {getFilteredMemos().map((memo) => (
                   <div key={memo.id} className="public-memo-item">
                     <div className="memo-header">
                       <h3>{getMemoTitle(memo)}</h3>
@@ -605,6 +807,49 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                         >
                           {memo.category}
                         </span>
+                        
+                        {/* ステータス表示・編集 */}
+                        <div className="memo-status">
+                          {editingMemoId === memo.id ? (
+                            <div className="status-edit">
+                              <select 
+                                value={editingStatus} 
+                                onChange={(e) => setEditingStatus(e.target.value)}
+                                className="status-select"
+                              >
+                                <option value="pending">保留中</option>
+                                <option value="in_progress">進行中</option>
+                                <option value="resolved">解決済み</option>
+                                <option value="closed">閉鎖</option>
+                              </select>
+                              <button 
+                                onClick={() => handleStatusUpdate(memo.id, editingStatus)}
+                                className="save-button"
+                              >
+                                保存
+                              </button>
+                              <button 
+                                onClick={cancelEditing}
+                                className="cancel-button"
+                              >
+                                キャンセル
+                              </button>
+                            </div>
+                          ) : (
+                            <span 
+                              className={`status-badge status-${memo.status || 'pending'}`}
+                              onClick={() => startEditing(memo)}
+                              title="クリックしてステータスを編集"
+                            >
+                              {memo.status === 'pending' && '⏳ 保留中'}
+                              {memo.status === 'in_progress' && '🔄 進行中'}
+                              {memo.status === 'resolved' && '✅ 解決済み'}
+                              {memo.status === 'closed' && '🔒 閉鎖'}
+                              {!memo.status && '⏳ 保留中'}
+                            </span>
+                          )}
+                        </div>
+                        
                         <span className="memo-date">
                           作成: {formatDateTime(memo.createdAt)}
                         </span>
@@ -626,13 +871,77 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                       <p>{memo.content}</p>
                     </div>
                     
-                    {memo.tags && memo.tags.length > 0 && (
-                      <div className="memo-tags">
-                        {memo.tags.map((tag, index) => (
-                          <span key={index} className="tag">
-                            {tag}
-                          </span>
-                        ))}
+                    {/* タグ表示・編集 */}
+                    <div className="memo-tags-section">
+                      {editingMemoId === memo.id ? (
+                        <div className="tags-edit">
+                          <input
+                            type="text"
+                            value={editingTags}
+                            onChange={(e) => setEditingTags(e.target.value)}
+                            placeholder="タグをカンマ区切りで入力..."
+                            className="tags-input"
+                          />
+                          <button 
+                            onClick={() => handleTagsUpdate(memo.id, editingTags)}
+                            className="save-button"
+                          >
+                            保存
+                          </button>
+                          <button 
+                            onClick={cancelEditing}
+                            className="cancel-button"
+                          >
+                            キャンセル
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="memo-tags">
+                          {memo.tags && memo.tags.length > 0 ? (
+                            memo.tags.map((tag, index) => (
+                              <span 
+                                key={index} 
+                                className="tag clickable-tag"
+                                onClick={() => {
+                                  setTagFilter(tag);
+                                  setShowFilters(true);
+                                }}
+                                title={`${tag}でフィルター`}
+                              >
+                                {tag}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="no-tags">タグなし</span>
+                          )}
+                          <button 
+                            onClick={() => startEditing(memo)}
+                            className="edit-tags-button"
+                            title="タグを編集"
+                          >
+                            ✏️
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* メモ操作ボタン（所有者のみ） */}
+                    {isMemoOwner(memo) && (
+                      <div className="memo-actions">
+                        <button
+                          onClick={() => onEditMemo?.(memo)}
+                          className="edit-memo-button"
+                          title="メモを編集"
+                        >
+                          ✏️ 編集
+                        </button>
+                        <button
+                          onClick={() => handleDeleteConfirm(memo)}
+                          className="delete-memo-button"
+                          title="メモを削除"
+                        >
+                          🗑️ 削除
+                        </button>
                       </div>
                     )}
                     
@@ -761,6 +1070,38 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                 
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* 削除確認ダイアログ */}
+      {deleteConfirmMemo && (
+        <div className="delete-confirm-modal">
+          <div className="delete-confirm-content">
+            <h3>メモを削除しますか？</h3>
+            <div className="delete-confirm-memo">
+              <h4>{deleteConfirmMemo.title}</h4>
+              <p className="delete-confirm-preview">
+                {deleteConfirmMemo.content.length > 100 
+                  ? `${deleteConfirmMemo.content.substring(0, 100)}...`
+                  : deleteConfirmMemo.content
+                }
+              </p>
+            </div>
+            <div className="delete-confirm-actions">
+              <button
+                onClick={handleDeleteExecute}
+                className="confirm-delete-button"
+              >
+                削除する
+              </button>
+              <button
+                onClick={handleDeleteCancel}
+                className="cancel-delete-button"
+              >
+                キャンセル
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -4962,6 +4962,107 @@ User Agent: ${userAgent}
     loadPublicMemos();
   };
 
+  // 公開メモのステータス更新
+  const handleUpdateMemoStatus = async (memoId: string, status: string) => {
+    try {
+      const response = await fetch(`/api/memos/${memoId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...createAuthHeaders(),
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // 公開メモ一覧を更新
+          await loadPublicMemos();
+          setMessage('ステータスを更新しました');
+        } else {
+          setMessage(`ステータス更新失敗: ${data.message}`);
+        }
+      } else {
+        setMessage(`ステータス更新失敗: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Failed to update memo status:', error);
+      setMessage('ステータス更新中にエラーが発生しました');
+    }
+  };
+
+  // 公開メモのタグ更新
+  const handleUpdateMemoTags = async (memoId: string, tags: string[]) => {
+    try {
+      const response = await fetch(`/api/memos/${memoId}/tags`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...createAuthHeaders(),
+        },
+        body: JSON.stringify({ tags }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // 公開メモ一覧を更新
+          await loadPublicMemos();
+          setMessage('タグを更新しました');
+        } else {
+          setMessage(`タグ更新失敗: ${data.message}`);
+        }
+      } else {
+        setMessage(`タグ更新失敗: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Failed to update memo tags:', error);
+      setMessage('タグ更新中にエラーが発生しました');
+    }
+  };
+
+  // 公開メモの編集
+  const handleEditPublicMemo = (memo: Memo) => {
+    // 編集モードに切り替え
+    setEditingMemo(memo);
+    setMemoTitle(memo.title);
+    setMemoContent(memo.content);
+    setMemoCategory(memo.category);
+    setMemoTags(memo.tags.join(', '));
+    setMemoIsPublic(memo.isPublic);
+    setMemoIsFamilyOnly(memo.isFamilyOnly || false);
+    setMemoIsAdminOnly(memo.isAdminOnly || false);
+    setMemoPostType(memo.postType || 'general');
+    setShowMemoForm(true);
+  };
+
+  // 公開メモの削除
+  const handleDeletePublicMemo = async (memoId: string) => {
+    try {
+      const response = await fetch(`/api/memos/${memoId}`, {
+        method: 'DELETE',
+        headers: createAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // 公開メモ一覧を更新
+          await loadPublicMemos();
+          setMessage('メモを削除しました');
+        } else {
+          setMessage(`削除失敗: ${data.message}`);
+        }
+      } else {
+        setMessage(`削除失敗: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Failed to delete memo:', error);
+      setMessage('削除中にエラーが発生しました');
+    }
+  };
+
   const getPublicMemoCategories = () => {
     const memoCategories = new Set(publicMemos.map((memo) => memo.category));
     const allCategories = [...memoCategories, ...getAllGenres()];
@@ -6186,6 +6287,10 @@ User Agent: ${userAgent}
                     handleDeleteReply={handleDeleteReply}
                     replyContent={replyContent}
                     setReplyContent={setReplyContent}
+                    onUpdateMemoStatus={handleUpdateMemoStatus}
+                    onUpdateMemoTags={handleUpdateMemoTags}
+                    onEditMemo={handleEditPublicMemo}
+                    onDeleteMemo={handleDeletePublicMemo}
                   />
                 );
               } else if (feature.id === "work-records") {
