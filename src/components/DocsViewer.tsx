@@ -55,6 +55,13 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
   // 利用可能な設計書ファイルの一覧
   const docFiles: DocFile[] = [
     {
+      id: 'sound-app-user-manual',
+      title: '音アプリ ユーザーマニュアル',
+      path: '/docs/sound-app-user-manual.md',
+      description: '音アプリの使い方、機能説明、トラブルシューティング',
+      category: 'ユーザーガイド'
+    },
+    {
       id: 'sound-app-design',
       title: '音アプリ設計書',
       path: '/docs/sound-app-design.md',
@@ -239,11 +246,12 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
     
     // まずMermaid図を抽出して保護
     const mermaidBlocks: string[] = [];
-    let processedContent = content.replace(/```mermaid\n([\s\S]*?)\n```/g, (match, diagram) => {
+    let processedContent = content.replace(/```mermaid\s*\n([\s\S]*?)\n```/g, (match, diagram) => {
       const index = mermaidBlocks.length;
       const trimmedDiagram = diagram.trim();
       mermaidBlocks.push(trimmedDiagram);
       console.log(`🔍 Mermaid図 ${index} を抽出:`, trimmedDiagram.substring(0, 50) + '...');
+      console.log(`🔍 完全なMermaid図 ${index}:`, trimmedDiagram);
       return `__MERMAID_BLOCK_${index}__`;
     });
 
@@ -255,10 +263,11 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
       .replace(/^### (.*$)/gim, '<h3>$1</h3>')
       .replace(/^## (.*$)/gim, '<h2>$1</h2>')
       .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-      // コードブロック
-      .replace(/```typescript\n([\s\S]*?)\n```/g, '<pre><code class="language-typescript">$1</code></pre>')
-      .replace(/```javascript\n([\s\S]*?)\n```/g, '<pre><code class="language-javascript">$1</code></pre>')
-      .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+      // コードブロック（Mermaid以外）
+      .replace(/```typescript\s*\n([\s\S]*?)\n```/g, '<pre><code class="language-typescript">$1</code></pre>')
+      .replace(/```javascript\s*\n([\s\S]*?)\n```/g, '<pre><code class="language-javascript">$1</code></pre>')
+      .replace(/```(?!mermaid)([a-zA-Z]*)\s*\n([\s\S]*?)\n```/g, '<pre><code class="language-$1">$2</code></pre>')
+      .replace(/```(?!mermaid)\s*\n([\s\S]*?)\n```/g, '<pre><code>$1</code></pre>')
       // インラインコード
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       // 太字
