@@ -3,10 +3,43 @@
  * PUT /api/memos/[id]/tags
  */
 
-const { mongoose, verifyJWT } = require('../../utils/database');
+const { mongoose } = require('../../utils/database');
+const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
 dotenv.config();
+
+// Database connection utility
+const ensureDatabaseConnection = async () => {
+  const isConnected = mongoose.connection.readyState === 1;
+  
+  if (isConnected) {
+    return;
+  }
+
+  console.warn('[memos/tags] Database not connected, attempting to connect...');
+  
+  try {
+    const MONGODB_URI = process.env.MONGODB_URI;
+    
+    if (!MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not set');
+    }
+
+    if (MONGODB_URI === "memory://") {
+      return;
+    }
+
+    await mongoose.connect(MONGODB_URI, {
+      dbName: 'workTimeTracker',
+    });
+
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('[memos/tags] Failed to connect to database:', message);
+    throw new Error(`Database connection failed: ${message}`);
+  }
+};
 
 // Memo Schema
 const MemoSchema = new mongoose.Schema({
@@ -46,6 +79,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // データベース接続を確実にする
+    await ensureDatabaseConnection();
+    
     const { id } = req.query;
     const { tags } = req.body;
     
