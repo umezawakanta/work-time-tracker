@@ -7,9 +7,7 @@
  */
 export const getAuthToken = (setMessage: (message: string) => void): string | null => {
   const token = localStorage.getItem('access_token');
-  console.log('getAuthToken - Token found:', !!token);
   if (!token) {
-    console.log('getAuthToken - No token found, setting message');
     setMessage('ログインが必要です');
     return null;
   }
@@ -23,9 +21,6 @@ export const getAuthToken = (setMessage: (message: string) => void): string | nu
  */
 export const createAuthHeaders = (token?: string): Record<string, string> => {
   const authToken = token || localStorage.getItem('access_token');
-  if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production') {
-    console.log('createAuthHeaders - Using token:', authToken ? authToken.substring(0, 20) + '...' : 'null');
-  }
   
   return {
     'Authorization': `Bearer ${authToken}`,

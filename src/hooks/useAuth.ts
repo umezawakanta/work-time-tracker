@@ -16,21 +16,14 @@ export const useAuth = () => {
 
   // 認証チェック
   const checkAuth = async () => {
-    console.log('useAuth - Starting auth check...');
-    console.log('useAuth - localStorage access_token:', localStorage.getItem('access_token') ? 'exists' : 'not found');
-    console.log('useAuth - localStorage authToken:', localStorage.getItem('authToken') ? 'exists' : 'not found');
-    const token = getAuthToken((message) => console.log('getAuthToken message:', message));
-    console.log('useAuth - Token found:', !!token);
-    console.log('useAuth - Token value:', token ? token.substring(0, 20) + '...' : 'null');
+    const token = getAuthToken((message) => setMessage(message));
     
     if (!token) {
-      console.log('useAuth - No token found, setting isCheckingAuth to false');
       setIsCheckingAuth(false);
       return;
     }
 
     // トークンが存在する場合は認証済みとして扱う（API検証をスキップ）
-    console.log('useAuth - Token exists, assuming user is authenticated');
     setIsLoggedIn(true);
     // ユーザー情報はlocalStorageから復元するか、デフォルト値を設定
     const userEmail = localStorage.getItem('userEmail') || 'user@example.com';

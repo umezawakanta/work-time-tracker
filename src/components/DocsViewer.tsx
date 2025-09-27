@@ -29,7 +29,6 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
 
   // Mermaidの初期化
   useEffect(() => {
-    console.log('🎨 Mermaidを初期化中...');
     mermaid.initialize({
       startOnLoad: false,
       theme: 'default',
@@ -49,7 +48,6 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
       },
       state: {},
     });
-    console.log('✅ Mermaid初期化完了');
   }, []);
 
   // 利用可能な設計書ファイルの一覧
@@ -115,10 +113,7 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
 
   // Mermaid図をレンダリング
   const renderMermaidDiagrams = async () => {
-    console.log('🔍 Mermaid図のレンダリングを開始...');
-    
     if (!mermaidContainerRef.current) {
-      console.log('❌ mermaidContainerRef.current が null です');
       return;
     }
     
@@ -127,10 +122,7 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
     const mermaidRegex = /<div class="mermaid">([\s\S]*?)<\/div>/g;
     const mermaidMatches = Array.from(containerHTML.matchAll(mermaidRegex));
     
-    console.log(`📊 HTMLから見つかったMermaid図数: ${mermaidMatches.length}`);
-    
     if (mermaidMatches.length === 0) {
-      console.log('❌ Mermaid図が見つかりません');
       return;
     }
     
@@ -215,53 +207,18 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
     // すべてのレンダリングが完了するまで待機
     await Promise.all(renderPromises);
     
-    console.log('🏁 Mermaid図のレンダリング完了');
-    
-    // レンダリング後の状態を確認
-    const renderedSvgs = mermaidContainerRef.current?.querySelectorAll('.mermaid svg');
-    const renderedElements = mermaidContainerRef.current?.querySelectorAll('.mermaid-rendered');
-    const errorElements = mermaidContainerRef.current?.querySelectorAll('.mermaid-error');
-    const allMermaidElements = mermaidContainerRef.current?.querySelectorAll('.mermaid');
-    
-    console.log(`📊 レンダリング後のSVG要素数: ${renderedSvgs?.length || 0}`);
-    console.log(`📊 レンダリング完了要素数: ${renderedElements?.length || 0}`);
-    console.log(`📊 エラー要素数: ${errorElements?.length || 0}`);
-    console.log(`📊 全Mermaid要素数: ${allMermaidElements?.length || 0}`);
-    
-    // 各要素の詳細を確認
-    if (allMermaidElements) {
-      allMermaidElements.forEach((element, index) => {
-        const hasSvg = element.querySelector('svg');
-        const hasContent = element.innerHTML.trim().length > 0;
-        console.log(`📊 要素 ${index}: SVG=${!!hasSvg}, コンテンツ=${hasContent}, クラス=${element.className}`);
-      });
-    }
-    
-    if (renderedSvgs && renderedSvgs.length > 0) {
-      console.log('✅ Mermaid図が正常にレンダリングされました');
-    } else {
-      console.warn('⚠️ Mermaid図がレンダリングされていません');
-    }
   };
 
   // MarkdownをHTMLに変換（Mermaid対応版）
   const renderMarkdown = (content: string) => {
-    console.log('📝 Markdown処理を開始...');
-    console.log(`📄 入力コンテンツの長さ: ${content.length} 文字`);
-    console.log(`📄 入力コンテンツの先頭: ${content.substring(0, 200)}...`);
-    
     // まずMermaid図を抽出して保護
     const mermaidBlocks: string[] = [];
     let processedContent = content.replace(/```mermaid\s*\n([\s\S]*?)\n```/g, (match, diagram) => {
       const index = mermaidBlocks.length;
       const trimmedDiagram = diagram.trim();
       mermaidBlocks.push(trimmedDiagram);
-      console.log(`🔍 Mermaid図 ${index} を抽出:`, trimmedDiagram.substring(0, 50) + '...');
-      console.log(`🔍 完全なMermaid図 ${index}:`, trimmedDiagram);
       return `__MERMAID_BLOCK_${index}__`;
     });
-
-    console.log(`📊 抽出されたMermaid図数: ${mermaidBlocks.length}`);
 
     // その他のMarkdown処理
     processedContent = processedContent
@@ -298,21 +255,16 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
         `__MERMAID_BLOCK_${index}__`,
         `<div class="mermaid">${protectedDiagram}</div>`
       );
-      console.log(`🔄 Mermaid図 ${index} を復元`);
     });
 
-    console.log('✅ Markdown処理完了');
     return processedContent;
   };
 
   // ドキュメントコンテンツが変更されたときにMermaid図をレンダリング
   useEffect(() => {
     if (docContent) {
-      console.log('📄 ドキュメントコンテンツが変更されました');
-      
       // DOMが更新された後にMermaid図をレンダリング
       const timeoutId = setTimeout(() => {
-        console.log('⏰ Mermaid図のレンダリングを開始します...');
         renderMermaidDiagrams();
       }, 500);
       

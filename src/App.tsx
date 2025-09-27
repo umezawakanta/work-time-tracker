@@ -3669,7 +3669,6 @@ ${errorInfo.stack}
           updateViaCache: "none", // キャッシュを無効化して常に最新版を取得
         })
         .then((registration) => {
-          console.log("Service Worker registered successfully:", registration);
 
           // 新しいサービスワーカーが利用可能な場合の処理
           registration.addEventListener("updatefound", () => {
@@ -4964,17 +4963,6 @@ User Agent: ${userAgent}
       const data = await response.json();
 
       if (data.success) {
-        console.log('Public memos loaded:', data.memos?.length || 0, 'memos');
-        // 更新されたメモを特定してログ出力
-        const updatedMemo = data.memos?.find((memo: any) => memo.id === '68cd6167948630efd47f2b5e');
-        if (updatedMemo) {
-          console.log('Updated memo details:', {
-            id: updatedMemo.id,
-            title: updatedMemo.title,
-            status: updatedMemo.status,
-            postType: updatedMemo.postType
-          });
-        }
         setPublicMemos(data.memos || []);
       } else {
         setMessage(`公開メモの一覧取得失敗: ${data.message}`);
@@ -5005,8 +4993,6 @@ User Agent: ${userAgent}
   // 公開メモのステータス更新
   const handleUpdateMemoStatus = async (memoId: string, status: string) => {
     try {
-      console.log('Updating memo status:', { memoId, status });
-      
       const response = await fetch(`/api/memos/${memoId}/status`, {
         method: 'PUT',
         headers: {
@@ -5016,19 +5002,11 @@ User Agent: ${userAgent}
         body: JSON.stringify({ status }),
       });
 
-      console.log('Status update response:', { 
-        status: response.status, 
-        ok: response.ok,
-        statusText: response.statusText 
-      });
-
       if (response.ok) {
         const data = await response.json();
-        console.log('Status update response data:', data);
         
         if (data.success) {
           // 公開メモ一覧を更新
-          console.log('Status update successful, reloading public memos...');
           await loadPublicMemos();
           setMessage('ステータスを更新しました');
         } else {
