@@ -103,13 +103,17 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const handleStatusUpdate = async (memoId: string, newStatus: string) => {
     if (onUpdateMemoStatus) {
       try {
+        console.log('PublicMemosComponent: Starting status update', { memoId, newStatus });
         await onUpdateMemoStatus(memoId, newStatus);
+        console.log('PublicMemosComponent: Status update completed');
         setEditingMemoId(null);
         setEditingStatus('');
       } catch (error) {
-        console.error('ステータス更新エラー:', error);
+        console.error('PublicMemosComponent: ステータス更新エラー:', error);
         alert('ステータス更新に失敗しました');
       }
+    } else {
+      console.error('PublicMemosComponent: onUpdateMemoStatus is not provided');
     }
   };
 
@@ -823,7 +827,10 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                                 <option value="closed">閉鎖</option>
                               </select>
                               <button 
-                                onClick={() => handleStatusUpdate(memo.id, editingStatus)}
+                                onClick={() => {
+                                  console.log('Status save button clicked:', { memoId: memo.id, status: editingStatus });
+                                  handleStatusUpdate(memo.id, editingStatus);
+                                }}
                                 className="save-button"
                               >
                                 保存

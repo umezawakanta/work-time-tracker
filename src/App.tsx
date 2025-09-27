@@ -4965,6 +4965,8 @@ User Agent: ${userAgent}
   // 公開メモのステータス更新
   const handleUpdateMemoStatus = async (memoId: string, status: string) => {
     try {
+      console.log('Updating memo status:', { memoId, status });
+      
       const response = await fetch(`/api/memos/${memoId}/status`, {
         method: 'PUT',
         headers: {
@@ -4974,17 +4976,28 @@ User Agent: ${userAgent}
         body: JSON.stringify({ status }),
       });
 
+      console.log('Status update response:', { 
+        status: response.status, 
+        ok: response.ok,
+        statusText: response.statusText 
+      });
+
       if (response.ok) {
         const data = await response.json();
+        console.log('Status update response data:', data);
+        
         if (data.success) {
           // 公開メモ一覧を更新
+          console.log('Status update successful, reloading public memos...');
           await loadPublicMemos();
           setMessage('ステータスを更新しました');
         } else {
           setMessage(`ステータス更新失敗: ${data.message}`);
         }
       } else {
-        setMessage(`ステータス更新失敗: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Status update failed:', { status: response.status, errorText });
+        setMessage(`ステータス更新失敗: ${response.status} - ${errorText}`);
       }
     } catch (error) {
       console.error('Failed to update memo status:', error);

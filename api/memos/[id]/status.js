@@ -122,12 +122,21 @@ module.exports = async (req, res) => {
     console.log('Looking for memo with ID:', id);
     const existingMemo = await Memo.findById(id);
     console.log('Existing memo found:', existingMemo ? 'Yes' : 'No');
+    console.log('Existing memo details:', existingMemo ? {
+      id: existingMemo._id,
+      title: existingMemo.title,
+      status: existingMemo.status,
+      userId: existingMemo.userId
+    } : 'No memo found');
+    
     if (!existingMemo) {
       return res.status(404).json({ success: false, message: 'Memo not found' });
     }
 
     // ステータス更新
     console.log('Updating memo status...');
+    console.log('Update data:', { status, updatedAt: new Date() });
+    
     const updatedMemo = await Memo.findByIdAndUpdate(
       id,
       { 
@@ -136,7 +145,14 @@ module.exports = async (req, res) => {
       },
       { new: true }
     );
+    
     console.log('Update result:', updatedMemo ? 'Success' : 'Failed');
+    console.log('Updated memo details:', updatedMemo ? {
+      id: updatedMemo._id,
+      title: updatedMemo.title,
+      status: updatedMemo.status,
+      updatedAt: updatedMemo.updatedAt
+    } : 'No memo updated');
 
     if (!updatedMemo) {
       console.log('No documents were modified');
