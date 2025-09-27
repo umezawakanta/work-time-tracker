@@ -4467,7 +4467,7 @@ User Agent: ${userAgent}
         return;
       }
 
-      const response = await fetch("https://github.com/umezawakanta/work-time-tracker/issues", {
+      const response = await fetch("https://api.github.com/repos/umezawakanta/work-time-tracker/issues", {
         method: "POST",
         headers: {
           "Authorization": `token ${githubToken}`,
