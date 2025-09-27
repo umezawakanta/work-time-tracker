@@ -45,6 +45,11 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const [showScore, setShowScore] = useState<boolean>(true);
   const [savedScores, setSavedScores] = useState<any[]>([]);
   const [showScoreLibrary, setShowScoreLibrary] = useState<boolean>(false);
+  // UI/UX関連の状態
+  const [useDragDrop, setUseDragDrop] = useState<boolean>(true);
+  const [showVisualizer, setShowVisualizer] = useState<boolean>(true);
+  const [showThemeCustomizer, setShowThemeCustomizer] = useState<boolean>(false);
+  const [currentTheme, setCurrentTheme] = useState<any>(null);
 
   // 参照管理
   const playTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
@@ -252,6 +257,10 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           viewMode={viewMode}
           setViewMode={setViewMode}
           userMessage={userMessage}
+          useDragDrop={useDragDrop}
+          showVisualizer={showVisualizer}
+          showThemeCustomizer={showThemeCustomizer}
+          onThemeChange={setCurrentTheme}
         />
       )}
     </div>

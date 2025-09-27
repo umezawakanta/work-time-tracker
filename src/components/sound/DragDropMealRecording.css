@@ -1,0 +1,387 @@
+/* DragDropMealRecording コンポーネントのスタイル */
+
+.drag-drop-meal-recording {
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.meal-recording-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.meal-recording-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3em;
+}
+
+.reset-button {
+  padding: 8px 16px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}
+
+.reset-button:hover:not(:disabled) {
+  background: #ff5252;
+  transform: translateY(-2px);
+}
+
+.reset-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ドラッグアイテム */
+.drag-items-container {
+  margin-bottom: 30px;
+}
+
+.drag-items-container h4 {
+  margin: 0 0 15px 0;
+  color: #555;
+  font-size: 1.1em;
+}
+
+.drag-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.drag-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 10px;
+  border-radius: 12px;
+  cursor: grab;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  user-select: none;
+}
+
+.drag-item:hover:not(.dragging) {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.drag-item.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg) scale(1.05);
+  z-index: 1000;
+}
+
+.drag-item-emoji {
+  font-size: 2em;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.drag-item-name {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ドロップゾーン */
+.drop-zone {
+  border: 3px dashed #ccc;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  background: white;
+  transition: all 0.3s ease;
+  position: relative;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drop-zone.drag-over {
+  border-color: #4CAF50;
+  background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+  transform: scale(1.02);
+}
+
+.drop-zone.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.drop-zone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.drop-zone-icon {
+  font-size: 3em;
+  opacity: 0.6;
+}
+
+.drop-zone-text {
+  font-size: 1.1em;
+  color: #666;
+  font-weight: 500;
+}
+
+/* プレビューオーバーレイ */
+.preview-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 25px;
+  border-radius: 25px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2em;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  animation: previewPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes previewPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+.preview-emoji {
+  font-size: 1.5em;
+}
+
+.preview-count {
+  font-size: 1.3em;
+}
+
+/* 現在の記録 */
+.current-records {
+  margin-top: 30px;
+}
+
+.current-records h4 {
+  margin: 0 0 15px 0;
+  color: #555;
+  font-size: 1.1em;
+}
+
+.record-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.record-item:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.record-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.record-emoji {
+  font-size: 1.3em;
+}
+
+.record-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.record-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.count-button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.count-button.plus {
+  background: #4CAF50;
+  color: white;
+}
+
+.count-button.minus {
+  background: #f44336;
+  color: white;
+}
+
+.count-button:hover:not(:disabled) {
+  transform: scale(1.1);
+}
+
+.count-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.count-display {
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+}
+
+/* 合計表示 */
+.total-summary {
+  margin-top: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.total-items {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.balance-indicator {
+  font-size: 0.9em;
+  color: #666;
+  font-style: italic;
+}
+
+/* 成功アニメーション */
+.drop-success {
+  animation: successBounce 0.6s ease-out;
+}
+
+@keyframes successBounce {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .drag-items {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .record-items {
+    grid-template-columns: 1fr;
+  }
+  
+  .meal-recording-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  .drop-zone {
+    padding: 30px 15px;
+    min-height: 100px;
+  }
+  
+  .drop-zone-icon {
+    font-size: 2.5em;
+  }
+  
+  .drop-zone-text {
+    font-size: 1em;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .drag-drop-meal-recording {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+  
+  .meal-recording-header h3 {
+    color: #fff;
+  }
+  
+  .drag-items-container h4,
+  .current-records h4 {
+    color: #ccc;
+  }
+  
+  .drop-zone {
+    background: #34495e;
+    border-color: #555;
+  }
+  
+  .drop-zone.drag-over {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  }
+  
+  .drop-zone-text {
+    color: #ccc;
+  }
+  
+  .record-item {
+    background: #34495e;
+  }
+  
+  .record-name {
+    color: #fff;
+  }
+  
+  .count-display {
+    color: #fff;
+  }
+  
+  .total-summary {
+    background: #34495e;
+  }
+  
+  .total-items {
+    color: #fff;
+  }
+  
+  .balance-indicator {
+    color: #ccc;
+  }
+}

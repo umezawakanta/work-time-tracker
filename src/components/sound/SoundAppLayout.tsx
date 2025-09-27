@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SoundControls from './SoundControls';
 import MealRecording from './MealRecording';
+import DragDropMealRecording from './DragDropMealRecording';
 import ScoreDisplay from './ScoreDisplay';
 import GenreSelector from './GenreSelector';
 import InstrumentSelector from './InstrumentSelector';
+import AudioVisualizer from './AudioVisualizer';
+import ThemeCustomizer from './ThemeCustomizer';
 import { musicGenres } from './MusicGenres';
 import { foodCategories } from './types';
 import { MealRecord } from './MealRecording';
@@ -40,6 +43,11 @@ interface SoundAppLayoutProps {
   savedScores?: any[];
   showScoreLibrary?: boolean;
   setShowScoreLibrary?: (show: boolean) => void;
+  // UI/UX関連
+  useDragDrop?: boolean;
+  showVisualizer?: boolean;
+  showThemeCustomizer?: boolean;
+  onThemeChange?: (theme: any) => void;
 }
 
 const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
@@ -70,6 +78,10 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
   savedScores,
   showScoreLibrary,
   setShowScoreLibrary,
+  useDragDrop = false,
+  showVisualizer = true,
+  showThemeCustomizer = false,
+  onThemeChange,
 }) => {
   return (
     <div className="sound-app-content">
@@ -79,6 +91,17 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
           <p className="tone-init-hint">初回は音ボタンをクリックしてください</p>
         )}
       </div>
+
+      {/* 音の可視化エリア */}
+      {showVisualizer && (
+        <AudioVisualizer
+          isPlaying={isPlaying}
+          instrumentType={selectedInstrument}
+          currentMeal={currentMeal}
+          selectedGenre={selectedGenre}
+          className="main-visualizer"
+        />
+      )}
 
       {/* 楽譜表示エリア */}
         <ScoreDisplay
@@ -122,12 +145,21 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
             disabled={disabled}
           />
 
-          <MealRecording
-            foodCategories={foodCategories}
-            currentMeal={currentMeal}
-            onUpdateCategoryCount={onUpdateCategoryCount}
-            onResetMeal={onResetMeal}
-          />
+          {useDragDrop ? (
+            <DragDropMealRecording
+              currentMeal={currentMeal}
+              onUpdateCategoryCount={onUpdateCategoryCount}
+              onResetMeal={onResetMeal}
+              disabled={disabled}
+            />
+          ) : (
+            <MealRecording
+              foodCategories={foodCategories}
+              currentMeal={currentMeal}
+              onUpdateCategoryCount={onUpdateCategoryCount}
+              onResetMeal={onResetMeal}
+            />
+          )}
 
           <SoundControls
             isPlaying={isPlaying}
@@ -180,7 +212,17 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
       )}
 
       {userMessage && (
-        <div className="user-message user-message-box">{userMessage}</div>
+        <div className="user-message user-message-box">{userMessage}        </div>
+      )}
+
+      {/* テーマカスタマイザー */}
+      {showThemeCustomizer && onThemeChange && (
+        <div className="theme-customizer-section">
+          <ThemeCustomizer
+            onThemeChange={onThemeChange}
+            className="main-theme-customizer"
+          />
+        </div>
       )}
     </div>
   );
