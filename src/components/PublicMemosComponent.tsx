@@ -527,10 +527,12 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
               
               {/* ステータスフィルター */}
               <div className="filter-group">
-                <label>ステータス:</label>
+                <label htmlFor="status-filter">ステータス:</label>
                 <select 
+                  id="status-filter"
                   value={statusFilter} 
                   onChange={(e) => setStatusFilter(e.target.value)}
+                  aria-label="ステータスでフィルター"
                 >
                   <option value="all">すべて</option>
                   <option value="pending">保留中</option>
