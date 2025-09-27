@@ -71,7 +71,27 @@ const MemoSchema = new mongoose.Schema({
 
 const Memo = mongoose.model('Memo', MemoSchema);
 
-export default async function handler(req, res) {
+// CORS設定
+const setCorsHeaders = (res, origin) => {
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
+  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
+
+  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Cache-Control', 'no-store');
+};
+
+module.exports = async (req, res) => {
+  const origin = req.headers.origin;
+  setCorsHeaders(res, origin);
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
   console.log('Status API called:', { method: req.method, query: req.query, body: req.body });
   
   if (req.method !== 'PUT') {
@@ -79,9 +99,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // データベース接続を確実にする
-    await ensureDatabaseConnection();
-    
     const { id } = req.query;
     const { status } = req.body;
     
@@ -96,7 +113,13 @@ export default async function handler(req, res) {
       });
     }
 
-    // メモの存在確認と更新
+    // データベース接続を確実にする
+    console.log('Ensuring database connection...');
+    await ensureDatabaseConnection();
+    console.log('Database connection ensured');
+
+    // メモの存在確認
+    console.log('Looking for memo with ID:', id);
     const existingMemo = await Memo.findById(id);
     console.log('Existing memo found:', existingMemo ? 'Yes' : 'No');
     if (!existingMemo) {
@@ -136,4 +159,4 @@ export default async function handler(req, res) {
       error: error.message
     });
   }
-}
+};

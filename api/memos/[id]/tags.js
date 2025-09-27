@@ -71,7 +71,27 @@ const MemoSchema = new mongoose.Schema({
 
 const Memo = mongoose.model('Memo', MemoSchema);
 
-export default async function handler(req, res) {
+// CORS設定
+const setCorsHeaders = (res, origin) => {
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
+  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
+
+  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Cache-Control', 'no-store');
+};
+
+module.exports = async (req, res) => {
+  const origin = req.headers.origin;
+  setCorsHeaders(res, origin);
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
   console.log('Tags API called:', { method: req.method, query: req.query, body: req.body });
   
   if (req.method !== 'PUT') {
@@ -152,4 +172,4 @@ export default async function handler(req, res) {
       error: error.message
     });
   }
-}
+};
