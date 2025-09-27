@@ -873,6 +873,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                                 value={editingStatus} 
                                 onChange={(e) => setEditingStatus(e.target.value)}
                                 className="status-select"
+                                aria-label="ステータスを選択"
                               >
                                 <option value="pending">保留中</option>
                                 <option value="in_progress">進行中</option>
