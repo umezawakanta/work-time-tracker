@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.0.12";
+export const APP_VERSION = "1.1.0";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,23 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.1.0",
+    date: "2025-01-27",
+    changes: [
+      "音声アプリ機能を追加（食事記録に基づく音楽生成）",
+      "明和電機風8bit音楽の自動生成機能",
+      "9種類の音楽ジャンル対応（バランス、明和電機、ロック、テクノ、クラシック、和楽器、ジャズ、アンビエント、カスタム）",
+      "リアルタイム楽譜表示機能",
+      "音声の再生・停止・ループ機能",
+      "Tone.js完全削除とSimpleAudioEngineへの移行",
+      "停止ボタン追加（再生中の音楽を即座に停止可能）",
+      "音声初期化の安定性向上",
+      "エラーハンドリング強化",
+      "依存関係の軽量化"
+    ],
+    type: "feature"
+  },
   {
     version: "1.0.12",
     date: "2025-01-27",
