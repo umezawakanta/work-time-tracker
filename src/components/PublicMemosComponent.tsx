@@ -73,7 +73,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // フィルタリングされたメモを取得
   const getFilteredMemos = () => {
-    return publicMemos.filter(memo => {
+    const filtered = publicMemos.filter(memo => {
       // ステータスフィルター
       if (statusFilter !== 'all' && memo.status !== statusFilter) {
         return false;
@@ -97,6 +97,16 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       
       return true;
     });
+    
+    console.log('Filtered memos:', {
+      totalMemos: publicMemos.length,
+      filteredMemos: filtered.length,
+      statusFilter,
+      tagFilter,
+      excludeTags
+    });
+    
+    return filtered;
   };
 
   // ステータス更新
@@ -106,6 +116,13 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         console.log('PublicMemosComponent: Starting status update', { memoId, newStatus });
         await onUpdateMemoStatus(memoId, newStatus);
         console.log('PublicMemosComponent: Status update completed');
+        
+        // ステータス更新後、フィルターをリセットして更新されたメモを確実に表示
+        console.log('Resetting filters to show updated memo');
+        setStatusFilter('all');
+        setTagFilter('');
+        setExcludeTags([]);
+        
         setEditingMemoId(null);
         setEditingStatus('');
       } catch (error) {
@@ -845,7 +862,14 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                           ) : (
                             <span 
                               className={`status-badge status-${memo.status || 'pending'}`}
-                              onClick={() => startEditing(memo)}
+                              onClick={() => {
+                                console.log('Status badge clicked for memo:', { 
+                                  id: memo.id, 
+                                  title: memo.title, 
+                                  currentStatus: memo.status 
+                                });
+                                startEditing(memo);
+                              }}
                               title="クリックしてステータスを編集"
                             >
                               {memo.status === 'pending' && '⏳ 保留中'}
