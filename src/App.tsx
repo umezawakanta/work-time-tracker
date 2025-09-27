@@ -4935,6 +4935,17 @@ User Agent: ${userAgent}
       const data = await response.json();
 
       if (data.success) {
+        console.log('Public memos loaded:', data.memos?.length || 0, 'memos');
+        // 更新されたメモを特定してログ出力
+        const updatedMemo = data.memos?.find((memo: any) => memo.id === '68cd6167948630efd47f2b5e');
+        if (updatedMemo) {
+          console.log('Updated memo details:', {
+            id: updatedMemo.id,
+            title: updatedMemo.title,
+            status: updatedMemo.status,
+            postType: updatedMemo.postType
+          });
+        }
         setPublicMemos(data.memos || []);
       } else {
         setMessage(`公開メモの一覧取得失敗: ${data.message}`);

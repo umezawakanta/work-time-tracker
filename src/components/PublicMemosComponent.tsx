@@ -106,6 +106,17 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       excludeTags
     });
     
+    // 特定のメモの詳細をログ出力
+    const specificMemo = publicMemos.find(memo => memo.id === '68cd6167948630efd47f2b5e');
+    if (specificMemo) {
+      console.log('Specific memo in publicMemos:', {
+        id: specificMemo.id,
+        title: specificMemo.title,
+        status: specificMemo.status,
+        postType: specificMemo.postType
+      });
+    }
+    
     return filtered;
   };
 
@@ -866,7 +877,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                                 console.log('Status badge clicked for memo:', { 
                                   id: memo.id, 
                                   title: memo.title, 
-                                  currentStatus: memo.status 
+                                  currentStatus: memo.status,
+                                  statusType: typeof memo.status,
+                                  allMemoKeys: Object.keys(memo)
                                 });
                                 startEditing(memo);
                               }}
