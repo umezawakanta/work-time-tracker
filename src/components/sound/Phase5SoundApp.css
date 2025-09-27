@@ -1,0 +1,271 @@
+/**
+ * Phase 5統合音アプリのスタイル
+ * Phase 5: AI活用、モバイル対応、協奏機能の統合
+ */
+
+.phase5-sound-app {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  margin: 16px 0;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.section-icon {
+  font-size: 24px;
+}
+
+.phase-badge {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 8px;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collaborative-btn,
+.ai-toggle {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collaborative-btn:hover,
+.ai-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.ai-toggle.active {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  border-color: rgba(255, 255, 255, 0.6);
+  animation: aiGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes aiGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(78, 205, 196, 0.6);
+  }
+}
+
+.close-section-button,
+.show-section-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-section-button:hover,
+.show-section-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.close-section-button:active,
+.show-section-button:active {
+  transform: scale(0.95);
+}
+
+/* モバイル最適化 */
+@media (max-width: 768px) {
+  .phase5-sound-app {
+    margin: 8px 0;
+    border-radius: 8px;
+  }
+  
+  .section-header {
+    padding: 12px 16px;
+  }
+  
+  .section-header h2 {
+    font-size: 18px;
+  }
+  
+  .phase-badge {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+  
+  .header-controls {
+    gap: 6px;
+  }
+  
+  .collaborative-btn,
+  .ai-toggle {
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 14px;
+  }
+  
+  .close-section-button,
+  .show-section-button {
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .section-header h2 {
+    text-align: center;
+  }
+  
+  .header-controls {
+    justify-content: center;
+  }
+  
+  .phase-badge {
+    display: none;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .phase5-sound-app {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+  
+  .section-header {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  .phase5-sound-app {
+    background: #000;
+    border: 2px solid #fff;
+  }
+  
+  .section-header {
+    background: #000;
+    border-bottom-color: #fff;
+  }
+  
+  .collaborative-btn,
+  .ai-toggle,
+  .close-section-button,
+  .show-section-button {
+    background: #333;
+    border-color: #fff;
+    color: #fff;
+  }
+  
+  .ai-toggle.active {
+    background: #fff;
+    color: #000;
+  }
+}
+
+/* アニメーション軽減設定 */
+@media (prefers-reduced-motion: reduce) {
+  .phase-badge,
+  .ai-toggle.active,
+  .collaborative-btn,
+  .ai-toggle,
+  .close-section-button,
+  .show-section-button {
+    animation: none;
+  }
+  
+  .collaborative-btn:hover,
+  .ai-toggle:hover,
+  .close-section-button:hover,
+  .show-section-button:hover {
+    transform: none;
+  }
+}
+
+/* タッチデバイス用の最適化 */
+@media (hover: none) and (pointer: coarse) {
+  .collaborative-btn:hover,
+  .ai-toggle:hover,
+  .close-section-button:hover,
+  .show-section-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: none;
+  }
+  
+  .collaborative-btn:active,
+  .ai-toggle:active,
+  .close-section-button:active,
+  .show-section-button:active {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0.95);
+  }
+}

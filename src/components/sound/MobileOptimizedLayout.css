@@ -1,0 +1,371 @@
+/**
+ * モバイル最適化レイアウトのスタイル
+ * Phase 5: モバイル対応 - スマートフォンでの最適化
+ */
+
+.mobile-optimized-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+.mobile-optimized-layout.landscape {
+  flex-direction: row;
+}
+
+.mobile-optimized-layout.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+/* デスクトップレイアウト */
+.desktop-layout {
+  width: 100%;
+  height: 100%;
+}
+
+/* ヘッダー */
+.mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 44px;
+  z-index: 100;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-center h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.orientation-toggle,
+.fullscreen-toggle {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orientation-toggle:hover,
+.fullscreen-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.orientation-toggle:active,
+.fullscreen-toggle:active {
+  transform: scale(0.95);
+}
+
+/* メインコンテンツ */
+.mobile-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.content-container {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ナビゲーション */
+.mobile-navigation {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 0;
+  z-index: 100;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+}
+
+.nav-item:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item.active {
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.nav-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ランドスケープモード */
+.mobile-optimized-layout.landscape .mobile-navigation {
+  flex-direction: column;
+  width: 80px;
+  height: 100%;
+  border-top: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-optimized-layout.landscape .nav-item {
+  flex-direction: row;
+  padding: 12px 8px;
+  min-height: 60px;
+}
+
+.mobile-optimized-layout.landscape .nav-icon {
+  margin-bottom: 0;
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.mobile-optimized-layout.landscape .nav-label {
+  font-size: 12px;
+  text-align: left;
+}
+
+/* スワイプインジケーター */
+.swipe-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 200;
+  animation: swipeIndicatorFade 0.5s ease-out;
+}
+
+.swipe-indicator.up {
+  top: 20%;
+}
+
+.swipe-indicator.down {
+  top: 80%;
+}
+
+@keyframes swipeIndicatorFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 再生状態インジケーター */
+.playing-indicator {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 150;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #ff6b6b;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 480px) {
+  .mobile-header {
+    padding: 6px 12px;
+    min-height: 40px;
+  }
+  
+  .header-center h1 {
+    font-size: 16px;
+  }
+  
+  .orientation-toggle,
+  .fullscreen-toggle {
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 14px;
+  }
+  
+  .content-container {
+    padding: 12px;
+  }
+  
+  .nav-item {
+    min-height: 50px;
+    padding: 6px 2px;
+  }
+  
+  .nav-icon {
+    font-size: 18px;
+  }
+  
+  .nav-label {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav-label {
+    display: none;
+  }
+  
+  .nav-item {
+    min-height: 44px;
+  }
+}
+
+/* タッチデバイス用の最適化 */
+@media (hover: none) and (pointer: coarse) {
+  .nav-item:hover {
+    color: rgba(255, 255, 255, 0.7);
+    background: none;
+  }
+  
+  .nav-item:active {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .orientation-toggle:hover,
+  .fullscreen-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: none;
+  }
+  
+  .orientation-toggle:active,
+  .fullscreen-toggle:active {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0.95);
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .mobile-optimized-layout {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+  
+  .mobile-header {
+    background: rgba(0, 0, 0, 0.4);
+  }
+  
+  .mobile-navigation {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  .mobile-optimized-layout {
+    background: #000;
+    color: #fff;
+  }
+  
+  .mobile-header,
+  .mobile-navigation {
+    background: #000;
+    border-color: #fff;
+  }
+  
+  .nav-item {
+    color: #fff;
+  }
+  
+  .nav-item.active {
+    color: #ffff00;
+    background: #333;
+  }
+}
+
+/* アニメーション軽減設定 */
+@media (prefers-reduced-motion: reduce) {
+  .swipe-indicator,
+  .pulse-dot,
+  .nav-item,
+  .orientation-toggle,
+  .fullscreen-toggle {
+    animation: none;
+    transition: none;
+  }
+}

@@ -68,7 +68,13 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
       description: '音アプリのアーキテクチャ、実装詳細、改善計画',
       category: 'アプリ設計'
     },
-    // 将来的に他の設計書も追加可能
+    {
+      id: 'sound-app-test-specification',
+      title: '音アプリ 総合試験仕様書',
+      path: '/docs/sound-app-test-specification.md',
+      description: '音アプリの全機能のテスト仕様、テストケース、品質保証',
+      category: '品質保証'
+    }
   ];
 
   // Markdownファイルを読み込む
