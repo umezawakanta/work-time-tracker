@@ -184,7 +184,7 @@ export const buildErrorInfo = (
     filename: (apiErrorInfo as any)?.filename ?? filename,
     lineno: (apiErrorInfo as any)?.lineno ?? lineno,
     colno: (apiErrorInfo as any)?.colno ?? colno,
-    type: apiErrorInfo?.type ?? type,
+    type: (apiErrorInfo as any)?.type ?? type,
     timestamp: apiErrorInfo?.timestamp || getTimestamp(),
     userAgent: apiErrorInfo?.userAgent || ERROR_DEFAULTS.USER_AGENT,
     url: apiErrorInfo?.url || extractedInfo?.url || ERROR_DEFAULTS.URL,
