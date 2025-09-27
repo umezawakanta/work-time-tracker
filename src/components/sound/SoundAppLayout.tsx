@@ -3,16 +3,20 @@ import SoundControls from './SoundControls';
 import MealRecording from './MealRecording';
 import ScoreDisplay from './ScoreDisplay';
 import GenreSelector from './GenreSelector';
+import InstrumentSelector from './InstrumentSelector';
 import { musicGenres } from './MusicGenres';
 import { foodCategories } from './types';
 import { MealRecord } from './MealRecording';
 import { ScoreData } from './ScoreDisplay';
 import { MusicGenre } from './GenreSelector';
+import { InstrumentType } from './SimpleAudioEngine';
 
 interface SoundAppLayoutProps {
   // 状態
   selectedGenre: string;
   setSelectedGenre: (genre: string) => void;
+  selectedInstrument: InstrumentType;
+  setSelectedInstrument: (instrument: InstrumentType) => void;
   currentMeal: MealRecord;
   onUpdateCategoryCount: (categoryId: string, count: number) => void;
   onResetMeal: () => void;
@@ -35,6 +39,8 @@ interface SoundAppLayoutProps {
 const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
   selectedGenre,
   setSelectedGenre,
+  selectedInstrument,
+  setSelectedInstrument,
   currentMeal,
   onUpdateCategoryCount,
   onResetMeal,
@@ -93,6 +99,12 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
             musicGenres={musicGenres}
             selectedGenre={selectedGenre}
             onGenreChange={setSelectedGenre}
+          />
+
+          <InstrumentSelector
+            selectedInstrument={selectedInstrument}
+            onInstrumentChange={setSelectedInstrument}
+            disabled={disabled}
           />
 
           <MealRecording

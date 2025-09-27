@@ -18,6 +18,7 @@ import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import SoundAppComponent from "./components/SoundAppComponent";
+import DocsViewer from "./components/DocsViewer";
 import NotificationComponent from "./components/NotificationComponent";
 import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
@@ -427,6 +428,7 @@ function App({
 
   // 音アプリの状態
   const [showSoundApp, setShowSoundApp] = useState(false);
+  const [showDocs, setShowDocs] = useState(false);
   const [incomeExpenseRecords, setIncomeExpenseRecords] = useState<
     IncomeExpenseRecord[]
   >([]);
@@ -895,6 +897,12 @@ function App({
       description: "食事バランスを音で表現するアプリ",
       component: null, // 音アプリセクション
     },
+    {
+      id: "docs",
+      name: "設計書",
+      description: "システム設計書とドキュメント",
+      component: null, // 設計書ビューアーセクション
+    },
   ];
 
   // 機能選択肢の定義
@@ -912,6 +920,7 @@ function App({
     { value: "timers", label: "タイマー" },
     { value: "self-analysis", label: "じぶん図鑑" },
     { value: "sound-app", label: "音アプリ" },
+    { value: "docs", label: "設計書" },
     { value: "general", label: "全般" },
     { value: "other", label: "その他" },
   ];
@@ -2862,6 +2871,9 @@ ${errorInfo.stack}
     }
     if (activeFeature !== "sound-app") {
       setShowSoundApp(false);
+    }
+    if (activeFeature !== "docs") {
+      setShowDocs(false);
     }
   };
 
@@ -6324,6 +6336,15 @@ User Agent: ${userAgent}
                     key={feature.id}
                     showSoundApp={showSoundApp}
                     setShowSoundApp={setShowSoundApp}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
+                );
+              } else if (feature.id === "docs") {
+                return (
+                  <DocsViewer
+                    key={feature.id}
+                    showDocs={showDocs}
+                    setShowDocs={setShowDocs}
                     closeOtherFeatures={closeOtherFeatures}
                   />
                 );

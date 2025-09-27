@@ -3,7 +3,7 @@ import { MusicGenre, CategoryRatio } from './types';
 import { foodCategories } from './types';
 import { createInitialMeal, updateCategoryCount, resetMeal, getTotalItems } from './MealLogic';
 import { PLAYBACK_DURATION, REPEAT_OPTIONS } from './constants';
-import { simpleAudioEngine } from './SimpleAudioEngine';
+import { simpleAudioEngine, InstrumentType } from './SimpleAudioEngine';
 import { generateMusic, calculateBalanceScore } from './SimpleAudioEngine';
 
 export interface PlaybackState {
@@ -11,6 +11,7 @@ export interface PlaybackState {
   isLooping: boolean;
   currentMeal: MealRecord;
   selectedGenre: string;
+  selectedInstrument: InstrumentType;
   repeatMode: number;
   userMessage: string;
 }
@@ -84,7 +85,8 @@ export const usePlaybackManager = (
 
     const balanceScore = calculateBalanceScore(categoryRatios);
 
-    await generateMusicCallback(categoryRatios, balanceScore, genre);
+    // 楽器別の音楽生成
+    await generateMusicWithInstrument(categoryRatios, balanceScore, genre, state.selectedInstrument);
 
     const message =
       balanceScore > 0.7
@@ -134,6 +136,31 @@ export const usePlaybackManager = (
   // 食事リセット
   const handleResetMeal = () => {
     setCurrentMeal((prev) => resetMeal(prev));
+  };
+
+  // 楽器別の音楽生成関数
+  const generateMusicWithInstrument = async (
+    categoryRatios: CategoryRatio[],
+    balanceScore: number,
+    genre: MusicGenre,
+    instrumentType: InstrumentType
+  ) => {
+    try {
+      // 楽器別のリズムパターンを生成
+      await simpleAudioEngine.playInstrumentRhythm(categoryRatios, 0.5, instrumentType);
+      
+      // バランススコアに基づいて追加の音を生成
+      if (balanceScore > 0.5) {
+        // 高スコアの場合は和音を追加
+        const chordFrequencies = [261.63, 329.63, 392.00]; // C-E-G
+        await simpleAudioEngine.playChord(chordFrequencies, 1.0, 0.3, instrumentType);
+      }
+      
+      console.log(`Generated music with ${instrumentType} instrument for ${genre.name} genre`);
+    } catch (error) {
+      console.error("Failed to generate music with instrument:", error);
+      showMessage("音楽生成に失敗しました", 3000);
+    }
   };
 
   return {

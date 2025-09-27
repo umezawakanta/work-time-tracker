@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.1.0";
+export const APP_VERSION = "1.3.0";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,25 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.3.0",
+    date: "2025-01-27",
+    changes: [
+      "設計書機能を追加（Markdownファイルの表示機能）",
+      "Mermaid図の表示機能を実装（フローチャート、シーケンス図、状態図など）",
+      "音アプリ設計書を追加（アーキテクチャ図と詳細仕様）",
+      "HTMLエンティティの自動デコード機能",
+      "DocsViewerコンポーネントの実装",
+      "Mermaid図のレンダリング最適化",
+      "設計書のナビゲーション機能",
+      "音アプリのPhase 1完了（音質・音色の向上）",
+      "複数波形対応（サイン波、矩形波、ノコギリ波、三角波）",
+      "楽器別音色実装（ピアノ、ギター、ドラム、ベース、シンセ、明和電機風）",
+      "ADSRエンベロープとエフェクト機能（リバーブ、ディレイ）",
+      "和音・倍音生成機能の実装"
+    ],
+    type: "feature"
+  },
   {
     version: "1.1.0",
     date: "2025-01-27",

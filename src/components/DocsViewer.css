@@ -1,0 +1,403 @@
+/* DocsViewer.css */
+
+.docs-viewer-section {
+  margin: 20px 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 8px 8px 0 0;
+}
+
+.section-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.4em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-icon {
+  font-size: 1.2em;
+}
+
+.close-section-button,
+.show-section-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.close-section-button:hover,
+.show-section-button:hover {
+  background: #0056b3;
+}
+
+.docs-content {
+  display: flex;
+  min-height: 600px;
+}
+
+.docs-sidebar {
+  width: 300px;
+  background: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.docs-sidebar h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.2em;
+}
+
+.docs-category {
+  margin-bottom: 25px;
+}
+
+.docs-category h4 {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 1em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.docs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.docs-list li {
+  margin-bottom: 8px;
+}
+
+.doc-item {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.doc-item:hover {
+  border-color: #007bff;
+  background: #f0f8ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
+}
+
+.doc-item.active {
+  border-color: #007bff;
+  background: #e3f2fd;
+  color: #007bff;
+}
+
+.doc-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: inherit;
+}
+
+.doc-description {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.3;
+}
+
+.docs-main {
+  flex: 1;
+  padding: 0;
+  overflow: hidden;
+}
+
+.doc-viewer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.doc-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 1.6em;
+}
+
+.back-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background: #545b62;
+}
+
+.doc-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: white;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #f5c6cb;
+  margin: 20px 0;
+}
+
+.docs-welcome {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
+
+.docs-welcome h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.docs-features {
+  margin-top: 30px;
+  text-align: left;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.docs-features h3 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.docs-features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.docs-features li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* Markdown content styling */
+.markdown-content {
+  line-height: 1.6;
+  color: #333;
+}
+
+.markdown-content h1 {
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+  margin: 30px 0 20px 0;
+}
+
+.markdown-content h2 {
+  color: #444;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 8px;
+  margin: 25px 0 15px 0;
+}
+
+.markdown-content h3 {
+  color: #555;
+  margin: 20px 0 10px 0;
+}
+
+.markdown-content pre {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 15px;
+  overflow-x: auto;
+  margin: 15px 0;
+}
+
+.markdown-content code {
+  background: #f1f3f4;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content pre code {
+  background: none;
+  padding: 0;
+}
+
+.markdown-content li {
+  margin: 5px 0;
+}
+
+.markdown-content strong {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Mermaid図のスタイリング */
+.mermaid {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: center;
+  overflow-x: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-height: 100px;
+  display: block;
+  width: 100%;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+  display: block !important;
+  margin: 0 auto;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+}
+
+/* Mermaid図がレンダリング中の場合 */
+.mermaid-rendering {
+  background: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  color: #6c757d;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.mermaid-rendering::before {
+  content: "図をレンダリング中...";
+}
+
+/* Mermaid図がレンダリング完了した場合 */
+.mermaid-rendered {
+  background: white;
+  border: 1px solid #e0e0e0;
+}
+
+/* Mermaid図でエラーが発生した場合 */
+.mermaid-error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #f5c6cb;
+  margin: 20px 0;
+  text-align: left;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mermaid-error h4 {
+  margin: 0 0 10px 0;
+  color: #721c24;
+  font-size: 16px;
+}
+
+.mermaid-error p {
+  margin: 0 0 15px 0;
+  font-size: 14px;
+}
+
+.mermaid-error details {
+  margin-top: 10px;
+}
+
+.mermaid-error summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #721c24;
+  margin-bottom: 10px;
+}
+
+.mermaid-error pre {
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+  border: 1px solid #ddd;
+}
+
+/* Mermaid図のレスポンシブ対応 */
+@media (max-width: 768px) {
+  .mermaid {
+    padding: 15px;
+    margin: 15px 0;
+  }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .docs-content {
+    flex-direction: column;
+  }
+  
+  .docs-sidebar {
+    width: 100%;
+    max-height: 200px;
+  }
+  
+  .doc-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .doc-header h1 {
+    font-size: 1.4em;
+  }
+}

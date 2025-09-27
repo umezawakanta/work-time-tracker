@@ -5,7 +5,7 @@ import "./SoundAppComponent.css";
 import SoundAppLayout from "./sound/SoundAppLayout";
 import { musicGenres } from "./sound/MusicGenres";
 import { usePlaybackManager, PlaybackState, PlaybackCallbacks } from "./sound/PlaybackManager";
-import { simpleAudioEngine, playSound } from "./sound/SimpleAudioEngine";
+import { simpleAudioEngine, playSound, InstrumentType, WaveformType } from "./sound/SimpleAudioEngine";
 import { generateMeiwaRhythm, generateMusic } from "./sound/SimpleAudioEngine";
 import { createInitialMeal } from "./sound/MealLogic";
 import { REPEAT_OPTIONS } from "./sound/constants";
@@ -33,6 +33,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
   // 状態管理
   const [selectedGenre, setSelectedGenre] = useState<string>("balanced");
+  const [selectedInstrument, setSelectedInstrument] = useState<InstrumentType>(InstrumentType.MEIWA);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [userMessage, setUserMessage] = useState<string>("");
   const [repeatMode, setRepeatMode] = useState<number>(REPEAT_OPTIONS.THREE_TIMES);
@@ -101,6 +102,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     isLooping,
     currentMeal,
     selectedGenre,
+    selectedInstrument,
     repeatMode,
     userMessage,
   };
@@ -166,6 +168,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         <SoundAppLayout
           selectedGenre={selectedGenre}
           setSelectedGenre={setSelectedGenre}
+          selectedInstrument={selectedInstrument}
+          setSelectedInstrument={setSelectedInstrument}
           currentMeal={currentMeal}
           onUpdateCategoryCount={handleUpdateCategoryCount}
           onResetMeal={handleResetMeal}
