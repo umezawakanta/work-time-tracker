@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback, useEffect, useState } from "react";
 import {
   Renderer,
   Stave,
@@ -6,10 +6,17 @@ import {
   Voice,
   Formatter,
   Accidental,
+  Beam,
+  Tuplet,
+  Articulation,
+  StaveTie,
+  StaveConnector,
+  System,
 } from "vexflow";
 import { SUPPORTED_KEY_SIGNATURES, type KeySignature } from "./MusicConstants";
 import { CategoryRatio, MusicGenre } from "./types";
 import { DEFAULT_NOTE_MAPPING, getNoteDuration } from "./ScoreConstants";
+import "./ScoreDisplay.css";
 
 export interface NoteData {
   pitch: string;
@@ -23,6 +30,32 @@ export interface ScoreData {
   timeSignature: string;
   tempo: number;
   key: string;
+  title?: string;
+  composer?: string;
+  measures?: MeasureData[];
+  dynamics?: DynamicMarking[];
+  articulations?: ArticulationData[];
+}
+
+export interface MeasureData {
+  measureNumber: number;
+  notes: NoteData[];
+  timeSignature: string;
+  keySignature: string;
+}
+
+export interface DynamicMarking {
+  measure: number;
+  beat: number;
+  dynamic: string; // pp, p, mp, mf, f, ff
+  position: number;
+}
+
+export interface ArticulationData {
+  measure: number;
+  beat: number;
+  articulation: string; // staccato, legato, accent, etc.
+  position: number;
 }
 
 
@@ -43,6 +76,9 @@ interface ScoreDisplayProps {
   showScore: boolean;
   onToggleScore: () => void;
   onExportScore: () => void;
+  onExportMIDI?: () => void;
+  onSaveScore?: () => void;
+  onShareScore?: () => void;
 }
 
 const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
@@ -50,9 +86,15 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
   showScore,
   onToggleScore,
   onExportScore,
+  onExportMIDI,
+  onSaveScore,
+  onShareScore,
 }) => {
   const scoreContainerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<any>(null);
+  const [scoreZoom, setScoreZoom] = useState(1.0);
+  const [showDetails, setShowDetails] = useState(true);
+  const [selectedMeasure, setSelectedMeasure] = useState<number | null>(null);
 
   // 楽譜を描画する関数
   const renderScore = useCallback((scoreData: ScoreData) => {
@@ -226,13 +268,12 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
     []
   );
 
-  // 楽譜をPDFとしてエクスポートする関数
-  const exportScoreToPDF = useCallback(() => {
+  // 楽譜をSVGとしてエクスポートする関数
+  const exportScoreToSVG = useCallback(() => {
     if (!scoreContainerRef.current) {
       return;
     }
 
-    // SVGをcanvasに変換してPDF化（簡易実装）
     const svg = scoreContainerRef.current.querySelector("svg");
     if (svg) {
       const svgData = new XMLSerializer().serializeToString(svg);
@@ -248,6 +289,72 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
     }
   }, []);
 
+  // MIDIファイルをエクスポートする関数
+  const exportToMIDI = useCallback(async () => {
+    if (!currentScore) return;
+
+    try {
+      const { MIDIExporter } = await import('./MIDIExporter');
+      const midiFile = MIDIExporter.generateMIDI(currentScore);
+      const filename = `score_${Date.now()}.mid`;
+      
+      MIDIExporter.downloadMIDI(midiFile, filename);
+    } catch (error) {
+      console.error('MIDI export error:', error);
+      alert('MIDIファイルのエクスポートに失敗しました。');
+    }
+  }, [currentScore]);
+
+  // 楽曲を保存する関数
+  const saveScore = useCallback(async () => {
+    if (!currentScore) return;
+
+    const title = prompt('楽曲のタイトルを入力してください:', 'Generated Music');
+    if (!title) return;
+
+    const composer = prompt('作曲者名を入力してください:', 'Generated');
+    if (!composer) return;
+
+    try {
+      const { ScoreManager } = await import('./ScoreManager');
+      const savedScore = ScoreManager.saveScore(currentScore, title, composer);
+      
+      alert(`楽曲「${savedScore.title}」を保存しました！`);
+    } catch (error) {
+      console.error('Save score error:', error);
+      alert('楽曲の保存に失敗しました。');
+    }
+  }, [currentScore]);
+
+  // 楽曲を共有する関数
+  const shareScore = useCallback(async () => {
+    if (!currentScore) return;
+
+    const title = prompt('楽曲のタイトルを入力してください:', 'Generated Music');
+    if (!title) return;
+
+    const composer = prompt('作曲者名を入力してください:', 'Generated');
+    if (!composer) return;
+
+    try {
+      const { ScoreManager } = await import('./ScoreManager');
+      const savedScore = ScoreManager.saveScore(currentScore, title, composer);
+      const shareId = ScoreManager.shareScore(savedScore.id);
+      
+      if (shareId) {
+        const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          alert(`共有URLをクリップボードにコピーしました！\n${shareUrl}`);
+        }).catch(() => {
+          alert(`共有URL: ${shareUrl}`);
+        });
+      }
+    } catch (error) {
+      console.error('Share score error:', error);
+      alert('楽曲の共有に失敗しました。');
+    }
+  }, [currentScore]);
+
   return (
     <>
       {/* 楽譜表示エリア */}
@@ -259,14 +366,57 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
               <button onClick={onToggleScore}>
                 {showScore ? "楽譜を隠す" : "楽譜を表示"}
               </button>
-              <button onClick={exportScoreToPDF} disabled={!currentScore}>
-                📥 楽譜をダウンロード
+              <button onClick={exportScoreToSVG} disabled={!currentScore}>
+                📥 SVGダウンロード
+              </button>
+              <button onClick={exportToMIDI} disabled={!currentScore}>
+                🎵 MIDIダウンロード
+              </button>
+              <button onClick={saveScore} disabled={!currentScore}>
+                💾 楽曲を保存
+              </button>
+              <button onClick={shareScore} disabled={!currentScore}>
+                🔗 楽曲を共有
               </button>
             </div>
           </div>
+          
+          {/* 楽譜詳細コントロール */}
+          {showDetails && currentScore && (
+            <div className="score-details">
+              <div className="score-info">
+                <span>🎵 タイトル: {currentScore.title || 'Generated Music'}</span>
+                <span>👤 作曲者: {currentScore.composer || 'Generated'}</span>
+                <span>🎼 調: {currentScore.key}</span>
+                <span>⏱️ テンポ: {currentScore.tempo} BPM</span>
+                <span>📏 拍子: {currentScore.timeSignature}</span>
+              </div>
+              
+              <div className="score-controls-advanced">
+                <label>
+                  ズーム: 
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2.0"
+                    step="0.1"
+                    value={scoreZoom}
+                    onChange={(e) => setScoreZoom(parseFloat(e.target.value))}
+                  />
+                  {Math.round(scoreZoom * 100)}%
+                </label>
+                
+                <button onClick={() => setShowDetails(!showDetails)}>
+                  {showDetails ? "詳細を隠す" : "詳細を表示"}
+                </button>
+              </div>
+            </div>
+          )}
+          
           <div
             ref={scoreContainerRef}
             className="score-container"
+            style={{ transform: `scale(${scoreZoom})` }}
           />
         </div>
       )}

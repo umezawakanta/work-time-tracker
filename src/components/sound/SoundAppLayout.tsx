@@ -31,9 +31,15 @@ interface SoundAppLayoutProps {
   showScore: boolean;
   onToggleScore: () => void;
   onExportScore: () => void;
+  onExportMIDI?: () => void;
+  onSaveScore?: () => void;
+  onShareScore?: () => void;
   viewMode: 'input' | 'score';
   setViewMode: (mode: 'input' | 'score') => void;
   userMessage: string;
+  savedScores?: any[];
+  showScoreLibrary?: boolean;
+  setShowScoreLibrary?: (show: boolean) => void;
 }
 
 const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
@@ -55,9 +61,15 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
   showScore,
   onToggleScore,
   onExportScore,
+  onExportMIDI,
+  onSaveScore,
+  onShareScore,
   viewMode,
   setViewMode,
   userMessage,
+  savedScores,
+  showScoreLibrary,
+  setShowScoreLibrary,
 }) => {
   return (
     <div className="sound-app-content">
@@ -69,12 +81,15 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
       </div>
 
       {/* 楽譜表示エリア */}
-      <ScoreDisplay
-        currentScore={currentScore}
-        showScore={showScore}
-        onToggleScore={onToggleScore}
-        onExportScore={onExportScore}
-      />
+        <ScoreDisplay
+          currentScore={currentScore}
+          showScore={showScore}
+          onToggleScore={onToggleScore}
+          onExportScore={onExportScore}
+          onExportMIDI={onExportMIDI}
+          onSaveScore={onSaveScore}
+          onShareScore={onShareScore}
+        />
 
       {/* ビューモード切り替え */}
       <div className="view-mode-tabs">

@@ -43,6 +43,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const [viewMode, setViewMode] = useState<"input" | "score">("input");
   const [currentScore, setCurrentScore] = useState<ScoreData | null>(null);
   const [showScore, setShowScore] = useState<boolean>(true);
+  const [savedScores, setSavedScores] = useState<any[]>([]);
+  const [showScoreLibrary, setShowScoreLibrary] = useState<boolean>(false);
 
   // 参照管理
   const playTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
@@ -127,6 +129,11 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       timeSignature: "4/4",
       tempo: genre.baseTempo || 120,
       key: genre.keySignature || "C",
+      title: "Generated Music",
+      composer: "AI Composer",
+      measures: [],
+      dynamics: [],
+      articulations: []
     };
   }, []);
 
@@ -232,6 +239,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           onToggleScore={() => setShowScore(!showScore)}
           onExportScore={() => {
             showMessage("楽譜をダウンロードしました", 2000);
+          }}
+          onExportMIDI={() => {
+            showMessage("MIDIファイルをダウンロードしました", 2000);
+          }}
+          onSaveScore={() => {
+            showMessage("楽曲を保存しました", 2000);
+          }}
+          onShareScore={() => {
+            showMessage("楽曲を共有しました", 2000);
           }}
           viewMode={viewMode}
           setViewMode={setViewMode}
