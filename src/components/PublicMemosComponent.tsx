@@ -265,7 +265,19 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     const filteredMemos = getFilteredMemos();
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredMemos.slice(startIndex, endIndex);
+    const paginatedMemos = filteredMemos.slice(startIndex, endIndex);
+    
+    console.log('Pagination debug:', {
+      currentPage,
+      itemsPerPage,
+      startIndex,
+      endIndex,
+      filteredMemosLength: filteredMemos.length,
+      paginatedMemosLength: paginatedMemos.length,
+      totalPages: getTotalPages()
+    });
+    
+    return paginatedMemos;
   };
 
   const getTotalPages = () => {
@@ -273,6 +285,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   };
 
   const handlePageChange = (page: number) => {
+    console.log('Page change requested:', { from: currentPage, to: page });
     setCurrentPage(page);
   };
 
@@ -793,7 +806,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
               <p className="no-memos">フィルター条件に合う公開メモがありません</p>
             ) : (
               <>
-                {getFilteredMemos().map((memo) => (
+                {getPaginatedMemos().map((memo) => (
                   <div key={memo.id} className="public-memo-item">
                     <div className="memo-header">
                       <h3>{getMemoTitle(memo)}</h3>
