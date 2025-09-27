@@ -62,23 +62,27 @@ module.exports = async (req, res) => {
           rating: book.rating,
           notes: book.notes || '',
           lentTo: book.lentTo || '',
+          isPublic: book.isPublic || false,
+          isFamilyOnly: book.isFamilyOnly || false,
+          isAdminOnly: book.isAdminOnly || false,
+          userId: book.userId || '',
           createdAt: book.createdAt ? book.createdAt.toISOString() : new Date().toISOString(),
           updatedAt: book.updatedAt ? book.updatedAt.toISOString() : new Date().toISOString(),
         })),
       });
     } else if (req.method === 'POST') {
       // 新しい本を追加
-      const { title, author, isbn, publishedYear, totalPages, category, notes } = req.body;
+      const { title, author, isbn, publishedYear, totalPages, category, notes, isPublic, isFamilyOnly, isAdminOnly, userId } = req.body;
 
-      // 必須フィールドの検証
-      if (!title || !author || !isbn || !publishedYear || !totalPages || !category) {
+      // 必須フィールドの検証（ISBNを必須から除外）
+      if (!title || !author || !publishedYear || !totalPages || !category) {
         return handleError(res, { statusCode: 400, message: '必須フィールドが不足しています' });
       }
 
       const newBook = new Book({
         title,
         author,
-        isbn,
+        isbn: isbn || '',
         publishedYear,
         totalPages,
         readPages: 0,
@@ -86,6 +90,10 @@ module.exports = async (req, res) => {
         rating: 0,
         notes: notes || '',
         lentTo: '',
+        isPublic: isPublic || false,
+        isFamilyOnly: isFamilyOnly || false,
+        isAdminOnly: isAdminOnly || false,
+        userId: userId || '',
       });
 
       const savedBook = await newBook.save();
@@ -106,6 +114,10 @@ module.exports = async (req, res) => {
           rating: savedBook.rating,
           notes: savedBook.notes || '',
           lentTo: savedBook.lentTo || '',
+          isPublic: savedBook.isPublic || false,
+          isFamilyOnly: savedBook.isFamilyOnly || false,
+          isAdminOnly: savedBook.isAdminOnly || false,
+          userId: savedBook.userId || '',
           createdAt: savedBook.createdAt ? savedBook.createdAt.toISOString() : new Date().toISOString(),
           updatedAt: savedBook.updatedAt ? savedBook.updatedAt.toISOString() : new Date().toISOString(),
         },

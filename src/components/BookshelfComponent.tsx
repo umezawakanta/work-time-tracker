@@ -25,6 +25,12 @@ interface BookshelfComponentProps {
   setBookCategory: (category: string) => void;
   bookNotes: string;
   setBookNotes: (notes: string) => void;
+  bookIsPublic: boolean;
+  setBookIsPublic: (isPublic: boolean) => void;
+  bookIsFamilyOnly: boolean;
+  setBookIsFamilyOnly: (isFamilyOnly: boolean) => void;
+  bookIsAdminOnly: boolean;
+  setBookIsAdminOnly: (isAdminOnly: boolean) => void;
   selectedBookCategory: string;
   setSelectedBookCategory: (category: string) => void;
   getBookCategories: () => string[];
@@ -62,6 +68,12 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
     setBookCategory,
     bookNotes,
     setBookNotes,
+    bookIsPublic,
+    setBookIsPublic,
+    bookIsFamilyOnly,
+    setBookIsFamilyOnly,
+    bookIsAdminOnly,
+    setBookIsAdminOnly,
     selectedBookCategory,
     setSelectedBookCategory,
     getBookCategories,
@@ -231,6 +243,9 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
                   setBookTotalPages(0);
                   setBookCategory("");
                   setBookNotes("");
+                  setBookIsPublic(false);
+                  setBookIsFamilyOnly(false);
+                  setBookIsAdminOnly(false);
                 }
               }}
               className="add-book-button"
@@ -272,15 +287,14 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="bookIsbn">ISBN *</label>
+                <label htmlFor="bookIsbn">ISBN</label>
                 <input
                   type="text"
                   id="bookIsbn"
                   value={bookIsbn}
                   onChange={(e) => setBookIsbn(e.target.value)}
-                  required
                   disabled={loading}
-                  placeholder="ISBNを入力してください"
+                  placeholder="ISBNを入力してください（任意）"
                 />
               </div>
               <div className="form-group">
@@ -353,6 +367,72 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
                   placeholder="メモを入力してください（任意）"
                 />
               </div>
+              
+              <div className="form-group">
+                <label>公開範囲</label>
+                <div className="visibility-options">
+                  <label className="visibility-option">
+                    <input
+                      type="radio"
+                      name="bookVisibility"
+                      value="private"
+                      checked={!bookIsPublic && !bookIsFamilyOnly && !bookIsAdminOnly}
+                      onChange={() => {
+                        setBookIsPublic(false);
+                        setBookIsFamilyOnly(false);
+                        setBookIsAdminOnly(false);
+                      }}
+                      disabled={loading}
+                    />
+                    <span>非公開</span>
+                  </label>
+                  <label className="visibility-option">
+                    <input
+                      type="radio"
+                      name="bookVisibility"
+                      value="family"
+                      checked={bookIsFamilyOnly && !bookIsPublic && !bookIsAdminOnly}
+                      onChange={() => {
+                        setBookIsPublic(false);
+                        setBookIsFamilyOnly(true);
+                        setBookIsAdminOnly(false);
+                      }}
+                      disabled={loading}
+                    />
+                    <span>家族のみ</span>
+                  </label>
+                  <label className="visibility-option">
+                    <input
+                      type="radio"
+                      name="bookVisibility"
+                      value="public"
+                      checked={bookIsPublic && !bookIsFamilyOnly && !bookIsAdminOnly}
+                      onChange={() => {
+                        setBookIsPublic(true);
+                        setBookIsFamilyOnly(false);
+                        setBookIsAdminOnly(false);
+                      }}
+                      disabled={loading}
+                    />
+                    <span>公開</span>
+                  </label>
+                  <label className="visibility-option">
+                    <input
+                      type="radio"
+                      name="bookVisibility"
+                      value="admin"
+                      checked={bookIsAdminOnly && !bookIsPublic && !bookIsFamilyOnly}
+                      onChange={() => {
+                        setBookIsPublic(false);
+                        setBookIsFamilyOnly(false);
+                        setBookIsAdminOnly(true);
+                      }}
+                      disabled={loading}
+                    />
+                    <span>管理者のみ</span>
+                  </label>
+                </div>
+              </div>
               <button
                 type="submit"
                 disabled={loading}
@@ -393,7 +473,18 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
                         {book.category}
                       </span>{" "}
                       | {book.totalPages}ページ
+                      {book.isbn && (
+                        <span className="book-isbn"> | ISBN: {book.isbn}</span>
+                      )}
                     </p>
+                    <div className="book-visibility">
+                      {book.isPublic && <span className="visibility-badge public">公開</span>}
+                      {book.isFamilyOnly && <span className="visibility-badge family">家族のみ</span>}
+                      {book.isAdminOnly && <span className="visibility-badge admin">管理者のみ</span>}
+                      {!book.isPublic && !book.isFamilyOnly && !book.isAdminOnly && (
+                        <span className="visibility-badge private">非公開</span>
+                      )}
+                    </div>
                     {book.notes && (
                       <p className="book-notes">{book.notes}</p>
                     )}

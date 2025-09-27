@@ -60,7 +60,7 @@ export interface Book {
   id: string;
   title: string;
   author: string;
-  isbn: string;
+  isbn?: string;
   publishedYear: number;
   totalPages: number;
   readPages: number;
@@ -68,6 +68,10 @@ export interface Book {
   rating: number;
   notes: string;
   lentTo: string;
+  isPublic?: boolean;
+  isFamilyOnly?: boolean;
+  isAdminOnly?: boolean;
+  userId?: string;
   createdAt: string;
   updatedAt: string;
 }

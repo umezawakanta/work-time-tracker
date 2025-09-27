@@ -354,6 +354,9 @@ function App({
   const [bookTotalPages, setBookTotalPages] = useState(0);
   const [bookCategory, setBookCategory] = useState("");
   const [bookNotes, setBookNotes] = useState("");
+  const [bookIsPublic, setBookIsPublic] = useState(false);
+  const [bookIsFamilyOnly, setBookIsFamilyOnly] = useState(false);
+  const [bookIsAdminOnly, setBookIsAdminOnly] = useState(false);
   const [selectedBookCategory, setSelectedBookCategory] = useState("all");
 
   // メモ関連の状態
@@ -4013,7 +4016,7 @@ ${errorInfo.stack}
   const handleCreateBook = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!bookTitle || !bookAuthor || !bookIsbn || !bookCategory) {
+    if (!bookTitle || !bookAuthor || !bookCategory) {
       setMessage("必須フィールドを入力してください");
       return;
     }
@@ -4034,6 +4037,10 @@ ${errorInfo.stack}
           totalPages: bookTotalPages,
           category: bookCategory,
           notes: bookNotes,
+          isPublic: bookIsPublic,
+          isFamilyOnly: bookIsFamilyOnly,
+          isAdminOnly: bookIsAdminOnly,
+          userId: user?.id || '',
         }),
       });
 
@@ -4048,6 +4055,9 @@ ${errorInfo.stack}
         setBookTotalPages(0);
         setBookCategory("");
         setBookNotes("");
+        setBookIsPublic(false);
+        setBookIsFamilyOnly(false);
+        setBookIsAdminOnly(false);
         setShowBookForm(false);
         loadBooks();
       } else {
@@ -4064,11 +4074,14 @@ ${errorInfo.stack}
     setEditingBook(book);
     setBookTitle(book.title);
     setBookAuthor(book.author);
-    setBookIsbn(book.isbn);
+    setBookIsbn(book.isbn || '');
     setBookPublishedYear(book.publishedYear);
     setBookTotalPages(book.totalPages);
     setBookCategory(book.category);
     setBookNotes(book.notes);
+    setBookIsPublic(book.isPublic || false);
+    setBookIsFamilyOnly(book.isFamilyOnly || false);
+    setBookIsAdminOnly(book.isAdminOnly || false);
     setShowBookForm(true);
   };
 
@@ -4095,6 +4108,10 @@ ${errorInfo.stack}
           totalPages: bookTotalPages,
           category: bookCategory,
           notes: bookNotes,
+          isPublic: bookIsPublic,
+          isFamilyOnly: bookIsFamilyOnly,
+          isAdminOnly: bookIsAdminOnly,
+          userId: user?.id || '',
         }),
       });
 
@@ -4103,6 +4120,16 @@ ${errorInfo.stack}
       if (data.success) {
         setMessage("本を更新しました！");
         setEditingBook(null);
+        setBookTitle("");
+        setBookAuthor("");
+        setBookIsbn("");
+        setBookPublishedYear(new Date().getFullYear());
+        setBookTotalPages(0);
+        setBookCategory("");
+        setBookNotes("");
+        setBookIsPublic(false);
+        setBookIsFamilyOnly(false);
+        setBookIsAdminOnly(false);
         setShowBookForm(false);
         loadBooks();
       } else {
@@ -6236,6 +6263,12 @@ User Agent: ${userAgent}
                     setBookCategory={setBookCategory}
                     bookNotes={bookNotes}
                     setBookNotes={setBookNotes}
+                    bookIsPublic={bookIsPublic}
+                    setBookIsPublic={setBookIsPublic}
+                    bookIsFamilyOnly={bookIsFamilyOnly}
+                    setBookIsFamilyOnly={setBookIsFamilyOnly}
+                    bookIsAdminOnly={bookIsAdminOnly}
+                    setBookIsAdminOnly={setBookIsAdminOnly}
                     selectedBookCategory={selectedBookCategory}
                     setSelectedBookCategory={setSelectedBookCategory}
                     loading={loading}
