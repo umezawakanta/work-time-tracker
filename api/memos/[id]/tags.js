@@ -4,6 +4,7 @@
  */
 
 import { connectToDatabase } from '../../../lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export default async function handler(req, res) {
   if (req.method !== 'PUT') {
@@ -40,18 +41,27 @@ export default async function handler(req, res) {
       }
     }
 
+    // ObjectIdの検証
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid memo ID format' 
+      });
+    }
+
     const { db } = await connectToDatabase();
     const memosCollection = db.collection('memos');
+    const objectId = new ObjectId(id);
 
     // メモの存在確認
-    const existingMemo = await memosCollection.findOne({ _id: id });
+    const existingMemo = await memosCollection.findOne({ _id: objectId });
     if (!existingMemo) {
       return res.status(404).json({ success: false, message: 'Memo not found' });
     }
 
     // タグ更新
     const result = await memosCollection.updateOne(
-      { _id: id },
+      { _id: objectId },
       { 
         $set: { 
           tags: tags,
