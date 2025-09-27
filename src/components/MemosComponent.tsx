@@ -140,6 +140,51 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
     return saved ? JSON.parse(saved) : [];
   });
 
+  // ジャンル管理の状態
+  const [newGenreName, setNewGenreName] = useState("");
+
+  // ジャンル管理の関数
+  const handleAddGenre = () => {
+    if (newGenreName.trim() && !customCategories.includes(newGenreName.trim())) {
+      const updatedCategories = [...customCategories, newGenreName.trim()];
+      setCustomCategories(updatedCategories);
+      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
+      setNewGenreName("");
+    }
+  };
+
+  const handleEditGenre = (genre: string) => {
+    setEditingGenre(genre);
+    setEditingGenreName(genre);
+  };
+
+  const handleSaveGenreEdit = () => {
+    if (editingGenreName.trim() && editingGenreName.trim() !== editingGenre) {
+      const updatedCategories = customCategories.map((category) =>
+        category === editingGenre ? editingGenreName.trim() : category
+      );
+      setCustomCategories(updatedCategories);
+      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
+    }
+    setEditingGenre(null);
+    setEditingGenreName("");
+  };
+
+  const handleCancelGenreEdit = () => {
+    setEditingGenre(null);
+    setEditingGenreName("");
+  };
+
+  const handleDeleteGenre = (genreToDelete: string) => {
+    if (window.confirm(`「${genreToDelete}」ジャンルを削除しますか？\nこのジャンルを使用しているメモも影響を受けます。`)) {
+      const updatedCategories = customCategories.filter(
+        (category) => category !== genreToDelete
+      );
+      setCustomCategories(updatedCategories);
+      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
+    }
+  };
+
   // 機能選択肢の定義
   const featureOptions = [
     { value: "", label: "機能を選択してください", disabled: true },
@@ -342,6 +387,14 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
         <div className="memos-content">
           <div className="memos-header">
             <div className="memos-header-left">
+              <button
+                onClick={() => setShowGenreManagement(true)}
+                className="genre-management-button"
+                title="ジャンル管理"
+              >
+                <i className="bi bi-tags"></i>
+                ジャンル管理
+              </button>
             </div>
             <div className="memos-header-right">
               <button
@@ -875,6 +928,117 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
 
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ジャンル管理モーダル */}
+      {showGenreManagement && (
+        <div className="genre-manager-modal">
+          <div className="genre-manager-content">
+            <div className="genre-manager-header">
+              <h3>ジャンル管理</h3>
+              <button
+                onClick={() => setShowGenreManagement(false)}
+                className="close-button"
+                title="閉じる"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="genre-manager-body">
+              {/* ジャンル追加セクション */}
+              <div className="add-genre-section">
+                <h4>新しいジャンルを追加</h4>
+                <div className="add-genre-form">
+                  <input
+                    type="text"
+                    value={newGenreName}
+                    onChange={(e) => setNewGenreName(e.target.value)}
+                    placeholder="ジャンル名を入力"
+                    className="genre-input"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAddGenre();
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={handleAddGenre}
+                    className="add-genre-button"
+                    disabled={!newGenreName.trim()}
+                  >
+                    追加
+                  </button>
+                </div>
+              </div>
+
+              {/* 既存ジャンル一覧 */}
+              <div className="existing-genres-section">
+                <h4>既存のジャンル</h4>
+                <div className="genres-list">
+                  {customCategories.map((genre) => (
+                    <div key={genre} className="genre-item">
+                      {editingGenre === genre ? (
+                        <div className="genre-edit-form">
+                          <input
+                            type="text"
+                            value={editingGenreName}
+                            onChange={(e) => setEditingGenreName(e.target.value)}
+                            className="genre-edit-input"
+                            placeholder="ジャンル名を入力"
+                            title="ジャンル名を編集"
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                handleSaveGenreEdit();
+                              }
+                            }}
+                          />
+                          <button
+                            onClick={handleSaveGenreEdit}
+                            className="save-genre-button"
+                            disabled={!editingGenreName.trim()}
+                          >
+                            保存
+                          </button>
+                          <button
+                            onClick={handleCancelGenreEdit}
+                            className="cancel-genre-button"
+                          >
+                            キャンセル
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="genre-display">
+                          <span className="genre-name">{genre}</span>
+                          <div className="genre-actions">
+                            <button
+                              onClick={() => handleEditGenre(genre)}
+                              className="edit-genre-button"
+                              title="編集"
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteGenre(genre)}
+                              className="delete-genre-button"
+                              title="削除"
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {customCategories.length === 0 && (
+                    <div className="no-genres">
+                      カスタムジャンルがありません
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
