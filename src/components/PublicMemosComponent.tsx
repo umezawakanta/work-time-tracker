@@ -278,15 +278,6 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     const endIndex = startIndex + itemsPerPage;
     const paginatedMemos = filteredMemos.slice(startIndex, endIndex);
     
-    console.log('Pagination debug:', {
-      currentPage,
-      itemsPerPage,
-      startIndex,
-      endIndex,
-      filteredMemosLength: filteredMemos.length,
-      paginatedMemosLength: paginatedMemos.length,
-      totalPages: getTotalPages()
-    });
     
     return paginatedMemos;
   };
@@ -296,7 +287,6 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   };
 
   const handlePageChange = (page: number) => {
-    console.log('Page change requested:', { from: currentPage, to: page });
     setCurrentPage(page);
   };
 
@@ -907,13 +897,6 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                             <span 
                               className={`status-badge status-${memo.status || 'pending'}`}
                               onClick={() => {
-                                console.log('Status badge clicked for memo:', { 
-                                  id: memo.id, 
-                                  title: memo.title, 
-                                  currentStatus: memo.status,
-                                  statusType: typeof memo.status,
-                                  allMemoKeys: Object.keys(memo)
-                                });
                                 startEditing(memo);
                               }}
                               title="クリックしてステータスを編集"
