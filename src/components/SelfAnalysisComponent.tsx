@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './SelfAnalysisComponent.css';
 import type { Habit, Goal, LearningRecord, MoodLog } from '../types';
-import HetamaIconComponent from './HetamaIconComponent';
 
-interface PersonalProfile {
+// CSS変数を設定するカスタムフック
+const useProgressBarRef = (percentage: number) => {
+  return useCallback((el: HTMLDivElement | null) => {
+    if (el) {
+      el.style.setProperty('--progress-width', `${percentage}%`);
+    }
+  }, [percentage]);
+};
+
+import HetamaIconComponent from './HetamaIconComponent';
+import { useTimeTrackingHelpers } from './TimeTrackingStateManager';
+import { useMoodLogState, useMoodLogHelpers } from './MoodLogManager';
+
+export interface PersonalProfile {
   values: string[];
   goals: string[];
   skills: string[];
@@ -34,17 +46,11 @@ interface SelfAnalysisComponentProps {
   setHabitHistory: React.Dispatch<React.SetStateAction<{ [habitId: string]: string[] }>>;
   habitStreak: { [habitId: string]: number };
   setHabitStreak: React.Dispatch<React.SetStateAction<{ [habitId: string]: number }>>;
-  moodLogs: any[];
-  setMoodLogs: React.Dispatch<React.SetStateAction<any[]>>;
   goals: Goal[];
   setGoals: (goals: Goal[]) => void;
   learningRecords: LearningRecord[];
   setLearningRecords: React.Dispatch<React.SetStateAction<LearningRecord[]>>;
   timeEntries: any[];
-  calculateTimeBreakdown: () => { [key: string]: number };
-  calculateProductivityTrend: () => Array<{date: string, workHours: number, dayOfWeek: string}>;
-  calculateProductivityStats: () => {averageHours: number, maxHours: number, totalHours: number, productiveDays: number, productivityRate: number};
-  loadTimeEntries: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
 }
 
@@ -61,19 +67,56 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   setHabitHistory,
   habitStreak,
   setHabitStreak,
-  moodLogs,
-  setMoodLogs,
   goals,
   setGoals,
   learningRecords,
   setLearningRecords,
   timeEntries,
-  calculateTimeBreakdown,
-  calculateProductivityTrend,
-  calculateProductivityStats,
-  loadTimeEntries,
   closeOtherFeatures,
 }) => {
+  // 時間記録関連のヘルパーをコンポーネント内で使用
+  const timeTrackingHelpers = useTimeTrackingHelpers();
+  
+  // 感情ログ状態をコンポーネント内で管理
+  const moodLogState = useMoodLogState();
+  const moodLogHelpers = useMoodLogHelpers();
+  
+  const { moodLogs, setMoodLogs } = moodLogState;
+  
+  // 時間記録関連の関数をコンポーネント内で定義
+  const calculateTimeBreakdown = () => {
+    return timeTrackingHelpers.calculateTimeBreakdown();
+  };
+
+  const calculateProductivityTrend = () => {
+    return timeTrackingHelpers.calculateProductivityTrend();
+  };
+
+  const calculateProductivityStats = () => {
+    const productivityData = calculateProductivityTrend();
+    const workHours = productivityData.map((day) => day.totalTime);
+
+    const totalHours =
+      workHours.length > 0
+        ? workHours.reduce((sum, hours) => sum + hours, 0)
+        : 0;
+    const averageHours = workHours.length > 0 ? totalHours / workHours.length : 0;
+    const maxHours = workHours.length > 0 ? Math.max(...workHours) : 0;
+    const productiveDays = workHours.filter((hours) => hours > 0).length;
+    const productivityRate = workHours.length > 0 ? (productiveDays / workHours.length) * 100 : 0;
+
+    return {
+      averageHours,
+      maxHours,
+      totalHours,
+      productiveDays,
+      productivityRate,
+    };
+  };
+
+  const loadTimeEntries = () => {
+    timeTrackingHelpers.loadTimeEntries();
+  };
   // 内部状態
   const [editingProfile, setEditingProfile] = useState(false);
   const [newValue, setNewValue] = useState("");
@@ -107,7 +150,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
   // プロフィール管理関数
   const addToProfile = (field: keyof PersonalProfile, value: string) => {
-    if (!value.trim()) return;
+    if (!value.trim()) {
+      return;
+    }
     setPersonalProfile((prev) => ({
       ...prev,
       [field]: [...(prev[field] as string[]), value.trim()],
@@ -123,7 +168,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
   // 習慣管理関数
   const addHabit = () => {
-    if (!newHabit.trim()) return;
+    if (!newHabit.trim()) {
+      return;
+    }
     const habitId = Date.now().toString();
     const newHabitObj: Habit = {
       id: habitId,
@@ -181,7 +228,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
   const getHabitCompletionRate = (habitId: string) => {
     const habit = habits.find((h) => h.id === habitId);
-    if (!habit) return 0;
+    if (!habit) {
+      return 0;
+    }
 
     const history = habitHistory[habitId] || [];
     const daysSinceStart = Math.ceil(
@@ -192,7 +241,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
 
   // 気分ログ管理関数
   const addMoodLog = () => {
-    if (!moodForm.date) return;
+    if (!moodForm.date) {
+      return;
+    }
     const moodLogId = Date.now().toString();
     const newMoodLog: MoodLog = {
       id: moodLogId,
@@ -206,18 +257,18 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
       sleep: 0,
       createdAt: new Date().toISOString(),
     };
-    setMoodLogs((prev) => [...prev, newMoodLog]);
+    setMoodLogs([...moodLogs, newMoodLog]);
     resetMoodForm();
   };
 
   const updateMoodLog = (moodLogId: string, updates: Partial<MoodLog>) => {
-    setMoodLogs((prev) =>
-      prev.map((log) => (log.id === moodLogId ? { ...log, ...updates } : log))
+    setMoodLogs(
+      moodLogs.map((log) => (log.id === moodLogId ? { ...log, ...updates } : log))
     );
   };
 
   const deleteMoodLog = (moodLogId: string) => {
-    setMoodLogs((prev) => prev.filter((log) => log.id !== moodLogId));
+    setMoodLogs(moodLogs.filter((log) => log.id !== moodLogId));
   };
 
   const resetMoodForm = () => {
@@ -233,7 +284,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   };
 
   const addActivity = () => {
-    if (!newActivity.trim()) return;
+    if (!newActivity.trim()) {
+      return;
+    }
     setMoodForm((prev) => ({
       ...prev,
       activities: [...prev.activities, newActivity.trim()],
@@ -276,21 +329,33 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   };
 
   const getMoodEmoji = (mood: number) => {
-    if (mood <= 2) return "😢";
-    if (mood <= 4) return "😔";
-    if (mood <= 6) return "😐";
-    if (mood <= 8) return "😊";
+    if (mood <= 2) {
+      return "😢";
+    }
+    if (mood <= 4) {
+      return "😔";
+    }
+    if (mood <= 6) {
+      return "😐";
+    }
+    if (mood <= 8) {
+      return "😊";
+    }
     return "😄";
   };
 
   const getAverageMood = () => {
-    if (moodLogs.length === 0) return 0;
+    if (moodLogs.length === 0) {
+      return 0;
+    }
     return moodLogs.reduce((sum, log) => sum + (log.mood || 0), 0) / moodLogs.length;
   };
 
   // 目標管理関数
   const addGoal = () => {
-    if (!goalForm.title.trim()) return;
+    if (!goalForm.title.trim()) {
+      return;
+    }
     const goalId = Date.now().toString();
     const newGoal: Goal = {
       id: goalId,
@@ -355,7 +420,9 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
   };
 
   const addMilestone = () => {
-    if (!newMilestone.trim()) return;
+    if (!newMilestone.trim()) {
+      return;
+    }
     const milestoneId = Date.now().toString();
     setGoalForm((prev) => ({
       ...prev,
@@ -586,7 +653,7 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                               <div className="progress-bar">
                                 <div 
                                   className="progress-fill" 
-                                  style={{width: `${percentage}%`}}
+                                  ref={useProgressBarRef(percentage)}
                                 ></div>
                               </div>
                               <span className="time-value">{hours.toFixed(1)}h</span>
@@ -620,18 +687,23 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             <div className="productivity-graph">
                               <div className="graph-container">
                                 {productivityData.map((day, index) => {
-                                  const maxHours = Math.max(...productivityData.map(d => d.workHours));
-                                  const height = maxHours > 0 ? (day.workHours / maxHours) * 100 : 0;
+                                  const maxHours = Math.max(...productivityData.map(d => d.totalTime));
+                                  const height = maxHours > 0 ? (day.totalTime / maxHours) * 100 : 0;
+                                  const dayOfWeek = new Date(day.date).toLocaleDateString('ja-JP', { weekday: 'short' });
                                   
                                   return (
                                     <div key={day.date} className="graph-bar">
                                       <div 
                                         className="bar-fill"
-                                        style={{height: `${height}%`}}
-                                        title={`${day.dayOfWeek} ${day.workHours.toFixed(1)}h`}
+                                        ref={(el) => {
+                                          if (el) {
+                                            el.style.setProperty('--bar-height', `${height}%`);
+                                          }
+                                        }}
+                                        title={`${dayOfWeek} ${day.totalTime.toFixed(1)}h`}
                                       ></div>
-                                      <div className="bar-label">{day.dayOfWeek}</div>
-                                      <div className="bar-value">{day.workHours > 0 ? `${day.workHours.toFixed(1)}h` : ''}</div>
+                                      <div className="bar-label">{dayOfWeek}</div>
+                                      <div className="bar-value">{day.totalTime > 0 ? `${day.totalTime.toFixed(1)}h` : ''}</div>
                                     </div>
                                   );
                                 })}
@@ -696,7 +768,25 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                       <div className="mood-average">
                         <span className="mood-label">平均気分</span>
                         <div className="mood-scale">
-                          <div className="mood-indicator" style={{left: '70%'}}>😊</div>
+                          {/*
+                            Use a variable for mood position and set inline style for cross-browser compatibility.
+                            For demonstration, we'll use a constant. In a real app, this should be dynamic.
+                          */}
+                          {(() => {
+                            const moodPosition = 70; // This should be dynamic in a real app
+                            return (
+                              <div
+                                className="mood-indicator"
+                                ref={(el) => {
+                                  if (el) {
+                                    el.style.setProperty('--mood-position', `${moodPosition}%`);
+                                  }
+                                }}
+                              >
+                                😊
+                              </div>
+                            );
+                          })()}
                           <div className="scale-line"></div>
                         </div>
                         <span className="mood-value">7.2/10</span>
@@ -1270,7 +1360,11 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             <div className="factor-bar">
                               <div 
                                 className="factor-fill" 
-                                style={{width: `${(log.energy / 5) * 100}%`}}
+                                ref={(el) => {
+                                  if (el) {
+                                    el.style.setProperty('--factor-percentage', `${(log.energy / 5) * 100}%`);
+                                  }
+                                }}
                               ></div>
                             </div>
                             <span className="factor-value">{log.energy}/5</span>
@@ -1280,7 +1374,11 @@ const SelfAnalysisComponent: React.FC<SelfAnalysisComponentProps> = ({
                             <div className="factor-bar">
                               <div 
                                 className="factor-fill stress" 
-                                style={{width: `${(log.stress / 5) * 100}%`}}
+                                ref={(el) => {
+                                  if (el) {
+                                    el.style.setProperty('--factor-percentage', `${(log.stress / 5) * 100}%`);
+                                  }
+                                }}
                               ></div>
                             </div>
                             <span className="factor-value">{log.stress}/5</span>

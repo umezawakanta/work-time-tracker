@@ -28,6 +28,7 @@ export interface TimeEntry {
   endTime?: Date;
   duration?: number;
   project?: string;
+  category?: string;
 }
 
 export interface Project {

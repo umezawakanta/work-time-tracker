@@ -403,6 +403,7 @@
   background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
   border-radius: 4px;
   transition: width 0.3s ease;
+  width: var(--percentage, 0%);
 }
 
 .factor-fill.stress {
@@ -509,6 +510,7 @@
   background: linear-gradient(90deg, var(--primary-color, #3b82f6), var(--primary-light, #60a5fa));
   border-radius: 4px;
   transition: width 0.3s ease;
+  width: 0%;
 }
 
 .time-value {
@@ -674,6 +676,7 @@
   top: -5px;
   font-size: 1.5rem;
   transform: translateX(-50%);
+  left: var(--indicator-position, 50%);
 }
 
 .scale-line {
@@ -1816,6 +1819,7 @@
   min-height: 4px;
   transition: all 0.3s ease;
   cursor: pointer;
+  height: var(--bar-height, 10%);
 }
 
 .bar-fill:hover {
@@ -1902,4 +1906,25 @@
   .stat-value {
     font-size: 1rem;
   }
+}
+
+/* Data attribute based styling - using CSS custom properties */
+.progress-fill {
+  width: var(--progress-width, 0%);
+  transition: width 0.3s ease;
+}
+
+.bar-fill {
+  height: var(--bar-height, 0%);
+  transition: height 0.3s ease;
+}
+
+.mood-indicator {
+  left: var(--mood-position, 0%);
+  transition: left 0.3s ease;
+}
+
+.factor-fill {
+  width: var(--factor-percentage, 0%);
+  transition: width 0.3s ease;
 }

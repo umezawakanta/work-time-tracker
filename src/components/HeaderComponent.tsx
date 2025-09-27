@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./HeaderComponent.css";
 import HeaderLeftComponent from "./HeaderLeftComponent";
 import HetamaCharacterComponent from "./HetamaCharacterComponent";
@@ -8,6 +8,8 @@ import LogoutButtonComponent from "./LogoutButtonComponent";
 import UserInfoComponent from "./UserInfoComponent";
 import UserGreetingComponent from "./UserGreetingComponent";
 import ShareButtonComponent from "./ShareButtonComponent";
+import UpdateRequestModal from "./UpdateRequestModal";
+import BugReportModal from "./BugReportModal";
 import type { User, Character } from "../types";
 import VersionInfoComponent from "./VersionInfo";
 
@@ -25,8 +27,8 @@ interface HeaderComponentProps {
   setShowFeatureSettings: (show: boolean) => void;
   loadUserSettings: () => void;
   isTimeTrackingActive: boolean;
-  onUpdateRequestClick: () => void;
-  onBugReportClick: () => void;
+  handleUpdateRequest: (updateRequest: any) => Promise<void>;
+  handleBugReport: (bugReport: any) => Promise<void>;
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -43,9 +45,13 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   setShowFeatureSettings,
   loadUserSettings,
   isTimeTrackingActive,
-  onUpdateRequestClick,
-  onBugReportClick,
+  handleUpdateRequest,
+  handleBugReport,
 }) => {
+  // 更新要望モーダルの状態をHeaderComponent内で管理
+  const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
+  // 不具合報告モーダルの状態をHeaderComponent内で管理
+  const [showBugReportModal, setShowBugReportModal] = useState(false);
   return (
     <header className="dashboard-header">
       {/* 左側：キャラクター（絶対保持） */}
@@ -100,7 +106,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       <div className="header-top-right">
         <ShareButtonComponent />
         <button
-          onClick={onBugReportClick}
+          onClick={() => setShowBugReportModal(true)}
           className="bug-report-button"
           title="不具合を報告"
         >
@@ -108,7 +114,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
           <span>不具合報告</span>
         </button>
         <button
-          onClick={onUpdateRequestClick}
+          onClick={() => setShowUpdateRequestModal(true)}
           className="update-request-button"
           title="更新要望を送信"
         >
@@ -121,6 +127,26 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       {/* 背景キャラクター（絶対保持） */}
       <HetamaCharacterComponent />
       <DogCharacterComponent />
+
+      {/* 更新要望モーダル */}
+      <UpdateRequestModal
+        isOpen={showUpdateRequestModal}
+        onClose={() => setShowUpdateRequestModal(false)}
+        onSubmit={async (updateRequest) => {
+          await handleUpdateRequest(updateRequest);
+          setShowUpdateRequestModal(false);
+        }}
+      />
+
+      {/* 不具合報告モーダル */}
+      <BugReportModal
+        isOpen={showBugReportModal}
+        onClose={() => setShowBugReportModal(false)}
+        onSubmit={async (bugReport) => {
+          await handleBugReport(bugReport);
+          setShowBugReportModal(false);
+        }}
+      />
     </header>
   );
 };

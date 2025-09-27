@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './DeleteConfirmModal.css';
 
 interface DeleteConfirmModalProps {
@@ -20,20 +20,30 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   itemName,
   itemType
 }) => {
-  // モーダル表示時にスクロールを無効化
+  const modalRef = useRef<HTMLDivElement>(null);
+  // モーダル表示時の処理
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && modalRef.current) {
       // 現在のスクロール位置を保存
       const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
+      
+      // スクロールを無効化（body要素の位置は変更しない）
+      document.body.style.overflow = 'hidden';
+      
+      // モーダルを現在の表示位置に配置
+      const modalElement = modalRef.current;
+      modalElement.style.position = 'fixed';
+      modalElement.style.top = '0';
+      modalElement.style.left = '0';
+      modalElement.style.width = '100vw';
+      modalElement.style.height = '100vh';
+      modalElement.style.transform = `translateY(${scrollY}px)`;
       
       return () => {
-        // モーダル閉じる時にスクロール位置を復元
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
+        // モーダル閉じる時にスクロールを復元
+        document.body.style.overflow = '';
+        
+        // スクロール位置を復元
         window.scrollTo(0, scrollY);
       };
     }
@@ -47,7 +57,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="delete-confirm-overlay">
+    <div ref={modalRef} className="delete-confirm-overlay">
       <div className="delete-confirm-content">
         <div className="delete-confirm-header">
           <h3>

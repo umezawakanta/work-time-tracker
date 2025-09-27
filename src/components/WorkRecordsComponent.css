@@ -4,6 +4,424 @@
   margin-bottom: 2rem;
 }
 
+/* カレンダー関連のスタイル（常に拡大表示） */
+
+/* 選択された日付の詳細表示（アプリ風デザイン） */
+.record-details {
+  background: var(--card-background, #ffffff);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+  box-shadow: var(--card-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
+  border: 1px solid var(--border-color, #e9ecef);
+  color: var(--text-color, #333);
+}
+
+.record-details h3 {
+  color: var(--text-color, #333);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color, #e9ecef);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.record-details h3 i {
+  color: var(--primary-color, #007bff);
+}
+
+.day-of-week {
+  color: var(--primary-color, #007bff);
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+/* 収入・支出記録の詳細表示 */
+.income-records-detail,
+.expense-records-detail {
+  margin-bottom: 1.5rem;
+}
+
+.income-records-detail h4,
+.expense-records-detail h4 {
+  color: var(--text-color, #333);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 6px;
+  border-left: 3px solid var(--success-color, #28a745);
+}
+
+.expense-records-detail h4 {
+  border-left-color: var(--danger-color, #dc3545);
+}
+
+.income-records-detail h4 i {
+  color: var(--success-color, #28a745);
+}
+
+.expense-records-detail h4 i {
+  color: var(--danger-color, #dc3545);
+}
+
+.total-amount {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: var(--text-muted, #6c757d);
+  font-weight: 500;
+}
+
+.record-item {
+  background: var(--card-background, #ffffff);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-color, #e9ecef);
+  transition: all 0.2s ease;
+  box-shadow: var(--item-shadow, 0 1px 3px rgba(0, 0, 0, 0.05));
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.record-item:hover {
+  background: var(--hover-background, #f8f9fa);
+  border-color: var(--primary-color, #007bff);
+  transform: translateY(-1px);
+  box-shadow: var(--hover-shadow, 0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.record-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-width: 70px;
+}
+
+.record-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.record-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-color, #333);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.record-amount {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.record-amount.income {
+  color: var(--success-color, #28a745);
+}
+
+.record-amount.expense {
+  color: var(--danger-color, #dc3545);
+}
+
+.record-time {
+  color: var(--text-muted, #6c757d);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.record-notes {
+  color: var(--text-muted, #6c757d);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  line-height: 1.4;
+}
+
+.record-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.edit-button,
+.delete-button {
+  padding: 0.3rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.edit-button {
+  background: var(--primary-color, #007bff);
+  color: white;
+}
+
+.edit-button:hover {
+  background: var(--primary-hover, #0056b3);
+  transform: translateY(-1px);
+}
+
+.delete-button {
+  background: var(--danger-color, #dc3545);
+  color: white;
+}
+
+.delete-button:hover {
+  background: var(--danger-hover, #c82333);
+  transform: translateY(-1px);
+}
+
+/* 日記の詳細表示 */
+.diary-records-detail {
+  margin-bottom: 1.5rem;
+}
+
+.diary-records-detail h4 {
+  color: var(--text-color, #333);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 8px;
+  border-left: 4px solid var(--info-color, #17a2b8);
+}
+
+.diary-records-detail h4 i {
+  color: var(--info-color, #17a2b8);
+}
+
+.diary-record-detail {
+  background: var(--card-background, #ffffff);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--border-color, #e9ecef);
+  transition: all 0.2s ease;
+  box-shadow: var(--item-shadow, 0 2px 4px rgba(0, 0, 0, 0.05));
+}
+
+.diary-record-detail:hover {
+  background: var(--hover-background, #f8f9fa);
+  border-color: var(--info-color, #17a2b8);
+  transform: translateY(-1px);
+  box-shadow: var(--hover-shadow, 0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.diary-record-detail h5 {
+  color: var(--text-color, #333);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.diary-mood {
+  margin-left: auto;
+}
+
+.diary-mood i {
+  font-size: 1.2rem;
+  color: var(--warning-color, #ffc107);
+}
+
+.diary-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.diary-content-full {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6c757d);
+  margin: 0.25rem 0;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.diary-record-detail p {
+  color: var(--text-muted, #6c757d);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  line-height: 1.4;
+}
+
+.diary-record-detail p strong {
+  color: var(--text-color, #333);
+  font-weight: 600;
+}
+
+/* 記録がない場合の表示 */
+.no-records {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted, #6c757d);
+}
+
+.no-records-icon {
+  font-size: 3rem;
+  color: var(--text-muted, #6c757d);
+  margin-bottom: 1rem;
+}
+
+.no-records h4 {
+  color: var(--text-color, #333);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.no-records p {
+  color: var(--text-muted, #6c757d);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* 記録詳細モーダル */
+.record-details-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.record-details-modal {
+  background: var(--card-background, #ffffff);
+  border-radius: 15px;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.record-details-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--border-color, #e9ecef);
+  background: var(--section-background, #f8f9fa);
+}
+
+.record-details-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.record-details-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted, #6c757d);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.record-details-modal-close:hover {
+  background-color: var(--hover-background, #f8f9fa);
+  color: var(--text-color, #333);
+}
+
+.record-details-modal-content {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .record-details-modal {
+    max-width: 95vw;
+    max-height: 95vh;
+    margin: 0.5rem;
+  }
+  
+  .record-details-modal-header {
+    padding: 1rem;
+  }
+  
+  .record-details-modal-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .record-details-modal-content {
+    padding: 1rem;
+  }
+  
+  .record-details-modal-close {
+    width: 35px;
+    height: 35px;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .record-details-modal {
+    max-width: 98vw;
+    max-height: 98vh;
+    margin: 0.25rem;
+  }
+  
+  .record-details-modal-header {
+    padding: 0.75rem;
+  }
+  
+  .record-details-modal-header h3 {
+    font-size: 1rem;
+  }
+  
+  .record-details-modal-content {
+    padding: 0.75rem;
+  }
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -56,64 +474,101 @@
 
 /* 月別統計 */
 .monthly-summary {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  border: 1px solid #e9ecef;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color, #e9ecef);
+  transition: all 0.3s ease;
 }
 
-.monthly-summary h3 {
-  margin: 0 0 1rem 0;
-  color: #333;
-  font-size: 1.1rem;
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.summary-header:hover {
+  background-color: var(--hover-background, #e9ecef);
+}
+
+.summary-header h3 {
+  margin: 0;
+  color: var(--text-color, #333);
+  font-size: 1rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.summary-toggle-icon {
+  font-size: 1.2rem;
+  color: var(--text-muted, #6c757d);
+  transition: transform 0.3s ease;
 }
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .summary-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 0.5rem;
+  background: var(--card-background, #ffffff);
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #e9ecef);
+  box-shadow: var(--item-shadow, 0 1px 3px rgba(0, 0, 0, 0.05));
 }
 
 .summary-label {
-  font-size: 0.8rem;
-  color: #6c757d;
-  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted, #6c757d);
+  margin-bottom: 0.25rem;
   font-weight: 500;
 }
 
 .summary-value {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
 }
 
 .summary-value.income {
-  color: #28a745;
+  color: var(--success-color, #28a745);
 }
 
 .summary-value.expense {
-  color: #dc3545;
+  color: var(--danger-color, #dc3545);
 }
 
 .summary-value.positive {
-  color: #28a745;
+  color: var(--success-color, #28a745);
 }
 
 .summary-value.negative {
-  color: #dc3545;
+  color: var(--danger-color, #dc3545);
 }
 
 /* カレンダー */
@@ -227,25 +682,51 @@
   font-weight: 600;
   color: #6c757d;
   font-size: 0.9rem;
+  border-right: 1px solid #e9ecef;
+}
+
+.weekday.sunday {
+  color: #d32f2f;
+  background-color: #ffebee;
+  font-weight: 700;
+}
+
+.weekday.saturday {
+  color: #1976d2;
+  background-color: #e3f2fd;
+  font-weight: 700;
 }
 
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(90px, auto);
 }
 
 .calendar-day {
-  min-height: 80px;
+  min-height: 90px;
   padding: 0.5rem;
   border-right: 1px solid #e9ecef;
   border-bottom: 1px solid #e9ecef;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
+}
+
+.calendar-day.sunday {
+  background-color: #ffebee;
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.calendar-day.saturday {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-weight: 600;
 }
 
 .calendar-day:hover {
@@ -258,17 +739,51 @@
 }
 
 .calendar-day.today {
-  background-color: #e3f2fd;
-  font-weight: 600;
+  background-color: #fff3e0;
+  border: 2px solid #ff9800;
+  font-weight: 700;
+}
+
+.calendar-day.today .day-number {
+  color: #f57c00;
+  font-size: 1.2rem;
 }
 
 .calendar-day.selected {
   background-color: #007bff;
   color: white;
+  border: 2px solid #0056b3;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.calendar-day.selected .day-number {
+  color: white;
+  font-size: 1.2rem;
+}
+
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.25rem;
 }
 
 .day-number {
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.today-indicator {
+  font-size: 0.7rem;
+  background-color: #007bff;
+  color: white;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
   font-weight: 500;
 }
 
@@ -623,18 +1138,47 @@
 
 /* 月次メモ */
 .monthly-memo {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  border: 1px solid #e9ecef;
+  background: var(--section-background, #f8f9fa);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color, #e9ecef);
+  transition: all 0.3s ease;
 }
 
-.monthly-memo h3 {
-  margin: 0 0 1rem 0;
-  color: #333;
-  font-size: 1.1rem;
+.memo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.memo-header:hover {
+  background-color: var(--hover-background, #e9ecef);
+}
+
+.memo-header h3 {
+  margin: 0;
+  color: var(--text-color, #333);
+  font-size: 1rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.memo-toggle-icon {
+  font-size: 1.2rem;
+  color: var(--text-muted, #6c757d);
+  transition: transform 0.3s ease;
+}
+
+.memo-content {
+  animation: slideDown 0.3s ease-out;
 }
 
 .memo-edit textarea {
@@ -690,21 +1234,24 @@
 /* アクションボタン */
 .action-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
 .action-button {
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 120px;
+  justify-content: center;
 }
 
 .salary-button {
@@ -744,7 +1291,32 @@
   }
   
   .summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .summary-header {
+    padding: 0.25rem;
+  }
+  
+  .summary-header h3 {
+    font-size: 0.9rem;
+  }
+  
+  .summary-toggle-icon {
+    font-size: 1rem;
+  }
+  
+  .summary-item {
+    padding: 0.4rem;
+  }
+  
+  .summary-label {
+    font-size: 0.7rem;
+  }
+  
+  .summary-value {
+    font-size: 0.9rem;
   }
   
   .calendar-day {
@@ -841,4 +1413,137 @@
   .monthly-memo {
     padding: 1rem;
   }
+  
+  .memo-header {
+    padding: 0.25rem;
+  }
+  
+  .memo-header h3 {
+    font-size: 0.9rem;
+  }
+  
+  .memo-toggle-icon {
+    font-size: 1rem;
+  }
+  
+  /* モバイル用の詳細表示最適化 */
+  .record-details {
+    padding: 1rem;
+    margin: 0 -0.5rem;
+    border-radius: 12px;
+  }
+  
+  .record-details h3 {
+    font-size: 1.1rem;
+  }
+  
+  .record-item,
+  .diary-record-detail {
+    padding: 0.75rem;
+  }
+  
+  .record-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.6rem;
+  }
+  
+  .record-header {
+    min-width: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .record-actions {
+    flex-direction: row;
+    gap: 0.3rem;
+    margin-left: 0;
+    margin-top: 0.4rem;
+  }
+  
+  .edit-button,
+  .delete-button {
+    flex: 1;
+    justify-content: center;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .action-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    min-width: auto;
+  }
 }
+
+@media (max-width: 480px) {
+  .calendar-preview {
+    padding: 0.5rem;
+    margin: 0 -0.25rem;
+  }
+  
+  .calendar-preview-header h3 {
+    font-size: 1rem;
+  }
+  
+  .expand-calendar-button {
+    padding: 0.6rem;
+    font-size: 0.8rem;
+  }
+  
+  .calendar-preview-grid {
+    max-height: 250px;
+  }
+  
+  /* 超小型モバイル用の詳細表示最適化 */
+  .record-details {
+    padding: 0.75rem;
+    margin: 0 -0.25rem;
+    border-radius: 8px;
+  }
+  
+  .record-details h3 {
+    font-size: 1rem;
+  }
+  
+  .record-item,
+  .diary-record-detail {
+    padding: 0.5rem;
+  }
+  
+  .record-amount {
+    font-size: 0.9rem;
+  }
+  
+  .record-time {
+    font-size: 0.7rem;
+  }
+  
+  .record-title {
+    font-size: 0.9rem;
+  }
+  
+  .record-notes,
+  .diary-record-detail p {
+    font-size: 0.75rem;
+  }
+  
+  .action-button {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.7rem;
+  }
+  
+  .edit-button,
+  .delete-button {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.65rem;
+  }
+}
+

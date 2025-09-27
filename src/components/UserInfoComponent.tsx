@@ -39,24 +39,10 @@ const UserInfoComponent: React.FC<UserInfoComponentProps> = ({
       <HeaderButtonsComponent
         onCharacterHomeToggle={onCharacterHomeToggle}
         showThemeSettings={showThemeSettings}
-        onThemeSettingsToggle={() => {
-          if (!showThemeSettings) {
-            closeOtherFeatures("theme-settings");
-          }
-          setShowThemeSettings(!showThemeSettings);
-        }}
+        onThemeSettingsToggle={onThemeSettingsToggle}
         showFontSettings={showFontSettings}
-        onFontSettingsToggle={() => {
-          if (!showFontSettings) {
-            closeOtherFeatures("font-settings");
-          }
-          setShowFontSettings(!showFontSettings);
-        }}
-        onFeatureSettingsToggle={() => {
-          closeOtherFeatures("feature-settings");
-          setShowFeatureSettings(true);
-          loadUserSettings();
-        }}
+        onFontSettingsToggle={onFontSettingsToggle}
+        onFeatureSettingsToggle={onFeatureSettingsToggle}
       />
     </div>
   );

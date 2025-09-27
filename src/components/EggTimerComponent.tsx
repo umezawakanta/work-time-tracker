@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './EggTimerComponent.css';
 
 interface EggTimerComponentProps {
@@ -69,6 +69,20 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
   timerSettings,
 }) => {
   const [eggTimerInterval, setEggTimerIntervalLocal] = useState<NodeJS.Timeout | null>(null);
+  const [localEggTimerTime, setLocalEggTimerTime] = useState(eggTimerTime);
+  
+  // 親の状態と同期
+  useEffect(() => {
+    setLocalEggTimerTime(eggTimerTime);
+  }, [eggTimerTime]);
+
+  // プログレスバーの進捗率を計算
+  const progressPercentage = eggTimerOriginalTime > 0 
+    ? Math.max(0, Math.min(100, ((eggTimerOriginalTime - localEggTimerTime) / eggTimerOriginalTime) * 100))
+    : 0;
+
+  // プログレスバーの進捗率は計算済み（progressPercentage）なので、
+  // useEffectは不要。インラインスタイルで直接適用
 
   // タイマーの開始
   const startEggTimer = () => {
@@ -88,7 +102,7 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
     setEggTimerPhaseName('加熱中');
 
     const interval = setInterval(() => {
-      setEggTimerTime((prevTime) => {
+      setLocalEggTimerTime((prevTime) => {
         if (prevTime <= 1) {
           // タイマー終了
           clearInterval(interval);
@@ -162,7 +176,7 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
     }
 
     const interval = setInterval(() => {
-      setEggTimerTime((prevTime) => {
+      setLocalEggTimerTime((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(interval);
           setEggTimerIntervalLocal(null);
@@ -292,7 +306,7 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
 
       <div className="egg-timer-display">
         <div className="timer-time">
-          {formatTime(eggTimerTime)}
+          {formatTime(localEggTimerTime)}
         </div>
         <div className="timer-phase">
           {eggTimerPhaseName}: {formatTime(eggTimerPhaseTime)}
@@ -300,9 +314,8 @@ const EggTimerComponent: React.FC<EggTimerComponentProps> = ({
         <div className="timer-progress">
           <div 
             className="progress-bar"
-            style={{
-              '--progress': ((eggTimerOriginalTime - eggTimerTime) / eggTimerOriginalTime) * 100
-            } as React.CSSProperties}
+            style={{ width: `${progressPercentage}%` }}
+            data-progress={progressPercentage}
           />
         </div>
       </div>

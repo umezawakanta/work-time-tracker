@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './BookshelfComponent.css';
 import type { Book } from '../types';
 
@@ -7,7 +7,6 @@ interface BookshelfComponentProps {
   setShowBookshelf: (show: boolean) => void;
   closeOtherFeatures: (activeFeature: string) => void;
   books: Book[];
-  booksLoading: boolean;
   showBookForm: boolean;
   setShowBookForm: (show: boolean) => void;
   editingBook: Book | null;
@@ -28,53 +27,66 @@ interface BookshelfComponentProps {
   setBookNotes: (notes: string) => void;
   selectedBookCategory: string;
   setSelectedBookCategory: (category: string) => void;
+  getBookCategories: () => string[];
   loading: boolean;
-  loadBooks: () => void;
+  loadBooks: () => Promise<void>;
   handleCreateBook: (e: React.FormEvent) => void;
   handleUpdateBook: (e: React.FormEvent) => void;
   handleEditBook: (book: Book) => void;
   handleDeleteBook: (bookId: string, bookTitle: string) => void;
   handleBookCategoryChange: (category: string) => void;
-  getBookCategories: () => string[];
   getReadingProgress: (book: Book) => number;
 }
 
-const BookshelfComponent: React.FC<BookshelfComponentProps> = ({
-  showBookshelf,
-  setShowBookshelf,
-  closeOtherFeatures,
-  books,
-  booksLoading,
-  showBookForm,
-  setShowBookForm,
-  editingBook,
-  setEditingBook,
-  bookTitle,
-  setBookTitle,
-  bookAuthor,
-  setBookAuthor,
-  bookIsbn,
-  setBookIsbn,
-  bookPublishedYear,
-  setBookPublishedYear,
-  bookTotalPages,
-  setBookTotalPages,
-  bookCategory,
-  setBookCategory,
-  bookNotes,
-  setBookNotes,
-  selectedBookCategory,
-  setSelectedBookCategory,
-  loading,
-  loadBooks,
-  handleCreateBook,
-  handleUpdateBook,
-  handleEditBook,
-  handleDeleteBook,
-  handleBookCategoryChange,
-  getBookCategories,
-  getReadingProgress,
-}) => {
+const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
+  const {
+    showBookshelf,
+    setShowBookshelf,
+    closeOtherFeatures,
+    books,
+    showBookForm,
+    setShowBookForm,
+    editingBook,
+    setEditingBook,
+    bookTitle,
+    setBookTitle,
+    bookAuthor,
+    setBookAuthor,
+    bookIsbn,
+    setBookIsbn,
+    bookPublishedYear,
+    setBookPublishedYear,
+    bookTotalPages,
+    setBookTotalPages,
+    bookCategory,
+    setBookCategory,
+    bookNotes,
+    setBookNotes,
+    selectedBookCategory,
+    setSelectedBookCategory,
+    getBookCategories,
+    loading,
+    loadBooks,
+    handleCreateBook,
+    handleUpdateBook,
+    handleEditBook,
+    handleDeleteBook,
+    handleBookCategoryChange,
+    getReadingProgress,
+  } = props;
+
+  // 本棚のローディング状態をBookshelfComponent内で管理
+  const [booksLoading, setBooksLoading] = useState(false);
+
+  // 本棚読み込み関数をBookshelfComponent内で定義
+  const loadBooksLocal = async () => {
+    setBooksLoading(true);
+    try {
+      await loadBooks();
+    } finally {
+      setBooksLoading(false);
+    }
+  };
   return (
     <div className="bookshelf-section">
       <div className="section-header">
@@ -119,7 +131,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = ({
                 closeOtherFeatures("bookshelf");
                 setShowBookshelf(true);
                 if (books.length === 0) {
-                  loadBooks();
+                  loadBooksLocal();
                 }
               }}
               className="show-section-button"
@@ -155,7 +167,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = ({
                 </select>
               </div>
               <button
-                onClick={loadBooks}
+                onClick={loadBooksLocal}
                 className="refresh-button"
                 title="本棚を更新"
               >
@@ -165,7 +177,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = ({
                 <button
                   onClick={() => {
                     setSelectedBookCategory("all");
-                    loadBooks();
+                    loadBooksLocal();
                   }}
                   className="reset-button"
                   title="フィルターをリセット"
@@ -389,7 +401,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = ({
                       <div className="progress-bar">
                         <div
                           className="progress-fill"
-                          style={{ width: `${getReadingProgress(book)}%` }}
+                          data-progress={getReadingProgress(book)}
                         ></div>
                       </div>
                       <span className="progress-text">

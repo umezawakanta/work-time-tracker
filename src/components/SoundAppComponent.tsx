@@ -1,0 +1,241 @@
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import * as Tone from "tone";
+import "./SoundAppComponent.css";
+
+// サブコンポーネントのインポート
+import SoundAppLayout from "./sound/SoundAppLayout";
+import { musicGenres } from "./sound/MusicGenres";
+import { createInstrumentForCategory } from "./sound/InstrumentFactory";
+import { usePlaybackManager, PlaybackState, PlaybackCallbacks } from "./sound/PlaybackManager";
+import { initializeTone, createMeiwaInstrument, playSound, toneStateManager } from "./sound/SoundEngine";
+import { generateMeiwaRhythm } from "./sound/MeiwaSoundGenerator";
+import { generateMusic } from "./sound/MusicGenerator";
+import { createInitialMeal } from "./sound/MealLogic";
+import { REPEAT_OPTIONS } from "./sound/constants";
+import { MealRecord } from "./sound/MealRecording";
+import { ScoreData } from "./sound/ScoreDisplay";
+import { MusicGenre, Instrument } from "./sound/types";
+import { ensureAudioContextReady } from "./sound/AudioContextUtils";
+
+/**
+ * Props for the SoundAppComponent
+ */
+interface SoundAppComponentProps {
+  /** Whether the sound app section is currently visible */
+  showSoundApp: boolean;
+  /** Function to toggle the visibility of the sound app section */
+  setShowSoundApp: (show: boolean) => void;
+  /** Function to close other features when this one is activated */
+  closeOtherFeatures: (activeFeature: string) => void;
+}
+
+const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
+  showSoundApp,
+  setShowSoundApp,
+  closeOtherFeatures,
+}) => {
+
+  // 状態管理
+  const [selectedGenre, setSelectedGenre] = useState<string>("balanced");
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [userMessage, setUserMessage] = useState<string>("");
+  const [repeatMode, setRepeatMode] = useState<number>(REPEAT_OPTIONS.THREE_TIMES);
+  const [isLooping, setIsLooping] = useState<boolean>(false);
+  const [currentMeal, setCurrentMeal] = useState<MealRecord>(createInitialMeal());
+  const [viewMode, setViewMode] = useState<"input" | "score">("input");
+  const [currentScore, setCurrentScore] = useState<ScoreData | null>(null);
+  const [showScore, setShowScore] = useState<boolean>(true);
+
+  // 参照管理
+  const instrumentsRef = useRef<{ [key: string]: Instrument }>({});
+  const playTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+
+  // メッセージ表示
+  const showMessage = (message: string, duration: number = 3000) => {
+    setUserMessage(message);
+    setTimeout(() => setUserMessage(""), duration);
+  };
+
+  // 楽器の作成（InstrumentFactoryを使用）
+  const getOrCreateInstrument = useCallback(async (categoryId: string) => {
+    // AudioContextが準備できているか確認
+    const isReady = await ensureAudioContextReady();
+    if (!isReady) {
+      console.warn("AudioContext is not ready, cannot create instrument");
+      return null;
+    }
+
+    if (!toneStateManager.isInitialized) {
+      // Tone.jsを初期化
+      const initialized = await initializeTone();
+      if (!initialized) {
+        console.warn("Failed to initialize Tone.js");
+        return null;
+      }
+    }
+
+    if (instrumentsRef.current[categoryId]) {
+      return instrumentsRef.current[categoryId];
+    }
+
+    const instrument = await createInstrumentForCategory(categoryId);
+    if (instrument) {
+      instrumentsRef.current[categoryId] = instrument;
+    }
+
+    return instrument;
+  }, []);
+
+  // 音を再生する関数
+  const playSoundCallback = useCallback(
+    async (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => {
+      // AudioContextの状態を確認
+      const isReady = await ensureAudioContextReady();
+      if (!isReady) {
+        console.warn("AudioContext is not ready, skipping sound playback");
+        return;
+      }
+
+      // Tone.jsが初期化されていない場合は初期化
+      if (!toneStateManager.isInitialized) {
+        const initialized = await initializeTone();
+        if (!initialized) {
+          console.warn("Failed to initialize Tone.js for sound playback");
+          return;
+        }
+      }
+
+      await playSound(
+        categoryId,
+        frequency,
+        duration,
+        volume,
+        genre,
+        instrumentsRef.current,
+        createMeiwaInstrument,
+        getOrCreateInstrument
+      );
+    },
+    [getOrCreateInstrument]
+  );
+
+  // 明和電機風リズム生成
+  const generateMeiwaRhythmCallback = useCallback((beatDuration: number, categoryRatios: any[]) => {
+    generateMeiwaRhythm(beatDuration, categoryRatios, playSoundCallback);
+  }, [playSoundCallback]);
+
+  // 音楽を生成
+  const generateMusicCallback = useCallback(
+    async (categoryRatios: any[], balanceScore: number, genre: MusicGenre) => {
+      playTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
+      playTimeoutsRef.current = [];
+
+      // 楽譜データを生成（明和電機風の場合はスキップ）
+      setCurrentScore(null);
+
+      // 明和電機風の8bit音楽を生成
+      await generateMusic(categoryRatios, balanceScore, genre, playSoundCallback, generateMeiwaRhythmCallback);
+    },
+    [playSoundCallback, generateMeiwaRhythmCallback]
+  );
+
+  // PlaybackManagerの使用
+  const playbackState: PlaybackState = {
+    isPlaying,
+    isLooping,
+    currentMeal,
+    selectedGenre,
+    repeatMode,
+    userMessage,
+  };
+
+  const playbackCallbacks: PlaybackCallbacks = {
+    setIsPlaying,
+    setIsLooping,
+    setCurrentMeal,
+    setUserMessage,
+    showMessage,
+    playSoundCallback,
+    generateMeiwaRhythmCallback,
+    generateMusicCallback,
+  };
+
+  const { playMealBalance, stopPlayback, handleUpdateCategoryCount, handleResetMeal } = 
+    usePlaybackManager(playbackState, playbackCallbacks);
+
+  // 初期化処理（ユーザージェスチャーが必要）
+  const handleInitialize = async () => {
+    try {
+      showMessage("音アプリを初期化中...", 1000);
+      
+      // 少し待機してから初期化を開始
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const initialized = await initializeTone();
+      if (!initialized) {
+        showMessage("Tone.jsの初期化に失敗しました。もう一度お試しください。", 3000);
+        return;
+      }
+
+      // 初期化が完了したことを確認
+      if (toneStateManager.isInitialized) {
+        showMessage("音アプリが起動しました！", 2000);
+      } else {
+        showMessage("初期化に失敗しました", 3000);
+      }
+    } catch (error) {
+      console.error("Initialization error:", error);
+      showMessage("初期化中にエラーが発生しました。もう一度お試しください。", 3000);
+    }
+  };
+
+  return (
+    <div className="sound-app-section">
+      <div className="section-header">
+        <h2>
+          <span className="section-icon">🎵</span>
+          音アプリ（楽譜表示版）
+        </h2>
+        <button
+          onClick={() => setShowSoundApp(!showSoundApp)}
+          className={
+            showSoundApp ? "close-section-button" : "show-section-button"
+          }
+        >
+          {showSoundApp ? "✕" : "▶"}
+        </button>
+      </div>
+
+      {showSoundApp && (
+        <SoundAppLayout
+          selectedGenre={selectedGenre}
+          setSelectedGenre={setSelectedGenre}
+          currentMeal={currentMeal}
+          onUpdateCategoryCount={handleUpdateCategoryCount}
+          onResetMeal={handleResetMeal}
+          isPlaying={isPlaying}
+          isLooping={isLooping}
+          toneStateManager={toneStateManager}
+          onPlay={() => playMealBalance(musicGenres)}
+          onStop={stopPlayback}
+          disabled={
+            isPlaying ||
+            Object.values(currentMeal.categories).every((c) => typeof c === 'number' && c === 0)
+          }
+          onInitialize={handleInitialize}
+          currentScore={currentScore}
+          showScore={showScore}
+          onToggleScore={() => setShowScore(!showScore)}
+          onExportScore={() => {
+            showMessage("楽譜をダウンロードしました", 2000);
+          }}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          userMessage={userMessage}
+        />
+      )}
+    </div>
+  );
+};
+
+export default SoundAppComponent;

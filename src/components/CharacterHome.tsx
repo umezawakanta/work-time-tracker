@@ -14,11 +14,20 @@ interface Character {
 }
 
 interface CharacterHomeProps {
-  onSelectCharacter: (character: Character) => void;
-  currentCharacter: Character | null;
+  showCharacterHome: boolean;
+  setShowCharacterHome: (show: boolean) => void;
+  closeOtherFeatures: (activeFeature: string) => void;
+  onSelectCharacter?: (character: Character) => void;
+  currentCharacter?: Character | null;
 }
 
-const CharacterHome: React.FC<CharacterHomeProps> = ({ onSelectCharacter, currentCharacter }) => {
+const CharacterHome: React.FC<CharacterHomeProps> = ({ 
+  showCharacterHome, 
+  setShowCharacterHome, 
+  closeOtherFeatures, 
+  onSelectCharacter, 
+  currentCharacter 
+}) => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -126,7 +135,9 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({ onSelectCharacter, curren
   });
 
   const handleCreateCharacter = () => {
-    if (!newCharacter.name || !newCharacter.svg) return;
+    if (!newCharacter.name || !newCharacter.svg) {
+      return;
+    }
 
     const character: Character = {
       id: `char-${Date.now()}`,
@@ -193,6 +204,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({ onSelectCharacter, curren
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="category-select"
+            aria-label="キャラクターカテゴリを選択"
           >
             <option value="all">すべて</option>
             <option value="my">私のキャラクター</option>
@@ -293,7 +305,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({ onSelectCharacter, curren
               </div>
               <div className="character-actions">
                 <button
-                  onClick={() => onSelectCharacter(character)}
+                  onClick={() => onSelectCharacter?.(character)}
                   className={`select-btn ${currentCharacter?.id === character.id ? 'selected' : ''}`}
                 >
                   {currentCharacter?.id === character.id ? '選択中' : '選択'}

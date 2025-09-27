@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Project } from "../types";
 
 interface ProjectsSectionProps {
@@ -8,7 +8,6 @@ interface ProjectsSectionProps {
   showProjectForm: boolean;
   setShowProjectForm: (show: boolean) => void;
   projects: Project[];
-  projectsLoading: boolean;
   selectedProject: string;
   setSelectedProject: (projectId: string) => void;
   projectName: string;
@@ -29,7 +28,6 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   showProjectForm,
   setShowProjectForm,
   projects,
-  projectsLoading,
   selectedProject,
   setSelectedProject,
   projectName,
@@ -42,6 +40,18 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   handleCreateProject,
   loadProjects,
 }) => {
+  // プロジェクトのローディング状態をProjectsSection内で管理
+  const [projectsLoading, setProjectsLoading] = useState(false);
+
+  // プロジェクト読み込み関数をProjectsSection内で定義
+  const loadProjectsLocal = async () => {
+    setProjectsLoading(true);
+    try {
+      await loadProjects();
+    } finally {
+      setProjectsLoading(false);
+    }
+  };
   return (
     <div key="projects" className="projects-section">
       <div className="section-header">
@@ -103,7 +113,7 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               {showProjectForm ? "❌ キャンセル" : "➕ プロジェクト追加"}
             </button>
             <button
-              onClick={loadProjects}
+              onClick={loadProjectsLocal}
               className="refresh-button"
               title="プロジェクトを更新"
             >
@@ -160,10 +170,10 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                 <div className="spinner"></div>
                 <p>プロジェクトを読み込み中...</p>
               </div>
-            ) : projects.length === 0 ? (
+            ) : !projects || projects.length === 0 ? (
               <p className="no-projects">プロジェクトが登録されていません</p>
             ) : (
-              projects.map((project) => (
+              projects && projects.map((project) => (
                 <div
                   key={project.id}
                   className={`project-item ${

@@ -17,19 +17,38 @@ import TimeTrackingComponent from "./components/TimeTrackingComponent";
 import TimersComponent from "./components/TimersComponent";
 import PublicMemosComponent from "./components/PublicMemosComponent";
 import WorkRecordsComponent from "./components/WorkRecordsComponent";
+import SoundAppComponent from "./components/SoundAppComponent";
 import NotificationComponent from "./components/NotificationComponent";
-import VersionInfo from "./components/VersionInfo";
-import { ErrorInfo, getErrorInfo, formatErrorInfo, createErrorInfo } from './types/errorTypes';
-import { getAuthToken, createAuthHeaders, executeAuthenticatedRequest } from './utils/authUtils';
-import type { ApiErrorInfo } from './utils/apiErrorHandler';
+import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
+import {
+  ErrorInfo,
+  getErrorInfo,
+  formatErrorInfo,
+  createErrorInfo,
+} from "./types/errorTypes";
+import {
+  createAuthHeaders,
+  executeAuthenticatedRequest,
+} from "./utils/authUtils";
+import type { ApiErrorInfo } from "./utils/apiErrorHandler";
 // Static import for apiFetch - used frequently throughout the application
-import { apiFetch } from './utils/apiClient';
-import { buildApiUrl, createUserIdParam, createValidatedUserIdParam, createIdParam } from './utils/urlUtils';
+import { apiFetch } from "./utils/apiClient";
+import {
+  buildApiUrl,
+  createUserIdParam,
+  createValidatedUserIdParam,
+  createIdParam,
+} from "./utils/urlUtils";
 import EggTimerComponent from "./components/EggTimerComponent";
-import { LoadingStateProvider, useLoadingState } from "./components/LoadingStateManager";
-import { TimeTrackingStateProvider, useTimeTrackingState, useTimeTrackingHelpers } from "./components/TimeTrackingStateManager";
-import { TimerPresetProvider, useTimerPresetState, useTimerPresetHelpers } from "./components/TimerPresetManager";
-import { MoodLogProvider, useMoodLogState, useMoodLogHelpers } from "./components/MoodLogManager";
+import {
+  TimeTrackingStateProvider,
+} from "./components/TimeTrackingStateManager";
+import {
+  TimerPresetProvider,
+} from "./components/TimerPresetManager";
+import {
+  MoodLogProvider,
+} from "./components/MoodLogManager";
 import { startCookingTimer } from "./utils/cookingTimer";
 import { availableThemes } from "./constants/themes";
 import {
@@ -41,8 +60,6 @@ import {
 import LanguageFontSettings from "./components/LanguageFontSettings";
 import { cookingRecipes, getRecipePhases } from "./constants/cookingRecipes";
 import SimpleErrorReportingModal from "./components/SimpleErrorReportingModal";
-import UpdateRequestModal from "./components/UpdateRequestModal";
-import BugReportModal from "./components/BugReportModal";
 import { setErrorReportCallback, reportApiError } from "./utils/apiClient";
 import {
   formatUpdateRequestContent,
@@ -69,61 +86,136 @@ import type {
   UserSettings,
   Feature,
   Habit,
-  MoodLog,
   Goal,
   LearningRecord,
 } from "./types";
 
+interface AppProps {
+  email: string;
+  setEmail: (email: string) => void;
+  password: string;
+  setPassword: (password: string) => void;
+  displayName: string;
+  setDisplayName: (displayName: string) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+  message: string;
+  setMessage: (message: string) => void;
+  isRegisterMode: boolean;
+  setIsRegisterMode: (isRegisterMode: boolean) => void;
+  user: User | null;
+  isLoggedIn: boolean;
+  isCheckingAuth: boolean;
+  handleLogin: (e: React.FormEvent) => Promise<void>;
+  handleRegister: (e: React.FormEvent) => Promise<void>;
+  handleLogout: () => void;
+  verifyToken: (token: string) => Promise<void>;
+}
 
-function App() {
-  // ローディング状態の管理
-  const loadingState = useLoadingState();
-  
-  // 時間記録状態の管理
-  const timeTrackingState = useTimeTrackingState();
-  const timeTrackingHelpers = useTimeTrackingHelpers();
-  
-  // タイマープリセット状態の管理
-  const timerPresetState = useTimerPresetState();
-  
-  // 感情ログ状態の管理
-  const moodLogState = useMoodLogState();
-  const moodLogHelpers = useMoodLogHelpers();
-  
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isRegisterMode, setIsRegisterMode] = useState(false);
+function App({ 
+  email, 
+  setEmail, 
+  password, 
+  setPassword, 
+  displayName, 
+  setDisplayName, 
+  loading, 
+  setLoading, 
+  message, 
+  setMessage, 
+  isRegisterMode, 
+  setIsRegisterMode,
+  user,
+  isLoggedIn,
+  isCheckingAuth,
+  handleLogin,
+  handleRegister,
+  handleLogout,
+  verifyToken
+}: AppProps) {
 
-  // エラー報告関連の状態
+  // 注意: showErrorModalをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. showErrorModalはグローバルエラーハンドリングで使用される
+  //    - WrappedXHR、WrappedFetch、handleReactError等のグローバルエラーハンドラーで使用
+  // 2. 複数のコンポーネントからアクセスされる
+  //    - エラー報告イベントリスナー（showErrorReport）で使用
+  //    - SimpleErrorReportingModalコンポーネントで表示制御
+  // 3. アプリケーション全体のエラー状態を管理する
+  //    - どのコンポーネントでエラーが発生しても統一されたエラー表示が必要
+  // 4. サブコンポーネント側で定義すると、グローバルエラーハンドリングが
+  //    分散し、一貫性が保てなくなる
+  //
+  // サブコンポーネント側で定義するために必要な対応:
+  // 1. グローバルエラーハンドリング用のContext Providerを作成
+  // 2. エラー状態を複数のコンポーネント間で共有する仕組みを構築
+  // 3. エラー報告イベントリスナーをエラーContext内で管理
+  // 4. 各コンポーネントでエラー状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
   const [showErrorModal, setShowErrorModal] = useState(false);
+  // 注意: currentErrorをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. currentErrorはグローバルエラーハンドリングで使用される
+  //    - WrappedXHR、WrappedFetch、handleReactError等のグローバルエラーハンドラーで使用
+  // 2. 複数のコンポーネントからアクセスされる
+  //    - エラー報告イベントリスナー（showErrorReport）で使用
+  //    - SimpleErrorReportingModalコンポーネントでgetErrorInfo(currentError)として使用
+  // 3. アプリケーション全体のエラー情報を管理する
+  //    - どのコンポーネントでエラーが発生しても統一されたエラー情報が必要
+  // 4. エラーの詳細情報を保持し、エラーモーダルに渡す役割
+  //    - エラーの種類、メッセージ、スタックトレース等の情報を管理
+  // 5. サブコンポーネント側で定義すると、グローバルエラーハンドリングが
+  //    分散し、一貫性が保てなくなる
+  //
+  // サブコンポーネント側で定義するために必要な対応:
+  // 1. グローバルエラーハンドリング用のContext Providerを作成
+  // 2. エラー状態とエラー情報を複数のコンポーネント間で共有する仕組みを構築
+  // 3. エラー報告イベントリスナーをエラーContext内で管理
+  // 4. 各コンポーネントでエラー状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
   const [currentError, setCurrentError] = useState<Error | null>(null);
+  // 注意: showSimpleErrorModalをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. showSimpleErrorModalはグローバルエラーハンドリングで使用される
+  //    - WrappedXHR、WrappedFetch、handleReactError等のグローバルエラーハンドラーで使用
+  // 2. 複数のコンポーネントからアクセスされる
+  //    - SimpleErrorReportingModalコンポーネントで表示制御
+  //    - handleSimpleErrorReport関数でエラー報告処理に使用
+  // 3. アプリケーション全体のエラー状態を管理する
+  //    - どのコンポーネントでエラーが発生しても統一されたエラー表示が必要
+  // 4. 独立したエラー報告モーダルとして使用
+  //    - showErrorModalとは別の独立したエラー報告モーダル
+  //    - エラー報告の送信成功時にモーダルを閉じる処理で使用
+  // 5. サブコンポーネント側で定義すると、グローバルエラーハンドリングが
+  //    分散し、一貫性が保てなくなる
+  //
+  // サブコンポーネント側で定義するために必要な対応:
+  // 1. グローバルエラーハンドリング用のContext Providerを作成
+  // 2. エラー状態を複数のコンポーネント間で共有する仕組みを構築
+  // 3. エラー報告イベントリスナーをエラーContext内で管理
+  // 4. 各コンポーネントでエラー状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
   const [showSimpleErrorModal, setShowSimpleErrorModal] = useState(false);
-  const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<{ x: number; y: number } | undefined>(undefined);
+  // 注意: errorModalButtonPositionをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. errorModalButtonPositionはグローバルエラーハンドリングで使用される
+  //    - WrappedXHR、WrappedFetch、handleReactError等のグローバルエラーハンドラーで使用
+  // 2. エラーモーダルの位置制御に使用される
+  //    - エラーが発生したボタンの位置を記録し、エラーモーダルの表示位置を制御
+  // 3. アプリケーション全体のUI状態を管理する
+  //    - どのコンポーネントでエラーが発生しても統一されたエラーモーダル表示が必要
+  // 4. ボタン位置のリセット処理で使用
+  //    - エラー処理時にボタン位置をundefinedにリセット
+  // 5. サブコンポーネント側で定義すると、グローバルエラーハンドリングが
+  //    分散し、一貫性が保てなくなる
+  //
+  // サブコンポーネント側で定義するために必要な対応:
+  // 1. グローバルエラーハンドリング用のContext Providerを作成
+  // 2. エラー状態とUI位置情報を複数のコンポーネント間で共有する仕組みを構築
+  // 3. エラー報告イベントリスナーをエラーContext内で管理
+  // 4. 各コンポーネントでエラー状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
+  const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<
+    { x: number; y: number } | undefined
+  >(undefined);
 
-  // 更新要望関連の状態
-  const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
 
-  // 不具合報告関連の状態
-  const [showBugReportModal, setShowBugReportModal] = useState(false);
-
-  // 各機能のローディング状態（LoadingStateManagerで管理）
-  const [publicMemosLoading, setPublicMemosLoading] = useState(false);
-  const [projectsLoading, setProjectsLoading] = useState(false);
-  const [booksLoading, setBooksLoading] = useState(false);
-  const [workRecordsLoading, setWorkRecordsLoading] = useState(false);
-  const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
-  const [diaryLoading, setDiaryLoading] = useState(false);
-
-  // 時間記録関連の状態（TimeTrackingStateManagerで管理）
-  const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(null);
-  const [isTracking, setIsTracking] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [description, setDescription] = useState("");
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
   const [currentProject, setCurrentProject] = useState<string>("");
@@ -132,11 +224,18 @@ function App() {
   const [eggTimerActive, setEggTimerActive] = useState(false);
   const [eggTimerPaused, setEggTimerPaused] = useState(false);
   const [eggTimerTime, setEggTimerTime] = useState(0);
-  const [eggTimerInterval, setEggTimerInterval] = useState<NodeJS.Timeout | null>(null);
-  const [eggTimerType, setEggTimerType] = useState<"soft" | "medium" | "hard">("medium");
-  const [eggTimerSound, setEggTimerSound] = useState<"bell" | "chime" | "beep" | "alarm">("bell");
+  const [eggTimerInterval, setEggTimerInterval] =
+    useState<NodeJS.Timeout | null>(null);
+  const [eggTimerType, setEggTimerType] = useState<"soft" | "medium" | "hard">(
+    "medium"
+  );
+  const [eggTimerSound, setEggTimerSound] = useState<
+    "bell" | "chime" | "beep" | "alarm"
+  >("bell");
   const [eggTimerOriginalTime, setEggTimerOriginalTime] = useState(0);
-  const [eggTimerPhase, setEggTimerPhase] = useState<"heating" | "boiling" | "cooking">("heating");
+  const [eggTimerPhase, setEggTimerPhase] = useState<
+    "heating" | "boiling" | "cooking"
+  >("heating");
   const [eggTimerPhaseTime, setEggTimerPhaseTime] = useState(0);
   const [eggTimerPhaseName, setEggTimerPhaseName] = useState("");
 
@@ -157,14 +256,9 @@ function App() {
   // タイマーセクションの表示状態
   const [showTimers, setShowTimers] = useState(false);
 
-  // タイマープリセットの状態（TimerPresetManagerで管理）
-  const [timerPresets, setTimerPresets] = useState([
-    { id: 1, name: "ポモドーロ", minutes: 25, seconds: 0, color: "#ef4444" },
-    { id: 2, name: "短い休憩", minutes: 5, seconds: 0, color: "#10b981" },
-    { id: 3, name: "長い休憩", minutes: 15, seconds: 0, color: "#3b82f6" },
-    { id: 4, name: "料理タイマー", minutes: 10, seconds: 0, color: "#f59e0b" },
-    { id: 5, name: "運動タイマー", minutes: 30, seconds: 0, color: "#8b5cf6" },
-  ]);
+  // 注意: timerPresetsは各コンポーネントで個別に管理される
+  // 理由: 各コンポーネントで個別のタイマープリセット機能を管理することで、状態の分散を防ぐ
+  // const [timerPresets, setTimerPresets] = useState([...]); // 削除
 
   // タイマー履歴の状態
   const [timerHistory, setTimerHistory] = useState<
@@ -330,7 +424,12 @@ function App() {
 
   // お仕事記録の状態
   const [showWorkRecords, setShowWorkRecords] = useState(false);
-  const [incomeExpenseRecords, setIncomeExpenseRecords] = useState<IncomeExpenseRecord[]>([]);
+
+  // 音アプリの状態
+  const [showSoundApp, setShowSoundApp] = useState(false);
+  const [incomeExpenseRecords, setIncomeExpenseRecords] = useState<
+    IncomeExpenseRecord[]
+  >([]);
   const [workDiaries, setWorkDiaries] = useState<WorkDiary[]>([]);
   const [showIncomeExpenseForm, setShowIncomeExpenseForm] = useState(false);
   const [showDiaryForm, setShowDiaryForm] = useState(false);
@@ -341,7 +440,9 @@ function App() {
   // 収入・支出記録フォームの状態
   const [incomeExpenseDate, setIncomeExpenseDate] = useState("");
   const [incomeExpenseAmount, setIncomeExpenseAmount] = useState("");
-  const [incomeExpenseType, setIncomeExpenseType] = useState<"income" | "expense">("income");
+  const [incomeExpenseType, setIncomeExpenseType] = useState<
+    "income" | "expense"
+  >("income");
   const [incomeExpenseNotes, setIncomeExpenseNotes] = useState("");
 
   // 日記フォームの状態
@@ -459,70 +560,16 @@ function App() {
   });
   const [newMilestone, setNewMilestone] = useState("");
 
-  // 感情ログ管理関数（MoodLogManagerで管理）
-  const addMoodLog = () => {
-    if (!moodForm.date) {
-      return;
-    }
-
-    const moodLogId = Date.now().toString();
-    const newMoodLog: MoodLog = {
-      id: moodLogId,
-      date: moodForm.date,
-      mood: moodForm.mood,
-      energy: moodForm.energy,
-      stress: moodForm.stress,
-      notes: moodForm.notes,
-      activities: moodForm.activities,
-      weather: moodForm.weather,
-      sleep: moodForm.sleep,
-      createdAt: new Date().toISOString(),
-    };
-
-    moodLogState.setMoodLogs([...moodLogState.moodLogs, newMoodLog]);
-    moodLogState.resetMoodForm();
-  };
-
-  const updateMoodLog = (moodLogId: string, updates: Partial<MoodLog>) => {
-    moodLogState.updateMoodLog(moodLogId, updates);
-  };
-
-  const deleteMoodLog = (moodLogId: string) => {
-    moodLogState.deleteMoodLog(moodLogId);
-  };
-
-  const resetMoodForm = () => {
-    moodLogState.resetMoodForm();
-  };
-
-  const addActivity = () => {
-    moodLogState.addActivity();
-  };
-
-  const removeActivity = (index: number) => {
-    moodLogState.removeActivity(index);
-  };
-
-  const editMoodLog = (log: MoodLog) => {
-    moodLogState.editMoodLog(log);
-  };
-
-  const saveMoodLog = () => {
-    if (editingMoodLog) {
-      updateMoodLog(editingMoodLog, {
-        date: moodForm.date,
-        mood: moodForm.mood,
-        energy: moodForm.energy,
-        stress: moodForm.stress,
-        notes: moodForm.notes,
-        activities: moodForm.activities,
-        weather: moodForm.weather,
-        sleep: moodForm.sleep,
-      });
-    } else {
-      addMoodLog();
-    }
-  };
+  // 注意: 感情ログ関連の関数は各コンポーネントで個別に定義される
+  // 理由: 各コンポーネントで個別の感情ログ機能を管理することで、状態の分散を防ぐ
+  // const addMoodLog = () => { ... }; // 削除
+  // const updateMoodLog = () => { ... }; // 削除
+  // const deleteMoodLog = () => { ... }; // 削除
+  // const resetMoodForm = () => { ... }; // 削除
+  // const addActivity = () => { ... }; // 削除
+  // const removeActivity = () => { ... }; // 削除
+  // const editMoodLog = () => { ... }; // 削除
+  // const saveMoodLog = () => { ... }; // 削除
 
   const getMoodEmoji = (mood: number) => {
     if (mood <= 2) {
@@ -606,7 +653,9 @@ function App() {
   };
 
   const deleteLearningRecord = (recordId: string) => {
-    setLearningRecords((learningRecords || []).filter((r) => r.id !== recordId));
+    setLearningRecords(
+      (learningRecords || []).filter((r) => r.id !== recordId)
+    );
   };
 
   const resetGoalForm = () => {
@@ -840,6 +889,12 @@ function App() {
       description: "自分自身を深く理解するための分析ツール",
       component: null, // 自己分析セクション
     },
+    {
+      id: "sound-app",
+      name: "音アプリ",
+      description: "食事バランスを音で表現するアプリ",
+      component: null, // 音アプリセクション
+    },
   ];
 
   // 機能選択肢の定義
@@ -856,6 +911,7 @@ function App() {
     { value: "work-records", label: "お仕事記録" },
     { value: "timers", label: "タイマー" },
     { value: "self-analysis", label: "じぶん図鑑" },
+    { value: "sound-app", label: "音アプリ" },
     { value: "general", label: "全般" },
     { value: "other", label: "その他" },
   ];
@@ -952,7 +1008,9 @@ function App() {
 
     // 「じぶん図鑑」が隠されている場合は表示に戻す
     if ((hiddenFeatures || []).includes("self-analysis")) {
-      hiddenFeatures = (hiddenFeatures || []).filter((id) => id !== "self-analysis");
+      hiddenFeatures = (hiddenFeatures || []).filter(
+        (id) => id !== "self-analysis"
+      );
     }
 
     return (order || [])
@@ -965,9 +1023,9 @@ function App() {
   const handle401Error = (response: Response) => {
     if (response.status === 401) {
       // 認証トークンをクリア
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+
       // 少し遅延してからページをリロードしてログイン画面に遷移
       // これにより障害報告画面が表示される時間を確保
       setTimeout(() => {
@@ -979,137 +1037,149 @@ function App() {
   // APIエラーハンドリング用のfetchラッパー
   const originalFetch = window.fetch;
   const originalXHR = window.XMLHttpRequest;
-  
+
   // XMLHttpRequestもラップ
-  const WrappedXHR = function(this: any) {
+  const WrappedXHR = function (this: any) {
     const xhr = new originalXHR();
     const originalOpen = xhr.open;
     const originalSend = xhr.send;
-    
-    (xhr as any)._method = '';
-    (xhr as any)._url = '';
-    
-    xhr.open = function(method: string, url: string | URL, ...args: any[]) {
+
+    (xhr as any)._method = "";
+    (xhr as any)._url = "";
+
+    xhr.open = function (method: string, url: string | URL, ...args: any[]) {
       (this as any)._method = method;
       (this as any)._url = url;
-      return originalOpen.apply(this, [method, url, args[0] ?? true, args[1], args[2]]);
+      return originalOpen.apply(this, [
+        method,
+        url,
+        args[0] ?? true,
+        args[1],
+        args[2],
+      ]);
     };
-    
-    xhr.send = function(...args: any[]) {
-      this.addEventListener('loadend', function() {
+
+    xhr.send = function (...args: any[]) {
+      this.addEventListener("loadend", function () {
         if (this.status >= 400) {
           const errorInfo = createErrorInfo(
-            'XMLHttpRequest',
+            "XMLHttpRequest",
             this.status,
             this.statusText,
-            (this as any)._url || 'Unknown URL',
-            (this as any)._method || 'GET'
+            (this as any)._url || "Unknown URL",
+            (this as any)._method || "GET"
           );
-          
-          console.error('XMLHttpRequestエラーが発生しました:', errorInfo);
-          
+
+          console.error("XMLHttpRequestエラーが発生しました:", errorInfo);
+
           // ApiErrorInfoをErrorInfoに変換してからフォーマット
           const convertedErrorInfo = getErrorInfo(errorInfo);
-          const { statusInfo, methodInfo } = formatErrorInfo(convertedErrorInfo || {});
+          const { statusInfo, methodInfo } = formatErrorInfo(
+            convertedErrorInfo || {}
+          );
           const errorDetails = `
 XMLHttpRequestエラーが発生しました。
 
 エラー詳細:
 - URL: ${errorInfo.url}
-${statusInfo ? `- ${statusInfo}` : ''}
-${methodInfo ? `- ${methodInfo}` : ''}
+${statusInfo ? `- ${statusInfo}` : ""}
+${methodInfo ? `- ${methodInfo}` : ""}
 - 時刻: ${errorInfo.timestamp}
 - ユーザーエージェント: ${errorInfo.userAgent}
 
 このエラーは自動的に検出されました。
           `.trim();
-          
+
           setTimeout(() => {
             setShowMemos(true);
             setShowMemoForm(true);
-            setMemoCategory('不具合報告');
+            setMemoCategory("不具合報告");
             setMemoContent(errorDetails);
           }, 2000);
         }
       });
-      
+
       return originalSend.apply(this, [args[0]]);
     };
-    
+
     return xhr;
   };
-  
+
   // XMLHttpRequestのプロパティをコピー
   Object.setPrototypeOf(WrappedXHR, originalXHR);
-  Object.defineProperty(WrappedXHR, 'prototype', {
+  Object.defineProperty(WrappedXHR, "prototype", {
     value: originalXHR.prototype,
-    writable: false
+    writable: false,
   });
-  
+
   // 定数プロパティをコピー
-  Object.defineProperty(WrappedXHR, 'UNSENT', { value: 0 });
-  Object.defineProperty(WrappedXHR, 'OPENED', { value: 1 });
-  Object.defineProperty(WrappedXHR, 'HEADERS_RECEIVED', { value: 2 });
-  Object.defineProperty(WrappedXHR, 'LOADING', { value: 3 });
-  Object.defineProperty(WrappedXHR, 'DONE', { value: 4 });
-  
+  Object.defineProperty(WrappedXHR, "UNSENT", { value: 0 });
+  Object.defineProperty(WrappedXHR, "OPENED", { value: 1 });
+  Object.defineProperty(WrappedXHR, "HEADERS_RECEIVED", { value: 2 });
+  Object.defineProperty(WrappedXHR, "LOADING", { value: 3 });
+  Object.defineProperty(WrappedXHR, "DONE", { value: 4 });
+
   (window as any).XMLHttpRequest = WrappedXHR;
-  
+
   window.fetch = async (...args) => {
     try {
       const response = await originalFetch(...args);
-      
+
       // 4xx, 5xxエラーをキャッチ
       if (!response.ok) {
         const errorInfo = createErrorInfo(
-          'API',
+          "API",
           response.status,
           response.statusText,
-          args[0]?.toString() || 'Unknown URL',
-          args[1]?.method || 'GET'
+          args[0]?.toString() || "Unknown URL",
+          args[1]?.method || "GET"
         );
-        
-        console.error('APIエラーが発生しました:', errorInfo);
-        
+
+        console.error("APIエラーが発生しました:", errorInfo);
+
         // エラー詳細を構築
         // ApiErrorInfoをErrorInfoに変換してからフォーマット
         const convertedErrorInfo = getErrorInfo(errorInfo);
-        const { statusInfo, methodInfo } = formatErrorInfo(convertedErrorInfo || {});
+        console.log("変換されたエラー情報:", convertedErrorInfo);
+        const { statusInfo, methodInfo } = formatErrorInfo(
+          convertedErrorInfo || {}
+        );
+        console.log("フォーマットされたエラー情報:", { statusInfo, methodInfo });
         const errorDetails = `
 APIエラーが発生しました。
 
 エラー詳細:
 - URL: ${errorInfo.url}
-${statusInfo ? `- ${statusInfo}` : ''}
-${methodInfo ? `- ${methodInfo}` : ''}
+${statusInfo ? `- ${statusInfo}` : ""}
+${methodInfo ? `- ${methodInfo}` : ""}
 - 時刻: ${errorInfo.timestamp}
 - ユーザーエージェント: ${errorInfo.userAgent}
 
 このエラーは自動的に検出されました。
         `.trim();
-        
+
         // 2秒後に不具合報告画面に遷移
         setTimeout(() => {
           setShowMemos(true);
           setShowMemoForm(true);
-          setMemoCategory('不具合報告');
+          setMemoCategory("不具合報告");
           setMemoContent(errorDetails);
         }, 2000);
       }
-      
+
       return response;
     } catch (error) {
       // ネットワークエラーなど
       const errorInfo = {
-        url: args[0]?.toString() || 'Unknown URL',
+        url: args[0]?.toString() || "Unknown URL",
         error: error instanceof Error ? error.message : String(error),
-        method: args[1]?.method || 'GET',
+        method: args[1]?.method || "GET",
         timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent
+        userAgent: navigator.userAgent,
       };
-      
-      console.error('ネットワークエラーが発生しました:', errorInfo);
-      
+
+      console.error("ネットワークエラーが発生しました:", errorInfo);
+
       // エラー詳細を構築
       const errorDetails = `
 ネットワークエラーが発生しました。
@@ -1123,15 +1193,15 @@ ${methodInfo ? `- ${methodInfo}` : ''}
 
 このエラーは自動的に検出されました。
       `.trim();
-      
+
       // 2秒後に不具合報告画面に遷移
       setTimeout(() => {
         setShowMemos(true);
         setShowMemoForm(true);
-        setMemoCategory('不具合報告');
+        setMemoCategory("不具合報告");
         setMemoContent(errorDetails);
       }, 2000);
-      
+
       throw error;
     }
   };
@@ -1139,36 +1209,39 @@ ${methodInfo ? `- ${methodInfo}` : ''}
   // グローバルエラーハンドリング
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
-      console.error('グローバルエラーが発生しました:', event.error);
-      
+      console.error("グローバルエラーが発生しました:", event.error);
+
       // エラーの詳細情報を収集
       const errorInfo = {
-        message: event.error?.message || event.message || 'Unknown error',
-        stack: event.error?.stack || event.error?.stackTrace || 'No stack trace available',
-        filename: event.filename || 'Unknown file',
+        message: event.error?.message || event.message || "Unknown error",
+        stack:
+          event.error?.stack ||
+          event.error?.stackTrace ||
+          "No stack trace available",
+        filename: event.filename || "Unknown file",
         lineno: event.lineno || 0,
         colno: event.colno || 0,
-        type: event.error?.constructor?.name || 'Error',
+        type: event.error?.constructor?.name || "Error",
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
-        url: window.location.href
+        url: window.location.href,
       };
-      
+
       // エラーオブジェクトに詳細情報を追加
       const enhancedError = new Error(errorInfo.message);
       enhancedError.stack = errorInfo.stack;
       (enhancedError as any).errorInfo = errorInfo;
-      
+
       setCurrentError(enhancedError);
       setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
-      
+
       // エラー発生時に不具合報告ページに遷移
       setTimeout(() => {
         setShowMemos(true);
         setShowMemoForm(true);
         // 不具合報告のカテゴリを設定
-        setMemoCategory('不具合報告');
+        setMemoCategory("不具合報告");
         // エラー情報をメモの内容に自動入力
         const errorDetails = `
 エラーが発生しました。
@@ -1191,32 +1264,36 @@ ${errorInfo.stack}
     };
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.error('未処理のPromise拒否が発生しました:', event.reason);
-      
+      console.error("未処理のPromise拒否が発生しました:", event.reason);
+
       // Promise拒否の詳細情報を収集
       const errorInfo = {
-        message: event.reason?.message || String(event.reason) || 'Promise rejection',
-        stack: event.reason?.stack || 'No stack trace available',
-        type: event.reason?.constructor?.name || 'PromiseRejection',
+        message:
+          event.reason?.message || String(event.reason) || "Promise rejection",
+        stack: event.reason?.stack || "No stack trace available",
+        type: event.reason?.constructor?.name || "PromiseRejection",
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
-        url: window.location.href
+        url: window.location.href,
       };
-      
-      const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+
+      const error =
+        event.reason instanceof Error
+          ? event.reason
+          : new Error(String(event.reason));
       error.stack = errorInfo.stack;
       (error as any).errorInfo = errorInfo;
-      
+
       setCurrentError(error);
       setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
-      
+
       // エラー発生時に不具合報告ページに遷移
       setTimeout(() => {
         setShowMemos(true);
         setShowMemoForm(true);
         // 不具合報告のカテゴリを設定
-        setMemoCategory('不具合報告');
+        setMemoCategory("不具合報告");
         // エラー情報をメモの内容に自動入力
         const errorDetails = `
 Promise拒否エラーが発生しました。
@@ -1239,96 +1316,97 @@ ${errorInfo.stack}
     const originalConsoleError = console.error;
     console.error = (...args) => {
       originalConsoleError.apply(console, args);
-      
+
       // エラーメッセージに特定のキーワードが含まれている場合
-    const errorMessage = args.join(' ').toLowerCase();
-    if (errorMessage.includes('referenceerror') ||
-          errorMessage.includes('typeerror') || 
-          errorMessage.includes('syntaxerror') ||
-          errorMessage.includes('is not defined') ||
-          errorMessage.includes('cannot read properties') ||
-          errorMessage.includes('cannot read property') ||
-          errorMessage.includes('reading') ||
-          errorMessage.includes('filter') ||
-          errorMessage.includes('map') ||
-          errorMessage.includes('foreach') ||
-          errorMessage.includes('reduce') ||
-          errorMessage.includes('find') ||
-          errorMessage.includes('some') ||
-          errorMessage.includes('every') ||
-          errorMessage.includes('includes') ||
-          errorMessage.includes('indexof') ||
-          errorMessage.includes('push') ||
-          errorMessage.includes('pop') ||
-          errorMessage.includes('shift') ||
-          errorMessage.includes('unshift') ||
-          errorMessage.includes('slice') ||
-          errorMessage.includes('splice') ||
-          errorMessage.includes('sort') ||
-          errorMessage.includes('reverse') ||
-          errorMessage.includes('join') ||
-          errorMessage.includes('split') ||
-          errorMessage.includes('replace') ||
-          errorMessage.includes('match') ||
-          errorMessage.includes('search') ||
-          errorMessage.includes('test') ||
-          errorMessage.includes('exec') ||
-          errorMessage.includes('tostring') ||
-          errorMessage.includes('valueof') ||
-          errorMessage.includes('hasownproperty') ||
-          errorMessage.includes('propertyisenumerable') ||
-          errorMessage.includes('tolocalestring') ||
-          errorMessage.includes('tojson') ||
-          errorMessage.includes('undefined') ||
-          errorMessage.includes('null') ||
-          errorMessage.includes('is not a function') ||
-          errorMessage.includes('is not a constructor') ||
-          errorMessage.includes('cannot access') ||
-          errorMessage.includes('cannot set') ||
-          errorMessage.includes('cannot delete') ||
-          errorMessage.includes('loadIncomeExpenseRecords') ||
-          errorMessage.includes('loadSalaryRecords') ||
-          errorMessage.includes('salaryRecords') ||
-          errorMessage.includes('incomeExpenseRecords') ||
-          errorMessage.includes('handleCreateIncomeExpenseRecord') ||
-          errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
-          errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
-          errorMessage.includes('editIncomeExpenseRecord') ||
-          errorMessage.includes('viewIncomeExpenseRecord') ||
-          errorMessage.includes('editingIncomeExpenseRecord') ||
-          errorMessage.includes('incomeExpenseAmount') ||
-          errorMessage.includes('incomeExpenseDate') ||
-          errorMessage.includes('incomeExpenseNotes') ||
-          errorMessage.includes('incomeExpenseType') ||
-          errorMessage.includes('401') ||
-          errorMessage.includes('Unauthorized') ||
-          errorMessage.includes('404') ||
-          errorMessage.includes('Not Found') ||
-          /api\.github\.com/.test(errorMessage) ||
-          errorMessage.includes('SourceCodeViewer')) {
-        
+      const errorMessage = args.join(" ").toLowerCase();
+      if (
+        errorMessage.includes("referenceerror") ||
+        errorMessage.includes("typeerror") ||
+        errorMessage.includes("syntaxerror") ||
+        errorMessage.includes("is not defined") ||
+        errorMessage.includes("cannot read properties") ||
+        errorMessage.includes("cannot read property") ||
+        errorMessage.includes("reading") ||
+        errorMessage.includes("filter") ||
+        errorMessage.includes("map") ||
+        errorMessage.includes("foreach") ||
+        errorMessage.includes("reduce") ||
+        errorMessage.includes("find") ||
+        errorMessage.includes("some") ||
+        errorMessage.includes("every") ||
+        errorMessage.includes("includes") ||
+        errorMessage.includes("indexof") ||
+        errorMessage.includes("push") ||
+        errorMessage.includes("pop") ||
+        errorMessage.includes("shift") ||
+        errorMessage.includes("unshift") ||
+        errorMessage.includes("slice") ||
+        errorMessage.includes("splice") ||
+        errorMessage.includes("sort") ||
+        errorMessage.includes("reverse") ||
+        errorMessage.includes("join") ||
+        errorMessage.includes("split") ||
+        errorMessage.includes("replace") ||
+        errorMessage.includes("match") ||
+        errorMessage.includes("search") ||
+        errorMessage.includes("test") ||
+        errorMessage.includes("exec") ||
+        errorMessage.includes("tostring") ||
+        errorMessage.includes("valueof") ||
+        errorMessage.includes("hasownproperty") ||
+        errorMessage.includes("propertyisenumerable") ||
+        errorMessage.includes("tolocalestring") ||
+        errorMessage.includes("tojson") ||
+        errorMessage.includes("undefined") ||
+        errorMessage.includes("null") ||
+        errorMessage.includes("is not a function") ||
+        errorMessage.includes("is not a constructor") ||
+        errorMessage.includes("cannot access") ||
+        errorMessage.includes("cannot set") ||
+        errorMessage.includes("cannot delete") ||
+        errorMessage.includes("loadIncomeExpenseRecords") ||
+        errorMessage.includes("loadSalaryRecords") ||
+        errorMessage.includes("salaryRecords") ||
+        errorMessage.includes("incomeExpenseRecords") ||
+        errorMessage.includes("handleCreateIncomeExpenseRecord") ||
+        errorMessage.includes("handleUpdateIncomeExpenseRecord") ||
+        errorMessage.includes("handleDeleteIncomeExpenseRecord") ||
+        errorMessage.includes("editIncomeExpenseRecord") ||
+        errorMessage.includes("viewIncomeExpenseRecord") ||
+        errorMessage.includes("editingIncomeExpenseRecord") ||
+        errorMessage.includes("incomeExpenseAmount") ||
+        errorMessage.includes("incomeExpenseDate") ||
+        errorMessage.includes("incomeExpenseNotes") ||
+        errorMessage.includes("incomeExpenseType") ||
+        errorMessage.includes("401") ||
+        errorMessage.includes("Unauthorized") ||
+        errorMessage.includes("404") ||
+        errorMessage.includes("Not Found") ||
+        /api\.github\.com/.test(errorMessage) ||
+        errorMessage.includes("SourceCodeViewer")
+      ) {
         const errorInfo = {
           message: errorMessage,
-          stack: new Error().stack || 'No stack trace available',
-          type: 'ConsoleError',
+          stack: new Error().stack || "No stack trace available",
+          type: "ConsoleError",
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent,
-          url: window.location.href
+          url: window.location.href,
         };
-        
+
         const error = new Error(errorMessage);
         error.stack = errorInfo.stack;
         (error as any).errorInfo = errorInfo;
-        
+
         setCurrentError(error);
         setShowErrorModal(true);
-        
+
         // エラー発生時に不具合報告ページに遷移
         setTimeout(() => {
           setShowMemos(true);
           setShowMemoForm(true);
           // 不具合報告のカテゴリを設定
-          setMemoCategory('不具合報告');
+          setMemoCategory("不具合報告");
           // エラー情報をメモの内容に自動入力
           const errorDetails = `
 コンソールエラーが発生しました。
@@ -1352,36 +1430,37 @@ ${errorInfo.stack}
     const originalConsoleWarn = console.warn;
     console.warn = (...args) => {
       originalConsoleWarn.apply(console, args);
-      
+
       // 警告メッセージに特定のキーワードが含まれている場合
-      const warningMessage = args.join(' ');
-      if (warningMessage.includes('ReferenceError') || 
-          warningMessage.includes('TypeError') || 
-          warningMessage.includes('is not defined') ||
-          warningMessage.includes('Cannot read properties')) {
-        
+      const warningMessage = args.join(" ");
+      if (
+        warningMessage.includes("ReferenceError") ||
+        warningMessage.includes("TypeError") ||
+        warningMessage.includes("is not defined") ||
+        warningMessage.includes("Cannot read properties")
+      ) {
         const errorInfo = {
           message: `Warning: ${warningMessage}`,
-          stack: new Error().stack || 'No stack trace available',
-          type: 'ConsoleWarning',
+          stack: new Error().stack || "No stack trace available",
+          type: "ConsoleWarning",
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent,
-          url: window.location.href
+          url: window.location.href,
         };
-        
+
         const error = new Error(`Warning: ${warningMessage}`);
         error.stack = errorInfo.stack;
         (error as any).errorInfo = errorInfo;
-        
+
         setCurrentError(error);
         setShowErrorModal(true);
-        
+
         // エラー発生時に不具合報告ページに遷移
         setTimeout(() => {
           setShowMemos(true);
           setShowMemoForm(true);
           // 不具合報告のカテゴリを設定
-          setMemoCategory('不具合報告');
+          setMemoCategory("不具合報告");
           // エラー情報をメモの内容に自動入力
           const errorDetails = `
 コンソール警告が発生しました。
@@ -1401,108 +1480,119 @@ ${errorInfo.stack}
       }
     };
 
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
+    window.addEventListener("error", handleError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+
     // より包括的なエラーハンドリング
     window.onerror = (message, source, lineno, colno, error) => {
-      console.error('window.onerror caught:', message, source, lineno, colno, error);
-      
+      console.error(
+        "window.onerror caught:",
+        message,
+        source,
+        lineno,
+        colno,
+        error
+      );
+
       // 特定のエラーパターンをチェック
       const errorMessage = String(message);
-      const shouldShowModal = errorMessage.includes('ReferenceError') ||
-                             errorMessage.includes('TypeError') ||
-                             errorMessage.includes('SyntaxError') ||
-                             errorMessage.includes('is not defined') ||
-                             errorMessage.includes('Cannot read properties') ||
-                             errorMessage.includes('Cannot read property') ||
-                             errorMessage.includes('reading') ||
-                             errorMessage.includes('filter') ||
-                             errorMessage.includes('map') ||
-                             errorMessage.includes('forEach') ||
-                             errorMessage.includes('reduce') ||
-                             errorMessage.includes('find') ||
-                             errorMessage.includes('some') ||
-                             errorMessage.includes('every') ||
-                             errorMessage.includes('includes') ||
-                             errorMessage.includes('indexOf') ||
-                             errorMessage.includes('push') ||
-                             errorMessage.includes('pop') ||
-                             errorMessage.includes('shift') ||
-                             errorMessage.includes('unshift') ||
-                             errorMessage.includes('slice') ||
-                             errorMessage.includes('splice') ||
-                             errorMessage.includes('sort') ||
-                             errorMessage.includes('reverse') ||
-                             errorMessage.includes('join') ||
-                             errorMessage.includes('split') ||
-                             errorMessage.includes('replace') ||
-                             errorMessage.includes('match') ||
-                             errorMessage.includes('search') ||
-                             errorMessage.includes('test') ||
-                             errorMessage.includes('exec') ||
-                             errorMessage.includes('toString') ||
-                             errorMessage.includes('valueOf') ||
-                             errorMessage.includes('hasOwnProperty') ||
-                             errorMessage.includes('propertyIsEnumerable') ||
-                             errorMessage.includes('toLocaleString') ||
-                             errorMessage.includes('toJSON') ||
-                             errorMessage.includes('undefined') ||
-                             errorMessage.includes('null') ||
-                             errorMessage.includes('is not a function') ||
-                             errorMessage.includes('is not a constructor') ||
-                             errorMessage.includes('Cannot access') ||
-                             errorMessage.includes('Cannot set') ||
-                             errorMessage.includes('Cannot delete') ||
-                             errorMessage.includes('handleCreateIncomeExpenseRecord') ||
-                             errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
-                             errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
-                             errorMessage.includes('editIncomeExpenseRecord') ||
-                             errorMessage.includes('viewIncomeExpenseRecord') ||
-                             errorMessage.includes('editingIncomeExpenseRecord') ||
-                             errorMessage.includes('incomeExpenseAmount') ||
-                             errorMessage.includes('incomeExpenseDate') ||
-                             errorMessage.includes('incomeExpenseNotes') ||
-                             errorMessage.includes('incomeExpenseType') ||
-                             errorMessage.includes('401') ||
-                             errorMessage.includes('Unauthorized') ||
-                             errorMessage.includes('404') ||
-                             errorMessage.includes('Not Found') ||
-                             /api\.github\.com/.test(errorMessage) ||
-                             errorMessage.includes('SourceCodeViewer');
-      
+      const shouldShowModal =
+        errorMessage.includes("ReferenceError") ||
+        errorMessage.includes("TypeError") ||
+        errorMessage.includes("SyntaxError") ||
+        errorMessage.includes("is not defined") ||
+        errorMessage.includes("Cannot read properties") ||
+        errorMessage.includes("Cannot read property") ||
+        errorMessage.includes("reading") ||
+        errorMessage.includes("filter") ||
+        errorMessage.includes("map") ||
+        errorMessage.includes("forEach") ||
+        errorMessage.includes("reduce") ||
+        errorMessage.includes("find") ||
+        errorMessage.includes("some") ||
+        errorMessage.includes("every") ||
+        errorMessage.includes("includes") ||
+        errorMessage.includes("indexOf") ||
+        errorMessage.includes("push") ||
+        errorMessage.includes("pop") ||
+        errorMessage.includes("shift") ||
+        errorMessage.includes("unshift") ||
+        errorMessage.includes("slice") ||
+        errorMessage.includes("splice") ||
+        errorMessage.includes("sort") ||
+        errorMessage.includes("reverse") ||
+        errorMessage.includes("join") ||
+        errorMessage.includes("split") ||
+        errorMessage.includes("replace") ||
+        errorMessage.includes("match") ||
+        errorMessage.includes("search") ||
+        errorMessage.includes("test") ||
+        errorMessage.includes("exec") ||
+        errorMessage.includes("toString") ||
+        errorMessage.includes("valueOf") ||
+        errorMessage.includes("hasOwnProperty") ||
+        errorMessage.includes("propertyIsEnumerable") ||
+        errorMessage.includes("toLocaleString") ||
+        errorMessage.includes("toJSON") ||
+        errorMessage.includes("undefined") ||
+        errorMessage.includes("null") ||
+        errorMessage.includes("is not a function") ||
+        errorMessage.includes("is not a constructor") ||
+        errorMessage.includes("Cannot access") ||
+        errorMessage.includes("Cannot set") ||
+        errorMessage.includes("Cannot delete") ||
+        errorMessage.includes("handleCreateIncomeExpenseRecord") ||
+        errorMessage.includes("handleUpdateIncomeExpenseRecord") ||
+        errorMessage.includes("handleDeleteIncomeExpenseRecord") ||
+        errorMessage.includes("editIncomeExpenseRecord") ||
+        errorMessage.includes("viewIncomeExpenseRecord") ||
+        errorMessage.includes("editingIncomeExpenseRecord") ||
+        errorMessage.includes("incomeExpenseAmount") ||
+        errorMessage.includes("incomeExpenseDate") ||
+        errorMessage.includes("incomeExpenseNotes") ||
+        errorMessage.includes("incomeExpenseType") ||
+        errorMessage.includes("401") ||
+        errorMessage.includes("Unauthorized") ||
+        errorMessage.includes("404") ||
+        errorMessage.includes("Not Found") ||
+        /api\.github\.com/.test(errorMessage) ||
+        errorMessage.includes("SourceCodeViewer");
+
       if (shouldShowModal) {
         const errorInfo = {
           message: errorMessage,
-          stack: error?.stack || 'No stack trace available',
-          filename: source || 'Unknown file',
+          stack: error?.stack || "No stack trace available",
+          filename: source || "Unknown file",
           lineno: lineno || 0,
           colno: colno || 0,
-          type: error?.constructor?.name || 'Error',
+          type: error?.constructor?.name || "Error",
           timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent,
-          url: window.location.href
+          url: window.location.href,
         };
-        
+
         const enhancedError = new Error(errorMessage);
         enhancedError.stack = errorInfo.stack;
         (enhancedError as any).errorInfo = errorInfo;
-        
+
         setCurrentError(enhancedError);
         setShowErrorModal(true);
-        
+
         // エラー発生時に独立したモーダルを表示
         setTimeout(() => {
           setShowSimpleErrorModal(true);
         }, 1000); // 1秒後にモーダルを表示
       }
-      
+
       return false; // デフォルトのエラーハンドリングを防ぐ
     };
 
     return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener("error", handleError);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection
+      );
       console.error = originalConsoleError;
       console.warn = originalConsoleWarn;
       window.onerror = null;
@@ -1878,7 +1968,7 @@ ${errorInfo.stack}
     setTimeout(() => {
       applyTheme(themeValue);
       // さらに強制的にDOM要素のスタイルを更新
-      const body = document.body;
+      const { body } = document;
       const dashboard = document.querySelector(".dashboard");
       const header = document.querySelector(".dashboard-header");
       const timeSection = document.querySelector(".time-tracking-section");
@@ -1923,31 +2013,30 @@ ${errorInfo.stack}
 
   // お仕事記録の関数
   const loadIncomeExpenseRecords = async () => {
-    setIncomeExpenseLoading(true);
     try {
       if (!user?.id) {
-        console.log('ユーザーIDがありません');
+        console.log("ユーザーIDがありません");
         return;
       }
-      
-      const token = localStorage.getItem('access_token');
+
+      const token = localStorage.getItem("access_token");
       if (!token) {
-        console.log('アクセストークンがありません');
-        setMessage('ログインが必要です');
+        console.log("アクセストークンがありません");
+        setMessage("ログインが必要です");
         return;
       }
 
       const response = await apiFetch("/api/work-records/salary", {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       const data = await response.json();
-        if (data.success) {
-          setIncomeExpenseRecords(data.records);
-        } else {
+      if (data.success) {
+        setIncomeExpenseRecords(data.records);
+      } else {
         console.error("Failed to load income/expense records:", data.message);
         setMessage(`収入・支出記録の読み込みに失敗しました: ${data.message}`);
       }
@@ -1958,29 +2047,31 @@ ${errorInfo.stack}
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
-    } finally {
-      setIncomeExpenseLoading(false);
     }
   };
 
   const loadWorkDiaries = async () => {
-    setDiaryLoading(true);
     try {
       if (!user?.id) {
-        console.warn('User ID not available, skipping work diaries load');
+        console.warn("User ID not available, skipping work diaries load");
         return;
       }
 
-      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        const userIdParam = createValidatedUserIdParam(user.id);
-        const url = buildApiUrl('/api/work-records/diary', userIdParam);
-        return await apiFetch(url, {
-          method: "GET",
-          headers: createAuthHeaders(token)
-        });
-      });
+      const result = await executeAuthenticatedRequest(
+        setMessage,
+        async (token) => {
+          const userIdParam = createValidatedUserIdParam(user.id);
+          const url = buildApiUrl("/api/work-records/diary", userIdParam);
+          return await apiFetch(url, {
+            method: "GET",
+            headers: createAuthHeaders(token),
+          });
+        }
+      );
 
-      if (!result) return; // 認証エラーの場合
+      if (!result) {
+        return; // 認証エラーの場合
+      }
 
       const data = await result.json();
       if (data.success) {
@@ -1993,35 +2084,35 @@ ${errorInfo.stack}
       // エラー情報を取得してエラー報告モーダルを表示
       const errorInfo = getErrorInfo(error instanceof Error ? error : null);
       if (errorInfo) {
-        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setCurrentError(
+          error instanceof Error ? error : new Error(String(error))
+        );
         setShowSimpleErrorModal(true);
       }
-      
+
       console.error("Failed to load work diaries:", error);
       setMessage(
         `日記の読み込みに失敗しました: ${
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
-    } finally {
-      setDiaryLoading(false);
     }
   };
 
   // ユーザーIDを直接受け取る関数
   const loadIncomeExpenseRecordsWithUserId = async (userId: string) => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem("access_token");
       if (!token) {
-        console.log('アクセストークンがありません');
+        console.log("アクセストークンがありません");
         return;
       }
 
       const response = await fetch(`/api/work-records/salary`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
       const data = await response.json();
       if (data.success) {
@@ -2035,23 +2126,23 @@ ${errorInfo.stack}
   const loadWorkDiariesWithUserId = async (userId: string) => {
     try {
       if (!userId) {
-        console.warn('User ID not provided, skipping work diaries load');
+        console.warn("User ID not provided, skipping work diaries load");
         return;
       }
 
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem("access_token");
       if (!token) {
-        console.log('アクセストークンがありません');
+        console.log("アクセストークンがありません");
         return;
       }
 
       const userIdParam = createValidatedUserIdParam(userId);
-      const url = buildApiUrl('/api/work-records/diary', userIdParam);
+      const url = buildApiUrl("/api/work-records/diary", userIdParam);
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
       const data = await response.json();
       if (data.success) {
@@ -2062,45 +2153,23 @@ ${errorInfo.stack}
     }
   };
 
-  // 時間記録の履歴を取得（TimeTrackingStateManagerで管理）
-  const loadTimeEntries = timeTrackingHelpers.loadTimeEntries;
-
-  // 時間記録データからカテゴリ別の時間を計算（TimeTrackingStateManagerで管理）
-  const calculateTimeBreakdown = timeTrackingHelpers.calculateTimeBreakdown;
-
-  // 過去7日間の生産性データを計算（TimeTrackingStateManagerで管理）
-  const calculateProductivityTrend = timeTrackingHelpers.calculateProductivityTrend;
-
-  // 生産性統計を計算
-  const calculateProductivityStats = () => {
-    const productivityData = calculateProductivityTrend();
-    const workHours = productivityData.map((day) => day.totalTime);
-
-    const totalHours = workHours.length > 0 ? workHours.reduce((sum, hours) => sum + hours, 0) : 0;
-    const averageHours = totalHours / workHours.length;
-    const maxHours = workHours.length > 0 ? Math.max(...workHours) : 0;
-    const productiveDays = (workHours || []).filter((hours) => hours > 0).length;
-
-    return {
-      averageHours: averageHours,
-      maxHours: maxHours,
-      totalHours: totalHours,
-      productiveDays: productiveDays,
-      productivityRate: (productiveDays / workHours.length) * 100,
-    };
-  };
+  // 注意: 時間記録関連の関数は各コンポーネントで個別に定義される
+  // 理由: 各コンポーネントで個別の時間記録機能を管理することで、状態の分散を防ぐ
+  // const calculateProductivityStats = () => { ... }; // 削除
 
   const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     try {
       // 入力値の検証
-      console.log('Input values:', {
+      console.log("Input values:", {
         incomeExpenseDate,
         incomeExpenseAmount,
         incomeExpenseType,
-        incomeExpenseNotes
+        incomeExpenseNotes,
       });
 
       if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
@@ -2120,18 +2189,18 @@ ${errorInfo.stack}
         notes: incomeExpenseNotes,
       };
 
-      console.log('Creating income/expense record:', requestBody);
+      console.log("Creating income/expense record:", requestBody);
 
       const response = await fetch("/api/work-records/salary", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('access_token')}`
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify(requestBody),
       });
 
-      console.log('Response status:', response.status);
+      console.log("Response status:", response.status);
       const data = await response.json();
       if (data.success) {
         setMessage("収入・支出記録が作成されました！");
@@ -2142,21 +2211,29 @@ ${errorInfo.stack}
         setShowIncomeExpenseForm(false);
         loadIncomeExpenseRecords();
       } else {
-        console.error('API Error Response:', data);
-        
+        console.error("API Error Response:", data);
+
         // 詳細なエラーメッセージを作成
         let errorMessage = `エラー: ${data.message}`;
         if (data.details) {
           const missingFields = [];
-          if (!data.details.date) missingFields.push('日付');
-          if (!data.details.amount) missingFields.push('金額');
-          if (!data.details.type) missingFields.push('タイプ');
-          
+          if (!data.details.date) {
+            missingFields.push("日付");
+          }
+          if (!data.details.amount) {
+            missingFields.push("金額");
+          }
+          if (!data.details.type) {
+            missingFields.push("タイプ");
+          }
+
           if (missingFields.length > 0) {
-            errorMessage += `\n不足しているフィールド: ${missingFields.join(', ')}`;
+            errorMessage += `\n不足しているフィールド: ${missingFields.join(
+              ", "
+            )}`;
           }
         }
-        
+
         setMessage(errorMessage);
       }
     } catch (error) {
@@ -2168,15 +2245,17 @@ ${errorInfo.stack}
 
   const handleUpdateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id || !editingIncomeExpenseRecord) return;
+    if (!user?.id || !editingIncomeExpenseRecord) {
+      return;
+    }
 
     try {
       // 入力値の検証
-      console.log('Update input values:', {
+      console.log("Update input values:", {
         incomeExpenseDate,
         incomeExpenseAmount,
         incomeExpenseType,
-        incomeExpenseNotes
+        incomeExpenseNotes,
       });
 
       if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
@@ -2197,18 +2276,18 @@ ${errorInfo.stack}
         notes: incomeExpenseNotes,
       };
 
-      console.log('Updating income/expense record:', requestBody);
+      console.log("Updating income/expense record:", requestBody);
 
       const response = await fetch("/api/work-records/salary", {
         method: "PUT",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('access_token')}`
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify(requestBody),
       });
 
-      console.log('Response status:', response.status);
+      console.log("Response status:", response.status);
       const data = await response.json();
       if (data.success) {
         setMessage("収入・支出記録を更新しました！");
@@ -2222,21 +2301,29 @@ ${errorInfo.stack}
         await loadIncomeExpenseRecords();
         await loadWorkDiaries();
       } else {
-        console.error('API Error Response:', data);
-        
+        console.error("API Error Response:", data);
+
         // 詳細なエラーメッセージを作成
         let errorMessage = `エラー: ${data.message}`;
         if (data.details) {
           const missingFields = [];
-          if (!data.details.date) missingFields.push('日付');
-          if (!data.details.amount) missingFields.push('金額');
-          if (!data.details.type) missingFields.push('タイプ');
-          
+          if (!data.details.date) {
+            missingFields.push("日付");
+          }
+          if (!data.details.amount) {
+            missingFields.push("金額");
+          }
+          if (!data.details.type) {
+            missingFields.push("タイプ");
+          }
+
           if (missingFields.length > 0) {
-            errorMessage += `\n不足しているフィールド: ${missingFields.join(', ')}`;
+            errorMessage += `\n不足しているフィールド: ${missingFields.join(
+              ", "
+            )}`;
           }
         }
-        
+
         setMessage(errorMessage);
       }
     } catch (error) {
@@ -2248,7 +2335,9 @@ ${errorInfo.stack}
 
   const handleCreateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     try {
       const response = await fetch("/api/work-records/diary", {
@@ -2319,7 +2408,9 @@ ${errorInfo.stack}
 
   const handleUpdateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id || !editingDiary) return;
+    if (!user?.id || !editingDiary) {
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -2398,15 +2489,23 @@ ${errorInfo.stack}
     try {
       // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
       // apiFetch: HTTPエラーの処理とエラー報告
-      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        const url = buildApiUrl('/api/work-records/salary', createIdParam(id));
-        return await apiFetch(url, {
-          method: "DELETE",
-          headers: createAuthHeaders(token)
-        });
-      });
+      const result = await executeAuthenticatedRequest(
+        setMessage,
+        async (token) => {
+          const url = buildApiUrl(
+            "/api/work-records/salary",
+            createIdParam(id)
+          );
+          return await apiFetch(url, {
+            method: "DELETE",
+            headers: createAuthHeaders(token),
+          });
+        }
+      );
 
-      if (!result) return; // 認証エラーの場合
+      if (!result) {
+        return; // 認証エラーの場合
+      }
 
       const data = await result.json();
       if (data.success) {
@@ -2421,10 +2520,12 @@ ${errorInfo.stack}
       // エラー情報を取得してエラー報告モーダルを表示
       const errorInfo = getErrorInfo(error instanceof Error ? error : null);
       if (errorInfo) {
-        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setCurrentError(
+          error instanceof Error ? error : new Error(String(error))
+        );
         setShowSimpleErrorModal(true);
       }
-      
+
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -2435,15 +2536,20 @@ ${errorInfo.stack}
     try {
       // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
       // apiFetch: HTTPエラーの処理とエラー報告
-      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        const url = buildApiUrl('/api/work-records/diary', createIdParam(id));
-        return await apiFetch(url, {
-          method: "DELETE",
-          headers: createAuthHeaders(token)
-        });
-      });
+      const result = await executeAuthenticatedRequest(
+        setMessage,
+        async (token) => {
+          const url = buildApiUrl("/api/work-records/diary", createIdParam(id));
+          return await apiFetch(url, {
+            method: "DELETE",
+            headers: createAuthHeaders(token),
+          });
+        }
+      );
 
-      if (!result) return; // 認証エラーの場合
+      if (!result) {
+        return; // 認証エラーの場合
+      }
 
       const data = await result.json();
       if (data.success) {
@@ -2456,10 +2562,12 @@ ${errorInfo.stack}
       // エラー情報を取得してエラー報告モーダルを表示
       const errorInfo = getErrorInfo(error instanceof Error ? error : null);
       if (errorInfo) {
-        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setCurrentError(
+          error instanceof Error ? error : new Error(String(error))
+        );
         setShowSimpleErrorModal(true);
       }
-      
+
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -2473,19 +2581,27 @@ ${errorInfo.stack}
     }
 
     try {
-      const result = await executeAuthenticatedRequest(setMessage, async (token) => {
-        const url = buildApiUrl('/api/user-settings', createUserIdParam(user.id));
-        return await apiFetch(url, {
-          method: "GET",
-          headers: createAuthHeaders(token)
-        });
-      });
+      const result = await executeAuthenticatedRequest(
+        setMessage,
+        async (token) => {
+          const url = buildApiUrl(
+            "/api/user-settings",
+            createUserIdParam(user.id)
+          );
+          return await apiFetch(url, {
+            method: "GET",
+            headers: createAuthHeaders(token),
+          });
+        }
+      );
 
-      if (!result) return; // 認証エラーの場合
+      if (!result) {
+        return; // 認証エラーの場合
+      }
 
       const data = await result.json();
       if (data.success) {
-        const settings = data.settings;
+        const { settings } = data;
 
         // 新しい機能を追加（既存の設定を保持）
         const currentFeatureIds = features.map((f) => f.id);
@@ -2520,15 +2636,28 @@ ${errorInfo.stack}
 
           // サーバーに保存
           try {
-            await fetch("/api/user-settings", {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                userId: user.id,
-                featureOrder: updatedOrder,
-                hiddenFeatures: updatedHidden,
-              }),
-            });
+            const result = await executeAuthenticatedRequest(
+              setMessage,
+              async (token) => {
+                const url = buildApiUrl(
+                  "/api/user-settings",
+                  createUserIdParam(user.id)
+                );
+                return await apiFetch(url, {
+                  method: "PUT",
+                  headers: createAuthHeaders(token),
+                  body: JSON.stringify({
+                    userId: user.id,
+                    featureOrder: updatedOrder,
+                    hiddenFeatures: updatedHidden,
+                  }),
+                });
+              }
+            );
+
+            if (!result) {
+              return; // 認証エラーの場合
+            }
           } catch (error) {
             console.error(
               "Failed to update settings with new features:",
@@ -2545,10 +2674,12 @@ ${errorInfo.stack}
       // エラー情報を取得してエラー報告モーダルを表示
       const errorInfo = getErrorInfo(error instanceof Error ? error : null);
       if (errorInfo) {
-        setCurrentError(error instanceof Error ? error : new Error(String(error)));
+        setCurrentError(
+          error instanceof Error ? error : new Error(String(error))
+        );
         setShowSimpleErrorModal(true);
       }
-      
+
       console.error("Failed to load user settings:", error);
       setMessage(
         `設定の読み込みに失敗しました: ${
@@ -2581,19 +2712,34 @@ ${errorInfo.stack}
   };
 
   const updateUserSettings = async (newSettings: Partial<UserSettings>) => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     try {
-      const response = await fetch("/api/user-settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          ...newSettings,
-        }),
-      });
+      const result = await executeAuthenticatedRequest(
+        setMessage,
+        async (token) => {
+          const url = buildApiUrl(
+            "/api/user-settings",
+            createUserIdParam(user.id)
+          );
+          return await apiFetch(url, {
+            method: "PUT",
+            headers: createAuthHeaders(token),
+            body: JSON.stringify({
+              userId: user.id,
+              ...newSettings,
+            }),
+          });
+        }
+      );
 
-      const data = await response.json();
+      if (!result) {
+        return; // 認証エラーの場合
+      }
+
+      const data = await result.json();
       if (data.success) {
         setUserSettings(data.settings);
         setMessage("設定が保存されました！");
@@ -2714,6 +2860,9 @@ ${errorInfo.stack}
     if (activeFeature !== "self-analysis") {
       setShowSelfAnalysis(false);
     }
+    if (activeFeature !== "sound-app") {
+      setShowSoundApp(false);
+    }
   };
 
   const handleDragStart = (e: React.DragEvent, featureId: string) => {
@@ -2727,7 +2876,9 @@ ${errorInfo.stack}
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!draggedFeature) return;
+    if (!draggedFeature) {
+      return;
+    }
     e.preventDefault();
   };
 
@@ -2849,13 +3000,15 @@ ${errorInfo.stack}
   // 環境変数をbooleanとして解釈するヘルパー関数
   // Only works for variables prefixed with REACT_APP_ (as these are exposed to the browser by the build system)
   const isEnvVarTrue = (key: string): boolean => {
-    if (!key.startsWith('REACT_APP_')) {
-      console.warn(`Environment variable "${key}" does not start with "REACT_APP_". Only variables with this prefix are available in the browser. Please rename it to "REACT_APP_${key}" or check if you're using the correct variable name.`);
+    if (!key.startsWith("REACT_APP_")) {
+      console.warn(
+        `Environment variable "${key}" does not start with "REACT_APP_". Only variables with this prefix are available in the browser. Please rename it to "REACT_APP_${key}" or check if you're using the correct variable name.`
+      );
       return false;
     }
     // Only check process.env for valid REACT_APP_ keys
     const envValue = process.env[key];
-    return envValue === 'true';
+    return envValue === "true";
   };
 
   /**
@@ -2870,9 +3023,9 @@ ${errorInfo.stack}
   // デバッグログの出力条件をチェックするヘルパー関数
   const shouldLogBalanceCalculation = () => {
     // 開発環境かどうかを安全にチェック
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    const debugEnabled = isEnvVarTrue('REACT_APP_DEBUG_BALANCE_CALCULATION');
-    
+    const isDevelopment = process.env.NODE_ENV === "development";
+    const debugEnabled = isEnvVarTrue("REACT_APP_DEBUG_BALANCE_CALCULATION");
+
     return isDevelopment && debugEnabled;
   };
 
@@ -2882,7 +3035,7 @@ ${errorInfo.stack}
     const endDate = new Date(year, month + 1, 0);
 
     // 月間の記録を一度だけフィルタリング
-    const recordsInMonth = (incomeExpenseRecords || []).filter(record => {
+    const recordsInMonth = (incomeExpenseRecords || []).filter((record) => {
       const recordDate = new Date(record.date);
       return recordDate >= startDate && recordDate <= endDate;
     });
@@ -2892,9 +3045,9 @@ ${errorInfo.stack}
 
     // フィルタリング済みの記録を処理
     recordsInMonth.forEach((record) => {
-      if (record.type === 'income') {
+      if (record.type === "income") {
         totalIncome += record.amount;
-      } else if (record.type === 'expense') {
+      } else if (record.type === "expense") {
         totalExpense += record.amount;
       }
     });
@@ -2903,18 +3056,18 @@ ${errorInfo.stack}
 
     // デバッグログを出力（条件に基づく）
     if (shouldLogBalanceCalculation()) {
-      console.log('収支計算結果:', {
+      console.log("収支計算結果:", {
         totalIncome,
         totalExpense,
         netIncome,
         recordsCount: incomeExpenseRecords?.length || 0,
         recordsInMonthCount: recordsInMonth.length,
-        recordsInMonthSample: recordsInMonth.slice(0, 10).map(record => ({
+        recordsInMonthSample: recordsInMonth.slice(0, 10).map((record) => ({
           id: record._id,
           type: record.type,
           amount: record.amount,
-          date: record.date
-        }))
+          date: record.date,
+        })),
       });
     }
 
@@ -2937,29 +3090,39 @@ ${errorInfo.stack}
 
   const getRecordsForDate = (date: Date) => {
     // 選択された日付をUTCの開始時刻に設定
-    const selectedDateUTC = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const selectedDateUTC = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
     const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
-    
 
-    const filteredIncomeExpenseRecords = (incomeExpenseRecords || []).filter((record) => {
-      // データベースの日付をUTC日付文字列に変換して比較
-      const recordDate = new Date(record.date);
-      const recordDateStr = recordDate.toISOString().split("T")[0];
-      return recordDateStr === selectedDateUTCStr;
-    });
+    const filteredIncomeExpenseRecords = (incomeExpenseRecords || []).filter(
+      (record) => {
+        // データベースの日付をUTC日付文字列に変換して比較
+        const recordDate = new Date(record.date);
+        const recordDateStr = recordDate.toISOString().split("T")[0];
+        return recordDateStr === selectedDateUTCStr;
+      }
+    );
 
     const filteredDiaries = (workDiaries || []).filter((diary) => {
       // データベースの日付をUTC日付文字列に変換して比較
       const diaryDate = new Date(diary.date);
       const diaryDateStr = diaryDate.toISOString().split("T")[0];
-      const matches = diaryDateStr === selectedDateUTCStr;
-      return matches;
+      return diaryDateStr === selectedDateUTCStr;
     });
 
-    return { incomeExpenseRecords: filteredIncomeExpenseRecords, diaries: filteredDiaries };
+    return {
+      incomeExpenseRecords: filteredIncomeExpenseRecords,
+      diaries: filteredDiaries,
+    };
   };
 
-  const handleRecordClick = (type: "income" | "expense" | "diary", date: Date) => {
+  const handleRecordClick = (
+    type: "income" | "expense" | "diary",
+    date: Date
+  ) => {
     // 日本時間での日付文字列を取得
     const jstDateStr = new Date(date.getTime() + 9 * 60 * 60 * 1000)
       .toISOString()
@@ -2969,15 +3132,32 @@ ${errorInfo.stack}
     // その日の記録を取得
     const dayRecords = getRecordsForDate(date);
 
-    if (type === "income" && (dayRecords.incomeExpenseRecords || []).filter(r => r.type === 'income').length > 0) {
-      setSelectedRecord((dayRecords.incomeExpenseRecords || []).filter(r => r.type === 'income')[0]);
+    if (
+      type === "income" &&
+      (dayRecords.incomeExpenseRecords || []).filter((r) => r.type === "income")
+        .length > 0
+    ) {
+      setSelectedRecord(
+        (dayRecords.incomeExpenseRecords || []).filter(
+          (r) => r.type === "income"
+        )[0]
+      );
       setSelectedRecordType("income");
       setShowRecordDetail(true);
       setShowIncomeExpenseForm(false);
       setShowDiaryForm(false);
       setShowCalendar(false);
-    } else if (type === "expense" && (dayRecords.incomeExpenseRecords || []).filter(r => r.type === 'expense').length > 0) {
-      setSelectedRecord((dayRecords.incomeExpenseRecords || []).filter(r => r.type === 'expense')[0]);
+    } else if (
+      type === "expense" &&
+      (dayRecords.incomeExpenseRecords || []).filter(
+        (r) => r.type === "expense"
+      ).length > 0
+    ) {
+      setSelectedRecord(
+        (dayRecords.incomeExpenseRecords || []).filter(
+          (r) => r.type === "expense"
+        )[0]
+      );
       setSelectedRecordType("expense");
       setShowRecordDetail(true);
       setShowIncomeExpenseForm(false);
@@ -2993,7 +3173,10 @@ ${errorInfo.stack}
     }
   };
 
-  const handleSpecificRecordClick = (record: any, type: "income" | "expense" | "diary") => {
+  const handleSpecificRecordClick = (
+    record: any,
+    type: "income" | "expense" | "diary"
+  ) => {
     setSelectedRecord(record);
     setSelectedRecordType(type);
     setShowRecordDetail(true);
@@ -3023,7 +3206,7 @@ ${errorInfo.stack}
   const editIncomeExpenseRecord = (record: any) => {
     setIncomeExpenseDate(record.date.split("T")[0]);
     setIncomeExpenseAmount(Math.abs(record.amount).toString()); // 絶対値で表示
-    setIncomeExpenseType(record.type === 'income' ? "income" : "expense"); // タイプに基づいて設定
+    setIncomeExpenseType(record.type === "income" ? "income" : "expense"); // タイプに基づいて設定
     setIncomeExpenseNotes(record.notes || "");
     setEditingIncomeExpenseRecord(record);
     setShowIncomeExpenseForm(true);
@@ -3034,9 +3217,11 @@ ${errorInfo.stack}
   const editDiary = (diary: any) => {
     // 日付を正しく処理（タイムゾーンを考慮）
     const diaryDate = new Date(diary.date);
-    const localDate = new Date(diaryDate.getTime() - diaryDate.getTimezoneOffset() * 60000);
+    const localDate = new Date(
+      diaryDate.getTime() - diaryDate.getTimezoneOffset() * 60000
+    );
     setDiaryDate(localDate.toISOString().split("T")[0]);
-    
+
     setDiaryTitle(diary.title || "");
     setDiaryContent(diary.content || "");
     setDiaryMood(diary.mood || "");
@@ -3076,10 +3261,16 @@ ${errorInfo.stack}
 
   // カスタムカテゴリ管理関数
   const handleAddCategory = () => {
-    if (newGenreName.trim() && !customCategories.includes(newGenreName.trim())) {
+    if (
+      newGenreName.trim() &&
+      !customCategories.includes(newGenreName.trim())
+    ) {
       const updatedCategories = [...customCategories, newGenreName.trim()];
       setCustomCategories(updatedCategories);
-      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
+      localStorage.setItem(
+        "customCategories",
+        JSON.stringify(updatedCategories)
+      );
       setNewGenreName("");
     }
   };
@@ -3104,7 +3295,10 @@ ${errorInfo.stack}
         category === editingGenre ? editingGenreName.trim() : category
       );
       setCustomCategories(updatedCategories);
-      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
+      localStorage.setItem(
+        "customCategories",
+        JSON.stringify(updatedCategories)
+      );
       setMessage("ジャンルを更新しました");
     }
     setEditingGenre(null);
@@ -3126,7 +3320,10 @@ ${errorInfo.stack}
         (category) => category !== genreToDelete
       );
       setCustomCategories(updatedCategories);
-      localStorage.setItem("customCategories", JSON.stringify(updatedCategories));
+      localStorage.setItem(
+        "customCategories",
+        JSON.stringify(updatedCategories)
+      );
       setMessage("ジャンルを削除しました");
     }
   };
@@ -3268,9 +3465,9 @@ ${errorInfo.stack}
         Promise.all([loadMemos(), loadPublicMemos()]).catch((error) => {
           console.error("Background reload failed:", error);
         });
-        
+
         // メモ件数更新イベントを発火
-        window.dispatchEvent(new CustomEvent('memoReplyCreated'));
+        window.dispatchEvent(new CustomEvent("memoReplyCreated"));
       } else {
         setMessage(data.message || "返信の投稿に失敗しました");
       }
@@ -3366,53 +3563,63 @@ ${errorInfo.stack}
     setReplyContent("");
   };
 
-  // ログイン状態をチェック
+  // 注意: ログイン状態のチェックはAppWithProviders内で実行される
+  // 理由: setIsLoggedInとsetUserはAppWithProviders内で管理されているため、
+  // Appコンポーネント内では直接アクセスできない
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     const token = localStorage.getItem("access_token");
+  //     if (token) {
+  //       await verifyToken(token);
+  //     } else {
+  //       setIsLoggedIn(false);
+  //       setUser(null);
+  //     }
+  //     setIsCheckingAuth(false);
+  //   };
+  //   checkAuth();
+  // }, [verifyToken]);
+
+  // エラー報告イベントをリッスン
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem("access_token");
-
-      if (token) {
-        // トークンの有効性を検証
-        await verifyToken(token);
-      } else {
-        // トークンがない場合は未ログイン状態に設定
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-      setIsCheckingAuth(false);
-    };
-
-    checkAuth();
-    
-    // エラー報告イベントをリッスン
     const handleErrorReport = (event: CustomEvent) => {
       const { category, content } = event.detail;
+      
+      // 音声エラーの場合は専用の処理
+      if (category === '音声エラー') {
+        handleSoundErrorReport(content);
+        return;
+      }
+      
+      // その他のエラーは従来通り
       setShowErrorModal(true);
       setCurrentError({
-        name: 'Error',
+        name: "Error",
         message: content,
-        stack: ''
+        stack: "",
       });
     };
 
-    
-    window.addEventListener('showErrorReport', handleErrorReport as EventListener);
+    window.addEventListener(
+      "showErrorReport",
+      handleErrorReport as EventListener
+    );
 
     // メモ件数更新のイベントリスナー
     const handleMemoCountUpdate = () => {
       // メモ件数を更新するイベントを発火
-      window.dispatchEvent(new CustomEvent('updateMemoCounts'));
+      window.dispatchEvent(new CustomEvent("updateMemoCounts"));
     };
 
     // メモ関連の操作時にイベントを発火
     const memoOperations = [
-      'memoCreated',
-      'memoUpdated', 
-      'memoDeleted',
-      'memoReplyCreated'
+      "memoCreated",
+      "memoUpdated",
+      "memoDeleted",
+      "memoReplyCreated",
     ];
 
-    memoOperations.forEach(eventName => {
+    memoOperations.forEach((eventName) => {
       window.addEventListener(eventName, handleMemoCountUpdate);
     });
 
@@ -3460,10 +3667,13 @@ ${errorInfo.stack}
           console.error("Service Worker registration failed:", error);
         });
     }
-    
+
     // クリーンアップ処理
     return () => {
-      window.removeEventListener('showErrorReport', handleErrorReport as EventListener);
+      window.removeEventListener(
+        "showErrorReport",
+        handleErrorReport as EventListener
+      );
     };
   }, []);
 
@@ -3488,7 +3698,6 @@ ${errorInfo.stack}
       loadIncomeExpenseRecords();
       loadWorkDiaries();
       loadUserSettings();
-      loadTimeEntries();
       loadMemos();
     }
   }, [isLoggedIn, user?.id]);
@@ -3500,134 +3709,22 @@ ${errorInfo.stack}
     }
   }, [currentDate, showCalendar]);
 
-  const verifyToken = async (token: string) => {
-    try {
-      // トークンの有効性を検証
-      const userResponse = await fetch("/api/auth/verify", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  // 注意: 認証関連の関数はAuthContextProviderで管理される
+  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
+  // const verifyToken = async (token: string) => { ... }; // AuthContextProviderで管理
 
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
+  // 注意: 経過時間の更新はTimeTrackingComponent内で管理される
+  // 理由: 時間記録の経過時間更新はTimeTrackingComponent内でのみ使用されるため、
+  // TimeTrackingComponent内で状態を管理することで、状態の分散を防ぐ
+  // useEffect(() => { ... }, [isTracking, currentTimeEntry]); // TimeTrackingComponentで管理
 
-        if (userData.success && userData.user) {
-          setUser(userData.user);
-          setIsLoggedIn(true);
-        } else {
-          // トークンが無効な場合は削除
-          localStorage.removeItem("access_token");
-          setIsLoggedIn(false);
-          setUser(null);
-        }
-      } else {
-        // トークンが無効な場合は削除
-        localStorage.removeItem("access_token");
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-    } catch (error) {
-      console.error("Token verification failed:", error);
-      localStorage.removeItem("access_token");
-      setIsLoggedIn(false);
-      setUser(null);
-    }
-  };
+  // 注意: 認証関連の関数はAuthContextProviderで管理される
+  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
+  // const handleLogin = async (e: React.FormEvent) => { ... }; // AuthContextProviderで管理
 
-  // 経過時間の更新
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isTracking && currentTimeEntry) {
-      interval = setInterval(() => {
-        const now = new Date();
-        const elapsed = Math.floor(
-          (now.getTime() - currentTimeEntry.startTime.getTime()) / 1000
-        );
-        setElapsedTime(elapsed);
-      }, 1000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isTracking, currentTimeEntry]);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setMessage("ログイン成功！");
-        setUser(data.user);
-        setIsLoggedIn(true);
-        if (data.token) {
-          localStorage.setItem("access_token", data.token);
-        }
-
-        // ユーザー情報を設定してからデータを読み込み
-        const userId = data.user.id;
-        loadProjects(); // プロジェクトを読み込み
-        loadReportSummary(); // レポートを読み込み
-        loadIncomeExpenseRecordsWithUserId(userId); // 収入・支出記録を読み込み
-        loadWorkDiariesWithUserId(userId); // 日記を読み込み
-        loadUserSettings(); // ユーザー設定を読み込み
-      } else {
-        setMessage(`ログイン失敗: ${data.message}`);
-      }
-    } catch (error) {
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password, displayName }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setMessage("アカウントが作成されました！ログインしてください。");
-        setIsRegisterMode(false);
-        setEmail("");
-        setPassword("");
-        setDisplayName("");
-      } else {
-        setMessage(`登録失敗: ${data.message}`);
-      }
-    } catch (error) {
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 注意: 認証関連の関数はAuthContextProviderで管理される
+  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
+  // const handleRegister = async (e: React.FormEvent) => { ... }; // AuthContextProviderで管理
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -3671,7 +3768,6 @@ ${errorInfo.stack}
   };
 
   const loadProjects = async () => {
-    setProjectsLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/projects/list", {
@@ -3687,13 +3783,21 @@ ${errorInfo.stack}
       }
     } catch (error) {
       console.error("Failed to load projects:", error);
-    } finally {
-      setProjectsLoading(false);
     }
   };
 
+  // 注意: loadReportSummaryをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. App.tsx内の複数の場所で呼び出されている
+  //    - ログイン後の初期データ読み込み（useEffect内）
+  //    - ログイン成功時のデータ読み込み（handleLogin内）
+  // 2. グローバルな状態（reportSummary）を更新する必要がある
+  //    - setReportSummaryはApp.tsx内で定義されている
+  // 3. グローバルなローディング状態（loadingState）を管理する必要がある
+  //    - loadingStateは複数のコンポーネント間で共有されている
+  // 4. サブコンポーネント側で定義すると、状態の管理が分散し、データの整合性が保てなくなる
+  // 5. 認証トークンの取得やAPI呼び出しは、アプリケーション全体の認証状態に依存する
   const loadReportSummary = async () => {
-    loadingState.setReportsLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/reports/summary", {
@@ -3709,13 +3813,23 @@ ${errorInfo.stack}
       }
     } catch (error) {
       console.error("Failed to load report summary:", error);
-    } finally {
-      loadingState.setReportsLoading(false);
     }
   };
 
+  // 注意: loadAdminUsersをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. App.tsx内の複数の場所で呼び出されている
+  //    - handleUpdateUser内でユーザー更新後に再読み込み
+  //    - handleDeleteUser内で楽観的更新の失敗時に元に戻す処理
+  // 2. グローバルな状態（adminUsers）を更新する必要がある
+  //    - setAdminUsersはApp.tsx内で定義されている
+  // 3. グローバルなローディング状態（loadingState）を管理する必要がある
+  //    - loadingStateは複数のコンポーネント間で共有されている
+  // 4. グローバルなメッセージ状態（setMessage）を更新する必要がある
+  //    - エラーメッセージや成功メッセージの表示
+  // 5. サブコンポーネント側で定義すると、状態の管理が分散し、データの整合性が保てなくなる
+  // 6. 認証トークンの取得やAPI呼び出しは、アプリケーション全体の認証状態に依存する
   const loadAdminUsers = async () => {
-    loadingState.setAdminUsersLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/admin/users", {
@@ -3736,8 +3850,6 @@ ${errorInfo.stack}
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
-    } finally {
-      loadingState.setAdminUsersLoading(false);
     }
   };
 
@@ -3844,7 +3956,6 @@ ${errorInfo.stack}
 
   // 本棚関連の関数
   const loadBooks = async () => {
-    setBooksLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch("/api/books", {
@@ -3874,8 +3985,6 @@ ${errorInfo.stack}
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
-    } finally {
-      setBooksLoading(false);
     }
   };
 
@@ -3944,7 +4053,9 @@ ${errorInfo.stack}
   const handleUpdateBook = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!editingBook) return;
+    if (!editingBook) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem("access_token");
@@ -4012,7 +4123,9 @@ ${errorInfo.stack}
   };
 
   const getReadingProgress = (book: Book) => {
-    if (book.totalPages === 0) return 0;
+    if (book.totalPages === 0) {
+      return 0;
+    }
     return Math.round((book.readPages / book.totalPages) * 100);
   };
 
@@ -4027,8 +4140,31 @@ ${errorInfo.stack}
   };
 
   // メモ関連の関数
+  // 注意: loadMemosをサブコンポーネント側で定義することはできません
+  // 理由:
+  // 1. App.tsx内の複数の場所で呼び出されている
+  //    - ログイン後の初期データ読み込み（useEffect内）
+  //    - メモ作成後の再読み込み（handleCreateMemo内）
+  //    - メモ更新後の再読み込み（handleUpdateMemo内）
+  //    - メモ削除後の再読み込み（handleDeleteMemo内）
+  //    - 返信作成後の再読み込み（handleCreateReply内）
+  //    - 返信更新後の再読み込み（handleUpdateReply内）
+  //    - 返信削除後の再読み込み（handleDeleteReply内）
+  //    - エラー報告送信後の再読み込み（handleErrorReport内）
+  //    - メモ検索時（handleMemoSearch内）
+  //    - カテゴリ変更時（handleMemoCategoryChange内）
+  //    - 通知からのナビゲーション時（NotificationComponent内）
+  // 2. グローバルな状態（memos）を更新する必要がある
+  //    - setMemosはApp.tsx内で定義されている
+  // 3. グローバルなローディング状態（loadingState）を管理する必要がある
+  //    - loadingStateは複数のコンポーネント間で共有されている
+  // 4. グローバルなメッセージ状態（setMessage）を更新する必要がある
+  //    - エラーメッセージや成功メッセージの表示
+  // 5. グローバルな検索・フィルタ状態に依存している
+  //    - selectedMemoCategory, memoSearchTermはApp.tsx内で管理されている
+  // 6. サブコンポーネント側で定義すると、状態の管理が分散し、データの整合性が保てなくなる
+  // 7. 認証トークンの取得やAPI呼び出しは、アプリケーション全体の認証状態に依存する
   const loadMemos = async () => {
-    loadingState.setMemosLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const params = new URLSearchParams();
@@ -4050,7 +4186,9 @@ ${errorInfo.stack}
       if (!contentType || !contentType.includes("application/json")) {
         const text = await response.text();
         console.error("Non-JSON response:", text);
-        throw new Error(`サーバーエラー: ${response.status} - ${text.substring(0, 100)}`);
+        throw new Error(
+          `サーバーエラー: ${response.status} - ${text.substring(0, 100)}`
+        );
       }
 
       const data = await response.json();
@@ -4063,14 +4201,14 @@ ${errorInfo.stack}
     } catch (error) {
       console.error("Failed to load memos:", error);
       if (error instanceof SyntaxError && error.message.includes("JSON")) {
-        setMessage("サーバーからの応答が無効です。しばらく待ってから再試行してください。");
+        setMessage(
+          "サーバーからの応答が無効です。しばらく待ってから再試行してください。"
+        );
       } else {
         setMessage(
           `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
-    } finally {
-      loadingState.setMemosLoading(false);
     }
   };
 
@@ -4082,7 +4220,6 @@ ${errorInfo.stack}
       return;
     }
 
-
     // タイトルがない場合は内容の一行目をタイトルとして使用
     const finalTitle =
       memoTitle.trim() || memoContent.split("\n")[0].trim() || "無題";
@@ -4093,7 +4230,6 @@ ${errorInfo.stack}
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
-
 
       const response = await fetch("/api/memos", {
         method: "POST",
@@ -4129,9 +4265,9 @@ ${errorInfo.stack}
         setMemoIsAdminOnly(false);
         setShowMemoForm(false);
         loadMemos();
-        
+
         // メモ件数更新イベントを発火
-        window.dispatchEvent(new CustomEvent('memoCreated'));
+        window.dispatchEvent(new CustomEvent("memoCreated"));
       } else {
         setMessage(`メモの追加失敗: ${data.message}`);
       }
@@ -4172,27 +4308,26 @@ ${errorInfo.stack}
     return `${errorType}が発生しました。
 
 --- エラー詳細 ---
-${url ? `URL: ${url}\n` : ''}
-${statusInfo ? `${statusInfo}\n` : ''}
-${methodInfo ? `${methodInfo}\n` : ''}
-${message ? `エラー: ${message}\n` : ''}
-${content ? `${content}\n` : ''}
-${errorDetails ? `詳細: ${errorDetails}\n` : ''}
+${url ? `URL: ${url}\n` : ""}
+${statusInfo ? `${statusInfo}\n` : ""}
+${methodInfo ? `${methodInfo}\n` : ""}
+${message ? `エラー: ${message}\n` : ""}
+${content ? `${content}\n` : ""}
+${errorDetails ? `詳細: ${errorDetails}\n` : ""}
 
 --- システム情報 ---
 User Agent: ${userAgent}
 発生時刻: ${timestamp}`;
   };
 
-
   const formatApiErrorReportContent = (errorInfo: Partial<ErrorInfo>) => {
     const { statusInfo, methodInfo } = formatErrorInfo(errorInfo);
     return formatGenericErrorReportContent({
       errorType: "APIエラー",
-      url: errorInfo.url,
-      statusInfo,
-      methodInfo,
-      message: errorInfo.message,
+      url: errorInfo.url || "Unknown URL",
+      statusInfo: statusInfo || "ステータス: Unknown",
+      methodInfo: methodInfo || "メソッド: Unknown",
+      message: errorInfo.message || "エラーメッセージが取得できませんでした",
       userAgent: errorInfo.userAgent ?? "",
       timestamp: errorInfo.timestamp ?? "",
     });
@@ -4207,7 +4342,7 @@ User Agent: ${userAgent}
   }) => {
     try {
       const token = localStorage.getItem("access_token");
-      
+
       // エラー報告を公開メモとして投稿
       const response = await fetch("/api/memos", {
         method: "POST",
@@ -4216,7 +4351,7 @@ User Agent: ${userAgent}
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: `[${report.title}] ${new Date().toLocaleString('ja-JP')}`,
+          title: `[${report.title}] ${new Date().toLocaleString("ja-JP")}`,
           content: formatGenericErrorReportContent({
             content: report.content,
             userAgent: report.userAgent,
@@ -4228,7 +4363,7 @@ User Agent: ${userAgent}
           isPublic: true,
           isFamilyOnly: false,
           isAdminOnly: false,
-          postType: "error_report"
+          postType: "error_report",
         }),
       });
 
@@ -4250,7 +4385,7 @@ User Agent: ${userAgent}
   const handleUpdateRequest = async (updateRequest: UpdateRequestData) => {
     try {
       const token = localStorage.getItem("access_token");
-      
+
       // 更新要望を公開メモとして投稿
       const response = await fetch("/api/memos", {
         method: "POST",
@@ -4266,13 +4401,13 @@ User Agent: ${userAgent}
           isPublic: true,
           isFamilyOnly: false,
           isAdminOnly: false,
-          postType: "update_request"
+          postType: "update_request",
         }),
       });
 
       if (response.ok) {
         setMessage("更新要望を送信しました。ありがとうございます。");
-        setShowUpdateRequestModal(false);
+        // モーダルの閉じる処理はHeaderComponent内で管理
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "更新要望の送信に失敗しました");
@@ -4288,7 +4423,7 @@ User Agent: ${userAgent}
   const handleBugReport = async (bugReport: BugReportData) => {
     try {
       const token = localStorage.getItem("access_token");
-      
+
       // 不具合報告を公開メモとして投稿
       const response = await fetch("/api/memos", {
         method: "POST",
@@ -4304,13 +4439,13 @@ User Agent: ${userAgent}
           isPublic: true,
           isFamilyOnly: false,
           isAdminOnly: false,
-          postType: "error_report"
+          postType: "error_report",
         }),
       });
 
       if (response.ok) {
         setMessage("不具合報告を送信しました。ありがとうございます。");
-        setShowBugReportModal(false);
+        // モーダルの閉じる処理はHeaderComponent内で管理
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "不具合報告の送信に失敗しました");
@@ -4322,11 +4457,88 @@ User Agent: ${userAgent}
     }
   };
 
+  // GitHubイシュー作成関数
+  const createGitHubIssue = async (title: string, body: string) => {
+    try {
+      // GitHub Personal Access Token（環境変数から取得）
+      const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
+      if (!githubToken) {
+        console.warn("GitHub token not found, skipping issue creation");
+        return;
+      }
+
+      const response = await fetch("https://api.github.com/repos/umezawakanta/work-time-tracker/issues", {
+        method: "POST",
+        headers: {
+          "Authorization": `token ${githubToken}`,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: title,
+          body: body,
+          labels: ["bug", "auto-generated"],
+        }),
+      });
+
+      if (response.ok) {
+        const issue = await response.json();
+        console.log(`GitHub issue created: ${issue.html_url}`);
+        return issue.html_url;
+      } else {
+        console.error("Failed to create GitHub issue:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error creating GitHub issue:", error);
+    }
+  };
+
+  // 音声エラー報告の送信処理
+  const handleSoundErrorReport = async (content: string) => {
+    try {
+      const token = localStorage.getItem("access_token");
+
+      // 音声エラー報告を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: `[エラー報告] 音声エラー`,
+          content: content,
+          category: "音声エラー",
+          tags: ["音声", "エラー", "バグ報告"],
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "update_request",
+        }),
+      });
+
+      // 401エラーのチェック
+      handle401Error(response);
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log("音声エラー報告が送信されました");
+        // GitHubイシューも作成
+        await createGitHubIssue("音声エラー", content);
+      } else {
+        console.error("音声エラー報告の送信に失敗:", data.message);
+      }
+    } catch (error) {
+      console.error("音声エラー報告の送信中にエラーが発生:", error);
+    }
+  };
+
   // エラー報告の送信処理
   const handleErrorReport = async (errorInfo: ApiErrorInfo) => {
     try {
       const token = localStorage.getItem("access_token");
-      
+
       // エラー報告を公開メモとして投稿
       const response = await fetch("/api/memos", {
         method: "POST",
@@ -4335,14 +4547,14 @@ User Agent: ${userAgent}
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: `[エラー報告] API Error - ${errorInfo.status}`,
+          title: `[エラー報告] API Error - ${errorInfo.status || 'Unknown'}`,
           content: formatApiErrorReportContent(errorInfo),
           category: "エラー報告",
           tags: ["エラー", "バグ報告", "システム"],
           isPublic: true,
           isFamilyOnly: false,
           isAdminOnly: false,
-          postType: "update_request"
+          postType: "update_request",
         }),
       });
 
@@ -4354,6 +4566,8 @@ User Agent: ${userAgent}
       if (data.success) {
         setMessage("エラー報告を送信しました。開発者が確認します。");
         loadMemos(); // メモ一覧を更新
+        // GitHubイシューも作成
+        await createGitHubIssue(`API Error - ${errorInfo.status || 'Unknown'}`, formatApiErrorReportContent(errorInfo));
         loadPublicMemos(); // 公開メモ一覧を更新
       } else {
         throw new Error(data.message || "エラー報告の送信に失敗しました");
@@ -4371,21 +4585,22 @@ User Agent: ${userAgent}
       fn();
     } catch (error) {
       console.error(`${errorContext}でエラーが発生しました:`, error);
-      
+
       const errorInfo = {
         message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : 'No stack trace available',
-        type: error instanceof Error ? error.constructor.name : 'UnknownError',
+        stack:
+          error instanceof Error ? error.stack : "No stack trace available",
+        type: error instanceof Error ? error.constructor.name : "UnknownError",
         context: errorContext,
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
-        url: window.location.href
+        url: window.location.href,
       };
-      
+
       const enhancedError = new Error(errorInfo.message);
       enhancedError.stack = errorInfo.stack;
       (enhancedError as any).errorInfo = errorInfo;
-      
+
       setCurrentError(enhancedError);
       setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
@@ -4394,86 +4609,88 @@ User Agent: ${userAgent}
 
   // Reactエラーバウンダリー用のエラーハンドラー
   const handleReactError = (error: Error, errorInfo: any) => {
-    console.error('React Error Boundary caught an error:', error, errorInfo);
-    
+    console.error("React Error Boundary caught an error:", error, errorInfo);
+
     // 特定のエラーパターンをチェック
     const errorMessage = error.message;
-    const shouldShowModal = errorMessage.includes('ReferenceError') ||
-                           errorMessage.includes('TypeError') ||
-                           errorMessage.includes('SyntaxError') ||
-                           errorMessage.includes('is not defined') ||
-                           errorMessage.includes('Cannot read properties') ||
-                           errorMessage.includes('Cannot read property') ||
-                           errorMessage.includes('reading') ||
-                           errorMessage.includes('filter') ||
-                           errorMessage.includes('map') ||
-                           errorMessage.includes('forEach') ||
-                           errorMessage.includes('reduce') ||
-                           errorMessage.includes('find') ||
-                           errorMessage.includes('some') ||
-                           errorMessage.includes('every') ||
-                           errorMessage.includes('includes') ||
-                           errorMessage.includes('indexOf') ||
-                           errorMessage.includes('push') ||
-                           errorMessage.includes('pop') ||
-                           errorMessage.includes('shift') ||
-                           errorMessage.includes('unshift') ||
-                           errorMessage.includes('slice') ||
-                           errorMessage.includes('splice') ||
-                           errorMessage.includes('sort') ||
-                           errorMessage.includes('reverse') ||
-                           errorMessage.includes('join') ||
-                           errorMessage.includes('split') ||
-                           errorMessage.includes('replace') ||
-                           errorMessage.includes('match') ||
-                           errorMessage.includes('search') ||
-                           errorMessage.includes('test') ||
-                           errorMessage.includes('exec') ||
-                           errorMessage.includes('toString') ||
-                           errorMessage.includes('valueOf') ||
-                           errorMessage.includes('hasOwnProperty') ||
-                           errorMessage.includes('propertyIsEnumerable') ||
-                           errorMessage.includes('toLocaleString') ||
-                           errorMessage.includes('toJSON') ||
-                           errorMessage.includes('undefined') ||
-                           errorMessage.includes('null') ||
-                           errorMessage.includes('is not a function') ||
-                           errorMessage.includes('is not a constructor') ||
-                           errorMessage.includes('Cannot access') ||
-                           errorMessage.includes('Cannot set') ||
-                           errorMessage.includes('Cannot delete') ||
-                           errorMessage.includes('handleCreateIncomeExpenseRecord') ||
-                           errorMessage.includes('handleUpdateIncomeExpenseRecord') ||
-                           errorMessage.includes('handleDeleteIncomeExpenseRecord') ||
-                           errorMessage.includes('editIncomeExpenseRecord') ||
-                           errorMessage.includes('viewIncomeExpenseRecord') ||
-                           errorMessage.includes('editingIncomeExpenseRecord') ||
-                           errorMessage.includes('incomeExpenseAmount') ||
-                           errorMessage.includes('incomeExpenseDate') ||
-                           errorMessage.includes('incomeExpenseNotes') ||
-                           errorMessage.includes('incomeExpenseType') ||
-                           errorMessage.includes('401') ||
-                           errorMessage.includes('Unauthorized') ||
-                           errorMessage.includes('404') ||
-                           errorMessage.includes('Not Found') ||
-                           /api\.github\.com/.test(errorMessage) ||
-                           errorMessage.includes('SourceCodeViewer');
-    
+    const shouldShowModal =
+      errorMessage.includes("ReferenceError") ||
+      errorMessage.includes("TypeError") ||
+      errorMessage.includes("SyntaxError") ||
+      errorMessage.includes("is not defined") ||
+      errorMessage.includes("Cannot read properties") ||
+      errorMessage.includes("Cannot read property") ||
+      errorMessage.includes("reading") ||
+      errorMessage.includes("filter") ||
+      errorMessage.includes("map") ||
+      errorMessage.includes("forEach") ||
+      errorMessage.includes("reduce") ||
+      errorMessage.includes("find") ||
+      errorMessage.includes("some") ||
+      errorMessage.includes("every") ||
+      errorMessage.includes("includes") ||
+      errorMessage.includes("indexOf") ||
+      errorMessage.includes("push") ||
+      errorMessage.includes("pop") ||
+      errorMessage.includes("shift") ||
+      errorMessage.includes("unshift") ||
+      errorMessage.includes("slice") ||
+      errorMessage.includes("splice") ||
+      errorMessage.includes("sort") ||
+      errorMessage.includes("reverse") ||
+      errorMessage.includes("join") ||
+      errorMessage.includes("split") ||
+      errorMessage.includes("replace") ||
+      errorMessage.includes("match") ||
+      errorMessage.includes("search") ||
+      errorMessage.includes("test") ||
+      errorMessage.includes("exec") ||
+      errorMessage.includes("toString") ||
+      errorMessage.includes("valueOf") ||
+      errorMessage.includes("hasOwnProperty") ||
+      errorMessage.includes("propertyIsEnumerable") ||
+      errorMessage.includes("toLocaleString") ||
+      errorMessage.includes("toJSON") ||
+      errorMessage.includes("undefined") ||
+      errorMessage.includes("null") ||
+      errorMessage.includes("is not a function") ||
+      errorMessage.includes("is not a constructor") ||
+      errorMessage.includes("Cannot access") ||
+      errorMessage.includes("Cannot set") ||
+      errorMessage.includes("Cannot delete") ||
+      errorMessage.includes("handleCreateIncomeExpenseRecord") ||
+      errorMessage.includes("handleUpdateIncomeExpenseRecord") ||
+      errorMessage.includes("handleDeleteIncomeExpenseRecord") ||
+      errorMessage.includes("editIncomeExpenseRecord") ||
+      errorMessage.includes("viewIncomeExpenseRecord") ||
+      errorMessage.includes("editingIncomeExpenseRecord") ||
+      errorMessage.includes("incomeExpenseAmount") ||
+      errorMessage.includes("incomeExpenseDate") ||
+      errorMessage.includes("incomeExpenseNotes") ||
+      errorMessage.includes("incomeExpenseType") ||
+      errorMessage.includes("401") ||
+      errorMessage.includes("Unauthorized") ||
+      errorMessage.includes("404") ||
+      errorMessage.includes("Not Found") ||
+      /api\.github\.com/.test(errorMessage) ||
+      errorMessage.includes("SourceCodeViewer");
+
     if (shouldShowModal) {
       const enhancedErrorInfo = {
         message: errorMessage,
-        stack: error.stack || 'No stack trace available',
-        type: 'ReactError',
-        componentStack: errorInfo.componentStack || 'No component stack available',
+        stack: error.stack || "No stack trace available",
+        type: "ReactError",
+        componentStack:
+          errorInfo.componentStack || "No component stack available",
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
-        url: window.location.href
+        url: window.location.href,
       };
-      
+
       const enhancedError = new Error(errorMessage);
       enhancedError.stack = error.stack;
       (enhancedError as any).errorInfo = enhancedErrorInfo;
-      
+
       setCurrentError(enhancedError);
       setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
@@ -4482,16 +4699,16 @@ User Agent: ${userAgent}
 
   // エラーハンドリングのテスト用関数（開発時のみ）
   const testErrorHandling = () => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('エラーハンドリングのテストを実行します...');
-      
+    if (process.env.NODE_ENV === "development") {
+      console.log("エラーハンドリングのテストを実行します...");
+
       // 意図的にエラーを発生させてテスト
       setTimeout(() => {
         try {
           // 存在しない関数を呼び出してエラーを発生
           (window as any).nonExistentFunction();
         } catch (error) {
-          console.error('テストエラーが発生しました:', error);
+          console.error("テストエラーが発生しました:", error);
         }
       }, 1000);
     }
@@ -4499,26 +4716,26 @@ User Agent: ${userAgent}
 
   // 特定のエラーパターンをテストする関数
   const testSpecificError = (errorType: string) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log(`${errorType}エラーのテストを実行します...`);
-      
+
       setTimeout(() => {
         try {
           // 特定のエラータイプに応じてエラーを発生
           switch (errorType) {
-            case 'handleCreateIncomeExpenseRecord':
+            case "handleCreateIncomeExpenseRecord":
               (window as any).handleCreateIncomeExpenseRecord();
               break;
-            case 'handleUpdateIncomeExpenseRecord':
+            case "handleUpdateIncomeExpenseRecord":
               (window as any).handleUpdateIncomeExpenseRecord();
               break;
-            case 'handleDeleteIncomeExpenseRecord':
+            case "handleDeleteIncomeExpenseRecord":
               (window as any).handleDeleteIncomeExpenseRecord();
               break;
-            case 'editIncomeExpenseRecord':
+            case "editIncomeExpenseRecord":
               (window as any).editIncomeExpenseRecord();
               break;
-            case 'viewIncomeExpenseRecord':
+            case "viewIncomeExpenseRecord":
               (window as any).viewIncomeExpenseRecord();
               break;
             default:
@@ -4611,9 +4828,9 @@ User Agent: ${userAgent}
         setEditingMemo(null);
         setShowMemoForm(false);
         loadMemos();
-        
+
         // メモ件数更新イベントを発火
-        window.dispatchEvent(new CustomEvent('memoUpdated'));
+        window.dispatchEvent(new CustomEvent("memoUpdated"));
       } else {
         setMessage(`メモの更新失敗: ${data.message}`);
       }
@@ -4646,9 +4863,9 @@ User Agent: ${userAgent}
       if (data.success) {
         setMessage("メモを削除しました");
         loadMemos();
-        
+
         // メモ件数更新イベントを発火
-        window.dispatchEvent(new CustomEvent('memoDeleted'));
+        window.dispatchEvent(new CustomEvent("memoDeleted"));
       } else {
         setMessage(`メモの削除失敗: ${data.message}`);
       }
@@ -4670,7 +4887,6 @@ User Agent: ${userAgent}
 
   // 公開メモ関連の関数
   const loadPublicMemos = async () => {
-    setPublicMemosLoading(true);
     try {
       const params = new URLSearchParams();
       if (selectedPublicMemoCategory !== "all") {
@@ -4687,7 +4903,9 @@ User Agent: ${userAgent}
       if (!contentType || !contentType.includes("application/json")) {
         const text = await response.text();
         console.error("Non-JSON response:", text);
-        throw new Error(`サーバーエラー: ${response.status} - ${text.substring(0, 100)}`);
+        throw new Error(
+          `サーバーエラー: ${response.status} - ${text.substring(0, 100)}`
+        );
       }
 
       const data = await response.json();
@@ -4700,14 +4918,14 @@ User Agent: ${userAgent}
     } catch (error) {
       console.error("Failed to load public memos:", error);
       if (error instanceof SyntaxError && error.message.includes("JSON")) {
-        setMessage("サーバーからの応答が無効です。しばらく待ってから再試行してください。");
+        setMessage(
+          "サーバーからの応答が無効です。しばらく待ってから再試行してください。"
+        );
       } else {
         setMessage(
           `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       }
-    } finally {
-      setPublicMemosLoading(false);
     }
   };
 
@@ -4726,50 +4944,16 @@ User Agent: ${userAgent}
     return Array.from(new Set(allCategories)).sort();
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    setIsLoggedIn(false);
-    setUser(null);
-    setMessage("");
-    setCurrentTimeEntry(null);
-    setIsTracking(false);
-    setElapsedTime(0);
-    setDescription("");
-    setProjects([]);
-    setSelectedProject("");
-    // その他の状態もリセット
-    setIncomeExpenseRecords([]);
-    setWorkDiaries([]);
-    setReportSummary(null);
-    setUserSettings(null);
-    setBooks([]);
-    setMemos([]);
-    setPublicMemos([]);
-    setAdminUsers([]);
-  };
+  // 注意: 認証関連の関数はAuthContextProviderで管理される
+  // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
+  // const handleLogout = () => { ... }; // AuthContextProviderで管理
 
-  // 時間記録を開始（TimeTrackingStateManagerで管理）
-  const handleStartTracking = async () => {
-    if (!description.trim()) {
-      setMessage("作業内容を入力してください");
-      return;
-    }
-
-    const result = await timeTrackingHelpers.startTimeTracking(currentProject, description);
-    setMessage(result.message);
-  };
-
-  // 時間記録を停止（TimeTrackingStateManagerで管理）
-  const handleStopTracking = async () => {
-    const result = await timeTrackingHelpers.stopTimeTracking();
-    setMessage(result.message);
-  };
-
-  // 時間記録を強制的にリセットする関数（TimeTrackingStateManagerで管理）
-  const handleResetTracking = () => {
-    const result = timeTrackingHelpers.resetTimeTracking();
-    setMessage(result.message);
-  };
+  // 注意: 時間記録関連の関数は各コンポーネントで個別に定義される
+  // 理由: 各コンポーネントで個別の時間記録機能を管理することで、状態の分散を防ぐ
+  // const handleStartTracking = async () => { ... }; // 削除
+  // const handleStopTracking = async () => { ... }; // 削除
+  // const handleResetTracking = () => { ... }; // 削除
+  // const calculateProductivityStats = () => { ... }; // 削除
 
   // ゆでたまごタイマーの関数（EggTimerComponentで管理）
   const getEggTimerDuration = (type: "soft" | "medium" | "hard") => {
@@ -5262,44 +5446,9 @@ User Agent: ${userAgent}
     }
   };
 
-  // プリセットタイマーの関数（TimerPresetManagerで管理）
-  const startPresetTimer = (preset: (typeof timerPresets)[0]) => {
-    if (customTimerActive) return;
-
-    const totalSeconds = preset.minutes * 60 + 0;
-    setCustomTimerTime(totalSeconds);
-    setCustomTimerActive(true);
-    setCustomTimerName(preset.name);
-
-    const interval = setInterval(() => {
-      setCustomTimerTime((prev) => {
-        if (prev <= 1) {
-          setCustomTimerActive(false);
-          clearInterval(interval);
-          setCustomTimerInterval(null);
-          setMessage(
-            `⏰ ${preset.name}終了！音を停止するには「音を停止」ボタンを押してください。`
-          );
-
-          // ブラウザ通知を送信
-          sendNotification(
-            "プリセットタイマー終了！",
-            `${preset.name}が終了しました！音を停止するには「音を停止」ボタンを押してください。`,
-            "⏰"
-          );
-
-          // ループ音声を開始
-          startSoundLoop(customTimerSound);
-
-          addToTimerHistory(preset.name, totalSeconds, "preset");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    setCustomTimerInterval(interval);
-  };
+  // 注意: プリセットタイマー関連の関数は各コンポーネントで個別に定義される
+  // 理由: 各コンポーネントで個別のタイマー機能を管理することで、状態の分散を防ぐ
+  // const startPresetTimer = (preset) => { ... }; // 削除
 
   // タイマー履歴に追加
   const addToTimerHistory = (
@@ -5695,6 +5844,12 @@ User Agent: ${userAgent}
 
   // コンポーネントマウント時に音声と通知を初期化
   React.useEffect(() => {
+    // body要素のスタイルをリセット（緊急修正）
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.height = '';
+    
     initializeAudio();
     initializeNotifications();
     loadTimerSettings();
@@ -5757,7 +5912,7 @@ User Agent: ${userAgent}
       <div className="app">
         <div className="dashboard">
           <HeaderComponent
-            user={user}
+            user={user!}
             currentCharacter={currentCharacter}
             showThemeSettings={showThemeSettings}
             showFontSettings={showFontSettings}
@@ -5770,18 +5925,13 @@ User Agent: ${userAgent}
             setShowFeatureSettings={setShowFeatureSettings}
             loadUserSettings={loadUserSettings}
             isTimeTrackingActive={isTimeTrackingActive}
-            onUpdateRequestClick={() => setShowUpdateRequestModal(true)}
-            onBugReportClick={() => setShowBugReportModal(true)}
+            handleUpdateRequest={handleUpdateRequest}
+            handleBugReport={handleBugReport}
           />
-
-          {/* バージョン情報 */}
-          <div className="version-wrapper">
-            <VersionInfo />
-          </div>
 
           {/* 通知コンポーネント */}
           <div className="notification-wrapper">
-            <NotificationComponent 
+            <NotificationComponent
               onNavigateToMemo={(memoId: string) => {
                 // メモセクションを表示
                 setShowMemos(true);
@@ -5790,7 +5940,7 @@ User Agent: ${userAgent}
                 // 通知ドロップダウンを閉じる
                 setTimeout(() => {
                   // 該当するメモをハイライトする処理（必要に応じて実装）
-                  console.log('Navigating to memo:', memoId);
+                  console.log("Navigating to memo:", memoId);
                 }, 100);
               }}
             />
@@ -5805,22 +5955,9 @@ User Agent: ${userAgent}
                     showTimeTracking={showTimeTracking}
                     setShowTimeTracking={setShowTimeTracking}
                     projects={projects}
-                    projectsLoading={projectsLoading}
-                    timeEntries={timeTrackingState.timeEntries}
-                    timeEntriesLoading={timeTrackingState.timeEntriesLoading}
-                    currentProject={timeTrackingState.currentProject}
-                    setCurrentProject={timeTrackingState.setCurrentProject}
-                    description={timeTrackingState.description}
-                    setDescription={timeTrackingState.setDescription}
-                    isTracking={timeTrackingState.isTracking}
-                    startTime={timeTrackingState.startTime}
-                    elapsedTime={timeTrackingState.elapsedTime}
                     loadProjects={loadProjects}
-                    loadTimeEntries={loadTimeEntries}
-                    handleStartTracking={handleStartTracking}
-                    handleStopTracking={handleStopTracking}
-                    handleResetTracking={handleResetTracking}
                     closeOtherFeatures={closeOtherFeatures}
+                    setMessage={setMessage}
                   />
                 );
               } else if (feature.id === "cooking-timer") {
@@ -5877,7 +6014,6 @@ User Agent: ${userAgent}
                     showProjectForm={showProjectForm}
                     setShowProjectForm={setShowProjectForm}
                     projects={projects}
-                    projectsLoading={projectsLoading}
                     selectedProject={selectedProject}
                     setSelectedProject={setSelectedProject}
                     projectName={projectName}
@@ -5899,7 +6035,6 @@ User Agent: ${userAgent}
                     setShowReports={setShowReports}
                     incomeExpenseRecords={incomeExpenseRecords}
                     workDiaries={workDiaries}
-                    reportsLoading={loadingState.reportsLoading}
                     reportSummary={reportSummary}
                     loadReportSummary={loadReportSummary}
                     closeOtherFeatures={closeOtherFeatures}
@@ -5915,7 +6050,6 @@ User Agent: ${userAgent}
                     showAdminPanel={showAdminPanel}
                     setShowAdminPanel={setShowAdminPanel}
                     adminUsers={adminUsers}
-                    adminUsersLoading={adminUsersLoading}
                     editingUser={editingUser}
                     setEditingUser={setEditingUser}
                     loadAdminUsers={loadAdminUsers}
@@ -5933,7 +6067,6 @@ User Agent: ${userAgent}
                     setShowBookshelf={setShowBookshelf}
                     closeOtherFeatures={closeOtherFeatures}
                     books={books}
-                    booksLoading={booksLoading}
                     showBookForm={showBookForm}
                     setShowBookForm={setShowBookForm}
                     editingBook={editingBook}
@@ -5971,7 +6104,6 @@ User Agent: ${userAgent}
                     key={feature.id}
                     memos={memos}
                     publicMemos={publicMemos}
-                    memosLoading={loadingState.memosLoading}
                     showMemos={showMemos}
                     setShowMemos={setShowMemos}
                     customCategories={customCategories}
@@ -6015,7 +6147,6 @@ User Agent: ${userAgent}
                   <PublicMemosComponent
                     key={feature.id}
                     publicMemos={publicMemos}
-                    publicMemosLoading={publicMemosLoading}
                     showPublicMemos={showPublicMemos}
                     setShowPublicMemos={setShowPublicMemos}
                     user={user}
@@ -6045,9 +6176,6 @@ User Agent: ${userAgent}
                     setShowCalendar={setShowCalendar}
                     incomeExpenseRecords={incomeExpenseRecords}
                     workDiaries={workDiaries}
-                    incomeExpenseLoading={incomeExpenseLoading}
-                    diaryLoading={diaryLoading}
-                    workRecordsLoading={workRecordsLoading}
                     currentMonth={currentMonth}
                     setCurrentMonth={setCurrentMonth}
                     selectedDate={selectedDate}
@@ -6057,7 +6185,9 @@ User Agent: ${userAgent}
                     selectedRecordType={selectedRecordType}
                     setSelectedRecordType={setSelectedRecordType}
                     editingIncomeExpenseRecord={editingIncomeExpenseRecord}
-                    setEditingIncomeExpenseRecord={setEditingIncomeExpenseRecord}
+                    setEditingIncomeExpenseRecord={
+                      setEditingIncomeExpenseRecord
+                    }
                     editingDiary={editingDiary}
                     setEditingDiary={setEditingDiary}
                     incomeExpenseAmount={incomeExpenseAmount}
@@ -6096,11 +6226,17 @@ User Agent: ${userAgent}
                     setEditingMonthlyMemo={setEditingMonthlyMemo}
                     loadIncomeExpenseRecords={loadIncomeExpenseRecords}
                     loadWorkDiaries={loadWorkDiaries}
-                    handleCreateIncomeExpenseRecord={handleCreateIncomeExpenseRecord}
-                    handleUpdateIncomeExpenseRecord={handleUpdateIncomeExpenseRecord}
+                    handleCreateIncomeExpenseRecord={
+                      handleCreateIncomeExpenseRecord
+                    }
+                    handleUpdateIncomeExpenseRecord={
+                      handleUpdateIncomeExpenseRecord
+                    }
                     handleCreateDiary={handleCreateDiary}
                     handleUpdateDiary={handleUpdateDiary}
-                    handleDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
+                    handleDeleteIncomeExpenseRecord={
+                      handleDeleteIncomeExpenseRecord
+                    }
                     handleDeleteDiary={handleDeleteDiary}
                     editDiary={editDiary}
                     openDiaryForm={openDiaryForm}
@@ -6170,17 +6306,20 @@ User Agent: ${userAgent}
                     setHabitHistory={setHabitHistory}
                     habitStreak={habitStreak}
                     setHabitStreak={setHabitStreak}
-                    moodLogs={moodLogState.moodLogs}
-                    setMoodLogs={moodLogState.setMoodLogs as React.Dispatch<React.SetStateAction<MoodLog[]>>}
                     goals={goals}
                     setGoals={setGoals}
                     learningRecords={learningRecords}
                     setLearningRecords={setLearningRecords}
                     timeEntries={timeEntries}
-                    calculateTimeBreakdown={calculateTimeBreakdown}
-                    calculateProductivityTrend={calculateProductivityTrend as unknown as () => { date: string; workHours: number; dayOfWeek: string; }[]}
-                    calculateProductivityStats={calculateProductivityStats}
-                    loadTimeEntries={loadTimeEntries}
+                    closeOtherFeatures={closeOtherFeatures}
+                  />
+                );
+              } else if (feature.id === "sound-app") {
+                return (
+                  <SoundAppComponent
+                    key={feature.id}
+                    showSoundApp={showSoundApp}
+                    setShowSoundApp={setShowSoundApp}
                     closeOtherFeatures={closeOtherFeatures}
                   />
                 );
@@ -6201,7 +6340,9 @@ User Agent: ${userAgent}
             ></div>
             <div className="character-home-modal-content">
               <div className="character-home-modal-header">
-                <h2><i className="bi bi-house"></i> キャラクター達のお家</h2>
+                <h2>
+                  <i className="bi bi-house"></i> キャラクター達のお家
+                </h2>
                 <button
                   onClick={handleCharacterHomeToggle}
                   className="close-button"
@@ -6212,6 +6353,9 @@ User Agent: ${userAgent}
               <CharacterHome
                 onSelectCharacter={handleSelectCharacter}
                 currentCharacter={currentCharacter}
+                showCharacterHome={showCharacterHome}
+                setShowCharacterHome={setShowCharacterHome}
+                closeOtherFeatures={closeOtherFeatures}
               />
             </div>
           </div>
@@ -6222,7 +6366,9 @@ User Agent: ${userAgent}
           <div className="theme-settings-modal">
             <div className="theme-settings-content">
               <div className="theme-settings-header">
-                <h3><i className="bi bi-palette"></i> テーマ設定</h3>
+                <h3>
+                  <i className="bi bi-palette"></i> テーマ設定
+                </h3>
                 <button
                   onClick={() => setShowThemeSettings(false)}
                   className="close-button"
@@ -6304,7 +6450,8 @@ User Agent: ${userAgent}
                       fontFamily: selectedFont === "system" ? "" : selectedFont,
                     }}
                   >
-                    <i className="bi bi-clock"></i> Work Time Tracker <i className="bi bi-book"></i>
+                    <i className="bi bi-clock"></i> Work Time Tracker{" "}
+                    <i className="bi bi-book"></i>
                   </p>
                   <p
                     style={{
@@ -6318,7 +6465,10 @@ User Agent: ${userAgent}
                       fontFamily: selectedFont === "system" ? "" : selectedFont,
                     }}
                   >
-                    <i className="bi bi-palette"></i> テーマ <i className="bi bi-fonts"></i> フォント <i className="bi bi-gear"></i> 機能設定 <i className="bi bi-box-arrow-right"></i> ログアウト
+                    <i className="bi bi-palette"></i> テーマ{" "}
+                    <i className="bi bi-fonts"></i> フォント{" "}
+                    <i className="bi bi-gear"></i> 機能設定{" "}
+                    <i className="bi bi-box-arrow-right"></i> ログアウト
                   </p>
                   <p
                     style={{
@@ -6339,7 +6489,8 @@ User Agent: ${userAgent}
                       fontFamily: selectedFont === "system" ? "" : selectedFont,
                     }}
                   >
-                    作業内容を入力してください | <i className="bi bi-play-fill"></i> 記録開始
+                    作業内容を入力してください |{" "}
+                    <i className="bi bi-play-fill"></i> 記録開始
                   </p>
                 </div>
                 <div className="font-options">
@@ -6380,7 +6531,9 @@ User Agent: ${userAgent}
           <div className="feature-settings-modal">
             <div className="feature-settings-content">
               <div className="feature-settings-header">
-                <h3><i className="bi bi-gear"></i> 機能設定</h3>
+                <h3>
+                  <i className="bi bi-gear"></i> 機能設定
+                </h3>
                 <button
                   onClick={() => setShowFeatureSettings(false)}
                   className="close-button"
@@ -6390,17 +6543,22 @@ User Agent: ${userAgent}
               </div>
               <div className="feature-settings-body">
                 <div className="feature-settings-section">
-                  <h4><i className="bi bi-journal-text"></i> 日記リマインダー設定</h4>
+                  <h4>
+                    <i className="bi bi-journal-text"></i> 日記リマインダー設定
+                  </h4>
                   <button
                     onClick={() => setShowDiaryReminderSettings(true)}
                     className="reminder-settings-btn"
                   >
-                    <i className="bi bi-journal-text"></i> リマインダー設定を開く
+                    <i className="bi bi-journal-text"></i>{" "}
+                    リマインダー設定を開く
                   </button>
                 </div>
 
                 <div className="feature-settings-section">
-                  <h4><i className="bi bi-list-ul"></i> 機能の並び順</h4>
+                  <h4>
+                    <i className="bi bi-list-ul"></i> 機能の並び順
+                  </h4>
                   <p>
                     ドラッグ&ドロップまたは↑↓ボタンで機能の順序を変更できます
                   </p>
@@ -6431,10 +6589,7 @@ User Agent: ${userAgent}
                           <div className="feature-drag-handle">⋮⋮</div>
                           <div className="feature-item-content">
                             <div className="feature-icon">
-                              <HetamaIconComponent
-                                featureId={feature.id}
-                                size="medium"
-                              />
+                              <HetamaIconComponent featureId={feature.id} />
                             </div>
                             <div className="feature-info">
                               <div className="feature-name">{feature.name}</div>
@@ -6521,7 +6676,15 @@ User Agent: ${userAgent}
         <SimpleErrorReportingModal
           isOpen={showErrorModal}
           onClose={() => setShowErrorModal(false)}
-          onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
+          onSubmit={
+            handleErrorReport as unknown as (errorReport: {
+              title: string;
+              content: string;
+              errorDetails: string;
+              userAgent: string;
+              timestamp: string;
+            }) => Promise<void>
+          }
           errorInfo={getErrorInfo(currentError)}
         />
 
@@ -6533,19 +6696,9 @@ User Agent: ${userAgent}
           errorInfo={getErrorInfo(currentError)}
         />
 
-        {/* 更新要望モーダル */}
-        <UpdateRequestModal
-          isOpen={showUpdateRequestModal}
-          onClose={() => setShowUpdateRequestModal(false)}
-          onSubmit={handleUpdateRequest}
-        />
+        {/* 更新要望モーダルはHeaderComponent内で管理 */}
 
-        {/* 不具合報告モーダル */}
-        <BugReportModal
-          isOpen={showBugReportModal}
-          onClose={() => setShowBugReportModal(false)}
-          onSubmit={handleBugReport}
-        />
+        {/* 不具合報告モーダルはHeaderComponent内で管理 */}
       </div>
     );
   }
@@ -6566,12 +6719,20 @@ User Agent: ${userAgent}
         handleLogin={handleLogin}
         handleRegister={handleRegister}
       />
-        <SimpleErrorReportingModal
-          isOpen={showErrorModal}
-          onClose={() => setShowErrorModal(false)}
-          onSubmit={handleErrorReport as unknown as (errorReport: { title: string; content: string; errorDetails: string; userAgent: string; timestamp: string; }) => Promise<void>}
-          errorInfo={getErrorInfo(currentError)}
-        />
+      <SimpleErrorReportingModal
+        isOpen={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        onSubmit={
+          handleErrorReport as unknown as (errorReport: {
+            title: string;
+            content: string;
+            errorDetails: string;
+            userAgent: string;
+            timestamp: string;
+          }) => Promise<void>
+        }
+        errorInfo={getErrorInfo(currentError)}
+      />
     </>
   );
 }
@@ -6580,31 +6741,291 @@ User Agent: ${userAgent}
 const AppWithProviders = () => {
   const [user, setUser] = useState<User | null>(null);
   const [customTimerActive, setCustomTimerActive] = useState(false);
-  
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+
   return (
-    <LoadingStateProvider>
+    <AuthProvider
+      onLogin={async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage("");
+
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: email, password: password }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (data.success) {
+            setMessage("ログイン成功！");
+            setUser(data.user);
+            setIsLoggedIn(true);
+            if (data.token) {
+              localStorage.setItem("access_token", data.token);
+            }
+
+            // ユーザー情報を設定してからデータを読み込み
+            const userId = data.user.id;
+            // データの読み込みはAppコンポーネント内で実行される
+          } else {
+            setMessage(`ログイン失敗: ${data.message || '認証に失敗しました'}`);
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          if (error instanceof Error && error.message.includes('404')) {
+            setMessage("ログインAPIが見つかりません。サーバーが起動しているか確認してください。");
+          } else if (error instanceof Error && error.message.includes('400')) {
+            setMessage("ログイン情報が正しくありません。メールアドレスとパスワードを確認してください。");
+          } else {
+            setMessage(
+              `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+            );
+          }
+        } finally {
+          setLoading(false);
+        }
+      }}
+      onRegister={async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage("");
+
+        try {
+          const response = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: email, password: password, displayName: displayName }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            setMessage("アカウントが作成されました！ログインしてください。");
+            setIsRegisterMode(false);
+            setEmail("");
+            setPassword("");
+            setDisplayName("");
+          } else {
+            setMessage(`登録失敗: ${data.message}`);
+          }
+        } catch (error) {
+          setMessage(
+            `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+          );
+        } finally {
+          setLoading(false);
+        }
+      }}
+      onLogout={() => {
+        localStorage.removeItem("access_token");
+        setIsLoggedIn(false);
+        setUser(null);
+        setMessage("");
+        // その他の状態のリセットはAppコンポーネント内で実行される
+      }}
+      onVerifyToken={async (token: string) => {
+        try {
+          const userResponse = await fetch("/api/auth/verify", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+
+            if (userData.success && userData.user) {
+              setUser(userData.user);
+              setIsLoggedIn(true);
+            } else {
+              localStorage.removeItem("access_token");
+              setIsLoggedIn(false);
+              setUser(null);
+            }
+          } else {
+            localStorage.removeItem("access_token");
+            setIsLoggedIn(false);
+            setUser(null);
+          }
+        } catch (error) {
+          console.error("Token verification failed:", error);
+          localStorage.removeItem("access_token");
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      }}
+      setMessage={setMessage}
+    >
       <TimeTrackingStateProvider user={user}>
-        <TimerPresetProvider 
+        <TimerPresetProvider
           onStartTimer={(minutes, seconds, name) => {
             // カスタムタイマーを開始する処理
             console.log(`Starting timer: ${name} for ${minutes}:${seconds}`);
           }}
           onStopTimer={() => {
             // カスタムタイマーを停止する処理
-            console.log('Stopping timer');
+            console.log("Stopping timer");
           }}
           onResetTimer={() => {
             // カスタムタイマーをリセットする処理
-            console.log('Resetting timer');
+            console.log("Resetting timer");
           }}
           isTimerActive={customTimerActive}
         >
           <MoodLogProvider>
-            <App />
+            <App 
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              displayName={displayName}
+              setDisplayName={setDisplayName}
+              loading={loading}
+              setLoading={setLoading}
+              message={message}
+              setMessage={setMessage}
+              isRegisterMode={isRegisterMode}
+              setIsRegisterMode={setIsRegisterMode}
+              user={user}
+              isLoggedIn={isLoggedIn}
+              isCheckingAuth={false}
+              handleLogin={async (e: React.FormEvent) => {
+                e.preventDefault();
+                setLoading(true);
+                setMessage("");
+
+                try {
+                  const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email: email, password: password }),
+                  });
+
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
+
+                  const data = await response.json();
+
+                  if (data.success) {
+                    setMessage("ログイン成功！");
+                    setUser(data.user);
+                    setIsLoggedIn(true);
+                    if (data.token) {
+                      localStorage.setItem("access_token", data.token);
+                    }
+                  } else {
+                    setMessage(`ログイン失敗: ${data.message || '認証に失敗しました'}`);
+                  }
+                } catch (error) {
+                  console.error("Login error:", error);
+                  if (error instanceof Error && error.message.includes('404')) {
+                    setMessage("ログインAPIが見つかりません。サーバーが起動しているか確認してください。");
+                  } else if (error instanceof Error && error.message.includes('400')) {
+                    setMessage("ログイン情報が正しくありません。メールアドレスとパスワードを確認してください。");
+                  } else {
+                    setMessage(
+                      `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+                    );
+                  }
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              handleRegister={async (e: React.FormEvent) => {
+                e.preventDefault();
+                setLoading(true);
+                setMessage("");
+
+                try {
+                  const response = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email: email, password: password, displayName: displayName }),
+                  });
+
+                  const data = await response.json();
+
+                  if (data.success) {
+                    setMessage("アカウントが作成されました！ログインしてください。");
+                    setIsRegisterMode(false);
+                    setEmail("");
+                    setPassword("");
+                    setDisplayName("");
+                  } else {
+                    setMessage(`登録失敗: ${data.message}`);
+                  }
+                } catch (error) {
+                  setMessage(
+                    `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+                  );
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              handleLogout={() => {
+                localStorage.removeItem("access_token");
+                setIsLoggedIn(false);
+                setUser(null);
+                setMessage("");
+              }}
+              verifyToken={async (token: string) => {
+                try {
+                  const userResponse = await fetch("/api/auth/verify", {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  });
+
+                  if (userResponse.ok) {
+                    const userData = await userResponse.json();
+
+                    if (userData.success && userData.user) {
+                      setUser(userData.user);
+                      setIsLoggedIn(true);
+                    } else {
+                      localStorage.removeItem("access_token");
+                      setIsLoggedIn(false);
+                      setUser(null);
+                    }
+                  } else {
+                    localStorage.removeItem("access_token");
+                    setIsLoggedIn(false);
+                    setUser(null);
+                  }
+                } catch (error) {
+                  console.error("Token verification failed:", error);
+                  localStorage.removeItem("access_token");
+                  setIsLoggedIn(false);
+                  setUser(null);
+                }
+              }}
+            />
           </MoodLogProvider>
         </TimerPresetProvider>
       </TimeTrackingStateProvider>
-    </LoadingStateProvider>
+    </AuthProvider>
   );
 };
 

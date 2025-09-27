@@ -1,50 +1,88 @@
 import React, { useState, useEffect } from 'react';
 import './TimeTrackingComponent.css';
 import type { Project, TimeEntry } from '../types';
+import { useTimeTrackingState, useTimeTrackingHelpers } from './TimeTrackingStateManager';
 
 interface TimeTrackingComponentProps {
   showTimeTracking: boolean;
   setShowTimeTracking: (show: boolean) => void;
   projects: Project[];
-  projectsLoading: boolean;
-  timeEntries: TimeEntry[];
-  timeEntriesLoading: boolean;
-  currentProject: string;
-  setCurrentProject: (project: string) => void;
-  description: string;
-  setDescription: (description: string) => void;
-  isTracking: boolean;
-  startTime: Date | null;
-  elapsedTime: number;
-  loadProjects: () => void;
-  loadTimeEntries: () => void;
-  handleStartTracking: () => void;
-  handleStopTracking: () => void;
-  handleResetTracking: () => void;
+  loadProjects: () => Promise<void>;
   closeOtherFeatures: (activeFeature: string) => void;
+  setMessage: (message: string) => void;
 }
 
 const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
   showTimeTracking,
   setShowTimeTracking,
   projects,
-  projectsLoading,
-  timeEntries,
-  timeEntriesLoading,
-  currentProject,
-  setCurrentProject,
-  description,
-  setDescription,
-  isTracking,
-  startTime,
-  elapsedTime,
   loadProjects,
-  loadTimeEntries,
-  handleStartTracking,
-  handleStopTracking,
-  handleResetTracking,
   closeOtherFeatures,
+  setMessage,
 }) => {
+  // プロジェクトのローディング状態をTimeTrackingComponent内で管理
+  const [projectsLoading, setProjectsLoading] = useState(false);
+
+  // 現在の時間記録エントリをTimeTrackingComponent内で管理
+  const [currentTimeEntry, setCurrentTimeEntry] = useState<TimeEntry | null>(null);
+
+  // プロジェクト読み込み関数をTimeTrackingComponent内で定義
+  const loadProjectsLocal = async () => {
+    setProjectsLoading(true);
+    try {
+      await loadProjects();
+    } finally {
+      setProjectsLoading(false);
+    }
+  };
+  // 時間記録状態をコンポーネント内で管理
+  const timeTrackingState = useTimeTrackingState();
+  const timeTrackingHelpers = useTimeTrackingHelpers();
+  
+  const {
+    timeEntries,
+    timeEntriesLoading,
+    currentProject,
+    setCurrentProject,
+    description,
+    setDescription,
+    isTracking,
+    startTime,
+    elapsedTime,
+  } = timeTrackingState;
+
+  // 時間記録関連の関数をコンポーネント内で定義
+  const handleStartTracking = async () => {
+    if (!currentProject) {
+      setMessage("プロジェクトを選択してください");
+      return;
+    }
+
+    if (!description.trim()) {
+      setMessage("作業内容を入力してください");
+      return;
+    }
+
+    const result = await timeTrackingHelpers.startTimeTracking(
+      currentProject,
+      description
+    );
+    setMessage(result.message);
+  };
+
+  const handleStopTracking = async () => {
+    const result = await timeTrackingHelpers.stopTimeTracking();
+    setMessage(result.message);
+  };
+
+  const handleResetTracking = () => {
+    const result = timeTrackingHelpers.resetTimeTracking();
+    setMessage(result.message);
+  };
+
+  const loadTimeEntries = () => {
+    timeTrackingHelpers.loadTimeEntries();
+  };
   const [showTimeEntries, setShowTimeEntries] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
@@ -187,7 +225,7 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
       });
 
       if (response.ok) {
-        loadProjects();
+        loadProjectsLocal();
         setNewProjectName('');
         setShowProjectForm(false);
       }
@@ -217,7 +255,7 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
               onClick={() => {
                 closeOtherFeatures("time-tracking");
                 setShowTimeTracking(true);
-                loadProjects();
+                loadProjectsLocal();
                 loadTimeEntries();
               }}
               className="show-section-button"
@@ -234,7 +272,7 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
           <div className="time-tracking-header">
             <button
               onClick={() => {
-                loadProjects();
+                loadProjectsLocal();
                 loadTimeEntries();
               }}
               className="refresh-button"

@@ -41,6 +41,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  // APIリクエストはプロキシに任せる
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
+  
   event.respondWith(
     // ネットワークファースト戦略
     fetch(request)
@@ -64,6 +69,12 @@ self.addEventListener('fetch', (event) => {
           if (request.destination === 'document') {
             return caches.match('/');
           }
+          // フォールバックが見つからない場合は、基本的なHTMLレスポンスを返す
+          return new Response('Offline', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: { 'Content-Type': 'text/plain' }
+          });
         });
       })
   );
