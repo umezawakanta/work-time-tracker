@@ -3,10 +3,44 @@
  * PUT /api/memos/[id]/tags
  */
 
-import { connectToDatabase } from '../../../lib/mongodb';
-import { ObjectId } from 'mongodb';
+const { mongoose, verifyJWT } = require('../../utils/database');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+// Memo Schema
+const MemoSchema = new mongoose.Schema({
+  title: { type: String, required: false },
+  content: { type: String, required: true },
+  category: { type: String, required: true },
+  tags: [{ type: String }],
+  isPublic: { type: Boolean, default: false },
+  isFamilyOnly: { type: Boolean, default: false },
+  isAdminOnly: { type: Boolean, default: false },
+  userId: { type: String, required: true },
+  authorName: { type: String, required: false },
+  authorEmail: { type: String, required: false },
+  postType: { 
+    type: String, 
+    enum: ['update_request', 'error_report', 'general'], 
+    default: 'general' 
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'in_progress', 'resolved', 'closed'], 
+    default: 'pending' 
+  },
+  adminResponse: { type: String },
+  adminResponseDate: { type: Date },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+const Memo = mongoose.model('Memo', MemoSchema);
 
 export default async function handler(req, res) {
+  console.log('Tags API called:', { method: req.method, query: req.query, body: req.body });
+  
   if (req.method !== 'PUT') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
@@ -14,6 +48,8 @@ export default async function handler(req, res) {
   try {
     const { id } = req.query;
     const { tags } = req.body;
+    
+    console.log('Processing tags update:', { id, tags });
 
     // タグの検証
     if (!Array.isArray(tags)) {
@@ -41,36 +77,27 @@ export default async function handler(req, res) {
       }
     }
 
-    // ObjectIdの検証
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid memo ID format' 
-      });
-    }
-
-    const { db } = await connectToDatabase();
-    const memosCollection = db.collection('memos');
-    const objectId = new ObjectId(id);
-
-    // メモの存在確認
-    const existingMemo = await memosCollection.findOne({ _id: objectId });
+    // メモの存在確認と更新
+    const existingMemo = await Memo.findById(id);
+    console.log('Existing memo found:', existingMemo ? 'Yes' : 'No');
     if (!existingMemo) {
       return res.status(404).json({ success: false, message: 'Memo not found' });
     }
 
     // タグ更新
-    const result = await memosCollection.updateOne(
-      { _id: objectId },
+    console.log('Updating memo tags...');
+    const updatedMemo = await Memo.findByIdAndUpdate(
+      id,
       { 
-        $set: { 
-          tags: tags,
-          updatedAt: new Date().toISOString()
-        } 
-      }
+        tags: tags,
+        updatedAt: new Date()
+      },
+      { new: true }
     );
+    console.log('Update result:', updatedMemo ? 'Success' : 'Failed');
 
-    if (result.modifiedCount === 0) {
+    if (!updatedMemo) {
+      console.log('No documents were modified');
       return res.status(400).json({ success: false, message: 'Failed to update tags' });
     }
 
@@ -82,9 +109,11 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error updating memo tags:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       success: false, 
-      message: 'Internal server error' 
+      message: 'Internal server error',
+      error: error.message
     });
   }
 }
