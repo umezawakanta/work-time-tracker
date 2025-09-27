@@ -1084,6 +1084,50 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
               </>
             )}
           </div>
+
+          {/* ページネーション（下部） */}
+          {getTotalPages() > 1 && (
+            <div className="pagination pagination-bottom">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="pagination-button prev"
+              >
+                ← 前へ
+              </button>
+              
+              <div className="pagination-numbers">
+                {Array.from({ length: getTotalPages() }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`pagination-button number ${
+                      currentPage === page ? 'active' : ''
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === getTotalPages()}
+                className="pagination-button next"
+              >
+                次へ →
+              </button>
+            </div>
+          )}
+
+          {/* ページ情報（下部） */}
+          <div className="pagination-info pagination-info-bottom">
+            {getFilteredMemos().length > 0 && (
+              <p>
+                {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, getFilteredMemos().length)} / {getFilteredMemos().length} 件
+              </p>
+            )}
+          </div>
         </div>
       )}
 
