@@ -23,7 +23,7 @@ export interface PlaybackCallbacks {
   setUserMessage: (message: string) => void;
   showMessage: (message: string, duration?: number) => void;
   playSoundCallback: (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => Promise<void>;
-  generateMeiwaRhythmCallback: (beatDuration: number, categoryRatios: CategoryRatio[]) => void;
+  generateMeiwaRhythmCallback: (beatDuration: number, categoryRatios: CategoryRatio[]) => Promise<void>;
   generateMusicCallback: (categoryRatios: CategoryRatio[], balanceScore: number, genre: MusicGenre) => Promise<void>;
 }
 
@@ -75,7 +75,11 @@ export const usePlaybackManager = (
     const genre = musicGenres.find((g) => g.id === selectedGenre) || musicGenres[0];
 
     const categoryRatios = foodCategories.map((category) => ({
-      ...category,
+      id: category.id,
+      name: category.name,
+      category: category.id,
+      volume: category.sound.volume,
+      note: category.noteMapping,
       ratio: (currentMeal.categories[category.id] || 0) / totalItems,
     }));
 

@@ -147,8 +147,8 @@ export const createMeiwaInstrument = async (categoryId: string) => {
         return new Tone.MonoSynth({
           oscillator: { 
             type: "square" as const,
-            detune: -12, // 低音にデチューン
           },
+          detune: -12, // 低音にデチューン
           envelope: { 
             attack: 0.001, 
             decay: 0.05, 
@@ -166,8 +166,8 @@ export const createMeiwaInstrument = async (categoryId: string) => {
         return new Tone.MonoSynth({
           oscillator: { 
             type: "sawtooth",
-            detune: -6,
           },
+          detune: -6,
           envelope: { 
             attack: 0.01, 
             decay: 0.1, 
@@ -185,8 +185,8 @@ export const createMeiwaInstrument = async (categoryId: string) => {
         return new Tone.MonoSynth({
           oscillator: { 
             type: "square",
-            detune: 0,
           },
+          detune: 0,
           envelope: { 
             attack: 0.001, 
             decay: 0.02, 
@@ -204,8 +204,8 @@ export const createMeiwaInstrument = async (categoryId: string) => {
         return new Tone.MonoSynth({
           oscillator: { 
             type: "sawtooth",
-            detune: 3,
           },
+          detune: 3,
           envelope: { 
             attack: 0.001, 
             decay: 0.03, 
@@ -223,8 +223,8 @@ export const createMeiwaInstrument = async (categoryId: string) => {
         return new Tone.MonoSynth({
           oscillator: { 
             type: "triangle",
-            detune: 6,
           },
+          detune: 6,
           envelope: { 
             attack: 0.001, 
             decay: 0.01, 
@@ -242,8 +242,8 @@ export const createMeiwaInstrument = async (categoryId: string) => {
         return new Tone.MonoSynth({
           oscillator: { 
             type: "square",
-            detune: -3,
           },
+          detune: -3,
           envelope: { 
             attack: 0.001, 
             decay: 0.05, 
@@ -260,8 +260,8 @@ export const createMeiwaInstrument = async (categoryId: string) => {
         return new Tone.MonoSynth({
           oscillator: { 
             type: "square",
-            detune: 0,
           },
+          detune: 0,
           envelope: { 
             attack: 0.001, 
             decay: 0.02, 
@@ -333,9 +333,37 @@ export const initializeTone = async (): Promise<boolean> => {
       
       if (finalState === 'running' || rawState === 'running') {
         // Transportも確実に開始
-        if (Tone.Transport.state !== 'started') {
-          console.log("Starting Tone.js Transport...");
-          Tone.Transport.start();
+        try {
+          if (Tone.Transport.state !== 'started') {
+            console.log("Starting Tone.js Transport...");
+            
+            // AudioContextの状態を再確認
+            const currentContext = Tone.getContext();
+            const currentRawContext = currentContext.rawContext;
+            
+            if (currentRawContext && currentRawContext.state === 'closed') {
+              console.warn("AudioContext is closed, cannot start Transport");
+              throw new Error("AudioContext is closed");
+            }
+            
+            if (currentRawContext && currentRawContext.state === 'suspended') {
+              console.log("AudioContext is suspended, attempting to resume before starting Transport...");
+              try {
+                await currentRawContext.resume();
+                console.log("AudioContext resumed successfully");
+              } catch (resumeError) {
+                console.warn("Failed to resume AudioContext:", resumeError);
+                throw new Error("Failed to resume AudioContext");
+              }
+            }
+            
+            Tone.Transport.start();
+            console.log("Tone.js Transport started successfully");
+          }
+        } catch (transportError) {
+          console.warn("Failed to start Transport:", transportError);
+          // Transportの開始に失敗してもTone.jsの初期化は成功とする
+          // 後でTransportが必要になった時に再試行する
         }
         
         console.log("Tone.js initialized successfully");

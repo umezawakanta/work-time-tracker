@@ -14,7 +14,7 @@ const convertMsToSeconds = (timeMs: number, beatDuration: number): number => {
 };
 
 // 明和電機風の8bitリズムパターンを生成（音の重ね合わせ対応）
-export const generateMeiwaRhythm = (
+export const generateMeiwaRhythm = async (
   beatDuration: number, 
   categoryRatios: CategoryRatio[], 
   playSoundCallback: (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => Promise<void>
@@ -80,14 +80,39 @@ export const generateMeiwaRhythm = (
   
   // Transportが開始されていない場合は開始
   if (Tone.Transport.state !== 'started') {
-    Tone.Transport.start();
+    try {
+      // AudioContextの状態を確認
+      const { rawContext } = Tone.getContext();
+      
+      if (rawContext && rawContext.state === 'closed') {
+        console.warn("AudioContext is closed, cannot start Transport");
+        throw new Error("AudioContext is closed");
+      }
+      
+      if (rawContext && rawContext.state === 'suspended') {
+        console.log("AudioContext is suspended, attempting to resume before starting Transport...");
+        try {
+          await rawContext.resume();
+          console.log("AudioContext resumed successfully");
+        } catch (resumeError) {
+          console.warn("Failed to resume AudioContext:", resumeError);
+          throw new Error("Failed to resume AudioContext");
+        }
+      }
+      
+      Tone.Transport.start();
+      console.log("Tone.js Transport started successfully");
+    } catch (transportError) {
+      console.warn("Failed to start Transport:", transportError);
+      // Transportの開始に失敗した場合はフォールバックを使用
+    }
   }
   
   [...drumPattern, ...melodyPattern, ...bassPattern, ...layeredPattern].forEach((pattern) => {
     const delay = convertMsToSeconds(pattern.time, beatDuration);
     const baseFrequency = Tone.Frequency(pattern.note).toFrequency();
-    const frequency = pattern.detune ? 
-      baseFrequency * Math.pow(2, pattern.detune / CENTS_PER_OCTAVE) : // セント単位のデチューン
+    const frequency = 'detune' in pattern && pattern.detune ? 
+      baseFrequency * Math.pow(2, (pattern as any).detune / CENTS_PER_OCTAVE) : // セント単位のデチューン
       baseFrequency;
     const duration = 0.05; // 短い8bit風の音
 

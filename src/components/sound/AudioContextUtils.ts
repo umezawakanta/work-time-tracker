@@ -38,6 +38,8 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
         }
       } catch (resumeError) {
         console.warn("Failed to resume AudioContext:", resumeError);
+        // resumeに失敗した場合は新しいコンテキストを作成
+        console.log("Resume failed, will create new context");
       }
     }
     
@@ -77,10 +79,15 @@ export const ensureAudioContextReady = async (): Promise<boolean> => {
               throw new Error(`New AudioContext failed to start after ${attempts} attempts, state: ${newContext.state}`);
             }
           } catch (resumeError) {
+            console.error(`Failed to resume new AudioContext: ${resumeError instanceof Error ? resumeError.message : 'Unknown error'}`);
+            // resumeに失敗した場合は新しいコンテキストを再作成
+            newContext.close();
             throw new Error(`Failed to resume new AudioContext: ${resumeError instanceof Error ? resumeError.message : 'Unknown error'}`);
           }
         } else if ((newContext.state as string) !== 'running') {
           // suspended以外でrunningでない場合はエラー
+          console.error(`New AudioContext is in unexpected state: ${newContext.state}`);
+          newContext.close();
           throw new Error(`New AudioContext is in unexpected state: ${newContext.state}`);
         }
         

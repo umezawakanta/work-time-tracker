@@ -120,8 +120,8 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   );
 
   // 明和電機風リズム生成
-  const generateMeiwaRhythmCallback = useCallback((beatDuration: number, categoryRatios: any[]) => {
-    generateMeiwaRhythm(beatDuration, categoryRatios, playSoundCallback);
+  const generateMeiwaRhythmCallback = useCallback(async (beatDuration: number, categoryRatios: any[]) => {
+    await generateMeiwaRhythm(beatDuration, categoryRatios, playSoundCallback);
   }, [playSoundCallback]);
 
   // 音楽を生成

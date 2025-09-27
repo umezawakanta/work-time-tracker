@@ -9,7 +9,7 @@ export const generateMusic = async (
   balanceScore: number,
   genre: MusicGenre,
   playSoundCallback: typeof playSound,
-  generateMeiwaRhythmCallback: (beatDuration: number, categoryRatios: CategoryRatio[]) => void
+  generateMeiwaRhythmCallback: (beatDuration: number, categoryRatios: CategoryRatio[]) => Promise<void>
 ) => {
   // 明和電機風の固定テンポ（120 BPM）
   const adjustedTempo = 120;
@@ -22,11 +22,36 @@ export const generateMusic = async (
 
   // Transportが開始されていない場合は開始
   if (Tone.Transport.state !== 'started') {
-    Tone.Transport.start();
+    try {
+      // AudioContextの状態を確認
+      const { rawContext } = Tone.getContext();
+      
+      if (rawContext && rawContext.state === 'closed') {
+        console.warn("AudioContext is closed, cannot start Transport");
+        throw new Error("AudioContext is closed");
+      }
+      
+      if (rawContext && rawContext.state === 'suspended') {
+        console.log("AudioContext is suspended, attempting to resume before starting Transport...");
+        try {
+          await rawContext.resume();
+          console.log("AudioContext resumed successfully");
+        } catch (resumeError) {
+          console.warn("Failed to resume AudioContext:", resumeError);
+          throw new Error("Failed to resume AudioContext");
+        }
+      }
+      
+      Tone.Transport.start();
+      console.log("Tone.js Transport started successfully");
+    } catch (transportError) {
+      console.warn("Failed to start Transport:", transportError);
+      // Transportの開始に失敗した場合はフォールバックを使用
+    }
   }
 
   // 明和電機風の8bit音楽を生成（正確なテンポ同期）
-  generateMeiwaRhythmCallback(beatDuration, categoryRatios);
+  await generateMeiwaRhythmCallback(beatDuration, categoryRatios);
 
   // バランススコアに応じた追加のメロディー（機械的な正確性を重視）
   if (balanceScore > 0.5) {
