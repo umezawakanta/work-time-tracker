@@ -97,7 +97,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
 
       // 楽譜データを生成
       const scoreData = generateScoreData(categoryRatios, genre);
-      console.log("Generated score data:", scoreData);
       setCurrentScore(scoreData);
 
       // 明和電機風の8bit音楽を生成

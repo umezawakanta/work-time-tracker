@@ -126,7 +126,6 @@ class SimpleAudioEngine {
       }
 
       this.isInitialized = true;
-      console.log("SimpleAudioEngine initialized successfully with effects");
       return true;
     } catch (error) {
       console.error("Failed to initialize SimpleAudioEngine:", error);
@@ -264,7 +263,6 @@ class SimpleAudioEngine {
       }
     });
 
-    console.log(`Playing ${settings.type} tone: ${frequency}Hz for ${duration}s at volume ${volume}`);
   }
 
   // 楽器別の和音再生
@@ -387,23 +385,18 @@ class SimpleAudioEngine {
 
   // 全ての音を停止
   stopAll(): void {
-    console.log("Stopping all audio...");
-    
     // アクティブなオシレーターを停止
     this.activeOscillators.forEach(oscillator => {
       try {
         oscillator.stop();
       } catch (error) {
         // 既に停止している場合は無視
-        console.log("Oscillator already stopped");
       }
     });
     this.activeOscillators = [];
 
     // アクティブなタイムアウトをクリア
     this.clearAllTimeouts();
-    
-    console.log("All audio stopped");
   }
 
   // タイムアウトをクリア

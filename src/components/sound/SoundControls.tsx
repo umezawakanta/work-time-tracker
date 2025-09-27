@@ -34,8 +34,6 @@ const SoundControls: React.FC<SoundControlsProps> = ({
     event.preventDefault();
     event.stopPropagation();
     
-    console.log("User clicked initialize button, ensuring user interaction...");
-    
     // ユーザー操作を確実に検出するため、少し待機
     await new Promise(resolve => setTimeout(resolve, 100));
     

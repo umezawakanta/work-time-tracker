@@ -213,10 +213,6 @@ export const usePlaybackManager = (
         await generateMusicCallback(categoryRatios, balanceScore, genre);
       }
       
-      console.log(`Generated advanced music with ${instrumentType} instrument for ${genre.name} genre`);
-      console.log(`Nutrition score: ${nutritionScore.overallScore.toFixed(2)}`);
-      console.log(`Rhythm complexity: ${adjustedRhythm.complexity.toFixed(2)}`);
-      console.log(`Melody emotion: ${adjustedMelody.emotion}`);
     } catch (error) {
       console.error("Failed to generate advanced music:", error);
       showMessage("高度な音楽生成に失敗しました", 3000);

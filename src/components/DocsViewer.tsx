@@ -81,17 +81,13 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
     setError('');
     
     try {
-      console.log(`📄 ファイル読み込み開始: ${docPath}`);
       const response = await fetch(docPath);
-      console.log(`📊 レスポンス状況: ${response.status} ${response.statusText}`);
       
       if (!response.ok) {
         throw new Error(`ファイルが見つかりません: ${response.status}`);
       }
       
       const content = await response.text();
-      console.log(`📄 ファイル内容の長さ: ${content.length} 文字`);
-      console.log(`📄 ファイル内容の先頭: ${content.substring(0, 100)}...`);
       setDocContent(content);
     } catch (err) {
       console.error(`❌ ファイル読み込みエラー:`, err);
