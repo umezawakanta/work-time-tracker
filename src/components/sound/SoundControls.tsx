@@ -1,7 +1,4 @@
 import React from "react";
-import * as Tone from "tone";
-import { ensureAudioContextReady } from "./AudioContextUtils";
-import { initializeTone } from "./SoundEngine";
 
 interface SoundControlsProps {
   isPlaying: boolean;
@@ -24,14 +21,10 @@ const SoundControls: React.FC<SoundControlsProps> = ({
 }) => {
   // AudioContextの状態を取得
   const getAudioContextStatus = () => {
-    if (!toneStateManager.isInitialized) {
+    if (!toneStateManager.isReady()) {
       return "未初期化";
     }
-    try {
-      return Tone.context.state;
-    } catch (error) {
-      return "エラー";
-    }
+    return toneStateManager.getState();
   };
 
   const audioContextStatus = getAudioContextStatus();
@@ -57,17 +50,24 @@ const SoundControls: React.FC<SoundControlsProps> = ({
         <small>AudioContext: {audioContextStatus}</small>
       </div>
       <button
-        onClick={!toneStateManager.isInitialized ? handleInitialize : onPlay}
-        disabled={disabled && toneStateManager.isInitialized}
-        className={`play-button ${isPlaying ? "playing" : ""} ${!toneStateManager.isInitialized ? "initialize-button" : ""}`}
+        onClick={!toneStateManager.isReady() ? handleInitialize : onPlay}
+        disabled={disabled && toneStateManager.isReady()}
+        className={`play-button ${isPlaying ? "playing" : ""} ${!toneStateManager.isReady() ? "initialize-button" : ""}`}
       >
-        {!toneStateManager.isInitialized
+        {!toneStateManager.isReady()
           ? "🎵 クリックして起動"
           : isPlaying
           ? "再生中..."
           : "再生"}
       </button>
-      {isLooping && <button onClick={onStop}>停止</button>}
+      {isPlaying && (
+        <button 
+          onClick={onStop}
+          className="stop-button"
+        >
+          停止
+        </button>
+      )}
     </div>
   );
 };

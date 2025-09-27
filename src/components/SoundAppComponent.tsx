@@ -1,21 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import * as Tone from "tone";
 import "./SoundAppComponent.css";
 
 // サブコンポーネントのインポート
 import SoundAppLayout from "./sound/SoundAppLayout";
 import { musicGenres } from "./sound/MusicGenres";
-import { createInstrumentForCategory } from "./sound/InstrumentFactory";
 import { usePlaybackManager, PlaybackState, PlaybackCallbacks } from "./sound/PlaybackManager";
-import { initializeTone, createMeiwaInstrument, playSound, toneStateManager } from "./sound/SoundEngine";
-import { generateMeiwaRhythm } from "./sound/MeiwaSoundGenerator";
-import { generateMusic } from "./sound/MusicGenerator";
+import { simpleAudioEngine, playSound } from "./sound/SimpleAudioEngine";
+import { generateMeiwaRhythm, generateMusic } from "./sound/SimpleAudioEngine";
 import { createInitialMeal } from "./sound/MealLogic";
 import { REPEAT_OPTIONS } from "./sound/constants";
 import { MealRecord } from "./sound/MealRecording";
 import { ScoreData } from "./sound/ScoreDisplay";
-import { MusicGenre, Instrument } from "./sound/types";
-import { ensureAudioContextReady } from "./sound/AudioContextUtils";
+import { MusicGenre } from "./sound/types";
 
 /**
  * Props for the SoundAppComponent
@@ -47,7 +43,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const [showScore, setShowScore] = useState<boolean>(true);
 
   // 参照管理
-  const instrumentsRef = useRef<{ [key: string]: Instrument }>({});
   const playTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
 
   // メッセージ表示
@@ -56,51 +51,15 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
     setTimeout(() => setUserMessage(""), duration);
   };
 
-  // 楽器の作成（InstrumentFactoryを使用）
-  const getOrCreateInstrument = useCallback(async (categoryId: string) => {
-    // AudioContextが準備できているか確認
-    const isReady = await ensureAudioContextReady();
-    if (!isReady) {
-      console.warn("AudioContext is not ready, cannot create instrument");
-      return null;
-    }
-
-    if (!toneStateManager.isInitialized) {
-      // Tone.jsを初期化
-      const initialized = await initializeTone();
-      if (!initialized) {
-        console.warn("Failed to initialize Tone.js");
-        return null;
-      }
-    }
-
-    if (instrumentsRef.current[categoryId]) {
-      return instrumentsRef.current[categoryId];
-    }
-
-    const instrument = await createInstrumentForCategory(categoryId);
-    if (instrument) {
-      instrumentsRef.current[categoryId] = instrument;
-    }
-
-    return instrument;
-  }, []);
 
   // 音を再生する関数
   const playSoundCallback = useCallback(
     async (categoryId: string, frequency: number, duration: number, volume: number, genre?: string) => {
-      // AudioContextの状態を確認
-      const isReady = await ensureAudioContextReady();
-      if (!isReady) {
-        console.warn("AudioContext is not ready, skipping sound playback");
-        return;
-      }
-
-      // Tone.jsが初期化されていない場合は初期化
-      if (!toneStateManager.isInitialized) {
-        const initialized = await initializeTone();
+      // SimpleAudioEngineが初期化されていない場合は初期化
+      if (!simpleAudioEngine.isReady()) {
+        const initialized = await simpleAudioEngine.initialize();
         if (!initialized) {
-          console.warn("Failed to initialize Tone.js for sound playback");
+          console.warn("Failed to initialize SimpleAudioEngine for sound playback");
           return;
         }
       }
@@ -110,13 +69,10 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
         frequency,
         duration,
         volume,
-        genre,
-        instrumentsRef.current,
-        createMeiwaInstrument,
-        getOrCreateInstrument
+        genre
       );
     },
-    [getOrCreateInstrument]
+    []
   );
 
   // 明和電機風リズム生成
@@ -134,7 +90,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       setCurrentScore(null);
 
       // 明和電機風の8bit音楽を生成
-      await generateMusic(categoryRatios, balanceScore, genre, playSoundCallback, generateMeiwaRhythmCallback);
+      await generateMusic(categoryRatios, balanceScore, genre.id, playSoundCallback, generateMeiwaRhythmCallback);
     },
     [playSoundCallback, generateMeiwaRhythmCallback]
   );
@@ -171,14 +127,14 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       // 少し待機してから初期化を開始
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      const initialized = await initializeTone();
+      const initialized = await simpleAudioEngine.initialize();
       if (!initialized) {
-        showMessage("Tone.jsの初期化に失敗しました。もう一度お試しください。", 3000);
+        showMessage("音声エンジンの初期化に失敗しました。もう一度お試しください。", 3000);
         return;
       }
 
       // 初期化が完了したことを確認
-      if (toneStateManager.isInitialized) {
+      if (simpleAudioEngine.isReady()) {
         showMessage("音アプリが起動しました！", 2000);
       } else {
         showMessage("初期化に失敗しました", 3000);
@@ -215,7 +171,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           onResetMeal={handleResetMeal}
           isPlaying={isPlaying}
           isLooping={isLooping}
-          toneStateManager={toneStateManager}
+          toneStateManager={simpleAudioEngine}
           onPlay={() => playMealBalance(musicGenres)}
           onStop={stopPlayback}
           disabled={

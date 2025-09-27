@@ -5103,7 +5103,9 @@ User Agent: ${userAgent}
 
   // ゆでたまごタイマーの音声再生（EggTimerComponentで管理）
   const playEggTimerSound = async () => {
-    if (!timerSettings.enableSounds) return;
+    if (!timerSettings.enableSounds) {
+      return;
+    }
 
     console.log("ゆでたまごタイマー音声再生開始:", eggTimerSound);
     try {
