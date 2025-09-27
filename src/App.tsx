@@ -4788,7 +4788,9 @@ User Agent: ${userAgent}
   const handleUpdateMemo = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!editingMemo) return;
+    if (!editingMemo) {
+      return;
+    }
 
     // タイトルがない場合は内容の一行目をタイトルとして使用
     const finalTitle =

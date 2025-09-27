@@ -342,8 +342,14 @@ export const initializeTone = async (): Promise<boolean> => {
             const currentRawContext = currentContext.rawContext;
             
             if (currentRawContext && currentRawContext.state === 'closed') {
-              console.warn("AudioContext is closed, cannot start Transport");
-              throw new Error("AudioContext is closed");
+              console.warn("AudioContext is closed, creating new context for Transport...");
+              // 新しいAudioContextを作成
+              const newContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+              if (newContext.state === 'suspended') {
+                await newContext.resume();
+              }
+              Tone.setContext(newContext);
+              console.log("New AudioContext created and set for Transport");
             }
             
             if (currentRawContext && currentRawContext.state === 'suspended') {
@@ -353,7 +359,13 @@ export const initializeTone = async (): Promise<boolean> => {
                 console.log("AudioContext resumed successfully");
               } catch (resumeError) {
                 console.warn("Failed to resume AudioContext:", resumeError);
-                throw new Error("Failed to resume AudioContext");
+                // resumeに失敗した場合は新しいコンテキストを作成
+                const newContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                if (newContext.state === 'suspended') {
+                  await newContext.resume();
+                }
+                Tone.setContext(newContext);
+                console.log("New AudioContext created after resume failure");
               }
             }
             
