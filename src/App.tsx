@@ -4788,7 +4788,9 @@ User Agent: ${userAgent}
   const handleUpdateMemo = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!editingMemo) return;
+    if (!editingMemo) {
+      return;
+    }
 
     // タイトルがない場合は内容の一行目をタイトルとして使用
     const finalTitle =
@@ -5101,7 +5103,9 @@ User Agent: ${userAgent}
 
   // ゆでたまごタイマーの音声再生（EggTimerComponentで管理）
   const playEggTimerSound = async () => {
-    if (!timerSettings.enableSounds) return;
+    if (!timerSettings.enableSounds) {
+      return;
+    }
 
     console.log("ゆでたまごタイマー音声再生開始:", eggTimerSound);
     try {
