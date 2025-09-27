@@ -1215,6 +1215,56 @@ ${methodInfo ? `- ${methodInfo}` : ""}
     }
   };
 
+  // バージョン情報を取得する関数
+  const getAppVersion = () => {
+    try {
+      // package.jsonからバージョンを取得
+      const version = process.env.REACT_APP_VERSION || "1.3.1";
+      return version;
+    } catch (error) {
+      return "不明";
+    }
+  };
+
+  // エラー報告用の詳細情報を生成する関数
+  const generateErrorReport = (errorInfo: any, errorType: string = "エラー") => {
+    const appVersion = getAppVersion();
+    const timestamp = new Date().toLocaleString('ja-JP', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+
+    return `
+${errorType}が発生しました。
+
+【エラー情報】
+エラーメッセージ: ${errorInfo.message}
+エラータイプ: ${errorInfo.type || "Unknown"}
+発生時刻: ${timestamp}
+URL: ${errorInfo.url}
+
+【システム情報】
+アプリバージョン: ${appVersion}
+ユーザーエージェント: ${errorInfo.userAgent}
+ファイル: ${errorInfo.filename || "Unknown file"}
+行番号: ${errorInfo.lineno || 0}
+列番号: ${errorInfo.colno || 0}
+
+【スタックトレース】
+${errorInfo.stack}
+
+【追加情報】
+このエラーについて詳細を教えてください。
+どのような操作を行っていた時に発生しましたか？
+再現手順があれば教えてください。
+    `.trim();
+  };
+
   // グローバルエラーハンドリング
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
@@ -1252,22 +1302,7 @@ ${methodInfo ? `- ${methodInfo}` : ""}
         // 不具合報告のカテゴリを設定
         setMemoCategory("不具合報告");
         // エラー情報をメモの内容に自動入力
-        const errorDetails = `
-エラーが発生しました。
-
-エラーメッセージ: ${errorInfo.message}
-ファイル: ${errorInfo.filename}
-行番号: ${errorInfo.lineno}
-列番号: ${errorInfo.colno}
-エラータイプ: ${errorInfo.type}
-発生時刻: ${errorInfo.timestamp}
-URL: ${errorInfo.url}
-
-スタックトレース:
-${errorInfo.stack}
-
-このエラーについて詳細を教えてください。
-        `.trim();
+        const errorDetails = generateErrorReport(errorInfo, "JavaScriptエラー");
         setMemoContent(errorDetails);
       }, 2000); // 2秒後に遷移
     };
@@ -1304,19 +1339,7 @@ ${errorInfo.stack}
         // 不具合報告のカテゴリを設定
         setMemoCategory("不具合報告");
         // エラー情報をメモの内容に自動入力
-        const errorDetails = `
-Promise拒否エラーが発生しました。
-
-エラーメッセージ: ${errorInfo.message}
-エラータイプ: ${errorInfo.type}
-発生時刻: ${errorInfo.timestamp}
-URL: ${errorInfo.url}
-
-スタックトレース:
-${errorInfo.stack}
-
-このエラーについて詳細を教えてください。
-        `.trim();
+        const errorDetails = generateErrorReport(errorInfo, "Promise拒否エラー");
         setMemoContent(errorDetails);
       }, 2000); // 2秒後に遷移
     };
@@ -1417,19 +1440,7 @@ ${errorInfo.stack}
           // 不具合報告のカテゴリを設定
           setMemoCategory("不具合報告");
           // エラー情報をメモの内容に自動入力
-          const errorDetails = `
-コンソールエラーが発生しました。
-
-エラーメッセージ: ${errorMessage}
-エラータイプ: ${errorInfo.type}
-発生時刻: ${errorInfo.timestamp}
-URL: ${errorInfo.url}
-
-スタックトレース:
-${errorInfo.stack}
-
-このエラーについて詳細を教えてください。
-          `.trim();
+          const errorDetails = generateErrorReport(errorInfo, "コンソールエラー");
           setMemoContent(errorDetails);
         }, 2000); // 2秒後に遷移
       }
@@ -1471,19 +1482,7 @@ ${errorInfo.stack}
           // 不具合報告のカテゴリを設定
           setMemoCategory("不具合報告");
           // エラー情報をメモの内容に自動入力
-          const errorDetails = `
-コンソール警告が発生しました。
-
-警告メッセージ: ${warningMessage}
-エラータイプ: ${errorInfo.type}
-発生時刻: ${errorInfo.timestamp}
-URL: ${errorInfo.url}
-
-スタックトレース:
-${errorInfo.stack}
-
-この警告について詳細を教えてください。
-          `.trim();
+          const errorDetails = generateErrorReport(errorInfo, "コンソール警告");
           setMemoContent(errorDetails);
         }, 2000); // 2秒後に遷移
       }
@@ -1587,7 +1586,18 @@ ${errorInfo.stack}
         setCurrentError(enhancedError);
         setShowErrorModal(true);
 
-        // エラー発生時に独立したモーダルを表示
+        // エラー発生時に不具合報告ページに遷移
+        setTimeout(() => {
+          setShowMemos(true);
+          setShowMemoForm(true);
+          // 不具合報告のカテゴリを設定
+          setMemoCategory("不具合報告");
+          // エラー情報をメモの内容に自動入力
+          const errorDetails = generateErrorReport(errorInfo, "JavaScriptエラー");
+          setMemoContent(errorDetails);
+        }, 2000); // 2秒後に遷移
+
+        // エラー発生時に独立したモーダルも表示
         setTimeout(() => {
           setShowSimpleErrorModal(true);
         }, 1000); // 1秒後にモーダルを表示
