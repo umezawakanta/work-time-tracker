@@ -160,10 +160,8 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       try {
         await onUpdateMemoStatus(memoId, newStatus);
         
-        // ステータス更新後、フィルターをリセットして更新されたメモを確実に表示
-        setStatusFilter('all');
-        setTagFilter('');
-        setExcludeTags([]);
+        // ステータス更新後、フィルター条件を維持したまま更新されたメモを表示
+        // フィルターをリセットしない
         
         setEditingMemoId(null);
         setEditingStatus('');
@@ -187,6 +185,8 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       try {
         const tagsArray = newTags.split(',').map(tag => tag.trim()).filter(tag => tag);
         await onUpdateMemoTags(memoId, tagsArray);
+        
+        // タグ更新後、フィルター条件を維持したまま更新されたメモを表示
         setEditingMemoId(null);
         setEditingTags('');
       } catch (error) {
