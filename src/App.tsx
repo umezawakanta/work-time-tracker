@@ -387,6 +387,7 @@ function App({
   const [memoIsPublic, setMemoIsPublic] = useState(false);
   const [memoIsFamilyOnly, setMemoIsFamilyOnly] = useState(false);
   const [memoIsAdminOnly, setMemoIsAdminOnly] = useState(false);
+  const [memoPostType, setMemoPostType] = useState('general');
   const [memoSearchTerm, setMemoSearchTerm] = useState("");
   const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
 
@@ -4312,6 +4313,7 @@ ${errorInfo.stack}
         setMemoIsPublic(false);
         setMemoIsFamilyOnly(false);
         setMemoIsAdminOnly(false);
+        setMemoPostType('general');
         setShowMemoForm(false);
         loadMemos();
 
