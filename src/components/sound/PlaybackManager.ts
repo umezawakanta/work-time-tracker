@@ -206,6 +206,12 @@ export const usePlaybackManager = (
         const chordFrequencies = [261.63, 329.63, 392.00]; // C-E-G
         await simpleAudioEngine.playChord(chordFrequencies, 1.0, 0.3, instrumentType);
       }
+
+      // 楽譜データを生成
+      const scoreData = generateScoreData(categoryRatios, genre, adjustedRhythm, adjustedMelody);
+      if (generateMusicCallback) {
+        await generateMusicCallback(categoryRatios, balanceScore, genre);
+      }
       
       console.log(`Generated advanced music with ${instrumentType} instrument for ${genre.name} genre`);
       console.log(`Nutrition score: ${nutritionScore.overallScore.toFixed(2)}`);
@@ -238,6 +244,78 @@ export const usePlaybackManager = (
       
       await simpleAudioEngine.playTone(note, duration, 0.4, instrumentType);
     }
+  };
+
+  // 楽譜データを生成する関数
+  const generateScoreData = (
+    categoryRatios: CategoryRatio[],
+    genre: MusicGenre,
+    rhythmPattern: any,
+    melodyPattern: any
+  ) => {
+    const notes: any[] = [];
+    let currentTime = 0;
+
+    // リズムパターンから音符を生成
+    rhythmPattern.beats.forEach((beat: number, index: number) => {
+      if (beat > 0.3) {
+        const frequency = 220 + (beat * 220);
+        const duration = rhythmPattern.durations[index];
+        
+        // 周波数を音符に変換
+        const note = frequencyToNote(frequency);
+        notes.push({
+          pitch: note,
+          duration: getNoteDuration(duration),
+          time: currentTime,
+          instrument: 'rhythm'
+        });
+        
+        currentTime += duration;
+      }
+    });
+
+    // メロディーパターンから音符を生成
+    melodyPattern.notes.forEach((frequency: number, index: number) => {
+      const duration = melodyPattern.durations[index];
+      const note = frequencyToNote(frequency);
+      
+      notes.push({
+        pitch: note,
+        duration: getNoteDuration(duration),
+        time: currentTime,
+        instrument: 'melody'
+      });
+      
+      currentTime += duration;
+    });
+
+    return {
+      notes,
+      timeSignature: "4/4",
+      tempo: genre.baseTempo || 120,
+      key: genre.keySignature || "C",
+    };
+  };
+
+  // 周波数を音符に変換する関数
+  const frequencyToNote = (frequency: number): string => {
+    const A4 = 440;
+    const semitones = Math.round(12 * Math.log2(frequency / A4));
+    const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const octave = Math.floor(semitones / 12) + 4;
+    const noteIndex = ((semitones % 12) + 12) % 12;
+    return `${noteNames[noteIndex]}/${octave}`;
+  };
+
+  // 音符の長さを取得する関数
+  const getNoteDuration = (duration: number): string => {
+    if (duration >= 2) return 'w';
+    if (duration >= 1) return 'h';
+    if (duration >= 0.5) return 'q';
+    if (duration >= 0.25) return '8';
+    if (duration >= 0.125) return '16';
+    return '32';
   };
 
   // 詳細なフィードバックメッセージを生成

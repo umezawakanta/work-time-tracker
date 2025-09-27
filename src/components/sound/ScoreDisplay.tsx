@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import {
   Renderer,
   Stave,
@@ -54,9 +54,19 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
   const scoreContainerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<any>(null);
 
+  // 楽譜データが変更された時に描画
+  useEffect(() => {
+    if (currentScore && showScore) {
+      console.log("Score data changed, rendering...", currentScore);
+      renderScore(currentScore);
+    }
+  }, [currentScore, showScore, renderScore]);
+
   // 楽譜を描画する関数
   const renderScore = useCallback((scoreData: ScoreData) => {
+    console.log("Rendering score:", scoreData);
     if (!scoreContainerRef.current) {
+      console.log("Score container not found");
       return;
     }
 

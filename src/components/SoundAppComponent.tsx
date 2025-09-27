@@ -11,6 +11,7 @@ import { createInitialMeal } from "./sound/MealLogic";
 import { REPEAT_OPTIONS } from "./sound/constants";
 import { MealRecord } from "./sound/MealRecording";
 import { ScoreData } from "./sound/ScoreDisplay";
+import ScoreDisplay from "./sound/ScoreDisplay";
 import { MusicGenre } from "./sound/types";
 
 /**
@@ -87,14 +88,57 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
       playTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
       playTimeoutsRef.current = [];
 
-      // 楽譜データを生成（明和電機風の場合はスキップ）
-      setCurrentScore(null);
+      // 楽譜データを生成
+      const scoreData = generateScoreData(categoryRatios, genre);
+      console.log("Generated score data:", scoreData);
+      setCurrentScore(scoreData);
 
       // 明和電機風の8bit音楽を生成
       await generateMusic(categoryRatios, balanceScore, genre.id, playSoundCallback, generateMeiwaRhythmCallback);
     },
     [playSoundCallback, generateMeiwaRhythmCallback]
   );
+
+  // 楽譜データを生成する関数
+  const generateScoreData = useCallback((categoryRatios: any[], genre: MusicGenre) => {
+    const notes: any[] = [];
+    let currentTime = 0;
+
+    // アクティブなカテゴリから音符を生成
+    categoryRatios
+      .filter((cat) => cat.ratio > 0)
+      .forEach((category, index) => {
+        const noteMapping = category.noteMapping || "C/4";
+        const soundDuration = category.sound?.duration || 0.5;
+        const duration = getNoteDuration(soundDuration);
+
+        notes.push({
+          pitch: noteMapping,
+          duration: duration,
+          time: currentTime,
+          instrument: category.instrument || "unknown",
+        });
+
+        currentTime += soundDuration;
+      });
+
+    return {
+      notes,
+      timeSignature: "4/4",
+      tempo: genre.baseTempo || 120,
+      key: genre.keySignature || "C",
+    };
+  }, []);
+
+  // 音符の長さを取得する関数
+  const getNoteDuration = (duration: number): string => {
+    if (duration >= 2) return 'w';
+    if (duration >= 1) return 'h';
+    if (duration >= 0.5) return 'q';
+    if (duration >= 0.25) return '8';
+    if (duration >= 0.125) return '16';
+    return '32';
+  };
 
   // PlaybackManagerの使用
   const playbackState: PlaybackState = {
