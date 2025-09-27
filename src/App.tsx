@@ -3584,6 +3584,14 @@ ${errorInfo.stack}
   useEffect(() => {
     const handleErrorReport = (event: CustomEvent) => {
       const { category, content } = event.detail;
+      
+      // 音声エラーの場合は専用の処理
+      if (category === '音声エラー') {
+        handleSoundErrorReport(content);
+        return;
+      }
+      
+      // その他のエラーは従来通り
       setShowErrorModal(true);
       setCurrentError({
         name: "Error",
@@ -4449,6 +4457,83 @@ User Agent: ${userAgent}
     }
   };
 
+  // GitHubイシュー作成関数
+  const createGitHubIssue = async (title: string, body: string) => {
+    try {
+      // GitHub Personal Access Token（環境変数から取得）
+      const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
+      if (!githubToken) {
+        console.warn("GitHub token not found, skipping issue creation");
+        return;
+      }
+
+      const response = await fetch("https://api.github.com/repos/kanta13jp1/work-time-tracker/issues", {
+        method: "POST",
+        headers: {
+          "Authorization": `token ${githubToken}`,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: title,
+          body: body,
+          labels: ["bug", "auto-generated"],
+        }),
+      });
+
+      if (response.ok) {
+        const issue = await response.json();
+        console.log(`GitHub issue created: ${issue.html_url}`);
+        return issue.html_url;
+      } else {
+        console.error("Failed to create GitHub issue:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error creating GitHub issue:", error);
+    }
+  };
+
+  // 音声エラー報告の送信処理
+  const handleSoundErrorReport = async (content: string) => {
+    try {
+      const token = localStorage.getItem("access_token");
+
+      // 音声エラー報告を公開メモとして投稿
+      const response = await fetch("/api/memos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: `[エラー報告] 音声エラー`,
+          content: content,
+          category: "音声エラー",
+          tags: ["音声", "エラー", "バグ報告"],
+          isPublic: true,
+          isFamilyOnly: false,
+          isAdminOnly: false,
+          postType: "update_request",
+        }),
+      });
+
+      // 401エラーのチェック
+      handle401Error(response);
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log("音声エラー報告が送信されました");
+        // GitHubイシューも作成
+        await createGitHubIssue("音声エラー", content);
+      } else {
+        console.error("音声エラー報告の送信に失敗:", data.message);
+      }
+    } catch (error) {
+      console.error("音声エラー報告の送信中にエラーが発生:", error);
+    }
+  };
+
   // エラー報告の送信処理
   const handleErrorReport = async (errorInfo: ApiErrorInfo) => {
     try {
@@ -4481,6 +4566,8 @@ User Agent: ${userAgent}
       if (data.success) {
         setMessage("エラー報告を送信しました。開発者が確認します。");
         loadMemos(); // メモ一覧を更新
+        // GitHubイシューも作成
+        await createGitHubIssue(`API Error - ${errorInfo.status || 'Unknown'}`, formatApiErrorReportContent(errorInfo));
         loadPublicMemos(); // 公開メモ一覧を更新
       } else {
         throw new Error(data.message || "エラー報告の送信に失敗しました");

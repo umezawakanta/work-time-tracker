@@ -28,7 +28,7 @@ export const ERROR_PATTERNS = {
 export function parseStatus(statusMatch: RegExpMatchArray | null, statusMatch2: RegExpMatchArray | null): number | undefined {
   if (statusMatch?.[1]) {
     return parseInt(statusMatch[1], 10);
-  } else if (statusMatch2[1]) {
+  } else if (statusMatch2?.[1]) {
     return parseInt(statusMatch2[1], 10);
   }
   return undefined;
@@ -181,9 +181,9 @@ export const buildErrorInfo = (
   return {
     message: error.message,
     stack: error.stack,
-    filename: apiErrorInfo?.filename ?? filename,
-    lineno: apiErrorInfo?.lineno ?? lineno,
-    colno: apiErrorInfo?.colno ?? colno,
+    filename: (apiErrorInfo as any)?.filename ?? filename,
+    lineno: (apiErrorInfo as any)?.lineno ?? lineno,
+    colno: (apiErrorInfo as any)?.colno ?? colno,
     type: apiErrorInfo?.type ?? type,
     timestamp: apiErrorInfo?.timestamp || getTimestamp(),
     userAgent: apiErrorInfo?.userAgent || ERROR_DEFAULTS.USER_AGENT,

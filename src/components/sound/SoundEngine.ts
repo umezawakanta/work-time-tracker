@@ -298,29 +298,57 @@ export const initializeTone = async (): Promise<boolean> => {
 
   const initializationPromise = (async () => {
     try {
-      // ユーザー操作後にAudioContextを確実に準備
-      const audioReady = await ensureAudioContextReady();
-      if (!audioReady) {
-        throw new Error("AudioContext is not ready");
+      // まず既存のAudioContextをチェック
+      if (Tone.context.state === 'running') {
+        console.log("Tone.js is already running");
+        toneStateManager.setInitialized(true);
+        return true;
       }
 
-      // Tone.jsを明示的に開始（ユーザー操作後なので安全）
-      console.log("Starting Tone.js after user interaction...");
-      await Tone.start();
-      
-      // Tone.jsが確実に開始されるまで待つ
-      let attempts = 0;
-      while (Tone.context.state !== 'running' && attempts < 20) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
+      // AudioContextを確実に準備
+      const audioReady = await ensureAudioContextReady();
+      if (!audioReady) {
+        // AudioContextの準備に失敗した場合、強制的に新しいコンテキストを作成
+        console.log("AudioContext not ready, creating new context...");
+        
+        // 既存のコンテキストを破棄
+        if (Tone.context.state !== 'closed') {
+          Tone.context.dispose();
+        }
+        
+        // 新しいAudioContextを作成
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        
+        // AudioContextを開始
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+        
+        // Tone.jsに新しいコンテキストを設定
+        Tone.setContext(audioContext);
+        
+        // Tone.jsを開始
+        await Tone.start();
+        
+        // 状態を確認
+        let attempts = 0;
+        while (Tone.context.state !== 'running' && attempts < 20) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        if (Tone.context.state !== 'running') {
+          throw new Error(`AudioContext failed to initialize after ${attempts} attempts, state: ${Tone.context.state}`);
+        }
       }
-      
+
+      // 最終確認
       if (Tone.context.state === 'running') {
-        console.log(`Tone.js started successfully after ${attempts} attempts`);
+        console.log("Tone.js initialized successfully");
         toneStateManager.setInitialized(true);
         return true;
       } else {
-        throw new Error(`Tone.js failed to start after ${attempts} attempts, state: ${Tone.context.state}`);
+        throw new Error(`AudioContext is not ready. Tone.js: ${Tone.context.state}, Raw: ${Tone.context.rawContext.state}`);
       }
     } catch (error) {
       console.error("Failed to initialize Tone.js:", error);

@@ -36,8 +36,16 @@ const SoundControls: React.FC<SoundControlsProps> = ({
 
   const audioContextStatus = getAudioContextStatus();
 
-  // 初期化処理
-  const handleInitialize = async () => {
+  // 初期化処理（ユーザー操作を確実に検出）
+  const handleInitialize = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    console.log("User clicked initialize button, ensuring user interaction...");
+    
+    // ユーザー操作を確実に検出するため、少し待機
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     if (onInitialize) {
       await onInitialize();
     }
