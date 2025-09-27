@@ -177,6 +177,14 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const { playMealBalance, stopPlayback, handleUpdateCategoryCount, handleResetMeal } = 
     usePlaybackManager(playbackState, playbackCallbacks);
 
+  // デバッグ用ログ
+  console.log('SoundAppComponent state:', {
+    isPlaying,
+    currentMeal,
+    disabled: isPlaying,
+    useDragDrop
+  });
+
   // 初期化処理（ユーザージェスチャーが必要）
   const handleInitialize = async () => {
     try {
@@ -234,10 +242,7 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
           toneStateManager={simpleAudioEngine}
           onPlay={() => playMealBalance(musicGenres)}
           onStop={stopPlayback}
-          disabled={
-            isPlaying ||
-            Object.values(currentMeal.categories).every((c) => typeof c === 'number' && c === 0)
-          }
+          disabled={isPlaying}
           onInitialize={handleInitialize}
           currentScore={currentScore}
           showScore={showScore}

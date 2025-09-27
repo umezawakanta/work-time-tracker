@@ -158,6 +158,7 @@ const SoundAppLayout: React.FC<SoundAppLayoutProps> = ({
               currentMeal={currentMeal}
               onUpdateCategoryCount={onUpdateCategoryCount}
               onResetMeal={onResetMeal}
+              disabled={disabled}
             />
           )}
 

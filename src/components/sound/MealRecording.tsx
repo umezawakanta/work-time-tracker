@@ -26,6 +26,7 @@ interface MealRecordingProps {
   currentMeal: MealRecord;
   onUpdateCategoryCount: (categoryId: string, count: number) => void;
   onResetMeal: () => void;
+  disabled?: boolean;
 }
 
 const MealRecording: React.FC<MealRecordingProps> = ({
@@ -33,6 +34,7 @@ const MealRecording: React.FC<MealRecordingProps> = ({
   currentMeal,
   onUpdateCategoryCount,
   onResetMeal,
+  disabled = false,
 }) => {
   return (
     <div className="meal-recording">
@@ -57,6 +59,7 @@ const MealRecording: React.FC<MealRecordingProps> = ({
                     (currentMeal.categories[category.id] || 0) - 1
                   )
                 }
+                disabled={disabled}
               >
                 -
               </button>
@@ -68,6 +71,7 @@ const MealRecording: React.FC<MealRecordingProps> = ({
                     (currentMeal.categories[category.id] || 0) + 1
                   )
                 }
+                disabled={disabled}
               >
                 +
               </button>
@@ -75,7 +79,7 @@ const MealRecording: React.FC<MealRecordingProps> = ({
           </div>
         ))}
       </div>
-      <button onClick={onResetMeal}>リセット</button>
+      <button onClick={onResetMeal} disabled={disabled}>リセット</button>
     </div>
   );
 };
