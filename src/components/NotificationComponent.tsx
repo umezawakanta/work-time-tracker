@@ -34,7 +34,6 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ className
       }
 
       const data = await response.json();
-      console.log('Notifications loaded:', data);
       setNotifications(data.notifications || []);
       setUnreadCount(data.unreadCount || 0);
     } catch (error) {

@@ -177,13 +177,6 @@ const SoundAppComponent: React.FC<SoundAppComponentProps> = ({
   const { playMealBalance, stopPlayback, handleUpdateCategoryCount, handleResetMeal } = 
     usePlaybackManager(playbackState, playbackCallbacks);
 
-  // デバッグ用ログ
-  console.log('SoundAppComponent state:', {
-    isPlaying,
-    currentMeal,
-    disabled: isPlaying,
-    useDragDrop
-  });
 
   // 初期化処理（ユーザージェスチャーが必要）
   const handleInitialize = async () => {

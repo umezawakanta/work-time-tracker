@@ -148,29 +148,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       }
     });
     
-    console.log('Filtered memos:', {
-      totalMemos: publicMemos.length,
-      filteredMemos: sorted.length,
-      statusFilter,
-      tagFilter,
-      excludeTags,
-      filterByDate: filterByDate ? filterByDate.toISOString().split('T')[0] : null,
-      selectedPublicMemoCategory,
-      publicMemoSearchTerm,
-      sortBy,
-      sortOrder
-    });
     
-    // 特定のメモの詳細をログ出力
-    const specificMemo = publicMemos.find(memo => memo.id === '68cd6167948630efd47f2b5e');
-    if (specificMemo) {
-      console.log('Specific memo in publicMemos:', {
-        id: specificMemo.id,
-        title: specificMemo.title,
-        status: specificMemo.status,
-        postType: specificMemo.postType
-      });
-    }
     
     return sorted;
   };
@@ -180,12 +158,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     if (onUpdateMemoStatus && !isLoading) {
       setIsLoading(true);
       try {
-        console.log('PublicMemosComponent: Starting status update', { memoId, newStatus });
         await onUpdateMemoStatus(memoId, newStatus);
-        console.log('PublicMemosComponent: Status update completed');
         
         // ステータス更新後、フィルターをリセットして更新されたメモを確実に表示
-        console.log('Resetting filters to show updated memo');
         setStatusFilter('all');
         setTagFilter('');
         setExcludeTags([]);
@@ -199,7 +174,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         setIsLoading(false);
       }
     } else if (isLoading) {
-      console.log('PublicMemosComponent: Status update already in progress, ignoring request');
+      // 処理中のため無視
     } else {
       console.error('PublicMemosComponent: onUpdateMemoStatus is not provided');
     }
@@ -221,7 +196,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         setIsLoading(false);
       }
     } else if (isLoading) {
-      console.log('PublicMemosComponent: Tags update already in progress, ignoring request');
+      // 処理中のため無視
     }
   };
 
@@ -273,7 +248,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         setIsLoading(false);
       }
     } else if (isLoading) {
-      console.log('PublicMemosComponent: Delete already in progress, ignoring request');
+      // 処理中のため無視
     }
   };
 
@@ -914,7 +889,6 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                               </select>
                               <button 
                                 onClick={() => {
-                                  console.log('Status save button clicked:', { memoId: memo.id, status: editingStatus });
                                   handleStatusUpdate(memo.id, editingStatus);
                                 }}
                                 className="save-button"

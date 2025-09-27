@@ -97,14 +97,8 @@ module.exports = async (req, res) => {
       // 新しい本を追加
       const { title, author, isbn, publishedYear, totalPages, category, notes, isPublic, isFamilyOnly, isAdminOnly, userId } = req.body;
 
-      console.log('📚 Book creation request:', {
-        title, author, isbn, publishedYear, totalPages, category, notes,
-        isPublic, isFamilyOnly, isAdminOnly, userId
-      });
-
       // 必須フィールドの検証（ISBNを必須から除外）
       if (!title || !author || !publishedYear || !totalPages || !category) {
-        console.log('❌ Validation failed:', { title, author, publishedYear, totalPages, category });
         return handleError(res, { statusCode: 400, message: '必須フィールドが不足しています' });
       }
 
@@ -126,9 +120,7 @@ module.exports = async (req, res) => {
           userId: userId || '',
         });
 
-        console.log('📚 Creating book with data:', newBook);
         const savedBook = await newBook.save();
-        console.log('✅ Book saved successfully:', savedBook._id);
 
         res.status(201).json({
           success: true,
@@ -154,7 +146,6 @@ module.exports = async (req, res) => {
           },
         });
       } catch (bookError) {
-        console.error('❌ Book creation error:', bookError);
         throw bookError;
       }
     } else {
