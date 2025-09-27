@@ -15,6 +15,18 @@ const MemoSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   authorName: { type: String, required: false }, // 作成者名を追加
   authorEmail: { type: String, required: false }, // 作成者メールを追加
+  postType: { 
+    type: String, 
+    enum: ['update_request', 'error_report', 'general'], 
+    default: 'general' 
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'in_progress', 'resolved', 'closed'], 
+    default: 'pending' 
+  },
+  adminResponse: { type: String },
+  adminResponseDate: { type: Date },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -129,6 +141,10 @@ module.exports = async (req, res) => {
           isAdminOnly: memo.isAdminOnly || false,
           author: memo.authorName || '匿名', // メモの作成者名を追加
           authorEmail: memo.authorEmail, // メモの作成者メールを追加
+          postType: memo.postType || 'general', // 投稿タイプを追加
+          status: memo.status || 'pending', // ステータスを追加
+          adminResponse: memo.adminResponse, // 管理者返信を追加
+          adminResponseDate: memo.adminResponseDate ? memo.adminResponseDate.toISOString() : null, // 管理者返信日時を追加
           createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
           updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
           replies: replies.map(reply => ({
