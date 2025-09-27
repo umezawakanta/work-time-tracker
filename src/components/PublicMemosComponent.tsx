@@ -64,6 +64,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   
   // 削除確認ダイアログ状態
   const [deleteConfirmMemo, setDeleteConfirmMemo] = useState<Memo | null>(null);
+  
+  // ローディング状態管理
+  const [isLoading, setIsLoading] = useState(false);
 
   // 公開メモの読み込み関数をPublicMemosComponent内で定義
   const loadPublicMemosLocal = async () => {
@@ -174,7 +177,8 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // ステータス更新
   const handleStatusUpdate = async (memoId: string, newStatus: string) => {
-    if (onUpdateMemoStatus) {
+    if (onUpdateMemoStatus && !isLoading) {
+      setIsLoading(true);
       try {
         console.log('PublicMemosComponent: Starting status update', { memoId, newStatus });
         await onUpdateMemoStatus(memoId, newStatus);
@@ -191,7 +195,11 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       } catch (error) {
         console.error('PublicMemosComponent: ステータス更新エラー:', error);
         alert('ステータス更新に失敗しました');
+      } finally {
+        setIsLoading(false);
       }
+    } else if (isLoading) {
+      console.log('PublicMemosComponent: Status update already in progress, ignoring request');
     } else {
       console.error('PublicMemosComponent: onUpdateMemoStatus is not provided');
     }
@@ -199,7 +207,8 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // タグ更新
   const handleTagsUpdate = async (memoId: string, newTags: string) => {
-    if (onUpdateMemoTags) {
+    if (onUpdateMemoTags && !isLoading) {
+      setIsLoading(true);
       try {
         const tagsArray = newTags.split(',').map(tag => tag.trim()).filter(tag => tag);
         await onUpdateMemoTags(memoId, tagsArray);
@@ -208,7 +217,11 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       } catch (error) {
         console.error('タグ更新エラー:', error);
         alert('タグ更新に失敗しました');
+      } finally {
+        setIsLoading(false);
       }
+    } else if (isLoading) {
+      console.log('PublicMemosComponent: Tags update already in progress, ignoring request');
     }
   };
 
@@ -248,14 +261,19 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // 削除実行
   const handleDeleteExecute = async () => {
-    if (deleteConfirmMemo && onDeleteMemo) {
+    if (deleteConfirmMemo && onDeleteMemo && !isLoading) {
+      setIsLoading(true);
       try {
         await onDeleteMemo(deleteConfirmMemo.id);
         setDeleteConfirmMemo(null);
       } catch (error) {
         console.error('削除エラー:', error);
         alert('削除に失敗しました');
+      } finally {
+        setIsLoading(false);
       }
+    } else if (isLoading) {
+      console.log('PublicMemosComponent: Delete already in progress, ignoring request');
     }
   };
 
@@ -704,8 +722,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                   console.log('検索:', publicMemoSearchTerm);
                 }}
                 className="search-button"
+                disabled={isLoading || publicMemosLoading}
               >
-                検索
+                {isLoading || publicMemosLoading ? '検索中...' : '検索'}
               </button>
             </div>
             
@@ -769,8 +788,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                 }}
                 className="reset-button"
                 title="フィルターとソートをリセット"
+                disabled={isLoading || publicMemosLoading}
               >
-                🔄 リセット
+                {isLoading || publicMemosLoading ? '🔄 処理中...' : '🔄 リセット'}
               </button>
             )}
           </div>
@@ -898,8 +918,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                                   handleStatusUpdate(memo.id, editingStatus);
                                 }}
                                 className="save-button"
+                                disabled={isLoading}
                               >
-                                保存
+                                {isLoading ? '保存中...' : '保存'}
                               </button>
                               <button 
                                 onClick={cancelEditing}
@@ -967,8 +988,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                           <button 
                             onClick={() => handleTagsUpdate(memo.id, editingTags)}
                             className="save-button"
+                            disabled={isLoading}
                           >
-                            保存
+                            {isLoading ? '保存中...' : '保存'}
                           </button>
                           <button 
                             onClick={cancelEditing}
@@ -1218,8 +1240,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
               <button
                 onClick={handleDeleteExecute}
                 className="confirm-delete-button"
+                disabled={isLoading}
               >
-                削除する
+                {isLoading ? '削除中...' : '削除する'}
               </button>
               <button
                 onClick={handleDeleteCancel}

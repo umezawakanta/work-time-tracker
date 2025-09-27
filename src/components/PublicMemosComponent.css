@@ -1563,6 +1563,44 @@
   color: #b02a37;
 }
 
+/* ボタンの無効化状態 */
+.save-button:disabled,
+.cancel-button:disabled,
+.confirm-delete-button:disabled,
+.cancel-delete-button:disabled,
+.search-button:disabled,
+.reset-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f8f9fa;
+  color: #6c757d;
+  border-color: #dee2e6;
+}
+
+.save-button:disabled:hover,
+.cancel-button:disabled:hover,
+.confirm-delete-button:disabled:hover,
+.cancel-delete-button:disabled:hover,
+.search-button:disabled:hover,
+.reset-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+/* ローディング状態のアニメーション */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.save-button:disabled,
+.confirm-delete-button:disabled {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
 /* レスポンシブ対応 - ソートコントロール */
 @media (max-width: 768px) {
   .sort-controls {
