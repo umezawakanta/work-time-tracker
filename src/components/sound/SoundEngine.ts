@@ -1,5 +1,6 @@
 import * as Tone from "tone";
 import { ensureAudioContextReady } from "./AudioContextUtils";
+import { audioPlaybackFallback } from "./AudioFallbackUtils";
 
 // Tone.jsの状態管理クラス
 class ToneStateManager {
@@ -46,8 +47,9 @@ const toneStateManager = ToneStateManager.getInstance();
 
 // Tone.jsの自動初期化を防ぐ
 try {
-  if (Tone.context.state !== 'closed') {
-    Tone.context.dispose();
+  const context = Tone.getContext();
+  if (context.state !== 'closed') {
+    context.dispose();
   }
 } catch (error) {
   console.log(
@@ -280,76 +282,69 @@ export const createMeiwaInstrument = async (categoryId: string) => {
 
 // Tone.jsの初期化（ユーザー操作時のみ）
 export const initializeTone = async (): Promise<boolean> => {
+  // 既に初期化済みの場合は成功を返す
   if (toneStateManager.isInitialized) {
+    console.log("Tone.js is already initialized");
     return true;
   }
 
   // 既に初期化中の場合は同じPromiseを返す
   if (toneStateManager.getInitializationPromise()) {
+    console.log("Tone.js initialization already in progress, waiting...");
     return toneStateManager.getInitializationPromise()!;
   }
 
   // 初期化中フラグを設定
   if (toneStateManager.isCurrentlyInitializing) {
+    console.log("Tone.js is currently initializing, skipping duplicate request");
     return false;
   }
 
+  console.log("Starting Tone.js initialization...");
   toneStateManager.setInitializing(true);
 
   const initializationPromise = (async () => {
     try {
-      // まず既存のAudioContextをチェック
-      if (Tone.context.state === 'running') {
+      // まず既存のAudioContextの状態を確認
+      const context = Tone.getContext();
+      const currentState = context.state;
+      console.log(`Current Tone.js context state: ${currentState}`);
+      
+      if (currentState === 'running') {
         console.log("Tone.js is already running");
         toneStateManager.setInitialized(true);
         return true;
       }
 
       // AudioContextを確実に準備
+      console.log("Ensuring AudioContext is ready...");
       const audioReady = await ensureAudioContextReady();
+      
       if (!audioReady) {
-        // AudioContextの準備に失敗した場合、強制的に新しいコンテキストを作成
-        console.log("AudioContext not ready, creating new context...");
-        
-        // 既存のコンテキストを破棄
-        if (Tone.context.state !== 'closed') {
-          Tone.context.dispose();
-        }
-        
-        // 新しいAudioContextを作成
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        
-        // AudioContextを開始
-        if (audioContext.state === 'suspended') {
-          await audioContext.resume();
-        }
-        
-        // Tone.jsに新しいコンテキストを設定
-        Tone.setContext(audioContext);
-        
-        // Tone.jsを開始
-        await Tone.start();
-        
-        // 状態を確認
-        let attempts = 0;
-        while (Tone.context.state !== 'running' && attempts < 20) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-          attempts++;
-        }
-        
-        if (Tone.context.state !== 'running') {
-          throw new Error(`AudioContext failed to initialize after ${attempts} attempts, state: ${Tone.context.state}`);
-        }
+        throw new Error("AudioContext preparation failed");
       }
 
       // 最終確認
-      if (Tone.context.state === 'running') {
+      const finalContext = Tone.getContext();
+      const finalState = finalContext.state;
+      const rawState = finalContext.rawContext ? finalContext.rawContext.state : 'unknown';
+      
+      console.log(`Final Tone.js state - Context: ${finalState}, Raw: ${rawState}`);
+      
+      if (finalState === 'running' || rawState === 'running') {
+        // Transportも確実に開始
+        if (Tone.Transport.state !== 'started') {
+          console.log("Starting Tone.js Transport...");
+          Tone.Transport.start();
+        }
+        
         console.log("Tone.js initialized successfully");
         toneStateManager.setInitialized(true);
         return true;
       } else {
-        throw new Error(`AudioContext is not ready. Tone.js: ${Tone.context.state}, Raw: ${Tone.context.rawContext.state}`);
+        throw new Error(`Tone.js initialization failed. Context: ${finalState}, Raw: ${rawState}`);
       }
+      
     } catch (error) {
       console.error("Failed to initialize Tone.js:", error);
       
@@ -362,7 +357,7 @@ export const initializeTone = async (): Promise<boolean> => {
 - エラータイプ: 音声初期化エラー
 - 時刻: ${new Date().toISOString()}
 - ユーザーエージェント: ${navigator.userAgent}
-- AudioContext状態: ${Tone.context.state}
+- AudioContext状態: ${Tone.getContext().state}
 - ブラウザ: ${navigator.userAgent.includes('Chrome') ? 'Chrome' : navigator.userAgent.includes('Firefox') ? 'Firefox' : 'Other'}
 
 このエラーは自動的に検出されました。
@@ -389,7 +384,7 @@ export const initializeTone = async (): Promise<boolean> => {
   return initializationPromise;
 };
 
-// 音を再生
+// 音を再生（フォールバック機能付き）
 export const playSound = async (
   categoryId: string,
   frequency: number,
@@ -400,47 +395,54 @@ export const playSound = async (
   createInstrumentForGenre?: (categoryId: string, genre: string) => Promise<any>,
   getOrCreateInstrument?: (categoryId: string) => Promise<any>
 ) => {
-  // Tone.jsが初期化されているか確認
-  if (!toneStateManager.isInitialized) {
-    const initialized = await initializeTone();
-    if (!initialized) {
-      console.warn("Tone.js not initialized, skipping sound playback");
-      return;
+  // フォールバック機能付きで音声再生を実行
+  const success = await audioPlaybackFallback.playWithFallback(
+    async () => {
+      // Tone.jsが初期化されているか確認
+      if (!toneStateManager.isInitialized) {
+        const initialized = await initializeTone();
+        if (!initialized) {
+          throw new Error("Tone.js initialization failed");
+        }
+      }
+
+      // AudioContextの状態を確認し、必要に応じて再開
+      const isReady = await ensureAudioContextReady();
+      if (!isReady) {
+        throw new Error("AudioContext is not ready");
+      }
+
+      let instrument = null;
+      
+      if (genre && createInstrumentForGenre) {
+        instrument = await createInstrumentForGenre(categoryId, genre);
+      } else if (getOrCreateInstrument) {
+        instrument = await getOrCreateInstrument(categoryId);
+      }
+      
+      if (!instrument) {
+        throw new Error("Failed to create instrument");
+      }
+
+      const volumeDb = Math.log10(Math.max(0.001, volume)) * 20;
+      instrument.volume.value = volumeDb;
+
+      const noteToPlay = getNoteForCategory(categoryId, genre, frequency);
+      instrument.triggerAttackRelease(noteToPlay, duration + "s");
+    },
+    // フォールバック関数：シンプルなビープ音を再生
+    () => {
+      console.log(`Playing fallback beep for category ${categoryId}`);
+      audioPlaybackFallback.playSimpleBeep(frequency, duration);
     }
-  }
+  );
 
-  // AudioContextの状態を確認し、必要に応じて再開
-  const isReady = await ensureAudioContextReady();
-  if (!isReady) {
-    console.warn("AudioContext is not ready, skipping sound playback");
-    return;
-  }
-
-
-  try {
-    let instrument = null;
-    
-    if (genre && createInstrumentForGenre) {
-      instrument = await createInstrumentForGenre(categoryId, genre);
-    } else if (getOrCreateInstrument) {
-      instrument = await getOrCreateInstrument(categoryId);
-    }
-    
-    if (!instrument) {
-      return;
-    }
-
-    const volumeDb = Math.log10(Math.max(0.001, volume)) * 20;
-    instrument.volume.value = volumeDb;
-
-    const noteToPlay = getNoteForCategory(categoryId, genre, frequency);
-    instrument.triggerAttackRelease(noteToPlay, duration + "s");
-  } catch (error) {
-    console.error(`Could not play sound for ${categoryId}:`, error);
+  if (!success) {
+    console.error(`Failed to play sound for ${categoryId}, fallback also failed`);
     
     // 音声再生エラーを不具合報告フォームに送信
     const errorDetails = `
-音声再生に失敗しました。
+音声再生に失敗しました（フォールバック機能も失敗）。
 
 エラー詳細:
 - カテゴリID: ${categoryId}
@@ -448,11 +450,10 @@ export const playSound = async (
 - 再生時間: ${duration}秒
 - 音量: ${volume}
 - ジャンル: ${genre || '未指定'}
-- エラーメッセージ: ${error instanceof Error ? error.message : "Unknown error"}
-- エラータイプ: 音声再生エラー
+- エラータイプ: 音声再生エラー（フォールバック失敗）
 - 時刻: ${new Date().toISOString()}
 - ユーザーエージェント: ${navigator.userAgent}
-- AudioContext状態: ${Tone.context.state}
+- AudioContext状態: ${Tone.getContext().state}
 - ブラウザ: ${navigator.userAgent.includes('Chrome') ? 'Chrome' : navigator.userAgent.includes('Firefox') ? 'Firefox' : 'Other'}
 
 このエラーは自動的に検出されました。

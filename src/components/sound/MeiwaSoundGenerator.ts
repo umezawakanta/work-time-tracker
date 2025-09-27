@@ -77,6 +77,12 @@ export const generateMeiwaRhythm = (
 
   // すべてのパターンを統合して再生
   const scheduledEvents: number[] = [];
+  
+  // Transportが開始されていない場合は開始
+  if (Tone.Transport.state !== 'started') {
+    Tone.Transport.start();
+  }
+  
   [...drumPattern, ...melodyPattern, ...bassPattern, ...layeredPattern].forEach((pattern) => {
     const delay = convertMsToSeconds(pattern.time, beatDuration);
     const baseFrequency = Tone.Frequency(pattern.note).toFrequency();
@@ -85,10 +91,22 @@ export const generateMeiwaRhythm = (
       baseFrequency;
     const duration = 0.05; // 短い8bit風の音
 
-    const eventId = Tone.Transport.scheduleOnce((time) => {
-      playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
-    }, `+${delay}`);
-    scheduledEvents.push(eventId);
+    try {
+      const eventId = Tone.Transport.scheduleOnce((time) => {
+        playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
+      }, `+${delay}`);
+      scheduledEvents.push(eventId);
+    } catch (error) {
+      console.error("Failed to schedule sound event:", error);
+      // フォールバック: setTimeoutを使用
+      setTimeout(async () => {
+        try {
+          await playSoundCallback(pattern.category, frequency, duration, pattern.volume, "meiwa");
+        } catch (callbackError) {
+          console.error("Failed to play sound callback:", callbackError);
+        }
+      }, delay * 1000);
+    }
   });
 
   // Return a cleanup function to clear scheduled events

@@ -7,115 +7,125 @@ import * as Tone from "tone";
 export const ensureAudioContextReady = async (): Promise<boolean> => {
   try {
     // AudioContextの状態を確認
-    const currentState = Tone.context.state;
+    const context = Tone.getContext();
+    const currentState = context.state;
     console.log(`Current AudioContext state: ${currentState}`);
     
-    if (currentState === 'suspended') {
-      console.log("AudioContext is suspended, attempting to resume...");
-      await Tone.context.resume();
-      
-      // resume後に状態を確認
-      let attempts = 0;
-      while (Tone.context.state !== 'running' && attempts < 10) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
-      }
-      
-      if (Tone.context.state === 'running') {
-        console.log("AudioContext resumed successfully");
-        return true;
-      } else {
-        console.warn(`AudioContext resume failed, state: ${Tone.context.state}`);
-      }
+    // 既にrunningの場合は成功
+    if (currentState === 'running') {
+      console.log("AudioContext is already running");
+      return true;
     }
     
-    if (currentState === 'closed' || currentState !== 'running') {
-      console.log("AudioContext is closed, creating new context...");
+    // suspendedの場合はresumeを試行
+    if (currentState === 'suspended') {
+      console.log("AudioContext is suspended, attempting to resume...");
       try {
-        // 新しいAudioContextを作成（ユーザー操作後なので安全）
-        const newContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        await context.resume();
         
-        // Tone.jsのコンテキストを更新
-        Tone.setContext(newContext);
-        
-        // 新しいコンテキストが開始されるまで待つ
-        if (newContext.state === 'suspended') {
-          console.log("New AudioContext is suspended, attempting to resume...");
-          await newContext.resume();
-        }
-        
-        // コンテキストが確実に開始されるまで待つ
+        // resume後に状態を確認（最大5秒待機）
         let attempts = 0;
-        while (newContext.state !== 'running' && attempts < 10) {
-          await new Promise(resolve => setTimeout(resolve, 50));
+        while (context.state !== 'running' && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
           attempts++;
         }
         
-        console.log(`AudioContext creation completed after ${attempts} attempts, state: ${newContext.state}`);
-        
-        // Tone.jsのコンテキスト状態を強制的に更新
-        if (newContext.state === 'running') {
-          // Tone.jsのコンテキストを再初期化して状態を同期
+        if (context.state === 'running') {
+          console.log("AudioContext resumed successfully");
+          return true;
+        } else {
+          console.warn(`AudioContext resume failed after ${attempts} attempts, state: ${context.state}`);
+        }
+      } catch (resumeError) {
+        console.warn("Failed to resume AudioContext:", resumeError);
+      }
+    }
+    
+    // closedまたはその他の状態の場合は新しいコンテキストを作成
+    if (currentState === 'closed' || ((currentState as string) !== 'running' && (currentState as string) !== 'suspended' && (currentState as string) !== 'interrupted')) {
+      console.log("AudioContext is not running, creating new context...");
+      
+      try {
+        // 既存のTone.jsコンテキストを適切に破棄
+        if (context.state !== 'closed') {
           try {
-            // 既存のTone.jsコンテキストを破棄
-            if (Tone.context.state !== 'closed') {
-              Tone.context.dispose();
-            }
+            context.dispose();
+            console.log("Disposed existing Tone.js context");
+          } catch (disposeError) {
+            console.warn("Failed to dispose existing context:", disposeError);
+          }
+        }
+        
+        // 新しいAudioContextを作成
+        const newContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        console.log(`Created new AudioContext with state: ${newContext.state}`);
+        
+        // 新しいコンテキストがsuspendedの場合はresume
+        if (newContext.state === 'suspended') {
+          console.log("New AudioContext is suspended, attempting to resume...");
+          try {
+            await newContext.resume();
             
-            // 新しいコンテキストを設定
-            Tone.setContext(newContext);
-            
-            // 少し待ってからTone.jsを開始
-            await new Promise(resolve => setTimeout(resolve, 50));
-            
-            // Tone.jsを開始
-            await Tone.start();
-            
-            // Tone.jsが確実に開始されるまで待つ
+            // resume後に状態を確認（最大3秒待機）
             let attempts = 0;
-            while (Tone.context.state !== 'running' && attempts < 10) {
+            while ((newContext.state as string) !== 'running' && attempts < 30) {
               await new Promise(resolve => setTimeout(resolve, 100));
               attempts++;
             }
             
-            console.log(`Tone.js context synchronized with new AudioContext after ${attempts} attempts`);
-          } catch (toneError) {
-            console.warn("Failed to start Tone.js with new context:", toneError);
+            if ((newContext.state as string) !== 'running') {
+              throw new Error(`New AudioContext failed to start after ${attempts} attempts, state: ${newContext.state}`);
+            }
+          } catch (resumeError) {
+            throw new Error(`Failed to resume new AudioContext: ${resumeError instanceof Error ? resumeError.message : 'Unknown error'}`);
           }
+        } else if ((newContext.state as string) !== 'running') {
+          // suspended以外でrunningでない場合はエラー
+          throw new Error(`New AudioContext is in unexpected state: ${newContext.state}`);
         }
+        
+        // Tone.jsに新しいコンテキストを設定
+        Tone.setContext(newContext);
+        console.log("Set new context to Tone.js");
+        
+        // Tone.jsを開始
+        await Tone.start();
+        console.log("Started Tone.js");
+        
+        // Tone.jsが確実に開始されるまで待つ（最大5秒待機）
+        let attempts = 0;
+        while (Tone.getContext().state !== 'running' && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        if (Tone.getContext().state !== 'running') {
+          throw new Error(`Tone.js failed to start after ${attempts} attempts, state: ${Tone.getContext().state}`);
+        }
+        
+        console.log(`AudioContext and Tone.js initialized successfully after ${attempts} attempts`);
+        return true;
+        
       } catch (contextError) {
-        console.error("Failed to create new AudioContext:", contextError);
+        console.error("Failed to create and initialize new AudioContext:", contextError);
         throw contextError;
       }
     }
     
-    // AudioContextが正常に動作しているか確認
-    const finalState = Tone.context.state;
-    const actualContextState = Tone.context.rawContext ? Tone.context.rawContext.state : 'unknown';
+    // 最終確認
+    const finalContext = Tone.getContext();
+    const finalState = finalContext.state;
+    const actualContextState = finalContext.rawContext ? finalContext.rawContext.state : 'unknown';
     
     console.log(`Final AudioContext state - Tone.js: ${finalState}, Raw: ${actualContextState}`);
     
-    // Tone.jsのコンテキストがrunningでない場合は再試行
-    if (finalState !== 'running') {
-      console.warn(`Tone.js context is not running (${finalState}), attempting to restart...`);
-      try {
-        await Tone.start();
-        console.log("Tone.js restarted successfully");
-      } catch (restartError) {
-        console.error("Failed to restart Tone.js:", restartError);
-        throw new Error(`AudioContext is not ready. Tone.js: ${Tone.context.state}, Raw: ${actualContextState}`);
-      }
-    }
-    
-    // 最終確認
-    const finalCheckState = Tone.context.state;
-    if (finalCheckState === 'running' || actualContextState === 'running') {
+    if (finalState === 'running' || actualContextState === 'running') {
       console.log("AudioContext is ready");
       return true;
     } else {
-      console.warn(`AudioContext final state - Tone.js: ${finalCheckState}, Raw: ${actualContextState}`);
-      throw new Error(`AudioContext is not ready. Tone.js: ${finalCheckState}, Raw: ${actualContextState}`);
+      throw new Error(`AudioContext is not ready. Tone.js: ${finalState}, Raw: ${actualContextState}`);
     }
+    
   } catch (error) {
     console.error("Failed to ensure AudioContext is ready:", error);
     
@@ -128,7 +138,7 @@ AudioContextの初期化に失敗しました。
 - エラータイプ: AudioContext初期化エラー
 - 時刻: ${new Date().toISOString()}
 - ユーザーエージェント: ${navigator.userAgent}
-- 現在のAudioContext状態: ${Tone.context.state}
+- 現在のAudioContext状態: ${Tone.getContext().state}
 - ブラウザ: ${navigator.userAgent.includes('Chrome') ? 'Chrome' : navigator.userAgent.includes('Firefox') ? 'Firefox' : 'Other'}
 
 このエラーは自動的に検出されました。
@@ -152,7 +162,7 @@ AudioContextの初期化に失敗しました。
  */
 export const isAudioContextReady = (): boolean => {
   try {
-    return Tone.context.state === 'running';
+    return Tone.getContext().state === 'running';
   } catch (error) {
     console.error("Failed to check AudioContext state:", error);
     return false;

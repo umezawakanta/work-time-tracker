@@ -20,6 +20,11 @@ export const generateMusic = async (
     .filter((cat) => cat.ratio > 0)
     .sort((a, b) => b.ratio - a.ratio);
 
+  // Transportが開始されていない場合は開始
+  if (Tone.Transport.state !== 'started') {
+    Tone.Transport.start();
+  }
+
   // 明和電機風の8bit音楽を生成（正確なテンポ同期）
   generateMeiwaRhythmCallback(beatDuration, categoryRatios);
 
