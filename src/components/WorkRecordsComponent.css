@@ -44,10 +44,11 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 1000;
-  padding: 1rem;
+  padding: 2rem 1rem;
+  overflow-y: auto;
 }
 
 .modal-content {
@@ -65,8 +66,12 @@
 
 .diary-modal {
   max-width: 700px;
-  max-height: 95vh;
+  max-height: 90vh;
   overflow-y: auto;
+}
+
+.diary-modal .modal-body {
+  max-height: calc(90vh - 160px);
 }
 
 .income-expense-modal {
@@ -117,7 +122,8 @@
   padding: 1.5rem;
   flex: 1;
   overflow-y: auto;
-  max-height: calc(95vh - 120px);
+  max-height: calc(90vh - 140px);
+  min-height: 0;
 }
 
 .modal-body .form-group {

@@ -404,7 +404,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 配列項目を管理する関数
   const addArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string, setValue: React.Dispatch<React.SetStateAction<string>>) => {
     if (value.trim()) {
-      setter(prev => [...prev, value.trim()]);
+      setter(prev => {
+        const newArray = [...prev, value.trim()];
+        console.log('活動を追加:', newArray);
+        return newArray;
+      });
       setValue("");
     }
   };
@@ -481,6 +485,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 日記モーダルを開く関数
   const openDiaryModal = (diary?: any) => {
+    // 配列入力フィールドをリセット
+    setDiaryActivitiesInput('');
+    setDiaryLearningsInput('');
+    setDiaryTagsInput('');
+    
     if (diary) {
       editDiary(diary);
     } else {
@@ -510,10 +519,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       setDiaryProductivity(5);
       setDiaryTags([]);
       setEditingDiary(null);
-      // 配列入力フィールドもリセット
-      setDiaryActivitiesInput('');
-      setDiaryLearningsInput('');
-      setDiaryTagsInput('');
     }
     setShowDiaryModal(true);
   };
@@ -615,6 +620,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             </div>
             <div className="modal-body">
               <form onSubmit={(e) => {
+                console.log('フォーム送信時の活動データ:', diaryActivities);
                 if (editingDiary) {
                   handleUpdateDiary(e);
                 } else {
