@@ -59,11 +59,14 @@
   max-height: 90vh;
   overflow-y: auto;
   border: 1px solid var(--border-color, #e9ecef);
+  display: flex;
+  flex-direction: column;
 }
 
 .diary-modal {
   max-width: 700px;
   max-height: 95vh;
+  overflow-y: auto;
 }
 
 .income-expense-modal {
@@ -112,6 +115,9 @@
 
 .modal-body {
   padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(95vh - 120px);
 }
 
 .modal-body .form-group {

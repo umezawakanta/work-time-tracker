@@ -2419,6 +2419,8 @@ ${errorInfo.stack}
         setNewNextGoal("");
         setShowDiaryForm(false);
         loadWorkDiaries();
+        // モーダルを閉じる
+        setShowWorkRecords(true);
       } else {
         setMessage(`エラー: ${data.message}`);
       }
@@ -2501,6 +2503,8 @@ ${errorInfo.stack}
         setShowDiaryForm(false);
         // データを再読み込み
         await loadWorkDiaries();
+        // モーダルを閉じる
+        setShowWorkRecords(true);
       } else {
         setMessage(`エラー: ${data.message}`);
       }

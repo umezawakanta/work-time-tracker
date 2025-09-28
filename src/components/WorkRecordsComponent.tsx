@@ -620,7 +620,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 } else {
                   handleCreateDiary(e);
                 }
-                closeDiaryModal();
               }}>
                 <div className="form-group">
                   <label>タイトル</label>
@@ -907,7 +906,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 } else {
                   handleCreateIncomeExpenseRecord(e);
                 }
-                closeIncomeExpenseModal();
               }}>
                 <div className="form-group">
                   <label>日付</label>
