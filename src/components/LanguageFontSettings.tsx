@@ -12,7 +12,9 @@ import {
   FontOption
 } from '../constants/fonts';
 import FontInfoModal from './FontInfoModal';
+import CustomFontUpload from './CustomFontUpload';
 import { fontLoader } from '../utils/fontLoader';
+import { fontSettingsManager, CustomFontData } from '../utils/fontSettingsManager';
 import './LanguageFontSettings.css';
 
 interface LanguageFontSettingsProps {
@@ -41,6 +43,9 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
   const [showFontInfo, setShowFontInfo] = useState(false);
   const [selectedFontInfo, setSelectedFontInfo] = useState<FontOption | null>(null);
   const [fontLoadingProgress, setFontLoadingProgress] = useState(0);
+  const [showCustomUpload, setShowCustomUpload] = useState(false);
+  const [customFonts, setCustomFonts] = useState<CustomFontData[]>([]);
+  const [showExportImport, setShowExportImport] = useState(false);
 
   useEffect(() => {
     setSettings(currentSettings);
@@ -120,6 +125,33 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
   const handleCloseFontInfo = () => {
     setShowFontInfo(false);
     setSelectedFontInfo(null);
+  };
+
+  const handleCustomFontUpload = (fontData: CustomFontData) => {
+    setCustomFonts(prev => [...prev, fontData]);
+    // カスタムフォントを設定に追加
+    setSettings(prev => ({
+      ...prev,
+      [fontData.category]: fontData.fontFamily
+    }));
+  };
+
+  const handleExportSettings = () => {
+    fontSettingsManager.downloadSettings(settings, customFonts);
+  };
+
+  const handleImportSettings = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const { settings: importedSettings, customFonts: importedCustomFonts } = await fontSettingsManager.importSettings(file);
+      setSettings(importedSettings);
+      setCustomFonts(importedCustomFonts);
+      onSave(importedSettings);
+    } catch (error) {
+      alert(`設定のインポートに失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`);
+    }
   };
 
   const handleSave = () => {
@@ -371,10 +403,35 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
         </div>
 
         <div className="language-font-footer">
-          <button className="reset-button" onClick={handleReset}>
-            リセット
-          </button>
+          <div className="footer-controls">
+            <button 
+              className="custom-upload-button" 
+              onClick={() => setShowCustomUpload(true)}
+              title="カスタムフォントをアップロード"
+            >
+              📁 カスタムフォント
+            </button>
+            <button 
+              className="export-button" 
+              onClick={handleExportSettings}
+              title="設定をエクスポート"
+            >
+              📤 エクスポート
+            </button>
+            <label className="import-button" title="設定をインポート">
+              📥 インポート
+              <input
+                type="file"
+                accept=".json"
+                onChange={handleImportSettings}
+                style={{ display: 'none' }}
+              />
+            </label>
+          </div>
           <div className="footer-buttons">
+            <button className="reset-button" onClick={handleReset}>
+              リセット
+            </button>
             <button className="cancel-button" onClick={onClose}>
               キャンセル
             </button>
@@ -390,6 +447,13 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
         isOpen={showFontInfo}
         onClose={handleCloseFontInfo}
         font={selectedFontInfo}
+      />
+
+      {/* カスタムフォントアップロードモーダル */}
+      <CustomFontUpload
+        isOpen={showCustomUpload}
+        onClose={() => setShowCustomUpload(false)}
+        onFontUpload={handleCustomFontUpload}
       />
     </div>
   );

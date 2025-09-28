@@ -518,6 +518,11 @@
     gap: 15px;
   }
   
+  .footer-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
   .footer-buttons {
     width: 100%;
     justify-content: space-between;
@@ -547,4 +552,40 @@
     top: 12px;
     right: 12px;
   }
+}
+
+/* フッターコントロールのスタイル */
+.footer-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.custom-upload-button,
+.export-button,
+.import-button {
+  padding: 8px 12px;
+  border: 1px solid #007bff;
+  background: white;
+  color: #007bff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.custom-upload-button:hover,
+.export-button:hover,
+.import-button:hover {
+  background: #007bff;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.import-button {
+  cursor: pointer;
 }
