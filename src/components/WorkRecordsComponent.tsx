@@ -479,8 +479,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     if (diary) {
       editDiary(diary);
     } else {
-      // 新規作成の場合、フォームをリセット
-      setDiaryDate(new Date().toISOString().split('T')[0]);
+      // 新規作成の場合、選択された日付または今日の日付を設定
+      const dateToUse = selectedDate || new Date();
+      setDiaryDate(dateToUse.toISOString().split('T')[0]);
       setDiaryTitle('');
       setDiaryContent('');
       setDiaryMood('');
@@ -515,8 +516,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     if (record) {
       editIncomeExpenseRecord(record);
     } else {
-      // 新規作成の場合、フォームをリセット
-      setIncomeExpenseDate(new Date().toISOString().split('T')[0]);
+      // 新規作成の場合、選択された日付または今日の日付を設定
+      const dateToUse = selectedDate || new Date();
+      setIncomeExpenseDate(dateToUse.toISOString().split('T')[0]);
       setIncomeExpenseAmount('');
       setIncomeExpenseType('income');
       setIncomeExpenseNotes('');
