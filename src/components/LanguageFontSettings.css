@@ -287,23 +287,95 @@
 }
 
 /* プレビュー機能の拡張 */
-.preview-samples {
+.preview-header {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.preview-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.preview-controls label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.preview-size-select {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+}
+
+.preview-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.preview-sample {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.preview-sample h5,
+.preview-sample h6 {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.preview-sample h6 {
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+}
+
+.preview-japanese,
+.preview-english,
+.preview-numbers,
+.preview-usage {
+  margin: 0;
+  line-height: 1.6;
+  color: #333;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.preview-samples {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 15px;
   margin-top: 10px;
 }
 
-.preview-numbers,
-.preview-symbols {
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #666;
-  padding: 8px;
-  background: white;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
-  flex: 1;
+@media (max-width: 768px) {
+  .preview-samples {
+    grid-template-columns: 1fr;
+  }
+  
+  .preview-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 }
 
 /* フォントオプションの拡張 */
@@ -345,21 +417,33 @@
   font-weight: 500;
 }
 
-.favorite-button {
+.font-actions {
   position: absolute;
   top: 15px;
   right: 15px;
+  display: flex;
+  gap: 5px;
+}
+
+.favorite-button,
+.info-button {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   cursor: pointer;
   padding: 5px;
   border-radius: 50%;
   transition: all 0.3s ease;
   opacity: 0.5;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.favorite-button:hover {
+.favorite-button:hover,
+.info-button:hover {
   opacity: 1;
   background: #f0f0f0;
   transform: scale(1.1);
@@ -369,6 +453,11 @@
   opacity: 1;
   color: #ffc107;
   background: #fff3cd;
+}
+
+.info-button:hover {
+  background: #e3f2fd;
+  color: #1976d2;
 }
 
 .font-description {
