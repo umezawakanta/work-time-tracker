@@ -427,6 +427,17 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     };
   };
 
+  // 収入・支出記録の編集関数
+  const editIncomeExpenseRecord = (record: any) => {
+    setEditingIncomeExpenseRecord(record);
+    setIncomeExpenseAmount(record.amount.toString());
+    setIncomeExpenseCategory(record.category);
+    setIncomeExpenseDescription(record.description || '');
+    setIncomeExpenseDate(record.date);
+    setSelectedRecordType(record.type);
+    setShowIncomeExpenseForm(true);
+  };
+
   // 統計データの計算
   const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
   
