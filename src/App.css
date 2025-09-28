@@ -9701,3 +9701,24 @@ input:checked + .toggle-slider:before {
     right: 10px;
   }
 }
+
+/* キャラクター表示のスタイル */
+.character-display-wrapper {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .character-display-wrapper {
+    position: relative;
+    top: auto;
+    right: auto;
+    max-width: 100%;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+  }
+}

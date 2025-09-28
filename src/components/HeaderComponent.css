@@ -48,6 +48,33 @@
   visibility: visible !important;
   opacity: 1 !important;
   min-width: 0; /* フレックスアイテムの縮小を許可 */
+}
+
+/* キャラクター選択ボタン */
+.character-select-button {
+  background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin-right: 8px;
+}
+
+.character-select-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.character-select-button:active {
+  transform: scale(0.95);
+}
   position: relative;
   z-index: 1;
   padding-right: 120px; /* 右上固定ボタンのスペースを確保 */

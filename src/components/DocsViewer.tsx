@@ -93,6 +93,27 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
       path: '/docs/font-settings-test-specification.md',
       description: 'フォント設定機能の全機能テスト仕様、テストケース、品質保証',
       category: '品質保証'
+    },
+    {
+      id: 'character-feature-design',
+      title: 'キャラクター機能 設計書',
+      path: '/docs/character-feature-design.md',
+      description: 'キャラクター機能のシステム設計、要件定義、実装計画',
+      category: 'アプリ設計'
+    },
+    {
+      id: 'character-feature-user-manual',
+      title: 'キャラクター機能 ユーザーマニュアル',
+      path: '/docs/character-feature-user-manual.md',
+      description: 'キャラクター機能の使い方、おすすめキャラクター、トラブルシューティング',
+      category: 'ユーザーガイド'
+    },
+    {
+      id: 'character-feature-test-specification',
+      title: 'キャラクター機能 総合試験仕様書',
+      path: '/docs/character-feature-test-specification.md',
+      description: 'キャラクター機能の全機能テスト仕様、テストケース、品質保証',
+      category: '品質保証'
     }
   ];
 

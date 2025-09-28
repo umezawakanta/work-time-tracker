@@ -20,6 +20,8 @@ import WorkRecordsComponent from "./components/WorkRecordsComponent";
 import SoundAppComponent from "./components/SoundAppComponent";
 import DocsViewer from "./components/DocsViewer";
 import NotificationComponent from "./components/NotificationComponent";
+import CharacterSelector from "./components/CharacterSelector";
+import CharacterDisplay from "./components/CharacterDisplay";
 import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
@@ -34,6 +36,8 @@ import {
 import type { ApiErrorInfo } from "./utils/apiErrorHandler";
 // Static import for apiFetch - used frequently throughout the application
 import { apiFetch } from "./utils/apiClient";
+import { Character as CharacterType, UserCharacterSettings } from "./types/character";
+import { characterManager } from "./utils/characterManager";
 import {
   buildApiUrl,
   createUserIdParam,
@@ -309,6 +313,12 @@ function App({
 
   // 時間記録の進行状態
   const [isTimeTrackingActive, setIsTimeTrackingActive] = useState(false);
+
+  // キャラクター関連の状態
+  const [characterSettings, setCharacterSettings] = useState<UserCharacterSettings>(characterManager.getSettings());
+  const [showCharacterSelector, setShowCharacterSelector] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<CharacterType | null>(characterManager.getCurrentCharacter());
+  const [workState, setWorkState] = useState<'idle' | 'working' | 'break' | 'completed'>('idle');
 
   // ジャンル管理の状態
   const [showGenreManagement, setShowGenreManagement] = useState(false);
@@ -1816,6 +1826,37 @@ ${errorInfo.stack}
     setFontSettings(settings);
     applyLanguageFonts(settings);
     localStorage.setItem("fontSettings", JSON.stringify(settings));
+  };
+
+  // キャラクター選択ハンドラー
+  const handleCharacterSelect = (character: CharacterType) => {
+    characterManager.selectCharacter(character.id);
+    setSelectedCharacter(character);
+    setCharacterSettings(characterManager.getSettings());
+  };
+
+  // キャラクター設定更新ハンドラー
+  const handleCharacterSettingsUpdate = (updates: Partial<UserCharacterSettings>) => {
+    characterManager.updateSettings(updates);
+    setCharacterSettings(characterManager.getSettings());
+  };
+
+  // キャラクターインタラクションハンドラー
+  const handleCharacterInteraction = (interaction: string) => {
+    console.log('Character interaction:', interaction);
+    // 必要に応じて追加の処理を実装
+  };
+
+  // レベルアップハンドラー
+  const handleCharacterLevelUp = (newLevel: number) => {
+    console.log('Character leveled up to:', newLevel);
+    // レベルアップ時の特別な処理を実装
+  };
+
+  // アチーブメントハンドラー
+  const handleCharacterAchievement = (achievementId: string) => {
+    console.log('Achievement unlocked:', achievementId);
+    // アチーブメント獲得時の特別な処理を実装
   };
 
   // テーマ適用関数
@@ -6067,6 +6108,15 @@ User Agent: ${userAgent}
             <p>認証を確認中...</p>
           </div>
         </div>
+
+        {/* キャラクター選択モーダル */}
+        <CharacterSelector
+          isOpen={showCharacterSelector}
+          onClose={() => setShowCharacterSelector(false)}
+          onCharacterSelect={handleCharacterSelect}
+          currentSettings={characterSettings}
+          availableCharacters={characterManager.getAvailableCharacters()}
+        />
       </div>
     );
   }
@@ -6099,7 +6149,7 @@ User Agent: ${userAgent}
         <div className="dashboard">
           <HeaderComponent
             user={user!}
-            currentCharacter={currentCharacter}
+            currentCharacter={selectedCharacter as Character | null}
             showThemeSettings={showThemeSettings}
             showFontSettings={showFontSettings}
             showFeatureSettings={showFeatureSettings}
@@ -6113,6 +6163,7 @@ User Agent: ${userAgent}
             isTimeTrackingActive={isTimeTrackingActive}
             handleUpdateRequest={handleUpdateRequest}
             handleBugReport={handleBugReport}
+            onCharacterSelectClick={() => setShowCharacterSelector(true)}
           />
 
           {/* 通知コンポーネント */}
@@ -6133,6 +6184,18 @@ User Agent: ${userAgent}
           </div>
 
           <main className="dashboard-main">
+            {/* キャラクター表示 */}
+            <div className="character-display-wrapper">
+              <CharacterDisplay
+                character={selectedCharacter}
+                settings={characterSettings}
+                workState={workState}
+                onInteraction={handleCharacterInteraction}
+                onLevelUp={handleCharacterLevelUp}
+                onAchievement={handleCharacterAchievement}
+              />
+            </div>
+
             {getVisibleFeatures().map((feature) => {
               if (feature.id === "time-tracking") {
                 return (
@@ -6573,7 +6636,7 @@ User Agent: ${userAgent}
               </div>
               <CharacterHome
                 onSelectCharacter={handleSelectCharacter}
-                currentCharacter={currentCharacter}
+                currentCharacter={selectedCharacter as Character | null}
                 showCharacterHome={showCharacterHome}
                 setShowCharacterHome={setShowCharacterHome}
                 closeOtherFeatures={closeOtherFeatures}

@@ -29,6 +29,7 @@ interface HeaderComponentProps {
   isTimeTrackingActive: boolean;
   handleUpdateRequest: (updateRequest: any) => Promise<void>;
   handleBugReport: (bugReport: any) => Promise<void>;
+  onCharacterSelectClick?: () => void;
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -47,6 +48,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   isTimeTrackingActive,
   handleUpdateRequest,
   handleBugReport,
+  onCharacterSelectClick,
 }) => {
   // 更新要望モーダルの状態をHeaderComponent内で管理
   const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
@@ -70,6 +72,16 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       {/* 右側：ナビゲーション要素 */}
       <div className="header-right">
         <div className="header-navigation">
+          {/* キャラクター選択ボタン */}
+          {onCharacterSelectClick && (
+            <button
+              className="character-select-button"
+              onClick={onCharacterSelectClick}
+              title="キャラクター選択"
+            >
+              🎭
+            </button>
+          )}
           <UserInfoComponent
             user={user}
             currentCharacter={currentCharacter}
