@@ -185,7 +185,11 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
     <div className="character-display-container">
       <div
         className={getAnimationClass()}
-        style={getCharacterStyle()}
+        style={{
+          ...getCharacterStyle(),
+          '--character-color': character.customization?.color || '#FF6B6B',
+          '--character-size': character.customization?.size || 'medium'
+        } as React.CSSProperties}
         onClick={handleCharacterClick}
         role="button"
         tabIndex={0}
@@ -196,10 +200,6 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
             handleCharacterClick();
           }
         }}
-        style={{
-          '--character-color': character.customization?.color || '#FF6B6B',
-          '--character-size': character.customization?.size || 'medium'
-        } as React.CSSProperties}
       >
         <div 
           className="character-avatar"

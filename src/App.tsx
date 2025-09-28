@@ -24,7 +24,7 @@ import CharacterSelector from "./components/CharacterSelector";
 import CharacterDisplay from "./components/CharacterDisplay";
 import CharacterNotification from "./components/CharacterNotification";
 import CharacterProgress from "./components/CharacterProgress";
-import CharacterCustomization from "./components/CharacterCustomization";
+import CharacterCustomizationComponent from "./components/CharacterCustomization";
 import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
@@ -39,7 +39,7 @@ import {
 import type { ApiErrorInfo } from "./utils/apiErrorHandler";
 // Static import for apiFetch - used frequently throughout the application
 import { apiFetch } from "./utils/apiClient";
-import { Character as CharacterType, UserCharacterSettings, CharacterAchievement } from "./types/character";
+import { Character as CharacterType, UserCharacterSettings, CharacterAchievement, CharacterCustomization } from "./types/character";
 import { characterManager } from "./utils/characterManager";
 import {
   buildApiUrl,
@@ -6236,7 +6236,7 @@ User Agent: ${userAgent}
           <div className="character-customization-modal">
             <div className="character-customization-overlay" onClick={() => setShowCharacterCustomization(false)} />
             <div className="character-customization-content">
-              <CharacterCustomization
+              <CharacterCustomizationComponent
                 character={selectedCharacter}
                 settings={characterSettings}
                 onCustomizationChange={handleCustomizationChange}

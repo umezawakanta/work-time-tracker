@@ -10,7 +10,7 @@ interface CharacterCustomizationProps {
   onClose: () => void;
 }
 
-const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
+const CharacterCustomizationComponent: React.FC<CharacterCustomizationProps> = ({
   character,
   settings,
   onCustomizationChange,
@@ -277,4 +277,4 @@ const CharacterCustomization: React.FC<CharacterCustomizationProps> = ({
   );
 };
 
-export default CharacterCustomization;
+export default CharacterCustomizationComponent;
