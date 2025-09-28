@@ -15,7 +15,7 @@ const ensureDatabaseConnection = async () => {
   console.warn('[memos/id] Database not connected, attempting to connect...');
   
   try {
-    const MONGODB_URI = process.env.MONGODB_URI;
+    const { MONGODB_URI } = process.env;
     
     if (!MONGODB_URI) {
       throw new Error('MONGODB_URI environment variable is not set');
