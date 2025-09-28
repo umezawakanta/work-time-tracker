@@ -349,7 +349,18 @@ export const childFriendlyFonts: FontOption[] = [
 ];
 
 // 全フォント一覧（後方互換性のため）
-export const availableFonts: FontOption[] = [...japaneseFonts, ...englishFonts.filter(font => font.value !== 'system')];
+export const availableFonts: FontOption[] = (() => {
+  const allFonts = [...japaneseFonts, ...englishFonts.filter(font => font.value !== 'system')];
+  const uniqueFonts = new Map();
+  
+  allFonts.forEach(font => {
+    if (!uniqueFonts.has(font.value)) {
+      uniqueFonts.set(font.value, font);
+    }
+  });
+  
+  return Array.from(uniqueFonts.values());
+})();
 
 // フォントのデフォルト値
 export const DEFAULT_FONT = "system";

@@ -207,8 +207,8 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
           </div>
 
           <div className="font-options">
-            {filteredFonts.map((font) => (
-              <div key={font.value} className="font-option-container">
+            {filteredFonts.map((font, index) => (
+              <div key={`${font.value}-${activeTab}-${index}`} className="font-option-container">
                 <label className="font-option">
                   <input
                     type="radio"

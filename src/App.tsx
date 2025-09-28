@@ -6715,8 +6715,8 @@ User Agent: ${userAgent}
                   </p>
                 </div>
                 <div className="font-options">
-                  {availableFonts.map((font) => (
-                    <label key={font.value} className="font-option">
+                  {availableFonts.map((font, index) => (
+                    <label key={`${font.value}-${index}`} className="font-option">
                       <input
                         type="radio"
                         name="font"
