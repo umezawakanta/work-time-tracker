@@ -3391,10 +3391,10 @@ ${errorInfo.stack}
     setEditingMonthlyMemo(false);
   };
 
-  // 日記フォームを開く関数
+  // 日記フォームを開く関数（モーダル表示に変更）
   const openDiaryForm = () => {
     setShowIncomeExpenseForm(false);
-    setShowDiaryForm(true);
+    setShowDiaryForm(false); // モーダル表示のためfalseに変更
     setShowCalendar(false);
     setShowWorkRecords(true);
     // 今日の日付を設定

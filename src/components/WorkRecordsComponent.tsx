@@ -438,6 +438,48 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setShowIncomeExpenseForm(true);
   };
 
+  // 日記モーダルの状態管理
+  const [showDiaryModal, setShowDiaryModal] = useState(false);
+
+  // 日記モーダルを開く関数
+  const openDiaryModal = (diary?: any) => {
+    if (diary) {
+      editDiary(diary);
+    } else {
+      // 新規作成の場合、フォームをリセット
+      setDiaryDate(new Date().toISOString().split('T')[0]);
+      setDiaryTitle('');
+      setDiaryContent('');
+      setDiaryMood('');
+      setDiaryActivities([]);
+      setDiaryNotes('');
+      setDiaryNextGoals([]);
+      setDiaryChallenges([]);
+      setDiaryAchievements([]);
+      setDiaryGratitude('');
+      setDiaryReflection('');
+      setDiaryWorkSummary('');
+      setDiaryLearnings([]);
+      setDiaryEnergyLevel('');
+      setDiaryStressLevel('');
+      setDiaryWorkHours('');
+      setDiaryBreakTime('');
+      setDiaryProductivity('');
+      setDiaryTags([]);
+      setEditingDiary(null);
+    }
+    setShowDiaryModal(true);
+  };
+
+  // 日記モーダルを閉じる関数
+  const closeDiaryModal = () => {
+    setShowDiaryModal(false);
+    setEditingDiary(null);
+  };
+
+  // 新規日記作成ボタンの表示制御
+  const showNewDiaryButton = showWorkRecords && !showDiaryModal;
+
   // 統計データの計算
   const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
   
@@ -481,95 +523,97 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         </div>
       </div>
 
-      {/* 日記フォーム - 最上部に表示（編集時は常に表示） */}
-      {showDiaryForm && (
-        <div className="diary-form">
-          <h3><i className="bi bi-journal-text"></i>{editingDiary ? '日記を編集' : '新しい日記'}</h3>
-          <form onSubmit={editingDiary ? handleUpdateDiary : handleCreateDiary}>
-            <div className="form-group">
-              <label>タイトル</label>
-              <input
-                type="text"
-                value={diaryTitle}
-                onChange={(e) => setDiaryTitle(e.target.value)}
-                placeholder="日記のタイトル"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>日付</label>
-              <input
-                type="date"
-                value={diaryDate}
-                onChange={(e) => setDiaryDate(e.target.value)}
-                required
-                aria-label="日記の日付"
-              />
-            </div>
-            <div className="form-group">
-              <label>気分 (1-5)</label>
-              <select
-                value={diaryMood}
-                onChange={(e) => setDiaryMood(e.target.value)}
-                aria-label="気分を選択"
-              >
-                <option value="">選択してください</option>
-                <option value="1">😞 1 (とても悪い)</option>
-                <option value="2">😐 2 (悪い)</option>
-                <option value="3">😑 3 (普通)</option>
-                <option value="4">😊 4 (良い)</option>
-                <option value="5">😄 5 (とても良い)</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>内容</label>
-              <textarea
-                value={diaryContent}
-                onChange={(e) => setDiaryContent(e.target.value)}
-                placeholder="今日の出来事や感想を書いてください"
-                rows={5}
-                required
-              />
-            </div>
-            <div className="form-actions">
-              <button type="submit" className="save-button">
-                {editingDiary ? '更新' : '保存'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowDiaryForm(false);
-                  setEditingDiary(null);
-                  setDiaryTitle('');
-                  setDiaryContent('');
-                  setDiaryMood('');
-                  setDiaryDate('');
-                  setDiaryNotes('');
-                  setDiaryIsPrivate(true);
-                  setDiaryWorkSummary('');
-                  setDiaryAchievements([]);
-                  setDiaryChallenges([]);
-                  setDiaryLearnings([]);
-                  setDiaryNextGoals([]);
-                  setDiaryEnergyLevel(5);
-                  setDiaryStressLevel(5);
-                  setDiaryWorkHours(0);
-                  setDiaryBreakTime(0);
-                  setDiaryProductivity(5);
-                  setDiaryNotes('');
-                  setDiaryGratitude('');
-                  setDiaryReflection('');
-                  setNewAchievement('');
-                  setNewChallenge('');
-                  setNewLearning('');
-                  setNewNextGoal('');
-                }}
-                className="cancel-button"
-              >
-                キャンセル
+      {/* 新規日記作成ボタン */}
+      {showNewDiaryButton && (
+        <div className="new-diary-button-container">
+          <button
+            onClick={() => openDiaryModal()}
+            className="new-diary-button"
+          >
+            <i className="bi bi-journal-plus"></i> 新しい日記を書く
+          </button>
+        </div>
+      )}
+
+      {/* 日記モーダル */}
+      {showDiaryModal && (
+        <div className="modal-overlay" onClick={closeDiaryModal}>
+          <div className="modal-content diary-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3><i className="bi bi-journal-text"></i>{editingDiary ? '日記を編集' : '新しい日記'}</h3>
+              <button className="modal-close" onClick={closeDiaryModal}>
+                <i className="bi bi-x"></i>
               </button>
             </div>
-          </form>
+            <div className="modal-body">
+              <form onSubmit={(e) => {
+                if (editingDiary) {
+                  handleUpdateDiary(e);
+                } else {
+                  handleCreateDiary(e);
+                }
+                closeDiaryModal();
+              }}>
+                <div className="form-group">
+                  <label>タイトル</label>
+                  <input
+                    type="text"
+                    value={diaryTitle}
+                    onChange={(e) => setDiaryTitle(e.target.value)}
+                    placeholder="日記のタイトル"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>日付</label>
+                  <input
+                    type="date"
+                    value={diaryDate}
+                    onChange={(e) => setDiaryDate(e.target.value)}
+                    required
+                    aria-label="日記の日付"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>気分 (1-5)</label>
+                  <select
+                    value={diaryMood}
+                    onChange={(e) => setDiaryMood(e.target.value)}
+                    aria-label="気分を選択"
+                  >
+                    <option value="">選択してください</option>
+                    <option value="1">😞 1 (とても悪い)</option>
+                    <option value="2">😐 2 (悪い)</option>
+                    <option value="3">😑 3 (普通)</option>
+                    <option value="4">😊 4 (良い)</option>
+                    <option value="5">😄 5 (とても良い)</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>内容</label>
+                  <textarea
+                    value={diaryContent}
+                    onChange={(e) => setDiaryContent(e.target.value)}
+                    placeholder="今日の出来事や感想を書いてください"
+                    rows={5}
+                    required
+                  />
+                </div>
+                <div className="form-actions">
+                  <button type="submit" className="save-button">
+                    {editingDiary ? '更新' : '保存'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeDiaryModal}
+                    className="cancel-button"
+                  >
+                    キャンセル
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
 
@@ -591,7 +635,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           selectedRecordType={selectedRecordType}
           onRecordClick={handleRecordClick}
           onEditIncomeExpenseRecord={editIncomeExpenseRecord}
-          onEditDiary={editDiary}
+          onEditDiary={openDiaryModal}
           onDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
           onDeleteDiary={handleDeleteDiary}
           onRefresh={loadIncomeExpenseRecordsLocal}
