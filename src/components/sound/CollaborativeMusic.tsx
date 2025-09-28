@@ -414,8 +414,9 @@ const CollaborativeMusic: React.FC<CollaborativeMusicProps> = ({
         {/* 音楽制作エリア */}
         <div className="music-creation">
           <div className="instrument-selector">
-            <label>楽器:</label>
+            <label htmlFor="instrument-selector">楽器:</label>
             <select 
+              id="instrument-selector"
               value={selectedInstrument} 
               onChange={(e) => setSelectedInstrument(e.target.value)}
             >
