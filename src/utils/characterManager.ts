@@ -195,6 +195,21 @@ export class CharacterManager {
     this.applyAchievementReward(achievement);
   }
 
+  // キャラクターのカスタマイズを更新
+  public updateCharacterCustomization(characterId: string, customization: CharacterCustomization): void {
+    const character = this.characters.find(c => c.id === characterId);
+    if (character) {
+      character.customization = customization;
+      this.saveSettings();
+    }
+  }
+
+  // キャラクターのカスタマイズを取得
+  public getCharacterCustomization(characterId: string): CharacterCustomization | null {
+    const character = this.characters.find(c => c.id === characterId);
+    return character?.customization || null;
+  }
+
   // レベルアップチェック
   private checkLevelUp(character: Character): boolean {
     const requiredExp = this.getRequiredExperience(character.level);

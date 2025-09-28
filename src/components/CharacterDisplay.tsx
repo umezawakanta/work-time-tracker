@@ -11,6 +11,7 @@ interface CharacterDisplayProps {
   onLevelUp?: (newLevel: number) => void;
   onAchievement?: (achievementId: string) => void;
   onProgressClick?: () => void;
+  onCustomizeClick?: () => void;
 }
 
 const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
@@ -20,7 +21,8 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
   onInteraction,
   onLevelUp,
   onAchievement,
-  onProgressClick
+  onProgressClick,
+  onCustomizeClick
 }) => {
   const [currentAnimation, setCurrentAnimation] = useState<string>('idle');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -136,6 +138,18 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
     onInteraction?.(randomInteraction);
   };
 
+  const getAccessoryEmoji = (accessory: string): string => {
+    const accessoryMap: { [key: string]: string } = {
+      'crown': '👑',
+      'wings': '🪽',
+      'halo': '😇',
+      'glasses': '🤓',
+      'hat': '🎩',
+      'bow': '🎀'
+    };
+    return accessoryMap[accessory] || '✨';
+  };
+
   const getAnimationClass = () => {
     const baseClass = 'character-display';
     const animationClass = `character-${currentAnimation}`;
@@ -182,8 +196,15 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
             handleCharacterClick();
           }
         }}
+        style={{
+          '--character-color': character.customization?.color || '#FF6B6B',
+          '--character-size': character.customization?.size || 'medium'
+        } as React.CSSProperties}
       >
-        <div className="character-avatar">
+        <div 
+          className="character-avatar"
+          data-size={character.customization?.size || 'medium'}
+        >
           <span className="character-emoji">
             {character.type === 'cute' && '🐱'}
             {character.type === 'cool' && '🦁'}
@@ -195,8 +216,8 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
         {character.customization.accessories.length > 0 && (
           <div className="character-accessories">
             {character.customization.accessories.map((accessory, index) => (
-              <span key={index} className="accessory">
-                {accessory}
+              <span key={index} className={`accessory accessory-${accessory}`}>
+                {getAccessoryEmoji(accessory)}
               </span>
             ))}
           </div>
@@ -225,15 +246,26 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
           </div>
           <span className="exp-text">{character.experience} EXP</span>
         </div>
-        {onProgressClick && (
-          <button 
-            className="progress-button"
-            onClick={onProgressClick}
-            title="進捗を表示"
-          >
-            📊 進捗
-          </button>
-        )}
+        <div className="character-actions">
+          {onProgressClick && (
+            <button 
+              className="progress-button"
+              onClick={onProgressClick}
+              title="進捗を表示"
+            >
+              📊 進捗
+            </button>
+          )}
+          {onCustomizeClick && (
+            <button 
+              className="customize-button"
+              onClick={onCustomizeClick}
+              title="カスタマイズ"
+            >
+              🎨 カスタマイズ
+            </button>
+          )}
+        </div>
       </div>
 
       {settings.preferences.soundEffects && (

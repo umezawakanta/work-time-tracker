@@ -24,6 +24,7 @@ import CharacterSelector from "./components/CharacterSelector";
 import CharacterDisplay from "./components/CharacterDisplay";
 import CharacterNotification from "./components/CharacterNotification";
 import CharacterProgress from "./components/CharacterProgress";
+import CharacterCustomization from "./components/CharacterCustomization";
 import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
@@ -330,6 +331,9 @@ function App({
   
   // キャラクター進捗表示の状態
   const [showCharacterProgress, setShowCharacterProgress] = useState(false);
+  
+  // キャラクターカスタマイズの状態
+  const [showCharacterCustomization, setShowCharacterCustomization] = useState(false);
 
   // ジャンル管理の状態
   const [showGenreManagement, setShowGenreManagement] = useState(false);
@@ -1915,6 +1919,27 @@ ${errorInfo.stack}
   const handleAchievementClick = (achievement: CharacterAchievement) => {
     console.log('Achievement clicked:', achievement.name);
     // 必要に応じて詳細表示などの処理を実装
+  };
+
+  // キャラクターカスタマイズのハンドラー
+  const handleCharacterCustomizationToggle = () => {
+    setShowCharacterCustomization(!showCharacterCustomization);
+  };
+
+  // カスタマイズ変更ハンドラー
+  const handleCustomizationChange = (customization: CharacterCustomization) => {
+    if (selectedCharacter) {
+      const updatedCharacter = { ...selectedCharacter, customization };
+      setSelectedCharacter(updatedCharacter);
+      
+      // キャラクター設定を更新
+      const updatedSettings = { ...characterSettings };
+      updatedSettings.customizations = customization;
+      setCharacterSettings(updatedSettings);
+      
+      // キャラクターマネージャーに保存
+      characterManager.updateCharacterCustomization(selectedCharacter.id, customization);
+    }
   };
 
   // テーマ適用関数
@@ -6205,6 +6230,21 @@ User Agent: ${userAgent}
             </div>
           </div>
         )}
+
+        {/* キャラクターカスタマイズ */}
+        {showCharacterCustomization && (
+          <div className="character-customization-modal">
+            <div className="character-customization-overlay" onClick={() => setShowCharacterCustomization(false)} />
+            <div className="character-customization-content">
+              <CharacterCustomization
+                character={selectedCharacter}
+                settings={characterSettings}
+                onCustomizationChange={handleCustomizationChange}
+                onClose={() => setShowCharacterCustomization(false)}
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -6282,6 +6322,7 @@ User Agent: ${userAgent}
                 onLevelUp={handleCharacterLevelUp}
                 onAchievement={handleCharacterAchievement}
                 onProgressClick={handleCharacterProgressToggle}
+                onCustomizeClick={handleCharacterCustomizationToggle}
               />
             </div>
 

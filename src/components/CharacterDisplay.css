@@ -147,6 +147,20 @@
   border-radius: 50%;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(135deg, var(--character-color, #FF6B6B) 0%, #4ECDC4 100%);
+  transform: scale(var(--character-size, 1));
+}
+
+.character-avatar[data-size="small"] {
+  transform: scale(0.8);
+}
+
+.character-avatar[data-size="medium"] {
+  transform: scale(1);
+}
+
+.character-avatar[data-size="large"] {
+  transform: scale(1.2);
 }
 
 .character-emoji {
@@ -172,6 +186,73 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  z-index: 10;
+}
+
+.accessory {
+  font-size: 1.5rem;
+  margin: 0 2px;
+  animation: float 3s ease-in-out infinite;
+  position: absolute;
+}
+
+.accessory-crown {
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+}
+
+.accessory-wings {
+  top: 50%;
+  left: -15px;
+  transform: translateY(-50%);
+  font-size: 1.8rem;
+  animation: wingFlap 2s ease-in-out infinite;
+}
+
+.accessory-halo {
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  animation: haloGlow 2s ease-in-out infinite;
+}
+
+.accessory-glasses {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.3rem;
+}
+
+.accessory-hat {
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem;
+}
+
+.accessory-bow {
+  top: 10px;
+  right: 10px;
+  font-size: 1.2rem;
+  animation: bowBounce 2s ease-in-out infinite;
+}
+
+@keyframes wingFlap {
+  0%, 100% { transform: translateY(-50%) rotate(0deg); }
+  50% { transform: translateY(-50%) rotate(10deg); }
+}
+
+@keyframes haloGlow {
+  0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+}
+
+@keyframes bowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 .accessory {
@@ -321,7 +402,16 @@
   font-weight: 600;
 }
 
-.progress-button {
+.character-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.progress-button,
+.customize-button {
   background: linear-gradient(135deg, #4ECDC4 0%, #45b7b8 100%);
   color: white;
   border: none;
@@ -331,16 +421,28 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 10px;
   box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+  flex: 1;
+  min-width: 80px;
 }
 
-.progress-button:hover {
+.customize-button {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.progress-button:hover,
+.customize-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
 }
 
-.progress-button:active {
+.customize-button:hover {
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.progress-button:active,
+.customize-button:active {
   transform: translateY(0);
 }
 
