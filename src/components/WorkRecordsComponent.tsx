@@ -3,6 +3,7 @@ import './WorkRecordsComponent.css';
 import type { IncomeExpenseRecord, WorkDiary, User } from '../types';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import CalendarComponent from './CalendarComponent';
+import { logger } from '../utils/logger';
 
 interface WorkRecordsComponentProps {
   showWorkRecords: boolean;
@@ -406,7 +407,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     if (value.trim()) {
       setter(prev => {
         const newArray = [...prev, value.trim()];
-        console.log('活動を追加:', newArray);
+        logger.debug('活動を追加:', newArray);
         return newArray;
       });
       setValue("");
@@ -437,7 +438,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 週次メモの保存・編集関数
   const saveWeeklyMemo = () => {
     // TODO: API呼び出しで週次メモを保存
-    console.log('週次メモを保存:', weeklyMemo);
+    logger.debug('週次メモを保存:', weeklyMemo);
     setEditingWeeklyMemo(false);
   };
 
@@ -491,8 +492,45 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setDiaryTagsInput('');
     
     if (diary) {
-      console.log('編集モードでモーダルを開く:', diary);
-      editDiary(diary);
+      logger.debug('編集モードでモーダルを開く:', diary);
+      
+      // 編集モードの場合、既存のデータをフォームに設定
+      // 日付を正しく処理（UTC変換を避けてローカル時間で表示）
+      let dateString = '';
+      if (diary.date) {
+        // 日付文字列が既にYYYY-MM-DD形式の場合はそのまま使用
+        if (diary.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          dateString = diary.date;
+        } else {
+          // その他の場合はローカル時間で処理
+          const diaryDate = new Date(diary.date);
+          const year = diaryDate.getFullYear();
+          const month = String(diaryDate.getMonth() + 1).padStart(2, '0');
+          const day = String(diaryDate.getDate()).padStart(2, '0');
+          dateString = `${year}-${month}-${day}`;
+        }
+      }
+      setDiaryDate(dateString);
+      setDiaryTitle(diary.title || "");
+      setDiaryContent(diary.content || "");
+      setDiaryMood(diary.mood || "");
+      setDiaryTags(diary.tags || []);
+      // 新しい項目の初期値設定
+      setDiaryActivities(diary.activities || []);
+      setDiaryWorkSummary(diary.workSummary || "");
+      setDiaryAchievements(diary.achievements || []);
+      setDiaryChallenges(diary.challenges || []);
+      setDiaryLearnings(diary.learnings || []);
+      setDiaryNextGoals(diary.nextGoals || []);
+      setDiaryEnergyLevel(diary.energyLevel || 5);
+      setDiaryStressLevel(diary.stressLevel || 5);
+      setDiaryWorkHours(diary.workHours || 0);
+      setDiaryBreakTime(diary.breakTime || 0);
+      setDiaryProductivity(diary.productivity || 5);
+      setDiaryNotes(diary.notes || "");
+      setDiaryGratitude(diary.gratitude || "");
+      setDiaryReflection(diary.reflection || "");
+      setEditingDiary(diary);
     } else {
       // 新規作成の場合、選択された日付または今日の日付を設定
       const dateToUse = selectedDate || new Date();
@@ -529,6 +567,64 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setShowDiaryModal(false);
     // 編集状態はリセットしない（更新後に新規登録フォームに変わらないようにする）
     // ただし、明示的に新規作成ボタンを押した場合は編集状態をリセット
+  };
+
+  // WorkRecordsComponent専用の更新処理
+  const handleUpdateDiaryLocal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    logger.debug('ローカル更新処理開始:', { userId: user?.id, editingDiary });
+    if (!user?.id || !editingDiary) {
+      logger.warn('更新処理中止: ユーザーIDまたは編集対象の日記がありません');
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/work-records/diary/${editingDiary._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            date: diaryDate,
+            title: diaryTitle,
+            content: diaryContent,
+            mood: diaryMood,
+            tags: diaryTags,
+            // 新しい項目
+            activities: diaryActivities,
+            workSummary: diaryWorkSummary,
+            achievements: diaryAchievements,
+            challenges: diaryChallenges,
+            learnings: diaryLearnings,
+            nextGoals: diaryNextGoals,
+            energyLevel: diaryEnergyLevel,
+            stressLevel: diaryStressLevel,
+            workHours: diaryWorkHours,
+            breakTime: diaryBreakTime,
+            productivity: diaryProductivity,
+            notes: diaryNotes,
+            gratitude: diaryGratitude,
+            reflection: diaryReflection,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      logger.debug('更新APIレスポンス:', data);
+      if (data.success) {
+        // データを再読み込み
+        await loadWorkDiaries();
+        // モーダルを閉じる
+        setShowDiaryModal(false);
+        setEditingDiary(null);
+        logger.info('日記を更新しました！');
+      } else {
+        logger.error('日記の更新に失敗しました:', data.message);
+      }
+    } catch (error) {
+      logger.error('日記の更新中にエラーが発生しました:', error);
+    }
   };
 
   // 収入・支出モーダルを開く関数
@@ -568,7 +664,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 編集状態を監視
   useEffect(() => {
-    console.log('editingDiary状態が変更されました:', editingDiary);
+    logger.debug('editingDiary状態が変更されました:', editingDiary);
   }, [editingDiary]);
 
   // 統計データの計算
@@ -627,13 +723,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             </div>
             <div className="modal-body">
               <form onSubmit={(e) => {
-                console.log('フォーム送信時の活動データ:', diaryActivities);
-                console.log('編集状態:', editingDiary);
+                logger.debug('フォーム送信時の活動データ:', diaryActivities);
+                logger.debug('編集状態:', editingDiary);
                 if (editingDiary) {
-                  console.log('更新処理を実行');
-                  handleUpdateDiary(e);
+                  logger.debug('更新処理を実行');
+                  handleUpdateDiaryLocal(e);
                 } else {
-                  console.log('新規作成処理を実行');
+                  logger.debug('新規作成処理を実行');
                   handleCreateDiary(e);
                 }
               }}>

@@ -23,6 +23,21 @@ const WorkDiarySchema = new mongoose.Schema({
   mood: { type: String, enum: ['1', '2', '3', '4', '5'], default: '3' },
   tags: [{ type: String }],
   isPrivate: { type: Boolean, default: true },
+  // 新しい項目
+  activities: [{ type: String }],
+  workSummary: { type: String, default: '' },
+  achievements: [{ type: String }],
+  challenges: [{ type: String }],
+  learnings: [{ type: String }],
+  nextGoals: [{ type: String }],
+  energyLevel: { type: Number, min: 1, max: 10, default: 5 },
+  stressLevel: { type: Number, min: 1, max: 10, default: 5 },
+  workHours: { type: Number, default: 0 },
+  breakTime: { type: Number, default: 0 },
+  productivity: { type: Number, min: 1, max: 10, default: 5 },
+  notes: { type: String, default: '' },
+  gratitude: { type: String, default: '' },
+  reflection: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

@@ -29,6 +29,21 @@ const WorkDiarySchema = new mongoose.Schema({
   mood: { type: String, enum: ['1', '2', '3', '4', '5'], default: '3' },
   tags: [{ type: String }],
   isPrivate: { type: Boolean, default: true },
+  // 新しい項目
+  activities: [{ type: String }],
+  workSummary: { type: String, default: '' },
+  achievements: [{ type: String }],
+  challenges: [{ type: String }],
+  learnings: [{ type: String }],
+  nextGoals: [{ type: String }],
+  energyLevel: { type: Number, min: 1, max: 10, default: 5 },
+  stressLevel: { type: Number, min: 1, max: 10, default: 5 },
+  workHours: { type: Number, default: 0 },
+  breakTime: { type: Number, default: 0 },
+  productivity: { type: Number, min: 1, max: 10, default: 5 },
+  notes: { type: String, default: '' },
+  gratitude: { type: String, default: '' },
+  reflection: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
@@ -155,7 +170,12 @@ export default async function handler(req, res) {
 
     } else if (req.method === 'POST') {
       // 新しい日記を作成
-      const { userId, date, title, content, mood, tags, isPrivate } = req.body;
+      const { 
+        userId, date, title, content, mood, tags, isPrivate,
+        activities, workSummary, achievements, challenges, learnings, nextGoals,
+        energyLevel, stressLevel, workHours, breakTime, productivity,
+        notes, gratitude, reflection
+      } = req.body;
 
       // セキュリティのため、JWT認証を優先してユーザーIDを取得
       const user = verifyJWT(req);
@@ -189,7 +209,22 @@ export default async function handler(req, res) {
         content,
         mood: mood || '3',
         tags: tags || [],
-        isPrivate: isPrivate !== undefined ? isPrivate : true
+        isPrivate: isPrivate !== undefined ? isPrivate : true,
+        // 新しい項目
+        activities: activities || [],
+        workSummary: workSummary || '',
+        achievements: achievements || [],
+        challenges: challenges || [],
+        learnings: learnings || [],
+        nextGoals: nextGoals || [],
+        energyLevel: energyLevel || 5,
+        stressLevel: stressLevel || 5,
+        workHours: workHours || 0,
+        breakTime: breakTime || 0,
+        productivity: productivity || 5,
+        notes: notes || '',
+        gratitude: gratitude || '',
+        reflection: reflection || ''
       });
 
       await diary.save();
@@ -202,7 +237,12 @@ export default async function handler(req, res) {
 
     } else if (req.method === 'PUT') {
       // 日記を更新
-      const { id, userId, date, title, content, mood, tags, isPrivate } = req.body;
+      const { 
+        id, userId, date, title, content, mood, tags, isPrivate,
+        activities, workSummary, achievements, challenges, learnings, nextGoals,
+        energyLevel, stressLevel, workHours, breakTime, productivity,
+        notes, gratitude, reflection
+      } = req.body;
 
       if (!id) {
         return res.status(400).json({
@@ -249,6 +289,22 @@ export default async function handler(req, res) {
       if (isPrivate !== undefined) {
         updateData.isPrivate = isPrivate;
       }
+      
+      // 新しい項目の処理
+      if (activities) { updateData.activities = activities; }
+      if (workSummary !== undefined) { updateData.workSummary = workSummary; }
+      if (achievements) { updateData.achievements = achievements; }
+      if (challenges) { updateData.challenges = challenges; }
+      if (learnings) { updateData.learnings = learnings; }
+      if (nextGoals) { updateData.nextGoals = nextGoals; }
+      if (energyLevel !== undefined) { updateData.energyLevel = energyLevel; }
+      if (stressLevel !== undefined) { updateData.stressLevel = stressLevel; }
+      if (workHours !== undefined) { updateData.workHours = workHours; }
+      if (breakTime !== undefined) { updateData.breakTime = breakTime; }
+      if (productivity !== undefined) { updateData.productivity = productivity; }
+      if (notes !== undefined) { updateData.notes = notes; }
+      if (gratitude !== undefined) { updateData.gratitude = gratitude; }
+      if (reflection !== undefined) { updateData.reflection = reflection; }
 
       // ユーザーIDが提供されている場合は、そのユーザーの日記のみ更新可能にする
       const query: any = { _id: id };
