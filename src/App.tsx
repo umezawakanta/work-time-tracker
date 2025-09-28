@@ -22,6 +22,8 @@ import DocsViewer from "./components/DocsViewer";
 import NotificationComponent from "./components/NotificationComponent";
 import CharacterSelector from "./components/CharacterSelector";
 import CharacterDisplay from "./components/CharacterDisplay";
+import CharacterNotification from "./components/CharacterNotification";
+import CharacterProgress from "./components/CharacterProgress";
 import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
@@ -36,7 +38,7 @@ import {
 import type { ApiErrorInfo } from "./utils/apiErrorHandler";
 // Static import for apiFetch - used frequently throughout the application
 import { apiFetch } from "./utils/apiClient";
-import { Character as CharacterType, UserCharacterSettings } from "./types/character";
+import { Character as CharacterType, UserCharacterSettings, CharacterAchievement } from "./types/character";
 import { characterManager } from "./utils/characterManager";
 import {
   buildApiUrl,
@@ -319,6 +321,15 @@ function App({
   const [showCharacterSelector, setShowCharacterSelector] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterType | null>(characterManager.getCurrentCharacter());
   const [workState, setWorkState] = useState<'idle' | 'working' | 'break' | 'completed'>('idle');
+  
+  // キャラクター通知の状態
+  const [showCharacterNotification, setShowCharacterNotification] = useState(false);
+  const [notificationType, setNotificationType] = useState<'levelup' | 'achievement'>('levelup');
+  const [notificationLevel, setNotificationLevel] = useState<number>(0);
+  const [notificationAchievement, setNotificationAchievement] = useState<CharacterAchievement | undefined>(undefined);
+  
+  // キャラクター進捗表示の状態
+  const [showCharacterProgress, setShowCharacterProgress] = useState(false);
 
   // ジャンル管理の状態
   const [showGenreManagement, setShowGenreManagement] = useState(false);
@@ -1850,13 +1861,60 @@ ${errorInfo.stack}
   // レベルアップハンドラー
   const handleCharacterLevelUp = (newLevel: number) => {
     console.log('Character leveled up to:', newLevel);
-    // レベルアップ時の特別な処理を実装
+    setNotificationType('levelup');
+    setNotificationLevel(newLevel);
+    setShowCharacterNotification(true);
   };
 
   // アチーブメントハンドラー
   const handleCharacterAchievement = (achievementId: string) => {
     console.log('Achievement unlocked:', achievementId);
-    // アチーブメント獲得時の特別な処理を実装
+    const achievement = characterManager.getAchievements().find(a => a.id === achievementId);
+    if (achievement) {
+      setNotificationType('achievement');
+      setNotificationAchievement(achievement);
+      setShowCharacterNotification(true);
+    } else {
+      setNotificationAchievement(undefined);
+    }
+  };
+
+  // 作業完了時のキャラクター処理
+  const handleWorkComplete = (workMinutes: number) => {
+    const result = characterManager.onWorkComplete(workMinutes);
+    
+    if (result.leveledUp) {
+      handleCharacterLevelUp(result.newLevel);
+    }
+    
+    if (result.achievements.length > 0) {
+      result.achievements.forEach(achievement => {
+        handleCharacterAchievement(achievement.id);
+      });
+    }
+  };
+
+  // 作業開始時のキャラクター処理
+  const handleWorkStart = () => {
+    characterManager.onWorkStart();
+    setWorkState('working');
+  };
+
+  // 作業停止時のキャラクター処理
+  const handleWorkStop = (workMinutes: number) => {
+    handleWorkComplete(workMinutes);
+    setWorkState('idle');
+  };
+
+  // キャラクター進捗表示のハンドラー
+  const handleCharacterProgressToggle = () => {
+    setShowCharacterProgress(!showCharacterProgress);
+  };
+
+  // アチーブメントクリックハンドラー
+  const handleAchievementClick = (achievement: CharacterAchievement) => {
+    console.log('Achievement clicked:', achievement.name);
+    // 必要に応じて詳細表示などの処理を実装
   };
 
   // テーマ適用関数
@@ -6117,6 +6175,36 @@ User Agent: ${userAgent}
           currentSettings={characterSettings}
           availableCharacters={characterManager.getAvailableCharacters()}
         />
+
+        {/* キャラクター通知 */}
+        <CharacterNotification
+          isVisible={showCharacterNotification}
+          type={notificationType}
+          characterName={selectedCharacter?.name || ''}
+          level={notificationLevel}
+          achievement={notificationAchievement}
+          onClose={() => setShowCharacterNotification(false)}
+        />
+
+        {/* キャラクター進捗表示 */}
+        {showCharacterProgress && (
+          <div className="character-progress-modal">
+            <div className="character-progress-overlay" onClick={() => setShowCharacterProgress(false)} />
+            <div className="character-progress-content">
+              <button 
+                className="close-progress-button"
+                onClick={() => setShowCharacterProgress(false)}
+              >
+                ×
+              </button>
+              <CharacterProgress
+                character={selectedCharacter}
+                settings={characterSettings}
+                onAchievementClick={handleAchievementClick}
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -6193,6 +6281,7 @@ User Agent: ${userAgent}
                 onInteraction={handleCharacterInteraction}
                 onLevelUp={handleCharacterLevelUp}
                 onAchievement={handleCharacterAchievement}
+                onProgressClick={handleCharacterProgressToggle}
               />
             </div>
 
@@ -6207,6 +6296,8 @@ User Agent: ${userAgent}
                     loadProjects={loadProjects}
                     closeOtherFeatures={closeOtherFeatures}
                     setMessage={setMessage}
+                    onWorkStart={handleWorkStart}
+                    onWorkStop={handleWorkStop}
                   />
                 );
               } else if (feature.id === "cooking-timer") {

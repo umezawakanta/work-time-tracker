@@ -10,6 +10,8 @@ interface TimeTrackingComponentProps {
   loadProjects: () => Promise<void>;
   closeOtherFeatures: (activeFeature: string) => void;
   setMessage: (message: string) => void;
+  onWorkStart?: () => void;
+  onWorkStop?: (workMinutes: number) => void;
 }
 
 const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
@@ -19,6 +21,8 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
   loadProjects,
   closeOtherFeatures,
   setMessage,
+  onWorkStart,
+  onWorkStop,
 }) => {
   // プロジェクトのローディング状態をTimeTrackingComponent内で管理
   const [projectsLoading, setProjectsLoading] = useState(false);
@@ -68,11 +72,20 @@ const TimeTrackingComponent: React.FC<TimeTrackingComponentProps> = ({
       description
     );
     setMessage(result.message);
+    
+    // キャラクター機能の作業開始処理
+    onWorkStart?.();
   };
 
   const handleStopTracking = async () => {
     const result = await timeTrackingHelpers.stopTimeTracking();
     setMessage(result.message);
+    
+    // キャラクター機能の作業停止処理
+    if (elapsedTime > 0) {
+      const workMinutes = Math.floor(elapsedTime / 60);
+      onWorkStop?.(workMinutes);
+    }
   };
 
   const handleResetTracking = () => {

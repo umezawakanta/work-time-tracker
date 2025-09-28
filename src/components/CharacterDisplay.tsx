@@ -10,6 +10,7 @@ interface CharacterDisplayProps {
   onInteraction?: (interaction: string) => void;
   onLevelUp?: (newLevel: number) => void;
   onAchievement?: (achievementId: string) => void;
+  onProgressClick?: () => void;
 }
 
 const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
@@ -18,7 +19,8 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
   workState,
   onInteraction,
   onLevelUp,
-  onAchievement
+  onAchievement,
+  onProgressClick
 }) => {
   const [currentAnimation, setCurrentAnimation] = useState<string>('idle');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -223,6 +225,15 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
           </div>
           <span className="exp-text">{character.experience} EXP</span>
         </div>
+        {onProgressClick && (
+          <button 
+            className="progress-button"
+            onClick={onProgressClick}
+            title="進捗を表示"
+          >
+            📊 進捗
+          </button>
+        )}
       </div>
 
       {settings.preferences.soundEffects && (

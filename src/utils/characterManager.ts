@@ -134,15 +134,118 @@ export class CharacterManager {
     return { leveledUp, newLevel, achievements: newAchievements };
   }
 
+  // 作業時間に基づく経験値追加（作業完了時に呼び出し）
+  public addWorkExperience(workMinutes: number): {
+    leveledUp: boolean;
+    newLevel: number;
+    achievements: CharacterAchievement[];
+  } {
+    const workHours = workMinutes / 60;
+    return this.addExperience(0, workHours);
+  }
+
+  // 作業開始時の処理
+  public onWorkStart(): void {
+    this.settings.playTime += 0; // 作業開始時は時間を追加しない
+    this.saveSettings();
+  }
+
+  // 作業完了時の処理
+  public onWorkComplete(workMinutes: number): {
+    leveledUp: boolean;
+    newLevel: number;
+    achievements: CharacterAchievement[];
+  } {
+    // プレイ時間を更新
+    this.settings.playTime += workMinutes;
+    
+    // 経験値を追加
+    const result = this.addWorkExperience(workMinutes);
+    
+    // 作業完了のアチーブメントをチェック
+    this.checkWorkAchievements(workMinutes);
+    
+    return result;
+  }
+
+  // 作業関連のアチーブメントをチェック
+  private checkWorkAchievements(workMinutes: number): void {
+    const workHours = workMinutes / 60;
+    
+    // 作業時間のアチーブメントをチェック
+    this.achievements.forEach(achievement => {
+      if (achievement.unlocked) return;
+      
+      if (achievement.condition.type === 'work_hours') {
+        const totalWorkHours = this.settings.totalExperience / EXPERIENCE_TABLE.workHour;
+        if (totalWorkHours >= achievement.condition.value) {
+          this.unlockAchievement(achievement);
+        }
+      }
+    });
+  }
+
+  // アチーブメントを解除
+  private unlockAchievement(achievement: CharacterAchievement): void {
+    achievement.unlocked = true;
+    achievement.unlockedAt = new Date();
+    this.settings.achievements.push(achievement.id);
+    
+    // 報酬を適用
+    this.applyAchievementReward(achievement);
+  }
+
   // レベルアップチェック
   private checkLevelUp(character: Character): boolean {
     const requiredExp = this.getRequiredExperience(character.level);
     if (character.experience >= requiredExp) {
       character.level++;
       character.experience -= requiredExp;
+      
+      // レベルアップ時の特別な処理
+      this.onLevelUp(character);
+      
       return true;
     }
     return false;
+  }
+
+  // レベルアップ時の特別な処理
+  private onLevelUp(character: Character): void {
+    // レベルアップ時に新しい外見オプションを解放
+    this.unlockLevelUpRewards(character);
+    
+    // レベルアップのアチーブメントをチェック
+    this.checkLevelUpAchievements(character.level);
+  }
+
+  // レベルアップ報酬を解放
+  private unlockLevelUpRewards(character: Character): void {
+    // レベルに応じて新しいアクセサリーや外見オプションを解放
+    const level = character.level;
+    
+    if (level >= 5 && !character.customization.accessories.includes('crown')) {
+      character.customization.accessories.push('crown');
+    }
+    
+    if (level >= 10 && !character.customization.accessories.includes('wings')) {
+      character.customization.accessories.push('wings');
+    }
+    
+    if (level >= 15 && !character.customization.accessories.includes('halo')) {
+      character.customization.accessories.push('halo');
+    }
+  }
+
+  // レベルアップのアチーブメントをチェック
+  private checkLevelUpAchievements(level: number): void {
+    this.achievements.forEach(achievement => {
+      if (achievement.unlocked) return;
+      
+      if (achievement.condition.type === 'level_reach' && level >= achievement.condition.value) {
+        this.unlockAchievement(achievement);
+      }
+    });
   }
 
   // 必要経験値を取得
