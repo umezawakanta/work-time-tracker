@@ -57,6 +57,22 @@ interface WorkRecordsComponentProps {
   setDiaryGratitude: (gratitude: string) => void;
   diaryReflection: string;
   setDiaryReflection: (reflection: string) => void;
+  diaryWorkSummary: string;
+  setDiaryWorkSummary: (summary: string) => void;
+  diaryLearnings: string[];
+  setDiaryLearnings: React.Dispatch<React.SetStateAction<string[]>>;
+  diaryEnergyLevel: string;
+  setDiaryEnergyLevel: (level: string) => void;
+  diaryStressLevel: string;
+  setDiaryStressLevel: (level: string) => void;
+  diaryWorkHours: string;
+  setDiaryWorkHours: (hours: string) => void;
+  diaryBreakTime: string;
+  setDiaryBreakTime: (time: string) => void;
+  diaryProductivity: string;
+  setDiaryProductivity: (productivity: string) => void;
+  diaryTags: string[];
+  setDiaryTags: React.Dispatch<React.SetStateAction<string[]>>;
   monthlyMemo: string;
   setMonthlyMemo: (memo: string) => void;
   editingMonthlyMemo: boolean;
@@ -132,6 +148,22 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   setDiaryGratitude,
   diaryReflection,
   setDiaryReflection,
+  diaryWorkSummary,
+  setDiaryWorkSummary,
+  diaryLearnings,
+  setDiaryLearnings,
+  diaryEnergyLevel,
+  setDiaryEnergyLevel,
+  diaryStressLevel,
+  setDiaryStressLevel,
+  diaryWorkHours,
+  setDiaryWorkHours,
+  diaryBreakTime,
+  setDiaryBreakTime,
+  diaryProductivity,
+  setDiaryProductivity,
+  diaryTags,
+  setDiaryTags,
   monthlyMemo,
   setMonthlyMemo,
   editingMonthlyMemo,
