@@ -413,6 +413,20 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setEditingWeeklyMemo(false);
   };
 
+  // 週の範囲を取得する関数
+  const getWeekRange = (weekStart: Date) => {
+    const startOfWeek = new Date(weekStart);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // 日曜日を週の開始とする
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6); // 土曜日を週の終了とする
+    
+    return {
+      startOfWeek,
+      endOfWeek
+    };
+  };
+
   // 統計データの計算
   const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
   
