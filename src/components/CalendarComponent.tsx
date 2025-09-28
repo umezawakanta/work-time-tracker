@@ -444,6 +444,18 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
                           </div>
                         )}
 
+                        {/* 活動 */}
+                        {diary.activities && diary.activities.length > 0 && (
+                          <div className="diary-section">
+                            <h5><i className="bi bi-activity"></i> 活動</h5>
+                            <ul>
+                              {diary.activities.map((activity, idx) => (
+                                <li key={idx}>{activity}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
                         {/* 学んだこと */}
                         {diary.learnings && diary.learnings.length > 0 && (
                           <div className="diary-section">
@@ -523,10 +535,13 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
 
                         {/* タグ */}
                         {diary.tags && diary.tags.length > 0 && (
-                          <div className="diary-tags">
-                            {diary.tags.map((tag, idx) => (
-                              <span key={idx} className="diary-tag">{tag}</span>
-                            ))}
+                          <div className="diary-section">
+                            <h5><i className="bi bi-tags"></i> タグ</h5>
+                            <div className="diary-tags">
+                              {diary.tags.map((tag, idx) => (
+                                <span key={idx} className="diary-tag">{tag}</span>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
