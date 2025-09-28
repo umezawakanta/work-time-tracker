@@ -693,7 +693,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     </button>
                   </div>
                   <div className="array-items">
-                    {diaryActivities.map((activity, index) => (
+                    {(diaryActivities || []).map((activity, index) => (
                       <div key={index} className="array-item">
                         <span>{activity}</span>
                         <button
@@ -732,7 +732,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     </button>
                   </div>
                   <div className="array-items">
-                    {diaryLearnings.map((learning, index) => (
+                    {(diaryLearnings || []).map((learning, index) => (
                       <div key={index} className="array-item">
                         <span>{learning}</span>
                         <button
@@ -844,7 +844,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     </button>
                   </div>
                   <div className="array-items">
-                    {diaryTags.map((tag, index) => (
+                    {(diaryTags || []).map((tag, index) => (
                       <div key={index} className="array-item">
                         <span>{tag}</span>
                         <button
