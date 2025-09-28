@@ -481,7 +481,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     } else {
       // 新規作成の場合、選択された日付または今日の日付を設定
       const dateToUse = selectedDate || new Date();
-      setDiaryDate(dateToUse.toISOString().split('T')[0]);
+      // UTC変換を避けてローカル時間で日付文字列を作成
+      const year = dateToUse.getFullYear();
+      const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
+      const day = String(dateToUse.getDate()).padStart(2, '0');
+      setDiaryDate(`${year}-${month}-${day}`);
       setDiaryTitle('');
       setDiaryContent('');
       setDiaryMood('');
@@ -518,7 +522,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     } else {
       // 新規作成の場合、選択された日付または今日の日付を設定
       const dateToUse = selectedDate || new Date();
-      setIncomeExpenseDate(dateToUse.toISOString().split('T')[0]);
+      // UTC変換を避けてローカル時間で日付文字列を作成
+      const year = dateToUse.getFullYear();
+      const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
+      const day = String(dateToUse.getDate()).padStart(2, '0');
+      setIncomeExpenseDate(`${year}-${month}-${day}`);
       setIncomeExpenseAmount('');
       setIncomeExpenseType('income');
       setIncomeExpenseNotes('');
@@ -533,8 +541,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setEditingIncomeExpenseRecord(null);
   };
 
-  // 新規日記作成ボタンの表示制御
-  const showNewDiaryButton = showWorkRecords && !showDiaryModal;
 
   // 初期化時に今日の日付を選択
   useEffect(() => {
@@ -587,17 +593,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         </div>
       </div>
 
-      {/* 新規日記作成ボタン */}
-      {showNewDiaryButton && (
-        <div className="new-diary-button-container">
-          <button
-            onClick={() => openDiaryModal()}
-            className="new-diary-button"
-          >
-            <i className="bi bi-journal-plus"></i> 新しい日記を書く
-          </button>
-        </div>
-      )}
 
       {/* 日記モーダル */}
       {showDiaryModal && (
