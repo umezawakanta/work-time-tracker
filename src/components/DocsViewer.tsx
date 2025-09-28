@@ -72,6 +72,27 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
       path: '/docs/sound-app-test-specification.md',
       description: '音アプリの全機能のテスト仕様、テストケース、品質保証',
       category: '品質保証'
+    },
+    {
+      id: 'font-settings-design',
+      title: 'フォント設定機能 設計書',
+      path: '/docs/font-settings-design.md',
+      description: 'フォント設定機能のシステム設計、要件定義、実装計画',
+      category: 'アプリ設計'
+    },
+    {
+      id: 'font-settings-user-manual',
+      title: 'フォント設定機能 ユーザーマニュアル',
+      path: '/docs/font-settings-user-manual.md',
+      description: 'フォント設定の使い方、おすすめフォント、トラブルシューティング',
+      category: 'ユーザーガイド'
+    },
+    {
+      id: 'font-settings-test-specification',
+      title: 'フォント設定機能 総合試験仕様書',
+      path: '/docs/font-settings-test-specification.md',
+      description: 'フォント設定機能の全機能テスト仕様、テストケース、品質保証',
+      category: '品質保証'
     }
   ];
 
