@@ -1743,6 +1743,23 @@ ${errorInfo.stack}
     style.textContent = css;
     document.head.appendChild(style);
 
+    // フォントサイズと行間の設定
+    const fontSize = settings.fontSize === 'small' ? '14px' : 
+                    settings.fontSize === 'large' ? '18px' : '16px';
+    const lineHeight = settings.lineHeight === 'tight' ? '1.2' : 
+                      settings.lineHeight === 'loose' ? '1.8' : '1.5';
+
+    // CSS変数を設定
+    root.style.setProperty('--font-size', fontSize);
+    root.style.setProperty('--line-height', lineHeight);
+
+    // こどもモードの設定
+    if (settings.childMode) {
+      root.classList.add('child-mode');
+    } else {
+      root.classList.remove('child-mode');
+    }
+
     // 日本語テキストに日本語フォントを適用
     const japaneseFont =
       settings.japanese === "system"
@@ -1770,6 +1787,10 @@ ${errorInfo.stack}
       } else if (hasEnglish) {
         (element as HTMLElement).style.fontFamily = englishFont;
       }
+
+      // フォントサイズと行間を適用
+      (element as HTMLElement).style.fontSize = fontSize;
+      (element as HTMLElement).style.lineHeight = lineHeight;
     });
   };
 

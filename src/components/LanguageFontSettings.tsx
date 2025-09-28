@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { japaneseFonts, englishFonts, FontSettings, DEFAULT_FONT_SETTINGS } from '../constants/fonts';
+import { 
+  japaneseFonts, 
+  englishFonts, 
+  childFriendlyFonts,
+  FontSettings, 
+  DEFAULT_FONT_SETTINGS,
+  searchFonts,
+  filterFonts,
+  toggleFavorite,
+  getFavoriteFonts
+} from '../constants/fonts';
 import './LanguageFontSettings.css';
 
 interface LanguageFontSettingsProps {
@@ -16,7 +26,14 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
   currentSettings
 }) => {
   const [settings, setSettings] = useState<FontSettings>(currentSettings);
-  const [activeTab, setActiveTab] = useState<'japanese' | 'english'>('japanese');
+  const [activeTab, setActiveTab] = useState<'japanese' | 'english' | 'child-friendly'>('japanese');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({
+    subcategory: '',
+    ageGroup: '',
+    readability: ''
+  });
+  const [showFavorites, setShowFavorites] = useState(false);
 
   useEffect(() => {
     setSettings(currentSettings);
@@ -29,6 +46,22 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
     }));
   };
 
+  const handleChildFontChange = (value: string) => {
+    // こども向けフォントの場合、日本語と英語の両方に適用
+    setSettings(prev => ({
+      ...prev,
+      japanese: value,
+      english: value
+    }));
+  };
+
+  const handleToggleFavorite = (fontValue: string) => {
+    setSettings(prev => ({
+      ...prev,
+      favorites: toggleFavorite(fontValue, prev.favorites || [])
+    }));
+  };
+
   const handleSave = () => {
     onSave(settings);
     onClose();
@@ -38,10 +71,30 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
     setSettings(DEFAULT_FONT_SETTINGS);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
-  const currentFonts = activeTab === 'japanese' ? japaneseFonts : englishFonts;
-  const currentFont = settings[activeTab];
+  // 表示するフォントリストを決定
+  let currentFonts = japaneseFonts;
+  if (activeTab === 'english') {
+    currentFonts = englishFonts;
+  } else if (activeTab === 'child-friendly') {
+    currentFonts = childFriendlyFonts;
+  } else if (showFavorites) {
+    currentFonts = getFavoriteFonts(settings.favorites || []);
+  }
+
+  // 検索とフィルタを適用
+  let filteredFonts = currentFonts;
+  if (searchQuery) {
+    filteredFonts = searchFonts(searchQuery, activeTab === 'child-friendly' ? 'child-friendly' : activeTab);
+  }
+  if (filters.subcategory || filters.ageGroup || filters.readability) {
+    filteredFonts = filterFonts(filteredFonts, filters);
+  }
+
+  const currentFont = activeTab === 'child-friendly' ? settings.japanese : settings[activeTab];
 
   return (
     <div className="language-font-modal-overlay">
@@ -66,9 +119,73 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
           >
             🇺🇸 英語フォント
           </button>
+          <button
+            className={`tab-button ${activeTab === 'child-friendly' ? 'active' : ''}`}
+            onClick={() => setActiveTab('child-friendly')}
+          >
+            👶 こども向けフォント
+          </button>
+          <button
+            className={`tab-button ${showFavorites ? 'active' : ''}`}
+            onClick={() => setShowFavorites(!showFavorites)}
+          >
+            ⭐ お気に入り
+          </button>
         </div>
 
         <div className="language-font-body">
+          {/* 検索・フィルタ機能 */}
+          <div className="font-search-filters">
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder="フォントを検索..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+            </div>
+            <div className="filter-controls">
+              <select
+                value={filters.subcategory}
+                onChange={(e) => setFilters(prev => ({ ...prev, subcategory: e.target.value }))}
+                className="filter-select"
+                title="カテゴリでフィルタ"
+              >
+                <option value="">すべてのカテゴリ</option>
+                <option value="rounded">丸文字</option>
+                <option value="handwriting">手書き風</option>
+                <option value="cute">可愛い</option>
+                <option value="school">学校風</option>
+                <option value="modern">モダン</option>
+                <option value="classic">クラシック</option>
+              </select>
+              <select
+                value={filters.ageGroup}
+                onChange={(e) => setFilters(prev => ({ ...prev, ageGroup: e.target.value }))}
+                className="filter-select"
+                title="年齢層でフィルタ"
+              >
+                <option value="">すべての年齢</option>
+                <option value="child">こども向け</option>
+                <option value="teen">ティーン向け</option>
+                <option value="adult">大人向け</option>
+                <option value="all">全年齢</option>
+              </select>
+              <select
+                value={filters.readability}
+                onChange={(e) => setFilters(prev => ({ ...prev, readability: e.target.value }))}
+                className="filter-select"
+                title="読みやすさでフィルタ"
+              >
+                <option value="">すべての読みやすさ</option>
+                <option value="high">読みやすい</option>
+                <option value="medium">普通</option>
+                <option value="low">読みにくい</option>
+              </select>
+            </div>
+          </div>
+
           <div className="font-preview">
             <h4>プレビュー</h4>
             <div className="preview-content">
@@ -78,30 +195,72 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
               <p className="preview-english" style={{ fontFamily: settings.english === 'system' ? 'var(--english-font)' : settings.english }}>
                 English Text - Work Time Tracker with Cute Characters!
               </p>
+              <div className="preview-samples">
+                <p className="preview-numbers" style={{ fontFamily: activeTab === 'japanese' ? (settings.japanese === 'system' ? 'var(--japanese-font)' : settings.japanese) : (settings.english === 'system' ? 'var(--english-font)' : settings.english) }}>
+                  1234567890
+                </p>
+                <p className="preview-symbols" style={{ fontFamily: activeTab === 'japanese' ? (settings.japanese === 'system' ? 'var(--japanese-font)' : settings.japanese) : (settings.english === 'system' ? 'var(--english-font)' : settings.english) }}>
+                  !@#$%^&*()
+                </p>
+              </div>
             </div>
           </div>
 
           <div className="font-options">
-            {currentFonts.map((font) => (
-              <label key={font.value} className="font-option">
-                <input
-                  type="radio"
-                  name={`font-${activeTab}`}
-                  value={font.value}
-                  checked={currentFont === font.value}
-                  onChange={(e) => handleFontChange(activeTab, e.target.value)}
-                />
-                <span
-                  style={{
-                    fontFamily: font.value === 'system' 
-                      ? (activeTab === 'japanese' ? 'var(--japanese-font)' : 'var(--english-font)')
-                      : font.value,
-                  }}
+            {filteredFonts.map((font) => (
+              <div key={font.value} className="font-option-container">
+                <label className="font-option">
+                  <input
+                    type="radio"
+                    name={`font-${activeTab}`}
+                    value={font.value}
+                    checked={currentFont === font.value}
+                    onChange={(e) => {
+                      if (activeTab === 'child-friendly') {
+                        handleChildFontChange(e.target.value);
+                      } else {
+                        handleFontChange(activeTab, e.target.value);
+                      }
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: font.value === 'system' 
+                        ? (activeTab === 'japanese' ? 'var(--japanese-font)' : 'var(--english-font)')
+                        : font.value,
+                    }}
+                  >
+                    {font.label}
+                  </span>
+                </label>
+                <button
+                  className={`favorite-button ${(settings.favorites || []).includes(font.value) ? 'favorited' : ''}`}
+                  onClick={() => handleToggleFavorite(font.value)}
+                  title="お気に入りに追加/削除"
                 >
-                  {font.label}
-                </span>
-              </label>
+                  ⭐
+                </button>
+                {font.description && (
+                  <div className="font-description">
+                    {font.description}
+                  </div>
+                )}
+                {font.tags && font.tags.length > 0 && (
+                  <div className="font-tags">
+                    {font.tags.map((tag, index) => (
+                      <span key={index} className="font-tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
+            {filteredFonts.length === 0 && (
+              <div className="no-fonts-message">
+                条件に合うフォントが見つかりませんでした。
+              </div>
+            )}
           </div>
         </div>
 
