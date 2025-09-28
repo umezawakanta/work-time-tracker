@@ -2433,7 +2433,9 @@ ${errorInfo.stack}
 
   const handleUpdateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('更新処理開始:', { userId: user?.id, editingDiary });
     if (!user?.id || !editingDiary) {
+      console.log('更新処理中止: ユーザーIDまたは編集対象の日記がありません');
       return;
     }
 
@@ -2471,6 +2473,7 @@ ${errorInfo.stack}
       );
 
       const data = await response.json();
+      console.log('更新APIレスポンス:', data);
       if (data.success) {
         setMessage("日記を更新しました！");
         // データを再読み込み
@@ -2478,6 +2481,7 @@ ${errorInfo.stack}
         // モーダルを閉じる（フォームはリセットしない）
         setShowWorkRecords(true);
       } else {
+        console.log('更新エラー:', data.message);
         setMessage(`エラー: ${data.message}`);
       }
     } catch (error) {
@@ -3262,6 +3266,7 @@ ${errorInfo.stack}
     setNewLearning("");
     setNewNextGoal("");
     setEditingDiary(diary);
+    console.log('編集対象の日記を設定:', diary);
     setShowDiaryForm(true);
     setShowIncomeExpenseForm(false);
     setShowCalendar(false);

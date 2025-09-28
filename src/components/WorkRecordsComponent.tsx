@@ -491,6 +491,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setDiaryTagsInput('');
     
     if (diary) {
+      console.log('編集モードでモーダルを開く:', diary);
       editDiary(diary);
     } else {
       // 新規作成の場合、選択された日付または今日の日付を設定
@@ -565,6 +566,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     }
   }, [showWorkRecords, selectedDate, setSelectedDate]);
 
+  // 編集状態を監視
+  useEffect(() => {
+    console.log('editingDiary状態が変更されました:', editingDiary);
+  }, [editingDiary]);
+
   // 統計データの計算
   const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
   
@@ -622,9 +628,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             <div className="modal-body">
               <form onSubmit={(e) => {
                 console.log('フォーム送信時の活動データ:', diaryActivities);
+                console.log('編集状態:', editingDiary);
                 if (editingDiary) {
+                  console.log('更新処理を実行');
                   handleUpdateDiary(e);
                 } else {
+                  console.log('新規作成処理を実行');
                   handleCreateDiary(e);
                 }
               }}>
