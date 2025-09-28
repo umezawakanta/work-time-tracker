@@ -682,11 +682,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     aria-label="気分を選択"
                   >
                     <option value="">選択してください</option>
-                    <option value="1"><i className="bi bi-emoji-frown"></i> 1 (とても悪い)</option>
-                    <option value="2"><i className="bi bi-emoji-expressionless"></i> 2 (悪い)</option>
-                    <option value="3"><i className="bi bi-emoji-neutral"></i> 3 (普通)</option>
-                    <option value="4"><i className="bi bi-emoji-smile"></i> 4 (良い)</option>
-                    <option value="5"><i className="bi bi-emoji-laughing"></i> 5 (とても良い)</option>
+                    <option value="1">😞 1 (とても悪い)</option>
+                    <option value="2">😐 2 (悪い)</option>
+                    <option value="3">😑 3 (普通)</option>
+                    <option value="4">😊 4 (良い)</option>
+                    <option value="5">😄 5 (とても良い)</option>
                   </select>
                 </div>
                 <div className="form-group">
