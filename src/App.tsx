@@ -2374,6 +2374,7 @@ ${errorInfo.stack}
           tags: diaryTags,
           isPrivate: diaryIsPrivate,
           // 新しい項目
+          activities: diaryActivities,
           workSummary: diaryWorkSummary,
           achievements: diaryAchievements,
           challenges: diaryChallenges,
@@ -2385,6 +2386,8 @@ ${errorInfo.stack}
           breakTime: diaryBreakTime,
           productivity: diaryProductivity,
           notes: diaryNotes,
+          gratitude: diaryGratitude,
+          reflection: diaryReflection,
         }),
       });
 
@@ -2398,6 +2401,7 @@ ${errorInfo.stack}
         setDiaryTags([]);
         setDiaryIsPrivate(true);
         // 新しい項目もリセット
+        setDiaryActivities([]);
         setDiaryWorkSummary("");
         setDiaryAchievements([]);
         setDiaryChallenges([]);
@@ -2446,6 +2450,7 @@ ${errorInfo.stack}
             tags: diaryTags,
             isPrivate: diaryIsPrivate,
             // 新しい項目
+            activities: diaryActivities,
             workSummary: diaryWorkSummary,
             achievements: diaryAchievements,
             challenges: diaryChallenges,
@@ -2457,6 +2462,8 @@ ${errorInfo.stack}
             breakTime: diaryBreakTime,
             productivity: diaryProductivity,
             notes: diaryNotes,
+            gratitude: diaryGratitude,
+            reflection: diaryReflection,
           }),
         }
       );
@@ -2472,6 +2479,7 @@ ${errorInfo.stack}
         setDiaryTags([]);
         setDiaryIsPrivate(true);
         // 新しい項目もリセット
+        setDiaryActivities([]);
         setDiaryWorkSummary("");
         setDiaryAchievements([]);
         setDiaryChallenges([]);
@@ -2483,6 +2491,8 @@ ${errorInfo.stack}
         setDiaryBreakTime(0);
         setDiaryProductivity(5);
         setDiaryNotes("");
+        setDiaryGratitude("");
+        setDiaryReflection("");
         setNewAchievement("");
         setNewChallenge("");
         setNewLearning("");
@@ -3254,9 +3264,10 @@ ${errorInfo.stack}
     setDiaryTitle(diary.title || "");
     setDiaryContent(diary.content || "");
     setDiaryMood(diary.mood || "");
-    setDiaryTags(diary.tags ? diary.tags.join(", ") : "");
+    setDiaryTags(diary.tags || []);
     setDiaryIsPrivate(diary.isPrivate || false);
     // 新しい項目の初期値設定
+    setDiaryActivities(diary.activities || []);
     setDiaryWorkSummary(diary.workSummary || "");
     setDiaryAchievements(diary.achievements || []);
     setDiaryChallenges(diary.challenges || []);
@@ -3268,6 +3279,8 @@ ${errorInfo.stack}
     setDiaryBreakTime(diary.breakTime || 0);
     setDiaryProductivity(diary.productivity || 5);
     setDiaryNotes(diary.notes || "");
+    setDiaryGratitude(diary.gratitude || "");
+    setDiaryReflection(diary.reflection || "");
     setNewAchievement("");
     setNewChallenge("");
     setNewLearning("");
@@ -3402,6 +3415,16 @@ ${errorInfo.stack}
     setDiaryNextGoals([]);
     setDiaryChallenges([]);
     setDiaryAchievements([]);
+    setDiaryWorkSummary("");
+    setDiaryLearnings([]);
+    setDiaryEnergyLevel(5);
+    setDiaryStressLevel(5);
+    setDiaryWorkHours(0);
+    setDiaryBreakTime(0);
+    setDiaryProductivity(5);
+    setDiaryTags([]);
+    setDiaryGratitude("");
+    setDiaryReflection("");
     setEditingDiary(null);
   };
 
