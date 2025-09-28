@@ -474,6 +474,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 収入・支出モーダルの状態管理
   const [showIncomeExpenseModal, setShowIncomeExpenseModal] = useState(false);
 
+  // 配列入力用のローカル状態
+  const [diaryActivitiesInput, setDiaryActivitiesInput] = useState('');
+  const [diaryLearningsInput, setDiaryLearningsInput] = useState('');
+  const [diaryTagsInput, setDiaryTagsInput] = useState('');
+
   // 日記モーダルを開く関数
   const openDiaryModal = (diary?: any) => {
     if (diary) {
@@ -505,6 +510,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       setDiaryProductivity(5);
       setDiaryTags([]);
       setEditingDiary(null);
+      // 配列入力フィールドもリセット
+      setDiaryActivitiesInput('');
+      setDiaryLearningsInput('');
+      setDiaryTagsInput('');
     }
     setShowDiaryModal(true);
   };
@@ -658,6 +667,208 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     required
                   />
                 </div>
+
+                {/* 詳細項目 */}
+                <div className="form-group">
+                  <label>活動</label>
+                  <div className="array-input-group">
+                    <input
+                      type="text"
+                      value={diaryActivitiesInput}
+                      onChange={(e) => setDiaryActivitiesInput(e.target.value)}
+                      placeholder="活動を入力"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addArrayItem(setDiaryActivities, diaryActivitiesInput, setDiaryActivitiesInput);
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => addArrayItem(setDiaryActivities, diaryActivitiesInput, setDiaryActivitiesInput)}
+                      className="add-item-button"
+                    >
+                      追加
+                    </button>
+                  </div>
+                  <div className="array-items">
+                    {diaryActivities.map((activity, index) => (
+                      <div key={index} className="array-item">
+                        <span>{activity}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeArrayItem(setDiaryActivities, index)}
+                          className="remove-item-button"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>学習内容</label>
+                  <div className="array-input-group">
+                    <input
+                      type="text"
+                      value={diaryLearningsInput}
+                      onChange={(e) => setDiaryLearningsInput(e.target.value)}
+                      placeholder="学習内容を入力"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addArrayItem(setDiaryLearnings, diaryLearningsInput, setDiaryLearningsInput);
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => addArrayItem(setDiaryLearnings, diaryLearningsInput, setDiaryLearningsInput)}
+                      className="add-item-button"
+                    >
+                      追加
+                    </button>
+                  </div>
+                  <div className="array-items">
+                    {diaryLearnings.map((learning, index) => (
+                      <div key={index} className="array-item">
+                        <span>{learning}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeArrayItem(setDiaryLearnings, index)}
+                          className="remove-item-button"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>エネルギー・ストレスレベル</label>
+                  <div className="level-inputs">
+                    <div className="level-input">
+                      <label>エネルギー: {diaryEnergyLevel}</label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={diaryEnergyLevel}
+                        onChange={(e) => setDiaryEnergyLevel(parseInt(e.target.value))}
+                        aria-label="エネルギーレベル"
+                      />
+                    </div>
+                    <div className="level-input">
+                      <label>ストレス: {diaryStressLevel}</label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={diaryStressLevel}
+                        onChange={(e) => setDiaryStressLevel(parseInt(e.target.value))}
+                        aria-label="ストレスレベル"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>作業時間・休憩時間</label>
+                  <div className="time-inputs">
+                    <div className="time-input">
+                      <label>作業時間 (時間)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="24"
+                        step="0.5"
+                        value={diaryWorkHours}
+                        onChange={(e) => setDiaryWorkHours(parseFloat(e.target.value) || 0)}
+                        aria-label="作業時間"
+                      />
+                    </div>
+                    <div className="time-input">
+                      <label>休憩時間 (分)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="480"
+                        step="15"
+                        value={diaryBreakTime}
+                        onChange={(e) => setDiaryBreakTime(parseInt(e.target.value) || 0)}
+                        aria-label="休憩時間"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>生産性</label>
+                  <div className="level-input">
+                    <label>生産性: {diaryProductivity}</label>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={diaryProductivity}
+                      onChange={(e) => setDiaryProductivity(parseInt(e.target.value))}
+                      aria-label="生産性レベル"
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>タグ</label>
+                  <div className="array-input-group">
+                    <input
+                      type="text"
+                      value={diaryTagsInput}
+                      onChange={(e) => setDiaryTagsInput(e.target.value)}
+                      placeholder="タグを入力"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addArrayItem(setDiaryTags, diaryTagsInput, setDiaryTagsInput);
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => addArrayItem(setDiaryTags, diaryTagsInput, setDiaryTagsInput)}
+                      className="add-item-button"
+                    >
+                      追加
+                    </button>
+                  </div>
+                  <div className="array-items">
+                    {diaryTags.map((tag, index) => (
+                      <div key={index} className="array-item">
+                        <span>{tag}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeArrayItem(setDiaryTags, index)}
+                          className="remove-item-button"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>メモ</label>
+                  <textarea
+                    value={diaryNotes}
+                    onChange={(e) => setDiaryNotes(e.target.value)}
+                    placeholder="その他のメモや備考"
+                    rows={3}
+                  />
+                </div>
+
                 <div className="form-actions">
                   <button type="submit" className="save-button">
                     {editingDiary ? '更新' : '保存'}
