@@ -139,8 +139,9 @@ const FontRecommendationPanel: React.FC<FontRecommendationPanelProps> = ({
               <h4>あなたの好みを教えてください</h4>
               
               <div className="preference-group">
-                <label>年齢グループ</label>
+                <label htmlFor="age-group">年齢グループ</label>
                 <select
+                  id="age-group"
                   value={userPreferences.ageGroup || 'adult'}
                   onChange={(e) => handlePreferenceChange('ageGroup', e.target.value)}
                   className="preference-select"
@@ -153,8 +154,9 @@ const FontRecommendationPanel: React.FC<FontRecommendationPanelProps> = ({
               </div>
 
               <div className="preference-group">
-                <label>主な用途</label>
+                <label htmlFor="use-case">主な用途</label>
                 <select
+                  id="use-case"
                   value={userPreferences.useCase || 'work'}
                   onChange={(e) => handlePreferenceChange('useCase', e.target.value)}
                   className="preference-select"
@@ -168,8 +170,9 @@ const FontRecommendationPanel: React.FC<FontRecommendationPanelProps> = ({
               </div>
 
               <div className="preference-group">
-                <label>視覚的嗜好</label>
+                <label htmlFor="visual-preference">視覚的嗜好</label>
                 <select
+                  id="visual-preference"
                   value={userPreferences.visualPreference || 'minimal'}
                   onChange={(e) => handlePreferenceChange('visualPreference', e.target.value)}
                   className="preference-select"
@@ -183,8 +186,9 @@ const FontRecommendationPanel: React.FC<FontRecommendationPanelProps> = ({
               </div>
 
               <div className="preference-group">
-                <label>アクセシビリティ</label>
+                <label htmlFor="accessibility">アクセシビリティ</label>
                 <select
+                  id="accessibility"
                   value={userPreferences.accessibilityNeeds || 'none'}
                   onChange={(e) => handlePreferenceChange('accessibilityNeeds', e.target.value)}
                   className="preference-select"
@@ -197,8 +201,9 @@ const FontRecommendationPanel: React.FC<FontRecommendationPanelProps> = ({
               </div>
 
               <div className="preference-group">
-                <label>言語</label>
+                <label htmlFor="language">言語</label>
                 <select
+                  id="language"
                   value={userPreferences.language || 'mixed'}
                   onChange={(e) => handlePreferenceChange('language', e.target.value)}
                   className="preference-select"
