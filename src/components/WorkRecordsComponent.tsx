@@ -61,16 +61,16 @@ interface WorkRecordsComponentProps {
   setDiaryWorkSummary: (summary: string) => void;
   diaryLearnings: string[];
   setDiaryLearnings: React.Dispatch<React.SetStateAction<string[]>>;
-  diaryEnergyLevel: string;
-  setDiaryEnergyLevel: (level: string) => void;
-  diaryStressLevel: string;
-  setDiaryStressLevel: (level: string) => void;
-  diaryWorkHours: string;
-  setDiaryWorkHours: (hours: string) => void;
-  diaryBreakTime: string;
-  setDiaryBreakTime: (time: string) => void;
-  diaryProductivity: string;
-  setDiaryProductivity: (productivity: string) => void;
+  diaryEnergyLevel: number;
+  setDiaryEnergyLevel: (level: number) => void;
+  diaryStressLevel: number;
+  setDiaryStressLevel: (level: number) => void;
+  diaryWorkHours: number;
+  setDiaryWorkHours: (hours: number) => void;
+  diaryBreakTime: number;
+  setDiaryBreakTime: (time: number) => void;
+  diaryProductivity: number;
+  setDiaryProductivity: (productivity: number) => void;
   diaryTags: string[];
   setDiaryTags: React.Dispatch<React.SetStateAction<string[]>>;
   monthlyMemo: string;
@@ -463,8 +463,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   const editIncomeExpenseRecord = (record: any) => {
     setEditingIncomeExpenseRecord(record);
     setIncomeExpenseAmount(record.amount.toString());
-    setIncomeExpenseCategory(record.category);
-    setIncomeExpenseDescription(record.description || '');
     setIncomeExpenseDate(record.date);
     setSelectedRecordType(record.type);
     setShowIncomeExpenseForm(true);
@@ -472,6 +470,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 日記モーダルの状態管理
   const [showDiaryModal, setShowDiaryModal] = useState(false);
+
+  // 収入・支出モーダルの状態管理
+  const [showIncomeExpenseModal, setShowIncomeExpenseModal] = useState(false);
 
   // 日記モーダルを開く関数
   const openDiaryModal = (diary?: any) => {
@@ -492,11 +493,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       setDiaryReflection('');
       setDiaryWorkSummary('');
       setDiaryLearnings([]);
-      setDiaryEnergyLevel('');
-      setDiaryStressLevel('');
-      setDiaryWorkHours('');
-      setDiaryBreakTime('');
-      setDiaryProductivity('');
+      setDiaryEnergyLevel(5);
+      setDiaryStressLevel(5);
+      setDiaryWorkHours(0);
+      setDiaryBreakTime(0);
+      setDiaryProductivity(5);
       setDiaryTags([]);
       setEditingDiary(null);
     }
@@ -507,6 +508,27 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   const closeDiaryModal = () => {
     setShowDiaryModal(false);
     setEditingDiary(null);
+  };
+
+  // 収入・支出モーダルを開く関数
+  const openIncomeExpenseModal = (record?: any) => {
+    if (record) {
+      editIncomeExpenseRecord(record);
+    } else {
+      // 新規作成の場合、フォームをリセット
+      setIncomeExpenseDate(new Date().toISOString().split('T')[0]);
+      setIncomeExpenseAmount('');
+      setIncomeExpenseType('income');
+      setIncomeExpenseNotes('');
+      setEditingIncomeExpenseRecord(null);
+    }
+    setShowIncomeExpenseModal(true);
+  };
+
+  // 収入・支出モーダルを閉じる関数
+  const closeIncomeExpenseModal = () => {
+    setShowIncomeExpenseModal(false);
+    setEditingIncomeExpenseRecord(null);
   };
 
   // 新規日記作成ボタンの表示制御
@@ -581,7 +603,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           <div className="modal-content diary-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3><i className="bi bi-journal-text"></i>{editingDiary ? '日記を編集' : '新しい日記'}</h3>
-              <button className="modal-close" onClick={closeDiaryModal}>
+              <button className="modal-close" onClick={closeDiaryModal} aria-label="モーダルを閉じる">
                 <i className="bi bi-x"></i>
               </button>
             </div>
@@ -657,6 +679,88 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         </div>
       )}
 
+      {/* 収入・支出モーダル */}
+      {showIncomeExpenseModal && (
+        <div className="modal-overlay" onClick={closeIncomeExpenseModal}>
+          <div className="modal-content income-expense-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>
+                <i className="bi bi-cash-coin"></i>
+                {editingIncomeExpenseRecord ? '収支記録を編集' : '新しい収支記録'}
+              </h3>
+              <button className="modal-close" onClick={closeIncomeExpenseModal} aria-label="モーダルを閉じる">
+                <i className="bi bi-x"></i>
+              </button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={(e) => {
+                if (editingIncomeExpenseRecord) {
+                  handleUpdateIncomeExpenseRecord(e);
+                } else {
+                  handleCreateIncomeExpenseRecord(e);
+                }
+                closeIncomeExpenseModal();
+              }}>
+                <div className="form-group">
+                  <label>日付</label>
+                  <input
+                    type="date"
+                    value={incomeExpenseDate}
+                    onChange={(e) => setIncomeExpenseDate(e.target.value)}
+                    required
+                    aria-label="収支記録の日付"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>種類</label>
+                  <select
+                    value={incomeExpenseType}
+                    onChange={(e) => setIncomeExpenseType(e.target.value as "income" | "expense")}
+                    aria-label="収入または支出を選択"
+                  >
+                    <option value="income">💰 収入</option>
+                    <option value="expense">💸 支出</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>金額</label>
+                  <input
+                    type="number"
+                    value={incomeExpenseAmount}
+                    onChange={(e) => setIncomeExpenseAmount(e.target.value)}
+                    placeholder="金額を入力"
+                    required
+                    min="0"
+                    step="1"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>メモ（任意）</label>
+                  <textarea
+                    value={incomeExpenseNotes}
+                    onChange={(e) => setIncomeExpenseNotes(e.target.value)}
+                    placeholder="詳細や備考を入力"
+                    rows={3}
+                  />
+                </div>
+                <div className="form-actions">
+                  <button type="submit" className="save-button">
+                    {editingIncomeExpenseRecord ? '更新' : '保存'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeIncomeExpenseModal}
+                    className="cancel-button"
+                  >
+                    キャンセル
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* カレンダー（常に拡大表示） - work-records-section直下 */}
       {showWorkRecords && (
         <CalendarComponent
@@ -668,25 +772,16 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           isModal={true}
           onClose={() => setShowCalendarModal(false)}
           onViewModeChange={setCalendarViewMode}
-          viewMode={calendarViewMode}
           onWeekChange={setCurrentWeekStart}
-          currentWeekStart={currentWeekStart}
           selectedRecord={selectedRecord}
           selectedRecordType={selectedRecordType}
-          onRecordClick={handleRecordClick}
-          onEditIncomeExpenseRecord={editIncomeExpenseRecord}
+          onEditIncomeExpense={openIncomeExpenseModal}
           onEditDiary={openDiaryModal}
-          onDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
+          onDeleteIncomeExpense={handleDeleteIncomeExpenseRecord}
           onDeleteDiary={handleDeleteDiary}
-          onAddIncomeExpense={() => {
-            setShowIncomeExpenseForm(true);
-            setShowDiaryForm(false);
-            setShowCalendar(false);
-          }}
+          onAddIncomeExpense={() => openIncomeExpenseModal()}
           onAddDiary={() => openDiaryModal()}
           onRefresh={loadIncomeExpenseRecordsLocal}
-          incomeExpenseRecords={incomeExpenseRecords}
-          workDiaries={workDiaries}
           monthlyMemo={monthlyMemo}
           onMonthlyMemoChange={setMonthlyMemo}
           editingMonthlyMemo={editingMonthlyMemo}

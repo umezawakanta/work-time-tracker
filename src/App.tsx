@@ -457,7 +457,7 @@ function App({
   const [diaryContent, setDiaryContent] = useState("");
   const [diaryMood, setDiaryMood] = useState("4");
   const [diaryActivities, setDiaryActivities] = useState<string[]>([]);
-  const [diaryTags, setDiaryTags] = useState("");
+  const [diaryTags, setDiaryTags] = useState<string[]>([]);
   const [diaryIsPrivate, setDiaryIsPrivate] = useState(true);
 
   // 新しい日記項目の状態
@@ -1223,8 +1223,7 @@ ${methodInfo ? `- ${methodInfo}` : ""}
   const getAppVersion = () => {
     try {
       // package.jsonからバージョンを取得
-      const version = process.env.REACT_APP_VERSION || "1.3.1";
-      return version;
+      return process.env.REACT_APP_VERSION || "1.3.1";
     } catch (error) {
       return "不明";
     }
@@ -2372,10 +2371,7 @@ ${errorInfo.stack}
           title: diaryTitle,
           content: diaryContent,
           mood: diaryMood,
-          tags: diaryTags
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter((tag) => tag),
+          tags: diaryTags,
           isPrivate: diaryIsPrivate,
           // 新しい項目
           workSummary: diaryWorkSummary,
@@ -2399,7 +2395,7 @@ ${errorInfo.stack}
         setDiaryTitle("");
         setDiaryContent("");
         setDiaryMood("4");
-        setDiaryTags("");
+        setDiaryTags([]);
         setDiaryIsPrivate(true);
         // 新しい項目もリセット
         setDiaryWorkSummary("");
@@ -2447,10 +2443,7 @@ ${errorInfo.stack}
             title: diaryTitle,
             content: diaryContent,
             mood: diaryMood,
-            tags: diaryTags
-              .split(",")
-              .map((tag) => tag.trim())
-              .filter((tag) => tag),
+            tags: diaryTags,
             isPrivate: diaryIsPrivate,
             // 新しい項目
             workSummary: diaryWorkSummary,
@@ -2476,7 +2469,7 @@ ${errorInfo.stack}
         setDiaryTitle("");
         setDiaryContent("");
         setDiaryMood("4");
-        setDiaryTags("");
+        setDiaryTags([]);
         setDiaryIsPrivate(true);
         // 新しい項目もリセット
         setDiaryWorkSummary("");

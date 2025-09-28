@@ -317,6 +317,12 @@ const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({
                     value={value}
                     onChange={(e) => handleColorChange(key as keyof typeof customColors, e.target.value)}
                     className="color-text"
+                    aria-label={`${key === 'primary' ? 'プライマリ' :
+                     key === 'secondary' ? 'セカンダリ' :
+                     key === 'accent' ? 'アクセント' :
+                     key === 'background' ? '背景' :
+                     key === 'text' ? 'テキスト' :
+                     key === 'surface' ? 'サーフェス' : key}カラーの値`}
                   />
                 </div>
               ))}
