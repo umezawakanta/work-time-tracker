@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.4.0";
+export const APP_VERSION = "1.4.1";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,23 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.4.1",
+    date: "2025-01-29",
+    changes: [
+      "日記の活動データ更新機能を改善（activitiesフィールドの追加）",
+      "データベーススキーマに活動・学習・目標などの新フィールドを追加",
+      "日記更新後の即時画面反映機能を実装",
+      "強制的な再レンダリング機能を追加（selectedRecordの自動更新）",
+      "データベースマイグレーション機能を追加（既存レコードの更新）",
+      "ログ管理ユーティリティを改善（本番環境でのデバッグログ制御）",
+      "APIエンドポイントの重複定義問題を修正",
+      "WorkRecordsComponentの状態管理を最適化",
+      "日記編集時のフォーム初期化処理を改善",
+      "更新処理のエラーハンドリングを強化"
+    ],
+    type: "improvement"
+  },
   {
     version: "1.4.0",
     date: "2025-09-27",
