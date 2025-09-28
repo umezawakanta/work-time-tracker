@@ -5892,7 +5892,7 @@ input:checked + .toggle-slider:before {
     min-width: 0;
   }
   
-  .feature-na
+  .feature-na {
     font-size: 1rem;
     font-weight: 600;
     color: #92400e;
