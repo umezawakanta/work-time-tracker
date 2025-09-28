@@ -242,7 +242,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         setSelectedRecordType(null);
       }
     }
-  }, [selectedDate, incomeExpenseRecords.length, workDiaries.length]);
+  }, [selectedDate, incomeExpenseRecords.length, workDiaries.length, workDiaries]);
 
   // カレンダー用の月移動ハンドラー
   const handleMonthChange = (direction: 'prev' | 'next') => {
@@ -515,7 +515,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       setDiaryContent(diary.content || "");
       setDiaryMood(diary.mood || "");
       setDiaryTags(diary.tags || []);
-      // 新しい項目の初期値設定
+      // 新しい項目の初期値設定（存在しない場合はデフォルト値を使用）
       setDiaryActivities(diary.activities || []);
       setDiaryWorkSummary(diary.workSummary || "");
       setDiaryAchievements(diary.achievements || []);
@@ -530,6 +530,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       setDiaryNotes(diary.notes || "");
       setDiaryGratitude(diary.gratitude || "");
       setDiaryReflection(diary.reflection || "");
+      
+      // 既存のレコードにactivitiesフィールドが存在しない場合は、空の配列で初期化
+      if (!diary.activities) {
+        logger.debug('既存のレコードにactivitiesフィールドが存在しないため、空の配列で初期化します');
+      }
       setEditingDiary(diary);
     } else {
       // 新規作成の場合、選択された日付または今日の日付を設定
@@ -613,17 +618,146 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       const data = await response.json();
       logger.debug('更新APIレスポンス:', data);
       if (data.success) {
-        // データを再読み込み
-        await loadWorkDiaries();
+        logger.info('日記を更新しました！');
+        
         // モーダルを閉じる
         setShowDiaryModal(false);
         setEditingDiary(null);
-        logger.info('日記を更新しました！');
+        
+        // データを再読み込み（複数の方法で確実に更新）
+        try {
+          logger.debug('日記データの再読み込みを開始します...');
+          await loadWorkDiaries();
+          logger.debug('日記データの再読み込みが完了しました');
+          
+          // 更新されたデータを確認
+          logger.debug('現在の日記データ:', workDiaries);
+          
+          // 強制的に再レンダリングを促すため、状態を一時的に変更してから元に戻す
+          const currentDate = selectedDate;
+          if (currentDate) {
+            setSelectedDate(new Date(currentDate.getTime() + 1));
+            setTimeout(() => {
+              setSelectedDate(currentDate);
+              logger.debug('選択日付をリセットして再レンダリングを促しました');
+              
+              // selectedRecordも強制的に再計算
+              const records = getRecordsForDate(currentDate);
+              setSelectedRecord(records);
+              if (records.workDiaries.length > 0) {
+                setSelectedRecordType("diary");
+              }
+              logger.debug('selectedRecordを強制的に再計算しました');
+            }, 100);
+          }
+          
+        } catch (error) {
+          logger.error('日記データの再読み込みに失敗しました:', error);
+        }
+        
+        // 追加の確認として、少し遅延してから再度読み込み
+        setTimeout(async () => {
+          try {
+            logger.debug('遅延読み込みを実行します...');
+            await loadWorkDiaries();
+            logger.debug('遅延読み込みが完了しました');
+          } catch (error) {
+            logger.error('遅延読み込みに失敗しました:', error);
+          }
+        }, 1000);
+        
+        // 最終的な確認として、さらに遅延してから読み込み
+        setTimeout(async () => {
+          try {
+            logger.debug('最終確認読み込みを実行します...');
+            await loadWorkDiaries();
+            logger.debug('最終確認読み込みが完了しました');
+            
+            // それでも更新されない場合は、ページをリロードするオプションを提供
+            logger.info('更新が完了しました。画面が更新されない場合は、ページをリロードしてください。');
+            
+          } catch (error) {
+            logger.error('最終確認読み込みに失敗しました:', error);
+          }
+        }, 2000);
+        
       } else {
         logger.error('日記の更新に失敗しました:', data.message);
       }
     } catch (error) {
       logger.error('日記の更新中にエラーが発生しました:', error);
+    }
+  };
+
+  // データベースマイグレーション処理（代替方法）
+  const runMigration = async () => {
+    try {
+      logger.info('データベースマイグレーションを開始します...');
+      
+      // 既存の日記データを取得
+      const response = await fetch(`/api/work-records/diary?userId=${user?.id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      const data = await response.json();
+      if (!data.success) {
+        logger.error('日記データの取得に失敗しました:', data.message);
+        return;
+      }
+      
+      const diaries = data.diaries;
+      logger.info(`${diaries.length} 件の日記を取得しました`);
+      
+      let updatedCount = 0;
+      
+      // 各日記を更新（activitiesフィールドが存在しない場合のみ）
+      for (const diary of diaries) {
+        if (!diary.activities) {
+          try {
+            const updateResponse = await fetch(`/api/work-records/diary/${diary._id}`, {
+              method: 'PUT',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              },
+              body: JSON.stringify({
+                userId: user?.id,
+                activities: [],
+                workSummary: diary.workSummary || '',
+                achievements: diary.achievements || [],
+                challenges: diary.challenges || [],
+                learnings: diary.learnings || [],
+                nextGoals: diary.nextGoals || [],
+                energyLevel: diary.energyLevel || 5,
+                stressLevel: diary.stressLevel || 5,
+                workHours: diary.workHours || 0,
+                breakTime: diary.breakTime || 0,
+                productivity: diary.productivity || 5,
+                notes: diary.notes || '',
+                gratitude: diary.gratitude || '',
+                reflection: diary.reflection || ''
+              })
+            });
+            
+            const updateData = await updateResponse.json();
+            if (updateData.success) {
+              updatedCount++;
+              logger.debug(`日記 ${diary._id} を更新しました`);
+            }
+          } catch (error) {
+            logger.error(`日記 ${diary._id} の更新に失敗しました:`, error);
+          }
+        }
+      }
+      
+      logger.info(`マイグレーション完了: ${updatedCount}/${diaries.length} レコードを更新しました`);
+      // データを再読み込み
+      await loadWorkDiaries();
+      
+    } catch (error) {
+      logger.error('マイグレーション中にエラーが発生しました:', error);
     }
   };
 
@@ -667,6 +801,14 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     logger.debug('editingDiary状態が変更されました:', editingDiary);
   }, [editingDiary]);
 
+  // workDiariesの変更を監視して強制的に再レンダリングを促す
+  const [forceUpdate, setForceUpdate] = useState(0);
+  useEffect(() => {
+    logger.debug('workDiariesが変更されました。件数:', workDiaries?.length || 0);
+    // 強制的に再レンダリングを促す
+    setForceUpdate(prev => prev + 1);
+  }, [workDiaries]);
+
   // 統計データの計算
   const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
   
@@ -682,13 +824,24 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         </h2>
         <div className="section-controls">
           {showWorkRecords ? (
-            <button
-              onClick={() => setShowWorkRecords(false)}
-              className="close-section-button"
-              title="セクションを閉じる"
-            >
-              ✕
-            </button>
+            <>
+              <button
+                className="btn btn-warning btn-sm"
+                onClick={runMigration}
+                title="既存の日記データに新しいフィールドを追加します"
+                style={{ marginRight: '8px' }}
+              >
+                <i className="bi bi-database-gear"></i>
+                データ移行
+              </button>
+              <button
+                onClick={() => setShowWorkRecords(false)}
+                className="close-section-button"
+                title="セクションを閉じる"
+              >
+                ✕
+              </button>
+            </>
           ) : (
             <button
               onClick={() => {
