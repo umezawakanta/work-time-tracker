@@ -396,15 +396,140 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
                     </div>
                     <div className="record-content">
                       <p className="record-title">{diary.title}</p>
-                      <p className="diary-content-full">{diary.content}</p>
-                      {diary.mood && (
-                        <span className="diary-mood">
-                          <i className={`bi bi-emoji-${diary.mood === '1' ? 'frown' : 
-                            diary.mood === '2' ? 'meh' : 
-                            diary.mood === '3' ? 'neutral' : 
-                            diary.mood === '4' ? 'smile' : 'laughing'}`}></i>
-                        </span>
-                      )}
+                      
+                      {/* 基本情報 */}
+                      <div className="diary-basic-info">
+                        <p className="diary-content-full">{diary.content}</p>
+                        {diary.mood && (
+                          <span className="diary-mood">
+                            <i className={`bi bi-emoji-${diary.mood === '1' ? 'frown' : 
+                              diary.mood === '2' ? 'meh' : 
+                              diary.mood === '3' ? 'neutral' : 
+                              diary.mood === '4' ? 'smile' : 'laughing'}`}></i>
+                          </span>
+                        )}
+                      </div>
+
+                      {/* 詳細項目の表示 */}
+                      <div className="diary-detailed-sections">
+                        {/* 仕事の要約 */}
+                        {diary.workSummary && (
+                          <div className="diary-section">
+                            <h5><i className="bi bi-briefcase"></i> 仕事の要約</h5>
+                            <p>{diary.workSummary}</p>
+                          </div>
+                        )}
+
+                        {/* 今日の成果 */}
+                        {diary.achievements && diary.achievements.length > 0 && (
+                          <div className="diary-section">
+                            <h5><i className="bi bi-trophy"></i> 今日の成果</h5>
+                            <ul>
+                              {diary.achievements.map((achievement, idx) => (
+                                <li key={idx}>{achievement}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* 課題・困難 */}
+                        {diary.challenges && diary.challenges.length > 0 && (
+                          <div className="diary-section">
+                            <h5><i className="bi bi-exclamation-triangle"></i> 課題・困難</h5>
+                            <ul>
+                              {diary.challenges.map((challenge, idx) => (
+                                <li key={idx}>{challenge}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* 学んだこと */}
+                        {diary.learnings && diary.learnings.length > 0 && (
+                          <div className="diary-section">
+                            <h5><i className="bi bi-lightbulb"></i> 学んだこと</h5>
+                            <ul>
+                              {diary.learnings.map((learning, idx) => (
+                                <li key={idx}>{learning}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* 明日の目標 */}
+                        {diary.nextGoals && diary.nextGoals.length > 0 && (
+                          <div className="diary-section">
+                            <h5><i className="bi bi-target"></i> 明日の目標</h5>
+                            <ul>
+                              {diary.nextGoals.map((goal, idx) => (
+                                <li key={idx}>{goal}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* 数値指標 */}
+                        <div className="diary-metrics">
+                          <h5><i className="bi bi-graph-up"></i> 今日の指標</h5>
+                          <div className="metrics-grid">
+                            {diary.energyLevel && (
+                              <div className="metric-item">
+                                <span className="metric-label">エネルギーレベル:</span>
+                                <span className="metric-value">{diary.energyLevel}/10</span>
+                              </div>
+                            )}
+                            {diary.stressLevel && (
+                              <div className="metric-item">
+                                <span className="metric-label">ストレスレベル:</span>
+                                <span className="metric-value">{diary.stressLevel}/10</span>
+                              </div>
+                            )}
+                            {diary.productivity && (
+                              <div className="metric-item">
+                                <span className="metric-label">生産性:</span>
+                                <span className="metric-value">{diary.productivity}/10</span>
+                              </div>
+                            )}
+                            {diary.workHours > 0 && (
+                              <div className="metric-item">
+                                <span className="metric-label">作業時間:</span>
+                                <span className="metric-value">{diary.workHours}時間</span>
+                              </div>
+                            )}
+                            {diary.breakTime > 0 && (
+                              <div className="metric-item">
+                                <span className="metric-label">休憩時間:</span>
+                                <span className="metric-value">{diary.breakTime}分</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* その他のメモ */}
+                        {diary.notes && (
+                          <div className="diary-section">
+                            <h5><i className="bi bi-sticky"></i> その他のメモ</h5>
+                            <p>{diary.notes}</p>
+                          </div>
+                        )}
+
+                        {/* 感謝の気持ち */}
+                        {diary.gratitude && (
+                          <div className="diary-section">
+                            <h5><i className="bi bi-heart"></i> 感謝の気持ち</h5>
+                            <p>{diary.gratitude}</p>
+                          </div>
+                        )}
+
+                        {/* タグ */}
+                        {diary.tags && diary.tags.length > 0 && (
+                          <div className="diary-tags">
+                            {diary.tags.map((tag, idx) => (
+                              <span key={idx} className="diary-tag">{tag}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="record-actions">
                       <button
