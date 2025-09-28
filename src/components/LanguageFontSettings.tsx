@@ -13,6 +13,8 @@ import {
 } from '../constants/fonts';
 import FontInfoModal from './FontInfoModal';
 import CustomFontUpload from './CustomFontUpload';
+import FontRecommendationPanel from './FontRecommendationPanel';
+import AccessibilitySettings, { AccessibilitySettings as AccessibilitySettingsType } from './AccessibilitySettings';
 import { fontLoader } from '../utils/fontLoader';
 import { fontSettingsManager, CustomFontData } from '../utils/fontSettingsManager';
 import './LanguageFontSettings.css';
@@ -46,6 +48,20 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
   const [showCustomUpload, setShowCustomUpload] = useState(false);
   const [customFonts, setCustomFonts] = useState<CustomFontData[]>([]);
   const [showExportImport, setShowExportImport] = useState(false);
+  const [showRecommendation, setShowRecommendation] = useState(false);
+  const [showAccessibility, setShowAccessibility] = useState(false);
+  const [accessibilitySettings, setAccessibilitySettings] = useState<AccessibilitySettingsType>({
+    highContrast: false,
+    largeText: false,
+    reducedMotion: false,
+    focusIndicator: true,
+    screenReader: false,
+    colorBlindSupport: 'none',
+    fontSize: 'medium',
+    lineHeight: 'normal',
+    letterSpacing: 'normal',
+    wordSpacing: 'normal'
+  });
 
   useEffect(() => {
     setSettings(currentSettings);
@@ -152,6 +168,25 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
     } catch (error) {
       alert(`設定のインポートに失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`);
     }
+  };
+
+  const handleFontRecommendation = (font: FontOption, category: 'japanese' | 'english' | 'child-friendly') => {
+    if (category === 'child-friendly') {
+      setSettings(prev => ({
+        ...prev,
+        japanese: font.value,
+        english: font.value
+      }));
+    } else {
+      setSettings(prev => ({
+        ...prev,
+        [category]: font.value
+      }));
+    }
+  };
+
+  const handleAccessibilityChange = (newSettings: AccessibilitySettingsType) => {
+    setAccessibilitySettings(newSettings);
   };
 
   const handleSave = () => {
@@ -405,6 +440,20 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
         <div className="language-font-footer">
           <div className="footer-controls">
             <button 
+              className="ai-recommendation-button" 
+              onClick={() => setShowRecommendation(true)}
+              title="AI によるフォント推奨"
+            >
+              🤖 AI 推奨
+            </button>
+            <button 
+              className="accessibility-button" 
+              onClick={() => setShowAccessibility(true)}
+              title="アクセシビリティ設定"
+            >
+              ♿ アクセシビリティ
+            </button>
+            <button 
               className="custom-upload-button" 
               onClick={() => setShowCustomUpload(true)}
               title="カスタムフォントをアップロード"
@@ -454,6 +503,23 @@ const LanguageFontSettings: React.FC<LanguageFontSettingsProps> = ({
         isOpen={showCustomUpload}
         onClose={() => setShowCustomUpload(false)}
         onFontUpload={handleCustomFontUpload}
+      />
+
+      {/* AI フォント推奨パネル */}
+      <FontRecommendationPanel
+        isOpen={showRecommendation}
+        onClose={() => setShowRecommendation(false)}
+        onFontSelect={handleFontRecommendation}
+        currentSettings={settings}
+        availableFonts={filteredFonts}
+      />
+
+      {/* アクセシビリティ設定モーダル */}
+      <AccessibilitySettings
+        isOpen={showAccessibility}
+        onClose={() => setShowAccessibility(false)}
+        onSettingsChange={handleAccessibilityChange}
+        currentSettings={accessibilitySettings}
       />
     </div>
   );

@@ -561,6 +561,8 @@
   flex-wrap: wrap;
 }
 
+.ai-recommendation-button,
+.accessibility-button,
 .custom-upload-button,
 .export-button,
 .import-button {
@@ -576,6 +578,28 @@
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+.ai-recommendation-button {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.ai-recommendation-button:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.accessibility-button {
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+.accessibility-button:hover {
+  background: #4caf50;
+  color: white;
+  transform: translateY(-1px);
 }
 
 .custom-upload-button:hover,
