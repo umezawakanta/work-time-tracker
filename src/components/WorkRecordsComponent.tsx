@@ -512,6 +512,14 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 新規日記作成ボタンの表示制御
   const showNewDiaryButton = showWorkRecords && !showDiaryModal;
 
+  // 初期化時に今日の日付を選択
+  useEffect(() => {
+    if (showWorkRecords && !selectedDate) {
+      const today = new Date();
+      setSelectedDate(today);
+    }
+  }, [showWorkRecords, selectedDate, setSelectedDate]);
+
   // 統計データの計算
   const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
   
@@ -670,6 +678,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           onEditDiary={openDiaryModal}
           onDeleteIncomeExpenseRecord={handleDeleteIncomeExpenseRecord}
           onDeleteDiary={handleDeleteDiary}
+          onAddIncomeExpense={() => {
+            setShowIncomeExpenseForm(true);
+            setShowDiaryForm(false);
+            setShowCalendar(false);
+          }}
+          onAddDiary={() => openDiaryModal()}
           onRefresh={loadIncomeExpenseRecordsLocal}
           incomeExpenseRecords={incomeExpenseRecords}
           workDiaries={workDiaries}
