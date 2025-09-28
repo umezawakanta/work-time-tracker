@@ -3241,12 +3241,13 @@ ${errorInfo.stack}
   };
 
   const editDiary = (diary: any) => {
-    // 日付を正しく処理（タイムゾーンを考慮）
+    // 日付を正しく処理（ローカル時間で表示）
     const diaryDate = new Date(diary.date);
-    const localDate = new Date(
-      diaryDate.getTime() - diaryDate.getTimezoneOffset() * 60000
-    );
-    setDiaryDate(localDate.toISOString().split("T")[0]);
+    // ローカル時間の日付文字列を取得（YYYY-MM-DD形式）
+    const year = diaryDate.getFullYear();
+    const month = String(diaryDate.getMonth() + 1).padStart(2, '0');
+    const day = String(diaryDate.getDate()).padStart(2, '0');
+    setDiaryDate(`${year}-${month}-${day}`);
 
     setDiaryTitle(diary.title || "");
     setDiaryContent(diary.content || "");

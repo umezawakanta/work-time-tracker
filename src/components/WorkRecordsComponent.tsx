@@ -649,8 +649,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             </div>
           )}
 
-      {/* 日記フォーム */}
-      {showWorkRecords && showDiaryForm && (
+      {/* 日記フォーム - 最上部に表示 */}
+      {showDiaryForm && (
             <div className="diary-form">
               <h3>{editingDiary ? '日記を編集' : '新しい日記'}</h3>
               <form onSubmit={editingDiary ? handleUpdateDiary : handleCreateDiary}>
