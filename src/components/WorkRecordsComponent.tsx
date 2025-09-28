@@ -526,7 +526,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 日記モーダルを閉じる関数
   const closeDiaryModal = () => {
     setShowDiaryModal(false);
-    setEditingDiary(null);
+    // 編集状態はリセットしない（更新後に新規登録フォームに変わらないようにする）
+    // ただし、明示的に新規作成ボタンを押した場合は編集状態をリセット
   };
 
   // 収入・支出モーダルを開く関数
@@ -992,7 +993,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           onDeleteIncomeExpense={handleDeleteIncomeExpenseRecord}
           onDeleteDiary={handleDeleteDiary}
           onAddIncomeExpense={() => openIncomeExpenseModal()}
-          onAddDiary={() => openDiaryModal()}
+          onAddDiary={() => {
+            setEditingDiary(null);
+            openDiaryModal();
+          }}
           onRefresh={loadIncomeExpenseRecordsLocal}
           monthlyMemo={monthlyMemo}
           onMonthlyMemoChange={setMonthlyMemo}

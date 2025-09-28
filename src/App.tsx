@@ -2473,37 +2473,9 @@ ${errorInfo.stack}
       const data = await response.json();
       if (data.success) {
         setMessage("日記を更新しました！");
-        // フォームをリセット
-        setDiaryDate("");
-        setDiaryTitle("");
-        setDiaryContent("");
-        setDiaryMood("4");
-        setDiaryTags([]);
-        setDiaryIsPrivate(true);
-        // 新しい項目もリセット
-        setDiaryActivities([]);
-        setDiaryWorkSummary("");
-        setDiaryAchievements([]);
-        setDiaryChallenges([]);
-        setDiaryLearnings([]);
-        setDiaryNextGoals([]);
-        setDiaryEnergyLevel(5);
-        setDiaryStressLevel(5);
-        setDiaryWorkHours(0);
-        setDiaryBreakTime(0);
-        setDiaryProductivity(5);
-        setDiaryNotes("");
-        setDiaryGratitude("");
-        setDiaryReflection("");
-        setNewAchievement("");
-        setNewChallenge("");
-        setNewLearning("");
-        setNewNextGoal("");
-        setEditingDiary(null);
-        setShowDiaryForm(false);
         // データを再読み込み
         await loadWorkDiaries();
-        // モーダルを閉じる
+        // モーダルを閉じる（フォームはリセットしない）
         setShowWorkRecords(true);
       } else {
         setMessage(`エラー: ${data.message}`);
