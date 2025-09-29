@@ -104,6 +104,18 @@ module.exports = async (req, res) => {
       });
     } else if (req.method === 'DELETE') {
       // メモを削除
+      console.log('DELETE request for memo:', { id, userId: userInfo.userId });
+      console.log('MemoModel type:', typeof MemoModel);
+      
+      if (!MemoModel) {
+        console.error('MemoModel is undefined');
+        return res.status(500).json({
+          success: false,
+          message: 'データベースモデルの初期化に失敗しました',
+          error: 'Database model not initialized',
+        });
+      }
+      
       const memo = await MemoModel.findOneAndDelete({ _id: id, userId: userInfo.userId });
       if (!memo) {
         return res.status(404).json({
@@ -126,6 +138,13 @@ module.exports = async (req, res) => {
     }
   } catch (error) {
     console.error('❌ Memo detail API error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      method: req.method,
+      id: req.query.id,
+      userId: userInfo?.userId
+    });
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',

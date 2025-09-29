@@ -5266,7 +5266,9 @@ User Agent: ${userAgent}
 
   // メモ投稿の報酬処理
   const processMemoRewards = async (memoId: string, isPublic: boolean, content: string) => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     try {
       // メモ履歴を記録
@@ -6370,7 +6372,9 @@ User Agent: ${userAgent}
   };
 
   const playCustomTimerSound = async () => {
-    if (!timerSettings.enableSounds) return;
+    if (!timerSettings.enableSounds) {
+      return;
+    }
 
     try {
       // まずAudioContextを再開する（必要に応じて）
@@ -6454,10 +6458,8 @@ User Agent: ${userAgent}
 
   // ブラウザ通知の初期化
   const initializeNotifications = async () => {
-    if ("Notification" in window) {
-      if (Notification.permission === "default") {
-        await Notification.requestPermission();
-      }
+    if ("Notification" in window && Notification.permission === "default") {
+      await Notification.requestPermission();
     }
   };
 
