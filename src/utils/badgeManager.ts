@@ -209,6 +209,60 @@ class BadgeManager {
 
     return unlockedBadges;
   }
+
+  // 既存ユーザー向けのバッジ付与
+  public grantExistingUserBadges(): Badge[] {
+    const unlockedBadges: Badge[] = [];
+
+    // 登録バッジを強制付与
+    const registrationBadges = this.getBadgesByCategory('registration');
+    registrationBadges.forEach(badge => {
+      if (this.unlockBadge(badge.id)) {
+        unlockedBadges.push(badge);
+      }
+    });
+
+    // 既存の作業データに基づくバッジをチェック
+    // ここでは簡易的に基本的なバッジを付与
+    const basicBadges = ['first_work', 'diary_writer'];
+    basicBadges.forEach(badgeId => {
+      const badge = BADGES.find(b => b.id === badgeId);
+      if (badge && this.unlockBadge(badgeId)) {
+        unlockedBadges.push(badge);
+      }
+    });
+
+    return unlockedBadges;
+  }
+
+  // バッジの総経験値を計算
+  public getTotalBadgeXP(): number {
+    const userBadges = this.getUserBadges();
+    return userBadges.reduce((total, badge) => total + badge.xpReward, 0);
+  }
+
+  // バッジの統計情報を取得
+  public getBadgeStats() {
+    const userBadges = this.getUserBadges();
+    const totalBadges = BADGES.length;
+    const unlockedCount = userBadges.length;
+    const totalXP = this.getTotalBadgeXP();
+
+    const rarityCounts = {
+      common: userBadges.filter(b => b.rarity === 'common').length,
+      rare: userBadges.filter(b => b.rarity === 'rare').length,
+      epic: userBadges.filter(b => b.rarity === 'epic').length,
+      legendary: userBadges.filter(b => b.rarity === 'legendary').length
+    };
+
+    return {
+      totalBadges,
+      unlockedCount,
+      totalXP,
+      rarityCounts,
+      completionRate: Math.round((unlockedCount / totalBadges) * 100)
+    };
+  }
 }
 
 export const badgeManager = new BadgeManager();

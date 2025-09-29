@@ -31,6 +31,7 @@ import CharacterShare from "./components/CharacterShare";
 import CharacterAchievementGallery from "./components/CharacterAchievementGallery";
 import BadgeNotification from "./components/BadgeNotification";
 import TwitterShare from "./components/TwitterShare";
+import BadgeGallery from "./components/BadgeGallery";
 import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
@@ -360,6 +361,7 @@ function App({
   const [currentBadge, setCurrentBadge] = useState<Badge | null>(null);
   const [showTwitterShare, setShowTwitterShare] = useState(false);
   const [badgeShareData, setBadgeShareData] = useState<BadgeShareData | null>(null);
+  const [showBadgeGallery, setShowBadgeGallery] = useState(false);
 
   // ジャンル管理の状態
   const [showGenreManagement, setShowGenreManagement] = useState(false);
@@ -1322,11 +1324,22 @@ ${errorInfo.stack}
   // ユーザーログイン時のバッジチェック
   useEffect(() => {
     if (isLoggedIn && user) {
-      // 登録バッジをチェック
-      const unlockedBadges = badgeManager.checkRegistrationBadges();
-      if (unlockedBadges.length > 0) {
-        // 最初のバッジを通知として表示
-        handleBadgeUnlocked(unlockedBadges[0]);
+      // 既存ユーザー向けのバッジ付与（初回のみ）
+      const hasExistingBadges = localStorage.getItem('userBadges');
+      if (!hasExistingBadges) {
+        // 既存ユーザーにバッジを付与
+        const unlockedBadges = badgeManager.grantExistingUserBadges();
+        if (unlockedBadges.length > 0) {
+          // 最初のバッジを通知として表示
+          handleBadgeUnlocked(unlockedBadges[0]);
+        }
+      } else {
+        // 通常の登録バッジをチェック
+        const unlockedBadges = badgeManager.checkRegistrationBadges();
+        if (unlockedBadges.length > 0) {
+          // 最初のバッジを通知として表示
+          handleBadgeUnlocked(unlockedBadges[0]);
+        }
       }
     }
   }, [isLoggedIn, user]);
@@ -2068,6 +2081,20 @@ ${errorInfo.stack}
   const handleTwitterShareClose = () => {
     setShowTwitterShare(false);
     setBadgeShareData(null);
+  };
+
+  // バッジギャラリーのハンドラー
+  const handleBadgeGalleryToggle = () => {
+    setShowBadgeGallery(!showBadgeGallery);
+  };
+
+  const handleBadgeGalleryClose = () => {
+    setShowBadgeGallery(false);
+  };
+
+  const handleBadgeClick = (badge: Badge) => {
+    // バッジをクリックした時の処理（詳細表示など）
+    console.log('Badge clicked:', badge);
   };
 
   // テーマ適用関数
@@ -6444,6 +6471,19 @@ User Agent: ${userAgent}
             onClose={handleTwitterShareClose}
           />
         )}
+
+        {/* バッジギャラリー */}
+        {showBadgeGallery && (
+          <div className="badge-gallery-modal">
+            <div className="badge-gallery-overlay" onClick={handleBadgeGalleryClose}></div>
+            <div className="badge-gallery-content">
+              <BadgeGallery
+                onClose={handleBadgeGalleryClose}
+                onBadgeClick={handleBadgeClick}
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -6481,6 +6521,7 @@ User Agent: ${userAgent}
             showFontSettings={showFontSettings}
             showFeatureSettings={showFeatureSettings}
             handleCharacterHomeToggle={handleCharacterHomeToggle}
+            handleBadgeGalleryToggle={handleBadgeGalleryToggle}
             handleLogout={handleLogout}
             closeOtherFeatures={closeOtherFeatures}
             setShowThemeSettings={setShowThemeSettings}

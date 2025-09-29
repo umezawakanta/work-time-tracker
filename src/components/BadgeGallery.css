@@ -1,0 +1,276 @@
+/* BadgeGallery.css - バッジギャラリーのスタイル */
+
+.badge-gallery {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.badge-gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.badge-gallery-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.close-button {
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: #ff3742;
+  transform: scale(1.1);
+}
+
+.badge-stats {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 15px;
+  border: 2px solid #dee2e6;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.badge-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 2px solid #dee2e6;
+  border-radius: 25px;
+  background: white;
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-button:hover {
+  border-color: #1da1f2;
+  background: #f8f9fa;
+}
+
+.filter-button.active {
+  border-color: #1da1f2;
+  background: #1da1f2;
+  color: white;
+}
+
+.filter-icon {
+  font-size: 1rem;
+}
+
+.rarity-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.badge-item {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.badge-item:hover {
+  transform: translateY(-5px);
+}
+
+.badge-item.locked {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+}
+
+.badge-lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  z-index: 10;
+}
+
+.lock-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.unlock-condition {
+  font-size: 0.8rem;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.badge-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 5;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ECDC4 0%, #45b7b8 100%);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: -20px;
+  right: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #333;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .badge-gallery {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .badge-gallery-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .badge-stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .filter-buttons {
+    justify-content: center;
+  }
+  
+  .filter-button {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .badge-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+}
+
+/* アニメーション */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.badge-item {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.badge-item:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+.badge-item:nth-child(even) {
+  animation-delay: 0.2s;
+}

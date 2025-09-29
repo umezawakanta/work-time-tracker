@@ -77,6 +77,36 @@
   z-index: 20; /* 他の要素より上に表示 */
 }
 
+/* バッジギャラリーボタン */
+.badge-gallery-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+}
+
+.badge-gallery-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+}
+
+.badge-gallery-button i {
+  font-size: 1rem;
+}
+
+.badge-gallery-button span {
+  font-size: 0.85rem;
+}
+
 /* 不具合報告ボタン */
 .bug-report-button {
   display: flex;
