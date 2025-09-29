@@ -11,7 +11,6 @@ interface CharacterDisplayProps {
   onInteraction?: (interaction: string) => void;
   onLevelUp?: (newLevel: number) => void;
   onAchievement?: (achievementId: string) => void;
-  onMiniGameClick?: () => void;
   onCollectionClick?: () => void;
   onShareClick?: () => void;
 }
@@ -23,7 +22,6 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
   onInteraction,
   onLevelUp,
   onAchievement,
-  onMiniGameClick,
   onCollectionClick,
   onShareClick,
 }) => {
@@ -271,15 +269,6 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
           <span className="exp-text">{character.experience} EXP</span>
         </div>
         <div className="character-actions">
-          {onMiniGameClick && (
-            <button 
-              className="minigame-button"
-              onClick={onMiniGameClick}
-              title="ミニゲーム"
-            >
-              🎮 ゲーム
-            </button>
-          )}
           {onCollectionClick && (
             <button 
               className="collection-button"
