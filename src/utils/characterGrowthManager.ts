@@ -239,21 +239,35 @@ class CharacterGrowthManager {
     totalStats: number;
     maxStats: number;
   } {
-    const requiredExp = this.getRequiredExperience(character.level);
-    const progress = (character.experience / requiredExp) * 100;
+    // キャラクターの基本プロパティを安全に取得
+    const level = character?.level || 1;
+    const experience = character?.experience || 0;
+    const characterType = character?.type || 'cute';
+    
+    const requiredExp = this.getRequiredExperience(level);
+    const progress = (experience / requiredExp) * 100;
     
     // ステータスが存在しない場合は初期化
-    const stats = character.stats || this.getInitialStats(character.type);
-    const totalStats = Object.values(stats).reduce((sum, stat) => sum + stat, 0);
+    let stats: CharacterStats;
+    if (character?.stats && typeof character.stats === 'object') {
+      stats = character.stats;
+    } else {
+      stats = this.getInitialStats(characterType);
+    }
+    
+    // ステータスの値を安全に取得
+    const totalStats = Object.values(stats).reduce((sum, stat) => {
+      return sum + (typeof stat === 'number' ? stat : 0);
+    }, 0);
     const maxStats = 500; // 各ステータス最大100 × 5種類
 
     return {
-      currentLevel: character.level,
+      currentLevel: level,
       nextLevelExp: requiredExp,
-      currentExp: character.experience,
+      currentExp: experience,
       progress: Math.round(progress),
-      growthStage: this.getGrowthStageInfo(character.growthStage || this.getGrowthStage(character.level)).name,
-      evolutionLevel: character.evolutionLevel || 1,
+      growthStage: this.getGrowthStageInfo(character?.growthStage || this.getGrowthStage(level)).name,
+      evolutionLevel: character?.evolutionLevel || 1,
       totalStats,
       maxStats
     };

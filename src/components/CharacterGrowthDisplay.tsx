@@ -20,14 +20,35 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
 
   useEffect(() => {
     // キャラクターが存在し、必要なプロパティがある場合のみ処理
-    if (character && character.id) {
-      // 成長進捗を計算
-      const progress = characterGrowthManager.getGrowthProgress(character);
-      setGrowthProgress(progress);
+    if (character && character.id && character.name) {
+      try {
+        // 成長進捗を計算
+        const progress = characterGrowthManager.getGrowthProgress(character);
+        setGrowthProgress(progress);
 
-      // バッジ統計を取得
-      const stats = badgeManager.getBadgeStats();
-      setBadgeStats(stats);
+        // バッジ統計を取得
+        const stats = badgeManager.getBadgeStats();
+        setBadgeStats(stats);
+      } catch (error) {
+        console.error('CharacterGrowthDisplay error:', error);
+        // エラーが発生した場合はデフォルト値を設定
+        setGrowthProgress({
+          currentLevel: 1,
+          nextLevelExp: 100,
+          currentExp: 0,
+          progress: 0,
+          growthStage: '赤ちゃん',
+          evolutionLevel: 1,
+          totalStats: 50,
+          maxStats: 500
+        });
+        setBadgeStats({
+          total: 0,
+          unlocked: 0,
+          locked: 0,
+          byRarity: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 0 }
+        });
+      }
     }
   }, [character]);
 
@@ -35,16 +56,16 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
     return <div className="loading">読み込み中...</div>;
   }
 
-  const growthStageInfo = characterGrowthManager.getGrowthStageInfo(character.growthStage || 'baby');
+  const growthStageInfo = characterGrowthManager.getGrowthStageInfo(character?.growthStage || 'baby');
 
   return (
     <div className="character-growth-display">
       <div className="growth-header">
-        <h3>🌱 {character.name}の成長</h3>
+        <h3>🌱 {character?.name || 'キャラクター'}の成長</h3>
         <div className="growth-stage">
           <span className="stage-emoji">{growthStageInfo.emoji}</span>
           <span className="stage-name">{growthStageInfo.name}</span>
-          <span className="evolution-level">進化レベル: {character.evolutionLevel}</span>
+          <span className="evolution-level">進化レベル: {character?.evolutionLevel || 1}</span>
         </div>
       </div>
 
