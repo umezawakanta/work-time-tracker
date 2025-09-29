@@ -2063,17 +2063,27 @@ ${errorInfo.stack}
   };
 
   const handleBadgeShare = (badge: Badge) => {
+    console.log('handleBadgeShare called with badge:', badge);
+    console.log('Current user:', user);
+    
     if (user) {
       const shareData = badgeManager.generateShareData(badge.id, {
         name: user.displayName || user.email,
         displayName: user.displayName
       });
       
+      console.log('Generated share data:', shareData);
+      
       if (shareData) {
         setBadgeShareData(shareData);
         setShowTwitterShare(true);
         setShowBadgeNotification(false);
+        console.log('Twitter share modal should be shown');
+      } else {
+        console.log('Failed to generate share data');
       }
+    } else {
+      console.log('User is null, cannot share badge');
     }
   };
 
@@ -2083,8 +2093,9 @@ ${errorInfo.stack}
   };
 
   const handleBadgeClick = (badge: Badge) => {
-    // バッジをクリックした時の処理（詳細表示など）
+    // バッジをクリックした時の処理（シェア機能を呼び出し）
     console.log('Badge clicked:', badge);
+    handleBadgeShare(badge);
   };
 
   // テーマ適用関数
@@ -6456,10 +6467,15 @@ User Agent: ${userAgent}
 
         {/* X（Twitter）シェア */}
         {showTwitterShare && badgeShareData && (
-          <TwitterShare
-            shareData={badgeShareData}
-            onClose={handleTwitterShareClose}
-          />
+          <div className="twitter-share-modal">
+            <div className="twitter-share-overlay" onClick={handleTwitterShareClose} />
+            <div className="twitter-share-content">
+              <TwitterShare
+                shareData={badgeShareData}
+                onClose={handleTwitterShareClose}
+              />
+            </div>
+          </div>
         )}
 
       </div>
