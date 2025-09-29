@@ -185,12 +185,24 @@ module.exports = async function handler(req, res) {
         const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
         updateData.date = utcDate;
       }
-      if (amount !== undefined) updateData.amount = Number(amount);
-      if (type !== undefined) updateData.type = type;
-      if (transportation !== undefined) updateData.transportation = Number(transportation);
-      if (overtime !== undefined) updateData.overtime = Number(overtime);
-      if (bonus !== undefined) updateData.bonus = Number(bonus);
-      if (notes !== undefined) updateData.notes = notes;
+      if (amount !== undefined) {
+        updateData.amount = Number(amount);
+      }
+      if (type !== undefined) {
+        updateData.type = type;
+      }
+      if (transportation !== undefined) {
+        updateData.transportation = Number(transportation);
+      }
+      if (overtime !== undefined) {
+        updateData.overtime = Number(overtime);
+      }
+      if (bonus !== undefined) {
+        updateData.bonus = Number(bonus);
+      }
+      if (notes !== undefined) {
+        updateData.notes = notes;
+      }
 
       const record = await IncomeExpenseRecord.findByIdAndUpdate(
         id,

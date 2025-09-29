@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './PublicMemosComponent.css';
 import './LikeButton.css';
 import type { Memo, Reply, User } from '../types';
@@ -62,6 +62,11 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const initializeLikeStates = async () => {
     if (publicMemos.length === 0) {
       console.log('公開メモが空のため、いいね状態の初期化をスキップします');
+      return;
+    }
+    
+    if (isInitializing) {
+      console.log('いいね状態の初期化は既に実行中です');
       return;
     }
     
@@ -155,15 +160,23 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // いいね状態を初期化（初回のみ実行）
   const [isInitializing, setIsInitializing] = useState(false);
+  const hasInitialized = useRef(false);
   
-  useEffect(() => {
-    if (publicMemos.length > 0 && Object.keys(memoLikes).length === 0 && !isInitializing) {
-      setIsInitializing(true);
-      initializeLikeStates().finally(() => {
-        setIsInitializing(false);
-      });
-    }
-  }, [publicMemos.length, memoLikes, isInitializing]);
+  // 一時的にいいね機能の初期化を無効化（エラー防止のため）
+  // useEffect(() => {
+  //   if (publicMemos.length > 0 && !hasInitialized.current && !isInitializing) {
+  //     hasInitialized.current = true;
+  //     setIsInitializing(true);
+  //     initializeLikeStates().finally(() => {
+  //       setIsInitializing(false);
+  //     });
+  //   }
+  // }, [publicMemos.length, isInitializing]);
+
+  // // publicMemosが変更されたら初期化フラグをリセット
+  // useEffect(() => {
+  //   hasInitialized.current = false;
+  // }, [publicMemos]);
 
   // 公開メモの読み込み関数をPublicMemosComponent内で定義
   const loadPublicMemosLocal = async () => {
@@ -318,7 +331,9 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // メモの所有者判定
   const isMemoOwner = (memo: Memo) => {
-    if (!user) return false;
+    if (!user) {
+      return false;
+    }
     return memo.author === user.email || memo.author === user.displayName;
   };
 
@@ -369,10 +384,8 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     const filteredMemos = getFilteredMemos();
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const paginatedMemos = filteredMemos.slice(startIndex, endIndex);
     
-    
-    return paginatedMemos;
+    return filteredMemos.slice(startIndex, endIndex);
   };
 
   const getTotalPages = () => {
