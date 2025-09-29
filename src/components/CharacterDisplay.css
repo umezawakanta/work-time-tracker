@@ -5,13 +5,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-  padding: 20px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  min-height: 200px;
+  gap: 10px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  min-height: 120px;
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .character-display {
@@ -22,18 +24,20 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 4px solid;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   user-select: none;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .character-display:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .character-display:active {
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 
 .character-display:focus {
@@ -43,18 +47,18 @@
 
 /* サイズバリエーション */
 .character-small {
+  width: 60px;
+  height: 60px;
+}
+
+.character-medium {
   width: 80px;
   height: 80px;
 }
 
-.character-medium {
-  width: 120px;
-  height: 120px;
-}
-
 .character-large {
-  width: 160px;
-  height: 160px;
+  width: 100px;
+  height: 100px;
 }
 
 /* アニメーションクラス */
@@ -147,8 +151,9 @@
   border-radius: 50%;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--character-color, #FF6B6B) 0%, #4ECDC4 100%);
+  background: var(--character-color, #FF6B6B);
   transform: scale(var(--character-size, 1));
+  opacity: 0.9;
 }
 
 .character-avatar[data-size="small"] {
@@ -164,8 +169,9 @@
 }
 
 .character-emoji {
-  font-size: 2.5rem;
+  font-size: 2rem;
   transition: all 0.3s ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .character-small .character-emoji {
@@ -187,13 +193,15 @@
   justify-content: center;
   pointer-events: none;
   z-index: 10;
+  opacity: 0.8;
 }
 
 .accessory {
-  font-size: 1.5rem;
-  margin: 0 2px;
-  animation: float 3s ease-in-out infinite;
+  font-size: 1.2rem;
+  margin: 0 1px;
+  animation: none;
   position: absolute;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .accessory-crown {
@@ -294,36 +302,37 @@
 }
 
 .message-bubble {
-  background: white;
-  border: 2px solid #4ECDC4;
-  border-radius: 20px;
-  padding: 12px 18px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(78, 205, 196, 0.3);
+  border-radius: 15px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   position: relative;
-  max-width: 200px;
+  max-width: 150px;
   word-wrap: break-word;
+  backdrop-filter: blur(10px);
 }
 
 .message-bubble::after {
   content: '';
   position: absolute;
-  bottom: -8px;
+  bottom: -6px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 8px solid #4ECDC4;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(78, 205, 196, 0.3);
 }
 
 .message-bubble p {
   margin: 0;
-  font-size: 0.9rem;
-  color: #333;
-  font-weight: 500;
+  font-size: 0.8rem;
+  color: #555;
+  font-weight: 400;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.2;
 }
 
 @keyframes messageAppear {
@@ -343,17 +352,17 @@
 }
 
 .character-name {
-  margin: 0 0 8px 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #333;
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #444;
 }
 
 .character-level {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #666;
-  font-weight: 600;
-  margin-bottom: 8px;
+  font-weight: 500;
+  margin-bottom: 6px;
 }
 
 .character-experience {
@@ -404,8 +413,8 @@
 
 .character-actions {
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 6px;
+  margin-top: 8px;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -416,43 +425,44 @@
 .collection-button,
 .share-button,
 .achievement-gallery-button {
-  background: linear-gradient(135deg, #4ECDC4 0%, #45b7b8 100%);
+  background: rgba(78, 205, 196, 0.8);
   color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  border: 1px solid rgba(78, 205, 196, 0.3);
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.7rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   flex: 1;
-  min-width: 80px;
+  min-width: 60px;
+  backdrop-filter: blur(10px);
 }
 
 .customize-button {
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
-  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  background: rgba(255, 107, 107, 0.8);
+  border-color: rgba(255, 107, 107, 0.3);
 }
 
 .minigame-button {
-  background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);
-  box-shadow: 0 2px 8px rgba(155, 89, 182, 0.3);
+  background: rgba(155, 89, 182, 0.8);
+  border-color: rgba(155, 89, 182, 0.3);
 }
 
 .collection-button {
-  background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
-  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+  background: rgba(243, 156, 18, 0.8);
+  border-color: rgba(243, 156, 18, 0.3);
 }
 
 .share-button {
-  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+  background: rgba(23, 162, 184, 0.8);
+  border-color: rgba(23, 162, 184, 0.3);
 }
 
 .achievement-gallery-button {
-  background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
-  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+  background: rgba(231, 76, 60, 0.8);
+  border-color: rgba(231, 76, 60, 0.3);
 }
 
 .progress-button:hover,
@@ -461,29 +471,12 @@
 .collection-button:hover,
 .share-button:hover,
 .achievement-gallery-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
 }
 
-.customize-button:hover {
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
-}
-
-.minigame-button:hover {
-  box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
-}
-
-.collection-button:hover {
-  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
-}
-
-.share-button:hover {
-  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
-}
-
-.achievement-gallery-button:hover {
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-}
+/* 個別のホバー効果は統一されたスタイルを使用 */
 
 .progress-button:active,
 .customize-button:active,
