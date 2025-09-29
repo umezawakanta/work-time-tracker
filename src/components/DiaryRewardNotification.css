@@ -1,0 +1,208 @@
+/* 日記投稿報酬通知のスタイル */
+
+.diary-reward-notification {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.reward-content {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+.reward-content h3 {
+  color: white;
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 24px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.reward-section {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.reward-section h4 {
+  color: white;
+  margin-bottom: 15px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reward-amount {
+  color: #ffd700;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+}
+
+.level-up {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+  animation: pulse 2s infinite;
+}
+
+.badges-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.badge-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.badge-icon {
+  font-size: 24px;
+  min-width: 30px;
+}
+
+.badge-name {
+  color: white;
+  font-weight: bold;
+  flex: 1;
+}
+
+.badge-xp {
+  color: #ffd700;
+  font-weight: bold;
+  background: rgba(255, 215, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.achievement-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.achievement-icon {
+  font-size: 20px;
+  min-width: 25px;
+}
+
+.achievement-text {
+  color: white;
+  flex: 1;
+}
+
+.close-button {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.close-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.close-button:active {
+  transform: translateY(0);
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .reward-content {
+    padding: 20px;
+    margin: 20px;
+  }
+  
+  .reward-content h3 {
+    font-size: 20px;
+  }
+  
+  .reward-section h4 {
+    font-size: 16px;
+  }
+  
+  .badge-item, .achievement-item {
+    padding: 10px;
+  }
+  
+  .badge-icon {
+    font-size: 20px;
+  }
+}
