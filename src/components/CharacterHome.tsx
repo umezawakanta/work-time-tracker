@@ -333,7 +333,6 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
                   onMiniGameClick={() => setShowCharacterMiniGame(true)}
                   onCollectionClick={() => setShowCharacterCollection(true)}
                   onShareClick={() => setShowCharacterShare(true)}
-                  onAchievementGalleryClick={() => setShowCharacterAchievementGallery(true)}
                 />
               </div>
             )}
@@ -714,16 +713,6 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         </div>
       )}
 
-      {showCharacterAchievementGallery && selectedCharacter && (
-        <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <CharacterAchievementGallery
-              character={selectedCharacter}
-              onClose={() => setShowCharacterAchievementGallery(false)}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
