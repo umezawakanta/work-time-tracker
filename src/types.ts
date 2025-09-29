@@ -93,6 +93,7 @@ export interface Memo {
   status?: 'pending' | 'in_progress' | 'resolved' | 'closed';
   adminResponse?: string;
   adminResponseDate?: string;
+  likes?: string[]; // いいねしたユーザーIDの配列
   createdAt: string;
   updatedAt: string;
   replies?: Reply[];

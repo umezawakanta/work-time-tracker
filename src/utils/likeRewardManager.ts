@@ -54,7 +54,7 @@ class LikeRewardManager {
 
     // 5. ワークコインを付与
     if (result.workCoins > 0) {
-      currencyManager.addCurrency('work_coins', result.workCoins, 'いいね獲得', 'like');
+      currencyManager.addCurrency(authorId, 'work_coins', result.workCoins, 'いいね獲得', 'いいね獲得による報酬');
     }
 
     // 6. いいね履歴を記録

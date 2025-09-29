@@ -78,7 +78,7 @@ class IncomeExpenseRewardManager {
 
     // 5. ワークコインを付与
     if (result.workCoins > 0) {
-      currencyManager.addCurrency('work_coins', result.workCoins, '収支記録', 'income_expense');
+      currencyManager.addCurrency(userId, 'work_coins', result.workCoins, '収支記録', '収支記録による報酬');
     }
 
     // 6. 収支履歴を記録（バッジシステム用）

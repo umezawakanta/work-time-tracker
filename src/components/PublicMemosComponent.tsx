@@ -100,7 +100,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
           }
           return null;
         } catch (error) {
-          console.warn(`いいね状態の取得をスキップしました (メモID: ${memo.id}):`, error.message);
+          console.warn(`いいね状態の取得をスキップしました (メモID: ${memo.id}):`, error instanceof Error ? error.message : 'Unknown error');
           return {
             memoId: memo.id,
             isLiked: false,

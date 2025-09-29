@@ -82,7 +82,7 @@ class DiaryRewardManager {
 
     // 5. ワークコインを付与
     if (result.workCoins > 0) {
-      currencyManager.addCurrency('work_coins', result.workCoins, '日記投稿', 'diary');
+      currencyManager.addCurrency(userId, 'work_coins', result.workCoins, '日記投稿', '日記投稿による報酬');
     }
 
     // 6. メモ履歴を記録（バッジシステム用）
