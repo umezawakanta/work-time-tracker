@@ -1,6 +1,10 @@
 const { Memo: MemoModel } = require('../utils/schemas');
 const { setCorsHeaders: setCors, ensureDatabaseConnection: ensureDB, verifyJWT: verifyToken } = require('../utils/database');
 
+// Debug logging
+console.log('MemoModel imported:', !!MemoModel);
+console.log('MemoModel type:', typeof MemoModel);
+
 module.exports = async (req, res) => {
   const { origin } = req.headers;
   setCors(res, origin);
@@ -13,7 +17,9 @@ module.exports = async (req, res) => {
   try {
     
     // Ensure database connection
+    console.log('Ensuring database connection...');
     await ensureDB();
+    console.log('Database connection ensured');
 
     // Verify JWT token
     const userInfo = await verifyToken(req);
@@ -142,8 +148,7 @@ module.exports = async (req, res) => {
       message: error.message,
       stack: error.stack,
       method: req.method,
-      id: req.query.id,
-      userId: userInfo?.userId
+      id: req.query.id
     });
     res.status(500).json({
       success: false,

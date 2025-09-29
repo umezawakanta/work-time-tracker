@@ -1,6 +1,6 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
 const bcryptjs = require('bcryptjs');
-const { mongoose: mongooseLib, jwt: jwtLib, ensureDatabaseConnection, User } = require('../utils/database');
+const { mongoose: mongooseLib, jwt: jwtLib, ensureDatabaseConnection, User: UserDB } = require('../utils/database');
 const dotenv = require('dotenv');
 // Type definitions are now in comments for reference
 const { 
@@ -130,7 +130,7 @@ module.exports = async function handler(req, res) {
 
 
     // 既存ユーザーのチェック
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await UserDB.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return sendErrorResponse(res, 409, createResourceError(
         'このメールアドレスは既に登録されています',
@@ -144,7 +144,7 @@ module.exports = async function handler(req, res) {
     const hashedPassword = await bcryptjs.hash(password, saltRounds);
 
     // 新しいユーザーを作成
-    const newUser = new User({
+    const newUser = new UserDB({
       email: email.toLowerCase(),
       displayName: displayName.trim(),
       password: hashedPassword,

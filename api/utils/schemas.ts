@@ -238,6 +238,12 @@ const UserSettings = mongoose.models.UserSettings || mongoose.model('UserSetting
 const Project = mongoose.models.Project || mongoose.model('Project', ProjectSchema);
 const TimeEntry = mongoose.models.TimeEntry || mongoose.model('TimeEntry', TimeEntrySchema);
 
+// Debug logging
+console.log('Memo model created:', !!Memo);
+console.log('Memo model type:', typeof Memo);
+console.log('MemoSchema type:', typeof MemoSchema);
+console.log('mongoose type:', typeof mongoose);
+
 module.exports = {
   UserSchema,
   BookSchema,
