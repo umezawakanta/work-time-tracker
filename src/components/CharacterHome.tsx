@@ -46,14 +46,32 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   closeOtherFeatures, 
   onSelectCharacter, 
   currentCharacter,
-  selectedCharacter,
-  characterSettings,
+  selectedCharacter = null,
+  characterSettings = {
+    selectedCharacterId: '',
+    customizations: {
+      color: '#FF6B6B',
+      size: 'medium',
+      expression: 'happy',
+      accessories: []
+    },
+    preferences: {
+      animationSpeed: 'normal',
+      showAnimations: true,
+      soundEffects: true,
+      autoInteract: false
+    },
+    achievements: [],
+    unlockedCharacters: [],
+    totalExperience: 0,
+    playTime: 0
+  },
   workState = 'idle',
-  onCharacterInteraction,
-  onCharacterLevelUp,
-  onCharacterAchievement,
-  onCharacterSelect,
-  onCharacterSettingsUpdate
+  onCharacterInteraction = () => {},
+  onCharacterLevelUp = () => {},
+  onCharacterAchievement = () => {},
+  onCharacterSelect = () => {},
+  onCharacterSettingsUpdate = () => {}
 }) => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -393,11 +411,13 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         {activeTab === 'progress' && (
           <div className="progress-content">
             {selectedCharacter && characterSettings ? (
-              <CharacterProgress
-                character={selectedCharacter}
-                settings={characterSettings}
-                onClose={() => setShowCharacterProgress(false)}
-              />
+              <div className="progress-wrapper">
+                <CharacterProgress
+                  character={selectedCharacter}
+                  settings={characterSettings}
+                  onClose={() => setShowCharacterProgress(false)}
+                />
+              </div>
             ) : (
               <div className="no-character-message">
                 <p>キャラクターを選択してください</p>
@@ -415,12 +435,14 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         {activeTab === 'customization' && (
           <div className="customization-content">
             {selectedCharacter && characterSettings ? (
-              <CharacterCustomizationComponent
-                character={selectedCharacter}
-                settings={characterSettings}
-                onCustomizationChange={handleCharacterSettingsUpdate}
-                onClose={() => setShowCharacterCustomization(false)}
-              />
+              <div className="customization-wrapper">
+                <CharacterCustomizationComponent
+                  character={selectedCharacter}
+                  settings={characterSettings}
+                  onCustomizationChange={handleCharacterSettingsUpdate}
+                  onClose={() => setShowCharacterCustomization(false)}
+                />
+              </div>
             ) : (
               <div className="no-character-message">
                 <p>キャラクターを選択してください</p>
@@ -438,11 +460,13 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         {activeTab === 'minigame' && (
           <div className="minigame-content">
             {selectedCharacter ? (
-              <CharacterMiniGame
-                character={selectedCharacter}
-                onGameComplete={handleMiniGameComplete}
-                onClose={() => setShowCharacterMiniGame(false)}
-              />
+              <div className="minigame-wrapper">
+                <CharacterMiniGame
+                  character={selectedCharacter}
+                  onGameComplete={handleMiniGameComplete}
+                  onClose={() => setShowCharacterMiniGame(false)}
+                />
+              </div>
             ) : (
               <div className="no-character-message">
                 <p>キャラクターを選択してください</p>
@@ -460,10 +484,12 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         {activeTab === 'collection' && (
           <div className="collection-content">
             {selectedCharacter ? (
-              <CharacterCollection
-                character={selectedCharacter}
-                onClose={() => setShowCharacterCollection(false)}
-              />
+              <div className="collection-wrapper">
+                <CharacterCollection
+                  character={selectedCharacter}
+                  onClose={() => setShowCharacterCollection(false)}
+                />
+              </div>
             ) : (
               <div className="no-character-message">
                 <p>キャラクターを選択してください</p>
@@ -481,10 +507,12 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         {activeTab === 'share' && (
           <div className="share-content">
             {selectedCharacter ? (
-              <CharacterShare
-                character={selectedCharacter}
-                onClose={() => setShowCharacterShare(false)}
-              />
+              <div className="share-wrapper">
+                <CharacterShare
+                  character={selectedCharacter}
+                  onClose={() => setShowCharacterShare(false)}
+                />
+              </div>
             ) : (
               <div className="no-character-message">
                 <p>キャラクターを選択してください</p>
@@ -502,10 +530,12 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         {activeTab === 'gallery' && (
           <div className="gallery-content">
             {selectedCharacter ? (
-              <CharacterAchievementGallery
-                character={selectedCharacter}
-                onClose={() => setShowCharacterAchievementGallery(false)}
-              />
+              <div className="gallery-wrapper">
+                <CharacterAchievementGallery
+                  character={selectedCharacter}
+                  onClose={() => setShowCharacterAchievementGallery(false)}
+                />
+              </div>
             ) : (
               <div className="no-character-message">
                 <p>キャラクターを選択してください</p>
@@ -581,24 +611,24 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         />
       )}
 
-      {showCharacterProgress && (
+      {showCharacterProgress && selectedCharacter && characterSettings && (
         <div className="modal-overlay">
           <div className="modal-content">
             <CharacterProgress
-              character={selectedCharacter!}
-              settings={characterSettings!}
+              character={selectedCharacter}
+              settings={characterSettings}
               onClose={() => setShowCharacterProgress(false)}
             />
           </div>
         </div>
       )}
 
-      {showCharacterCustomization && (
+      {showCharacterCustomization && selectedCharacter && characterSettings && (
         <div className="modal-overlay">
           <div className="modal-content">
             <CharacterCustomizationComponent
-              character={selectedCharacter!}
-              settings={characterSettings!}
+              character={selectedCharacter}
+              settings={characterSettings}
               onCustomizationChange={handleCharacterSettingsUpdate}
               onClose={() => setShowCharacterCustomization(false)}
             />
@@ -606,11 +636,11 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         </div>
       )}
 
-      {showCharacterMiniGame && (
+      {showCharacterMiniGame && selectedCharacter && (
         <div className="modal-overlay">
           <div className="modal-content">
             <CharacterMiniGame
-              character={selectedCharacter!}
+              character={selectedCharacter}
               onGameComplete={handleMiniGameComplete}
               onClose={() => setShowCharacterMiniGame(false)}
             />
@@ -618,33 +648,33 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         </div>
       )}
 
-      {showCharacterCollection && (
+      {showCharacterCollection && selectedCharacter && (
         <div className="modal-overlay">
           <div className="modal-content">
             <CharacterCollection
-              character={selectedCharacter!}
+              character={selectedCharacter}
               onClose={() => setShowCharacterCollection(false)}
             />
           </div>
         </div>
       )}
 
-      {showCharacterShare && (
+      {showCharacterShare && selectedCharacter && (
         <div className="modal-overlay">
           <div className="modal-content">
             <CharacterShare
-              character={selectedCharacter!}
+              character={selectedCharacter}
               onClose={() => setShowCharacterShare(false)}
             />
           </div>
         </div>
       )}
 
-      {showCharacterAchievementGallery && (
+      {showCharacterAchievementGallery && selectedCharacter && (
         <div className="modal-overlay">
           <div className="modal-content">
             <CharacterAchievementGallery
-              character={selectedCharacter!}
+              character={selectedCharacter}
               onClose={() => setShowCharacterAchievementGallery(false)}
             />
           </div>
