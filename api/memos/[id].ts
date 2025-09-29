@@ -112,6 +112,7 @@ module.exports = async (req, res) => {
       // メモを削除
       console.log('DELETE request for memo:', { id, userId: userInfo.userId });
       console.log('MemoModel type:', typeof MemoModel);
+      console.log('MemoModel available:', !!MemoModel);
       
       if (!MemoModel) {
         console.error('MemoModel is undefined');
@@ -122,19 +123,32 @@ module.exports = async (req, res) => {
         });
       }
       
-      const memo = await MemoModel.findOneAndDelete({ _id: id, userId: userInfo.userId });
-      if (!memo) {
-        return res.status(404).json({
-          success: false,
-          message: 'メモが見つかりません',
-          error: 'Memo not found',
-        });
-      }
+      try {
+        console.log('Attempting to find and delete memo with query:', { _id: id, userId: userInfo.userId });
+        const memo = await MemoModel.findOneAndDelete({ _id: id, userId: userInfo.userId });
+        console.log('Delete result:', memo ? 'Memo found and deleted' : 'No memo found');
+        
+        if (!memo) {
+          return res.status(404).json({
+            success: false,
+            message: 'メモが見つかりません',
+            error: 'Memo not found',
+          });
+        }
 
-      res.status(200).json({
-        success: true,
-        message: 'メモを削除しました',
-      });
+        res.status(200).json({
+          success: true,
+          message: 'メモを削除しました',
+        });
+      } catch (deleteError) {
+        console.error('Error during memo deletion:', deleteError);
+        console.error('Delete error details:', {
+          message: deleteError.message,
+          stack: deleteError.stack,
+          name: deleteError.name
+        });
+        throw deleteError; // Re-throw to be caught by outer catch block
+      }
     } else {
       res.status(405).json({
         success: false,
@@ -148,12 +162,32 @@ module.exports = async (req, res) => {
       message: error.message,
       stack: error.stack,
       method: req.method,
-      id: req.query.id
+      id: req.query.id,
+      name: error.name,
+      code: error.code
     });
+    
+    // Provide more specific error messages based on error type
+    let errorMessage = 'サーバーエラーが発生しました';
+    if (error.name === 'CastError') {
+      errorMessage = '無効なメモIDです';
+    } else if (error.name === 'ValidationError') {
+      errorMessage = 'データの検証に失敗しました';
+    } else if (error.message && error.message.includes('not found')) {
+      errorMessage = 'メモが見つかりません';
+    }
+    
     res.status(500).json({
       success: false,
-      message: 'サーバーエラーが発生しました',
-      error: 'Internal server error',
+      message: errorMessage,
+      error: error.message || 'Internal server error',
+      ...(process.env.NODE_ENV === 'development' && { 
+        details: {
+          name: error.name,
+          code: error.code,
+          stack: error.stack
+        }
+      })
     });
   }
 };

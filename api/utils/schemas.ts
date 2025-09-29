@@ -120,6 +120,8 @@ const MemoSchema = new mongoose.Schema({
   category: { type: String, required: true },
   tags: [{ type: String }],
   isPublic: { type: Boolean, default: false },
+  isFamilyOnly: { type: Boolean, default: false },
+  isAdminOnly: { type: Boolean, default: false },
   userId: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
