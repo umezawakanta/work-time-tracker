@@ -474,6 +474,117 @@ export const BADGES: Badge[] = [
     unlockCondition: '公開メモを10個投稿する',
     shareText: '思考のリーダーになりました！公開メモを10個投稿しました 💭 #WorkTimeTracker #思考のリーダー',
     xpReward: 200
+  },
+  // 収入・支出関連バッジ
+  {
+    id: 'first_income',
+    name: '初回収入記録',
+    description: '初めての収入を記録しました',
+    icon: '💰',
+    rarity: 'common',
+    category: 'finance',
+    unlockCondition: '初めての収入を記録する',
+    shareText: '初回収入記録を達成しました！お金の管理を始めます 💰 #WorkTimeTracker #収入記録',
+    xpReward: 30
+  },
+  {
+    id: 'first_expense',
+    name: '初回支出記録',
+    description: '初めての支出を記録しました',
+    icon: '💸',
+    rarity: 'common',
+    category: 'finance',
+    unlockCondition: '初めての支出を記録する',
+    shareText: '初回支出記録を達成しました！支出管理を始めます 💸 #WorkTimeTracker #支出記録',
+    xpReward: 25
+  },
+  {
+    id: 'income_tracker',
+    name: '収入トラッカー',
+    description: '10回の収入を記録しました',
+    icon: '📈',
+    rarity: 'rare',
+    category: 'finance',
+    unlockCondition: '10回の収入を記録する',
+    shareText: '収入トラッカーになりました！10回の収入を記録しました 📈 #WorkTimeTracker #収入管理',
+    xpReward: 100
+  },
+  {
+    id: 'expense_tracker',
+    name: '支出トラッカー',
+    description: '10回の支出を記録しました',
+    icon: '📉',
+    rarity: 'rare',
+    category: 'finance',
+    unlockCondition: '10回の支出を記録する',
+    shareText: '支出トラッカーになりました！10回の支出を記録しました 📉 #WorkTimeTracker #支出管理',
+    xpReward: 100
+  },
+  {
+    id: 'financial_master',
+    name: '財務マスター',
+    description: '50回の収支を記録しました',
+    icon: '🏦',
+    rarity: 'epic',
+    category: 'finance',
+    unlockCondition: '50回の収支を記録する',
+    shareText: '財務マスターになりました！50回の収支を記録しました 🏦 #WorkTimeTracker #財務管理',
+    xpReward: 300
+  },
+  {
+    id: 'big_earner',
+    name: '大収入者',
+    description: '10万円以上の収入を記録しました',
+    icon: '💎',
+    rarity: 'epic',
+    category: 'finance',
+    unlockCondition: '10万円以上の収入を記録する',
+    shareText: '大収入者になりました！10万円以上の収入を記録しました 💎 #WorkTimeTracker #大収入',
+    xpReward: 250
+  },
+  {
+    id: 'budget_conscious',
+    name: '予算意識者',
+    description: '支出を10回記録しました',
+    icon: '🎯',
+    rarity: 'rare',
+    category: 'finance',
+    unlockCondition: '支出を10回記録する',
+    shareText: '予算意識者になりました！支出管理が身についています 🎯 #WorkTimeTracker #予算管理',
+    xpReward: 80
+  },
+  {
+    id: 'financial_analyst',
+    name: '財務アナリスト',
+    description: '100回の収支を記録しました',
+    icon: '📊',
+    rarity: 'legendary',
+    category: 'finance',
+    unlockCondition: '100回の収支を記録する',
+    shareText: '財務アナリストになりました！100回の収支を記録しました 📊 #WorkTimeTracker #財務分析',
+    xpReward: 500
+  },
+  {
+    id: 'money_manager',
+    name: 'マネーマネージャー',
+    description: '月間収支を5回記録しました',
+    icon: '💼',
+    rarity: 'epic',
+    category: 'finance',
+    unlockCondition: '月間収支を5回記録する',
+    shareText: 'マネーマネージャーになりました！月間収支を5回記録しました 💼 #WorkTimeTracker #マネー管理',
+    xpReward: 200
+  },
+  {
+    id: 'financial_planner',
+    name: 'ファイナンシャルプランナー',
+    description: '年間収支を記録しました',
+    icon: '📋',
+    rarity: 'legendary',
+    category: 'finance',
+    unlockCondition: '年間収支を記録する',
+    shareText: 'ファイナンシャルプランナーになりました！年間収支を記録しました 📋 #WorkTimeTracker #ファイナンシャルプランニング',
+    xpReward: 400
   }
 ];
 

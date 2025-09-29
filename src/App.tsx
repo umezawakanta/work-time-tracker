@@ -49,6 +49,7 @@ import { apiFetch } from "./utils/apiClient";
 import { Character as CharacterType, UserCharacterSettings, CharacterAchievement, CharacterCustomization } from "./types/character";
 import { Badge, BadgeShareData } from "./types/badge";
 import { diaryRewardManager } from "./utils/diaryRewardManager";
+import { incomeExpenseRewardManager } from "./utils/incomeExpenseRewardManager";
 import { badgeManager } from "./utils/badgeManager";
 import { BADGES } from "./constants/badges";
 import { characterManager } from "./utils/characterManager";
@@ -2780,7 +2781,37 @@ ${errorInfo.stack}
       console.log("Response status:", response.status);
       const data = await response.json();
       if (data.success) {
-        setMessage("収入・支出記録が作成されました！");
+        // 報酬システムを実行
+        try {
+          const recordId = data.record?._id || `record_${Date.now()}`;
+          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward({
+            type: incomeExpenseType,
+            amount: amount,
+            notes: incomeExpenseNotes,
+            date: incomeExpenseDate
+          }, recordId);
+
+          // 報酬結果を表示
+          let rewardMessage = "収入・支出記録が作成されました！";
+          if (rewardResult.badges.length > 0) {
+            rewardMessage += `\n🎉 バッジを${rewardResult.badges.length}個獲得しました！`;
+          }
+          if (rewardResult.experience > 0) {
+            rewardMessage += `\n⭐ ${rewardResult.experience}経験値を獲得しました！`;
+          }
+          if (rewardResult.workCoins > 0) {
+            rewardMessage += `\n🪙 ${rewardResult.workCoins}ワークコインを獲得しました！`;
+          }
+          if (rewardResult.leveledUp) {
+            rewardMessage += `\n🎊 キャラクターがレベル${rewardResult.newLevel}に上がりました！`;
+          }
+
+          setMessage(rewardMessage);
+        } catch (error) {
+          console.error('報酬処理でエラーが発生しました:', error);
+          setMessage("収入・支出記録が作成されました！（報酬処理でエラーが発生しました）");
+        }
+
         setIncomeExpenseDate("");
         setIncomeExpenseAmount("");
         setIncomeExpenseType("income");
@@ -2867,7 +2898,36 @@ ${errorInfo.stack}
       console.log("Response status:", response.status);
       const data = await response.json();
       if (data.success) {
-        setMessage("収入・支出記録を更新しました！");
+        // 更新時も報酬システムを実行（初回投稿時のみ報酬を付与するように制御）
+        try {
+          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward({
+            type: incomeExpenseType,
+            amount: amount,
+            notes: incomeExpenseNotes,
+            date: incomeExpenseDate
+          }, editingIncomeExpenseRecord._id);
+
+          // 報酬結果を表示（更新時は簡潔に）
+          let rewardMessage = "収入・支出記録を更新しました！";
+          if (rewardResult.badges.length > 0) {
+            rewardMessage += `\n🎉 バッジを${rewardResult.badges.length}個獲得しました！`;
+          }
+          if (rewardResult.experience > 0) {
+            rewardMessage += `\n⭐ ${rewardResult.experience}経験値を獲得しました！`;
+          }
+          if (rewardResult.workCoins > 0) {
+            rewardMessage += `\n🪙 ${rewardResult.workCoins}ワークコインを獲得しました！`;
+          }
+          if (rewardResult.leveledUp) {
+            rewardMessage += `\n🎊 キャラクターがレベル${rewardResult.newLevel}に上がりました！`;
+          }
+
+          setMessage(rewardMessage);
+        } catch (error) {
+          console.error('報酬処理でエラーが発生しました:', error);
+          setMessage("収入・支出記録を更新しました！（報酬処理でエラーが発生しました）");
+        }
+
         setIncomeExpenseDate("");
         setIncomeExpenseAmount("");
         setIncomeExpenseType("income");
