@@ -81,10 +81,11 @@ const SimpleShareModal: React.FC<SimpleShareModalProps> = ({
         </div>
         
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+          <label htmlFor="share-text" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
             シェアテキスト
           </label>
           <textarea
+            id="share-text"
             value={shareData.shareText}
             readOnly
             style={{
