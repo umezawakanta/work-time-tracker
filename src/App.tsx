@@ -6884,21 +6884,23 @@ User Agent: ${userAgent}
                   ✕
                 </button>
               </div>
-              <CharacterHome
-                onSelectCharacter={handleSelectCharacter}
-                currentCharacter={selectedCharacter as Character | null}
-                showCharacterHome={showCharacterHome}
-                setShowCharacterHome={setShowCharacterHome}
-                closeOtherFeatures={closeOtherFeatures}
-                selectedCharacter={selectedCharacter}
-                characterSettings={characterSettings}
-                workState={workState}
-                onCharacterInteraction={handleCharacterInteraction}
-                onCharacterLevelUp={handleCharacterLevelUp}
-                onCharacterAchievement={handleCharacterAchievement}
-                onCharacterSelect={handleCharacterSelect}
-                onCharacterSettingsUpdate={handleCharacterSettingsUpdate}
-              />
+              <div className="character-home-wrapper">
+                <CharacterHome
+                  onSelectCharacter={handleSelectCharacter}
+                  currentCharacter={selectedCharacter as Character | null}
+                  showCharacterHome={showCharacterHome}
+                  setShowCharacterHome={setShowCharacterHome}
+                  closeOtherFeatures={closeOtherFeatures}
+                  selectedCharacter={selectedCharacter}
+                  characterSettings={characterSettings}
+                  workState={workState}
+                  onCharacterInteraction={handleCharacterInteraction}
+                  onCharacterLevelUp={handleCharacterLevelUp}
+                  onCharacterAchievement={handleCharacterAchievement}
+                  onCharacterSelect={handleCharacterSelect}
+                  onCharacterSettingsUpdate={handleCharacterSettingsUpdate}
+                />
+              </div>
             </div>
           </div>
         )}

@@ -3673,6 +3673,7 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
+  z-index: 1;
 }
 
 .character-home-modal-content {
@@ -3686,6 +3687,7 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  z-index: 2;
 }
 
 .character-home-modal-header {
@@ -3743,6 +3745,13 @@ figure, figcaption, details, summary, mark, small, sub, sup,
 
 .character-home-modal .character-home .character-gallery {
   padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.character-home-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  z-index: 3;
 }
 
 .timers-section .section-header {

@@ -612,8 +612,8 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
       )}
 
       {showCharacterProgress && selectedCharacter && characterSettings && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <CharacterProgress
               character={selectedCharacter}
               settings={characterSettings}
@@ -624,8 +624,8 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
       )}
 
       {showCharacterCustomization && selectedCharacter && characterSettings && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <CharacterCustomizationComponent
               character={selectedCharacter}
               settings={characterSettings}
@@ -637,8 +637,8 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
       )}
 
       {showCharacterMiniGame && selectedCharacter && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <CharacterMiniGame
               character={selectedCharacter}
               onGameComplete={handleMiniGameComplete}
@@ -649,8 +649,8 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
       )}
 
       {showCharacterCollection && selectedCharacter && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <CharacterCollection
               character={selectedCharacter}
               onClose={() => setShowCharacterCollection(false)}
@@ -660,8 +660,8 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
       )}
 
       {showCharacterShare && selectedCharacter && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <CharacterShare
               character={selectedCharacter}
               onClose={() => setShowCharacterShare(false)}
@@ -671,8 +671,8 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
       )}
 
       {showCharacterAchievementGallery && selectedCharacter && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="modal-overlay" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <CharacterAchievementGallery
               character={selectedCharacter}
               onClose={() => setShowCharacterAchievementGallery(false)}
