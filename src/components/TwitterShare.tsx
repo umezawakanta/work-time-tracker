@@ -16,6 +16,7 @@ const TwitterShare: React.FC<TwitterShareProps> = ({
   const [isSharing, setIsSharing] = useState(false);
   
   console.log('TwitterShare component rendered with shareData:', shareData);
+  console.log('TwitterShare component is being rendered!');
 
   const handleTwitterShare = () => {
     setIsSharing(true);

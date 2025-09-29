@@ -1346,6 +1346,16 @@ ${errorInfo.stack}
     }
   }, [isLoggedIn, user]);
 
+  // デバッグ用：showTwitterShareの状態変化を監視
+  useEffect(() => {
+    console.log('showTwitterShare state changed:', showTwitterShare);
+  }, [showTwitterShare]);
+
+  // デバッグ用：badgeShareDataの状態変化を監視
+  useEffect(() => {
+    console.log('badgeShareData state changed:', badgeShareData);
+  }, [badgeShareData]);
+
   // グローバルエラーハンドリング
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
@@ -2084,6 +2094,7 @@ ${errorInfo.stack}
         
         // 状態更新を確実にするため、少し遅延してからモーダルを表示
         setTimeout(() => {
+          console.log('Setting showTwitterShare to true');
           setShowTwitterShare(true);
           console.log('Twitter share modal should be shown');
         }, 100);
@@ -6488,6 +6499,15 @@ User Agent: ${userAgent}
                 onClose={handleTwitterShareClose}
               />
             </div>
+          </div>
+        )}
+        
+        {/* デバッグ用：条件分岐の確認 */}
+        {process.env.NODE_ENV === 'development' && (
+          <div style={{ position: 'fixed', top: '50px', right: '10px', background: 'red', color: 'white', padding: '10px', zIndex: 99999, fontSize: '12px' }}>
+            <div>showTwitterShare: {showTwitterShare ? 'true' : 'false'}</div>
+            <div>badgeShareData exists: {badgeShareData ? 'true' : 'false'}</div>
+            <div>Condition result: {(showTwitterShare && badgeShareData) ? 'true' : 'false'}</div>
           </div>
         )}
         
