@@ -6016,7 +6016,9 @@ User Agent: ${userAgent}
 
   // カスタムタイマーの関数
   const startCustomTimer = () => {
-    if (customTimerActive && !customTimerPaused) return;
+    if (customTimerActive && !customTimerPaused) {
+      return;
+    }
 
     if (customTimerPaused) {
       // 一時停止から再開
@@ -7906,13 +7908,6 @@ const AppWithProviders = () => {
                 }
               }}
               handleLogout={() => {
-                // ログアウトボーナスをチェック
-                const logoutBonus = badgeManager.checkLogoutBonus();
-                if (logoutBonus) {
-                  console.log('Logout bonus earned:', logoutBonus);
-                  handleBadgeUnlocked(logoutBonus);
-                }
-                
                 localStorage.removeItem("access_token");
                 setIsLoggedIn(false);
                 setUser(null);
