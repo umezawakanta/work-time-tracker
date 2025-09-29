@@ -1,4 +1,4 @@
-const { mongoose: mongooseDB, ensureDatabaseConnection: ensureDBConn, verifyJWT: verifyToken, handleError } = require('../utils/database');
+const { mongoose: mongooseDB, ensureDatabaseConnection: ensureDBConn, verifyJWT: verifyAuth, handleError } = require('../utils/database');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
@@ -60,7 +60,7 @@ module.exports = async (req, res) => {
     await ensureDBConn();
 
     // Verify JWT token
-    const userInfo = await verifyToken(req);
+    const userInfo = await verifyAuth(req);
     if (!userInfo) {
       return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }
