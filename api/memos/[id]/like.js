@@ -1,7 +1,7 @@
 // メモのいいね機能API
 
 const { verifyJWT } = require('../../utils/validation');
-const { connectDB } = require('../../utils/database');
+const { ensureDatabaseConnection: connectDB } = require('../../utils/database');
 const { Memo } = require('../../../src/server/models/Memo');
 
 module.exports = async function handler(req, res) {
