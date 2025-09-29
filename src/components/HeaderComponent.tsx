@@ -20,7 +20,6 @@ interface HeaderComponentProps {
   showFontSettings: boolean;
   showFeatureSettings: boolean;
   handleCharacterHomeToggle: () => void;
-  handleBadgeGalleryToggle: () => void;
   handleLogout: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
   setShowThemeSettings: (show: boolean) => void;
@@ -39,7 +38,6 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   showFontSettings,
   showFeatureSettings,
   handleCharacterHomeToggle,
-  handleBadgeGalleryToggle,
   handleLogout,
   closeOtherFeatures,
   setShowThemeSettings,
@@ -107,14 +105,6 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       {/* 右上固定：シェアボタン、不具合報告ボタン、更新要望ボタン、ログアウトボタン */}
       <div className="header-top-right">
         <ShareButtonComponent />
-        <button
-          onClick={handleBadgeGalleryToggle}
-          className="badge-gallery-button"
-          title="バッジギャラリー"
-        >
-          <i className="bi bi-award"></i>
-          <span>バッジ</span>
-        </button>
         <button
           onClick={() => setShowBugReportModal(true)}
           className="bug-report-button"

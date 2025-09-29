@@ -14,6 +14,20 @@ export interface Character {
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
   unlockConditions?: string[];
   gameItems?: string[];
+  // 成長システム
+  totalExperience: number;
+  badges: string[]; // 獲得したバッジのIDリスト
+  growthStage: 'baby' | 'child' | 'teen' | 'adult' | 'master';
+  evolutionLevel: number; // 進化レベル
+  stats: CharacterStats;
+}
+
+export interface CharacterStats {
+  strength: number; // 力（作業時間に影響）
+  intelligence: number; // 知性（学習効果に影響）
+  creativity: number; // 創造性（アイデア生成に影響）
+  endurance: number; // 持久力（長時間作業に影響）
+  social: number; // 社交性（コミュニケーションに影響）
 }
 
 export interface CharacterCustomization {

@@ -361,7 +361,6 @@ function App({
   const [currentBadge, setCurrentBadge] = useState<Badge | null>(null);
   const [showTwitterShare, setShowTwitterShare] = useState(false);
   const [badgeShareData, setBadgeShareData] = useState<BadgeShareData | null>(null);
-  const [showBadgeGallery, setShowBadgeGallery] = useState(false);
 
   // ジャンル管理の状態
   const [showGenreManagement, setShowGenreManagement] = useState(false);
@@ -2081,15 +2080,6 @@ ${errorInfo.stack}
   const handleTwitterShareClose = () => {
     setShowTwitterShare(false);
     setBadgeShareData(null);
-  };
-
-  // バッジギャラリーのハンドラー
-  const handleBadgeGalleryToggle = () => {
-    setShowBadgeGallery(!showBadgeGallery);
-  };
-
-  const handleBadgeGalleryClose = () => {
-    setShowBadgeGallery(false);
   };
 
   const handleBadgeClick = (badge: Badge) => {
@@ -6472,18 +6462,6 @@ User Agent: ${userAgent}
           />
         )}
 
-        {/* バッジギャラリー */}
-        {showBadgeGallery && (
-          <div className="badge-gallery-modal">
-            <div className="badge-gallery-overlay" onClick={handleBadgeGalleryClose}></div>
-            <div className="badge-gallery-content">
-              <BadgeGallery
-                onClose={handleBadgeGalleryClose}
-                onBadgeClick={handleBadgeClick}
-              />
-            </div>
-          </div>
-        )}
       </div>
     );
   }
@@ -6521,7 +6499,6 @@ User Agent: ${userAgent}
             showFontSettings={showFontSettings}
             showFeatureSettings={showFeatureSettings}
             handleCharacterHomeToggle={handleCharacterHomeToggle}
-            handleBadgeGalleryToggle={handleBadgeGalleryToggle}
             handleLogout={handleLogout}
             closeOtherFeatures={closeOtherFeatures}
             setShowThemeSettings={setShowThemeSettings}
@@ -7024,6 +7001,7 @@ User Agent: ${userAgent}
                   onCharacterAchievement={handleCharacterAchievement}
                   onCharacterSelect={handleCharacterSelect}
                   onCharacterSettingsUpdate={handleCharacterSettingsUpdate}
+                  onBadgeClick={handleBadgeClick}
                 />
               </div>
             </div>

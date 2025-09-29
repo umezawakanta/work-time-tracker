@@ -9,6 +9,11 @@ import CharacterMiniGame from './CharacterMiniGame';
 import CharacterCollection from './CharacterCollection';
 import CharacterShare from './CharacterShare';
 import CharacterAchievementGallery from './CharacterAchievementGallery';
+import BadgeGallery from './BadgeGallery';
+import CharacterGrowthDisplay from './CharacterGrowthDisplay';
+import { Badge } from '../types/badge';
+import { badgeManager } from '../utils/badgeManager';
+import { characterGrowthManager } from '../utils/characterGrowthManager';
 import './CharacterHome.css';
 
 interface Character {
@@ -38,6 +43,7 @@ interface CharacterHomeProps {
   onCharacterAchievement?: (achievementId: string) => void;
   onCharacterSelect?: (character: CharacterType) => void;
   onCharacterSettingsUpdate?: (updates: Partial<UserCharacterSettings>) => void;
+  onBadgeClick?: (badge: Badge) => void;
 }
 
 const CharacterHome: React.FC<CharacterHomeProps> = ({ 
@@ -71,7 +77,8 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   onCharacterLevelUp = () => {},
   onCharacterAchievement = () => {},
   onCharacterSelect = () => {},
-  onCharacterSettingsUpdate = () => {}
+  onCharacterSettingsUpdate = () => {},
+  onBadgeClick = () => {}
 }) => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -86,7 +93,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   });
 
   // 新しいキャラクター機能の状態
-  const [activeTab, setActiveTab] = useState<'home' | 'characters' | 'progress' | 'customization' | 'minigame' | 'collection' | 'share' | 'gallery'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'characters' | 'progress' | 'customization' | 'minigame' | 'collection' | 'share' | 'gallery' | 'badges' | 'growth'>('home');
   const [showCharacterSelector, setShowCharacterSelector] = useState(false);
   const [showCharacterProgress, setShowCharacterProgress] = useState(false);
   const [showCharacterCustomization, setShowCharacterCustomization] = useState(false);
@@ -94,6 +101,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   const [showCharacterCollection, setShowCharacterCollection] = useState(false);
   const [showCharacterShare, setShowCharacterShare] = useState(false);
   const [showCharacterAchievementGallery, setShowCharacterAchievementGallery] = useState(false);
+  const [showBadgeGallery, setShowBadgeGallery] = useState(false);
 
   // デフォルトキャラクター
   const defaultCharacters: Character[] = [
@@ -281,6 +289,18 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
           onClick={() => setActiveTab('gallery')}
         >
           🏆 ギャラリー
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'badges' ? 'active' : ''}`}
+          onClick={() => setActiveTab('badges')}
+        >
+          🎖️ バッジ
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'growth' ? 'active' : ''}`}
+          onClick={() => setActiveTab('growth')}
+        >
+          🌱 成長
         </button>
       </div>
 
@@ -534,6 +554,40 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
                 <CharacterAchievementGallery
                   character={selectedCharacter}
                   onClose={() => setShowCharacterAchievementGallery(false)}
+                />
+              </div>
+            ) : (
+              <div className="no-character-message">
+                <p>キャラクターを選択してください</p>
+                <button
+                  className="select-character-btn"
+                  onClick={() => setShowCharacterSelector(true)}
+                >
+                  🎭 キャラクターを選択
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'badges' && (
+          <div className="badges-content">
+            <div className="badges-wrapper">
+              <BadgeGallery
+                onClose={() => setShowBadgeGallery(false)}
+                onBadgeClick={onBadgeClick}
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'growth' && (
+          <div className="growth-content">
+            {selectedCharacter ? (
+              <div className="growth-wrapper">
+                <CharacterGrowthDisplay
+                  character={selectedCharacter}
+                  characterSettings={characterSettings}
                 />
               </div>
             ) : (

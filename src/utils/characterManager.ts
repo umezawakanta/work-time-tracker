@@ -7,6 +7,7 @@ import {
   DEFAULT_CHARACTER_SETTINGS,
   CHARACTER_RARITY 
 } from '../types/character';
+import { characterGrowthManager } from './characterGrowthManager';
 import { SAMPLE_CHARACTERS, CHARACTER_ACHIEVEMENTS, EXPERIENCE_TABLE } from '../constants/characters';
 
 export class CharacterManager {
