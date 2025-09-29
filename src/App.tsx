@@ -29,6 +29,8 @@ import CharacterMiniGame from "./components/CharacterMiniGame";
 import CharacterCollection from "./components/CharacterCollection";
 import CharacterShare from "./components/CharacterShare";
 import CharacterAchievementGallery from "./components/CharacterAchievementGallery";
+import BadgeNotification from "./components/BadgeNotification";
+import TwitterShare from "./components/TwitterShare";
 import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
@@ -44,6 +46,8 @@ import type { ApiErrorInfo } from "./utils/apiErrorHandler";
 // Static import for apiFetch - used frequently throughout the application
 import { apiFetch } from "./utils/apiClient";
 import { Character as CharacterType, UserCharacterSettings, CharacterAchievement, CharacterCustomization } from "./types/character";
+import { Badge, BadgeShareData } from "./types/badge";
+import { badgeManager } from "./utils/badgeManager";
 import { characterManager } from "./utils/characterManager";
 import {
   buildApiUrl,
@@ -350,6 +354,12 @@ function App({
   
   // キャラクターアチーブメントギャラリーの状態
   const [showCharacterAchievementGallery, setShowCharacterAchievementGallery] = useState(false);
+
+  // バッジシステムの状態
+  const [showBadgeNotification, setShowBadgeNotification] = useState(false);
+  const [currentBadge, setCurrentBadge] = useState<Badge | null>(null);
+  const [showTwitterShare, setShowTwitterShare] = useState(false);
+  const [badgeShareData, setBadgeShareData] = useState<BadgeShareData | null>(null);
 
   // ジャンル管理の状態
   const [showGenreManagement, setShowGenreManagement] = useState(false);
@@ -1309,6 +1319,18 @@ ${errorInfo.stack}
     `.trim();
   };
 
+  // ユーザーログイン時のバッジチェック
+  useEffect(() => {
+    if (isLoggedIn && user) {
+      // 登録バッジをチェック
+      const unlockedBadges = badgeManager.checkRegistrationBadges();
+      if (unlockedBadges.length > 0) {
+        // 最初のバッジを通知として表示
+        handleBadgeUnlocked(unlockedBadges[0]);
+      }
+    }
+  }, [isLoggedIn, user]);
+
   // グローバルエラーハンドリング
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
@@ -1912,12 +1934,24 @@ ${errorInfo.stack}
         handleCharacterAchievement(achievement.id);
       });
     }
+    
+    // 作業完了時のバッジをチェック
+    const unlockedBadges = badgeManager.checkWorkCompleteBadges(workMinutes);
+    if (unlockedBadges.length > 0) {
+      handleBadgeUnlocked(unlockedBadges[0]);
+    }
   };
 
   // 作業開始時のキャラクター処理
   const handleWorkStart = () => {
     characterManager.onWorkStart();
     setWorkState('working');
+    
+    // 作業開始時のバッジをチェック
+    const unlockedBadges = badgeManager.checkWorkStartBadges();
+    if (unlockedBadges.length > 0) {
+      handleBadgeUnlocked(unlockedBadges[0]);
+    }
   };
 
   // 作業停止時のキャラクター処理
@@ -2002,6 +2036,38 @@ ${errorInfo.stack}
   // アチーブメントギャラリー表示ハンドラー
   const handleAchievementGalleryToggle = () => {
     setShowCharacterAchievementGallery(!showCharacterAchievementGallery);
+  };
+
+  // バッジ関連のハンドラー
+  const handleBadgeUnlocked = (badge: Badge) => {
+    setCurrentBadge(badge);
+    setShowBadgeNotification(true);
+  };
+
+  const handleBadgeNotificationClose = () => {
+    setShowBadgeNotification(false);
+    setCurrentBadge(null);
+    badgeManager.markBadgesAsRead();
+  };
+
+  const handleBadgeShare = (badge: Badge) => {
+    if (user) {
+      const shareData = badgeManager.generateShareData(badge.id, {
+        name: user.displayName || user.email,
+        displayName: user.displayName
+      });
+      
+      if (shareData) {
+        setBadgeShareData(shareData);
+        setShowTwitterShare(true);
+        setShowBadgeNotification(false);
+      }
+    }
+  };
+
+  const handleTwitterShareClose = () => {
+    setShowTwitterShare(false);
+    setBadgeShareData(null);
   };
 
   // テーマ適用関数
@@ -6360,6 +6426,23 @@ User Agent: ${userAgent}
               />
             </div>
           </div>
+        )}
+
+        {/* バッジ通知 */}
+        {showBadgeNotification && currentBadge && (
+          <BadgeNotification
+            badge={currentBadge}
+            onClose={handleBadgeNotificationClose}
+            onShare={handleBadgeShare}
+          />
+        )}
+
+        {/* X（Twitter）シェア */}
+        {showTwitterShare && badgeShareData && (
+          <TwitterShare
+            shareData={badgeShareData}
+            onClose={handleTwitterShareClose}
+          />
         )}
       </div>
     );

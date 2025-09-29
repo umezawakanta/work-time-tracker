@@ -1,0 +1,159 @@
+/* BadgeDisplay.css - バッジ表示のスタイル */
+
+.badge-display {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  padding: 15px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.badge-display.clickable {
+  cursor: pointer;
+}
+
+.badge-display.clickable:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.badge-display.clickable:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* サイズバリエーション */
+.badge-small {
+  width: 80px;
+  height: 80px;
+  padding: 10px;
+}
+
+.badge-medium {
+  width: 120px;
+  height: 120px;
+  padding: 15px;
+}
+
+.badge-large {
+  width: 160px;
+  height: 160px;
+  padding: 20px;
+}
+
+.badge-new-indicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4757;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.badge-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.badge-small .badge-icon {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.badge-large .badge-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.badge-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+}
+
+.badge-small .badge-name {
+  font-size: 0.7rem;
+}
+
+.badge-large .badge-name {
+  font-size: 1.1rem;
+}
+
+.badge-description {
+  font-size: 0.7rem;
+  opacity: 0.9;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.badge-small .badge-description {
+  font-size: 0.6rem;
+}
+
+.badge-large .badge-description {
+  font-size: 0.8rem;
+}
+
+.badge-rarity {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 0.5rem;
+  font-weight: bold;
+  opacity: 0.8;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.badge-small .badge-rarity {
+  font-size: 0.4rem;
+  bottom: 3px;
+  right: 3px;
+}
+
+.badge-large .badge-rarity {
+  font-size: 0.6rem;
+  bottom: 8px;
+  right: 8px;
+}
+
+/* レアリティ別の特別なエフェクト */
+.badge-display[style*="legendary"] {
+  animation: legendaryGlow 3s ease-in-out infinite;
+}
+
+@keyframes legendaryGlow {
+  0%, 100% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(243, 156, 18, 0.3); }
+  50% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 30px rgba(243, 156, 18, 0.6); }
+}
+
+.badge-display[style*="epic"] {
+  animation: epicShimmer 4s ease-in-out infinite;
+}
+
+@keyframes epicShimmer {
+  0%, 100% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 15px rgba(155, 89, 182, 0.3); }
+  50% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 25px rgba(155, 89, 182, 0.5); }
+}

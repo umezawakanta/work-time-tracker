@@ -1,0 +1,279 @@
+/* TwitterShare.css - X（Twitter）シェアのスタイル */
+
+.twitter-share-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.twitter-share-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.twitter-share-content {
+  position: relative;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.twitter-share-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.twitter-share-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.close-button {
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: #ff3742;
+  transform: scale(1.1);
+}
+
+.twitter-share-body {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.badge-preview {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 15px;
+  border: 2px solid #dee2e6;
+}
+
+.badge-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.badge-info h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.badge-info p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.share-text-preview,
+.share-url-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.share-text-preview label,
+.share-url-preview label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.share-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.share-textarea:focus {
+  outline: none;
+  border-color: #1da1f2;
+  box-shadow: 0 0 0 3px rgba(29, 161, 242, 0.1);
+}
+
+.share-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.share-input:focus {
+  outline: none;
+  border-color: #1da1f2;
+  box-shadow: 0 0 0 3px rgba(29, 161, 242, 0.1);
+}
+
+.copy-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+.copy-button:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+.twitter-share-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.twitter-share-button {
+  background: #1da1f2;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);
+  min-width: 150px;
+  justify-content: center;
+}
+
+.twitter-share-button:hover:not(:disabled) {
+  background: #0d8bd9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(29, 161, 242, 0.4);
+}
+
+.twitter-share-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.twitter-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.cancel-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .twitter-share-content {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .badge-preview {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .twitter-share-actions {
+    flex-direction: column;
+  }
+  
+  .twitter-share-button,
+  .cancel-button {
+    width: 100%;
+  }
+}

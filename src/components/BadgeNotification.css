@@ -1,0 +1,210 @@
+/* BadgeNotification.css - バッジ通知のスタイル */
+
+.badge-notification {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.badge-notification.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.badge-notification-content {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.badge-notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.badge-notification-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.close-button {
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: #ff3742;
+  transform: scale(1.1);
+}
+
+.badge-notification-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.badge-notification-text h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.badge-notification-text p {
+  margin: 0 0 15px 0;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.badge-reward {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.xp-reward {
+  background: linear-gradient(135deg, #4ECDC4 0%, #45b7b8 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+}
+
+.badge-notification-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  animation: fadeInUp 0.5s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.share-button {
+  background: #1da1f2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);
+}
+
+.share-button:hover {
+  background: #0d8bd9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(29, 161, 242, 0.4);
+}
+
+.twitter-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.close-action-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.close-action-button:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .badge-notification {
+    padding: 10px;
+  }
+  
+  .badge-notification-content {
+    padding: 20px;
+  }
+  
+  .badge-notification-header h3 {
+    font-size: 1.3rem;
+  }
+  
+  .badge-notification-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .share-button,
+  .close-action-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
