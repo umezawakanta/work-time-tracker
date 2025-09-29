@@ -228,6 +228,24 @@ class BadgeManager {
     return null;
   }
 
+  // ログアウトボーナスをチェック・付与
+  public checkLogoutBonus(): Badge | null {
+    const today = new Date().toDateString();
+    const lastLogoutDate = localStorage.getItem('lastLogoutDate');
+    
+    // 今日初回ログアウトの場合のみボーナス付与
+    if (lastLogoutDate !== today) {
+      localStorage.setItem('lastLogoutDate', today);
+      
+      const logoutBadge = BADGES.find(b => b.id === 'logout_achievement');
+      if (logoutBadge && this.unlockBadge(logoutBadge.id)) {
+        return logoutBadge;
+      }
+    }
+    
+    return null;
+  }
+
   // 既存ユーザー向けのバッジ付与
   public grantExistingUserBadges(): Badge[] {
     const unlockedBadges: Badge[] = [];

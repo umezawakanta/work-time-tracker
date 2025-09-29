@@ -7906,6 +7906,13 @@ const AppWithProviders = () => {
                 }
               }}
               handleLogout={() => {
+                // ログアウトボーナスをチェック
+                const logoutBonus = badgeManager.checkLogoutBonus();
+                if (logoutBonus) {
+                  console.log('Logout bonus earned:', logoutBonus);
+                  handleBadgeUnlocked(logoutBonus);
+                }
+                
                 localStorage.removeItem("access_token");
                 setIsLoggedIn(false);
                 setUser(null);

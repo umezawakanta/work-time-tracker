@@ -26,6 +26,17 @@ export const BADGES: Badge[] = [
     xpReward: 10
   },
   {
+    id: 'logout_achievement',
+    name: 'お疲れ様',
+    description: 'ログアウトしました',
+    icon: '👋',
+    rarity: 'common',
+    category: 'daily',
+    unlockCondition: 'ログアウトする',
+    shareText: 'お疲れ様でした！今日も頑張りました 👋 #WorkTimeTracker #ログアウト',
+    xpReward: 5
+  },
+  {
     id: 'first_work',
     name: '初めての作業',
     description: '初めて作業を開始しました',
