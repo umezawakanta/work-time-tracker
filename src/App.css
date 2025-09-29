@@ -6000,7 +6000,6 @@ input:checked + .toggle-slider:before {
     font-size: 1rem;
     border-radius: 25px;
   }
-}
 
 /* さらに小さな画面用 */
 @media (max-width: 480px) {
