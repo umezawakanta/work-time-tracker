@@ -574,6 +574,166 @@ class BadgeManager {
     });
     localStorage.setItem('reportHistory', JSON.stringify(reportHistory));
   }
+
+  // メモ投稿のバッジをチェック
+  public checkMemoBadges(isPublic: boolean = false): Badge[] {
+    const unlockedBadges: Badge[] = [];
+    
+    // 初回メモ投稿バッジ
+    const firstMemoBadge = this.checkFirstMemoBadge();
+    if (firstMemoBadge) {
+      unlockedBadges.push(firstMemoBadge);
+    }
+
+    // 累計メモ投稿バッジ
+    const cumulativeBadges = this.checkCumulativeMemoBadges();
+    unlockedBadges.push(...cumulativeBadges);
+
+    // 連続投稿バッジ
+    const streakBadge = this.checkMemoStreakBadge();
+    if (streakBadge) {
+      unlockedBadges.push(streakBadge);
+    }
+
+    // 公開メモバッジ
+    if (isPublic) {
+      const publicMemoBadge = this.checkPublicMemoBadge();
+      if (publicMemoBadge) {
+        unlockedBadges.push(publicMemoBadge);
+      }
+    }
+
+    return unlockedBadges;
+  }
+
+  // 初回メモ投稿バッジをチェック
+  private checkFirstMemoBadge(): Badge | null {
+    const memoCount = this.getMemoCount();
+    
+    if (memoCount === 1) {
+      const badge = BADGES.find(b => b.id === 'first_memo');
+      if (badge && this.unlockBadge(badge.id)) {
+        return badge;
+      }
+    }
+
+    return null;
+  }
+
+  // 累計メモ投稿バッジをチェック
+  private checkCumulativeMemoBadges(): Badge[] {
+    const unlockedBadges: Badge[] = [];
+    const memoCount = this.getMemoCount();
+
+    // メモライター（10個のメモ投稿）
+    if (memoCount >= 10) {
+      const badge = BADGES.find(b => b.id === 'memo_writer');
+      if (badge && !this.isBadgeUnlocked(badge.id) && this.unlockBadge(badge.id)) {
+        unlockedBadges.push(badge);
+      }
+    }
+
+    // メモマスター（50個のメモ投稿）
+    if (memoCount >= 50) {
+      const badge = BADGES.find(b => b.id === 'memo_master');
+      if (badge && !this.isBadgeUnlocked(badge.id) && this.unlockBadge(badge.id)) {
+        unlockedBadges.push(badge);
+      }
+    }
+
+    // メモレジェンド（100個のメモ投稿）
+    if (memoCount >= 100) {
+      const badge = BADGES.find(b => b.id === 'memo_legend');
+      if (badge && !this.isBadgeUnlocked(badge.id) && this.unlockBadge(badge.id)) {
+        unlockedBadges.push(badge);
+      }
+    }
+
+    return unlockedBadges;
+  }
+
+  // 連続投稿バッジをチェック
+  private checkMemoStreakBadge(): Badge | null {
+    const streak = this.getMemoStreak();
+    
+    if (streak >= 7) {
+      const badge = BADGES.find(b => b.id === 'daily_writer');
+      if (badge && !this.isBadgeUnlocked(badge.id) && this.unlockBadge(badge.id)) {
+        return badge;
+      }
+    }
+
+    return null;
+  }
+
+  // 公開メモバッジをチェック
+  private checkPublicMemoBadge(): Badge | null {
+    const publicMemoCount = this.getPublicMemoCount();
+    
+    if (publicMemoCount >= 10) {
+      const badge = BADGES.find(b => b.id === 'thought_leader');
+      if (badge && !this.isBadgeUnlocked(badge.id) && this.unlockBadge(badge.id)) {
+        return badge;
+      }
+    }
+
+    return null;
+  }
+
+  // メモ数を取得
+  private getMemoCount(): number {
+    const memoHistory = JSON.parse(localStorage.getItem('memoHistory') || '[]');
+    return memoHistory.length;
+  }
+
+  // 公開メモ数を取得
+  private getPublicMemoCount(): number {
+    const memoHistory = JSON.parse(localStorage.getItem('memoHistory') || '[]');
+    return memoHistory.filter((memo: any) => memo.isPublic).length;
+  }
+
+  // 連続投稿日数を取得
+  private getMemoStreak(): number {
+    const memoHistory = JSON.parse(localStorage.getItem('memoHistory') || '[]');
+    if (memoHistory.length === 0) return 0;
+
+    // 日付でソート
+    const sortedMemos = memoHistory.sort((a: any, b: any) => 
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+
+    let streak = 0;
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    for (const memo of sortedMemos) {
+      const memoDate = new Date(memo.timestamp);
+      memoDate.setHours(0, 0, 0, 0);
+      
+      const diffTime = currentDate.getTime() - memoDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === streak) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  }
+
+  // メモ履歴を記録
+  public recordMemo(memoId: string, isPublic: boolean = false): void {
+    const memoHistory = JSON.parse(localStorage.getItem('memoHistory') || '[]');
+    memoHistory.push({
+      id: memoId,
+      isPublic,
+      timestamp: new Date().toISOString()
+    });
+    localStorage.setItem('memoHistory', JSON.stringify(memoHistory));
+  }
 }
 
 export const badgeManager = new BadgeManager();

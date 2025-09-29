@@ -404,6 +404,73 @@ export const BADGES: Badge[] = [
     unlockCondition: '25個の報告・提案をする',
     shareText: '品質ガーディアンになりました！25個の報告・提案をしました 🛡️ #WorkTimeTracker #品質ガーディアン',
     xpReward: 500
+  },
+  // メモ投稿関連バッジ
+  {
+    id: 'first_memo',
+    name: '初回メモ投稿者',
+    description: '初めてのメモを投稿しました',
+    icon: '📝',
+    rarity: 'common',
+    category: 'writing',
+    unlockCondition: '初めてのメモを投稿する',
+    shareText: '初回メモ投稿者になりました！初めてのメモを投稿しました 📝 #WorkTimeTracker #メモ投稿',
+    xpReward: 25
+  },
+  {
+    id: 'memo_writer',
+    name: 'メモライター',
+    description: '10個のメモを投稿しました',
+    icon: '✍️',
+    rarity: 'rare',
+    category: 'writing',
+    unlockCondition: '10個のメモを投稿する',
+    shareText: 'メモライターになりました！10個のメモを投稿しました ✍️ #WorkTimeTracker #メモライター',
+    xpReward: 100
+  },
+  {
+    id: 'memo_master',
+    name: 'メモマスター',
+    description: '50個のメモを投稿しました',
+    icon: '📚',
+    rarity: 'epic',
+    category: 'writing',
+    unlockCondition: '50個のメモを投稿する',
+    shareText: 'メモマスターになりました！50個のメモを投稿しました 📚 #WorkTimeTracker #メモマスター',
+    xpReward: 300
+  },
+  {
+    id: 'memo_legend',
+    name: 'メモレジェンド',
+    description: '100個のメモを投稿しました',
+    icon: '🏆',
+    rarity: 'legendary',
+    category: 'writing',
+    unlockCondition: '100個のメモを投稿する',
+    shareText: 'メモレジェンドになりました！100個のメモを投稿しました 🏆 #WorkTimeTracker #メモレジェンド',
+    xpReward: 500
+  },
+  {
+    id: 'daily_writer',
+    name: '日記ライター',
+    description: '7日連続でメモを投稿しました',
+    icon: '📅',
+    rarity: 'rare',
+    category: 'writing',
+    unlockCondition: '7日連続でメモを投稿する',
+    shareText: '日記ライターになりました！7日連続でメモを投稿しました 📅 #WorkTimeTracker #日記ライター',
+    xpReward: 150
+  },
+  {
+    id: 'thought_leader',
+    name: '思考のリーダー',
+    description: '公開メモを10個投稿しました',
+    icon: '💭',
+    rarity: 'epic',
+    category: 'writing',
+    unlockCondition: '公開メモを10個投稿する',
+    shareText: '思考のリーダーになりました！公開メモを10個投稿しました 💭 #WorkTimeTracker #思考のリーダー',
+    xpReward: 200
   }
 ];
 

@@ -4865,6 +4865,11 @@ ${errorInfo.stack}
       const data = await response.json();
 
       if (data.success) {
+        const memoId = data.memo?.id || `memo_${Date.now()}`;
+        
+        // 報酬システムを実行
+        await processMemoRewards(memoId, memoIsPublic, memoContent);
+        
         setMessage("メモを追加しました！");
         setMemoTitle("");
         setMemoContent("");
@@ -5124,6 +5129,53 @@ User Agent: ${userAgent}
       console.log(`報酬付与完了: ${totalXP}XP, ${currencyRewards[0]?.amount || 0}ワークコイン`);
     } catch (error) {
       console.error('報酬処理エラー:', error);
+    }
+  };
+
+  // メモ投稿の報酬処理
+  const processMemoRewards = async (memoId: string, isPublic: boolean, content: string) => {
+    if (!user) return;
+
+    try {
+      // メモ履歴を記録
+      badgeManager.recordMemo(memoId, isPublic);
+
+      // バッジをチェック
+      const unlockedBadges = badgeManager.checkMemoBadges(isPublic);
+      
+      // 経験値を計算（バッジの経験値 + 基本報酬）
+      const baseXP = isPublic ? 15 : 10; // 公開メモの場合は追加報酬
+      const badgeXP = unlockedBadges.reduce((total, badge) => total + badge.xpReward, 0);
+      const totalXP = baseXP + badgeXP;
+
+      // キャラクターに経験値を追加
+      if (selectedCharacter) {
+        characterManager.addExperience(parseInt(selectedCharacter.id), totalXP);
+      }
+
+      // 仮想通貨を計算
+      const wordCount = content.length;
+      const currencyRewards = currencyManager.calculateMemoReward(isPublic, wordCount);
+      
+      // 仮想通貨を付与
+      currencyManager.grantReward(
+        user.id,
+        currencyRewards,
+        'memo_post',
+        `${isPublic ? '公開' : 'プライベート'}メモ投稿`,
+        { memoId, isPublic, wordCount }
+      );
+
+      // バッジ通知を表示
+      if (unlockedBadges.length > 0) {
+        const firstBadge = unlockedBadges[0];
+        setCurrentBadge(firstBadge);
+        setShowBadgeNotification(true);
+      }
+
+      console.log(`メモ投稿報酬付与完了: ${totalXP}XP, ${currencyRewards[0]?.amount || 0}ワークコイン`);
+    } catch (error) {
+      console.error('メモ投稿報酬処理エラー:', error);
     }
   };
 

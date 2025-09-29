@@ -170,6 +170,31 @@ class CurrencyManager {
     }];
   }
 
+  // メモ投稿の報酬を計算
+  public calculateMemoReward(isPublic: boolean = false, wordCount: number = 0): CurrencyReward[] {
+    let baseAmount = 5; // 基本報酬
+
+    // 公開メモの場合は追加報酬
+    if (isPublic) {
+      baseAmount += 10;
+    }
+
+    // 文字数に応じた追加報酬
+    if (wordCount > 100) {
+      baseAmount += Math.floor(wordCount / 100) * 2; // 100文字ごとに2コイン追加
+    }
+
+    // 最大50コインまで
+    baseAmount = Math.min(baseAmount, 50);
+
+    return [{
+      currencyId: 'work_coins',
+      amount: baseAmount,
+      reason: isPublic ? '公開メモ投稿報酬' : 'メモ投稿報酬',
+      source: 'memo_post'
+    }];
+  }
+
   // 取引履歴を取得
   public getTransactions(userId: string, limit?: number): CurrencyTransaction[] {
     const userTransactions = this.transactions

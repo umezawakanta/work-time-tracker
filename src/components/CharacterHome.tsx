@@ -657,6 +657,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
             <div className="currency-info-section">
               <h4>💡 ワークコインの獲得方法</h4>
               <ul className="currency-earning-methods">
+                <li>📝 メモ投稿: 5-50ワークコイン（文字数・公開設定に応じて）</li>
                 <li>🐛 不具合報告: 10-50ワークコイン</li>
                 <li>💡 機能提案: 15-60ワークコイン</li>
                 <li>⚡ 改善提案: 20-80ワークコイン</li>
