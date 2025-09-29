@@ -48,6 +48,7 @@ import { apiFetch } from "./utils/apiClient";
 import { Character as CharacterType, UserCharacterSettings, CharacterAchievement, CharacterCustomization } from "./types/character";
 import { Badge, BadgeShareData } from "./types/badge";
 import { badgeManager } from "./utils/badgeManager";
+import { BADGES } from "./constants/badges";
 import { characterManager } from "./utils/characterManager";
 import {
   buildApiUrl,
@@ -1320,11 +1321,15 @@ ${errorInfo.stack}
   // ユーザーログイン時のバッジチェック
   useEffect(() => {
     if (isLoggedIn && user) {
+      console.log('Checking badges for user:', user);
       // 既存ユーザー向けのバッジ付与（初回のみ）
       const hasExistingBadges = localStorage.getItem('userBadges');
+      console.log('Has existing badges:', !!hasExistingBadges);
+      
       if (!hasExistingBadges) {
         // 既存ユーザーにバッジを付与
         const unlockedBadges = badgeManager.grantExistingUserBadges();
+        console.log('Granted existing user badges:', unlockedBadges);
         if (unlockedBadges.length > 0) {
           // 最初のバッジを通知として表示
           handleBadgeUnlocked(unlockedBadges[0]);
@@ -1332,6 +1337,7 @@ ${errorInfo.stack}
       } else {
         // 通常の登録バッジをチェック
         const unlockedBadges = badgeManager.checkRegistrationBadges();
+        console.log('Checked registration badges:', unlockedBadges);
         if (unlockedBadges.length > 0) {
           // 最初のバッジを通知として表示
           handleBadgeUnlocked(unlockedBadges[0]);
@@ -2045,6 +2051,7 @@ ${errorInfo.stack}
 
   // バッジ関連のハンドラー
   const handleBadgeUnlocked = (badge: Badge) => {
+    console.log('Badge unlocked:', badge);
     setCurrentBadge(badge);
     setShowBadgeNotification(true);
   };
@@ -2060,6 +2067,10 @@ ${errorInfo.stack}
     console.log('Current user:', user);
     
     if (user) {
+      // バッジがアンロックされているかチェック
+      const isUnlocked = badgeManager.isBadgeUnlocked(badge.id);
+      console.log('Badge unlocked status:', isUnlocked);
+      
       const shareData = badgeManager.generateShareData(badge.id, {
         name: user.displayName || user.email,
         displayName: user.displayName
@@ -2077,7 +2088,24 @@ ${errorInfo.stack}
           console.log('Twitter share modal should be shown');
         }, 100);
       } else {
-        console.log('Failed to generate share data');
+        console.log('Failed to generate share data - badge may not be unlocked');
+        // デバッグ用：バッジを強制的にアンロックしてシェアを試行
+        if (!isUnlocked) {
+          console.log('Attempting to unlock badge for sharing');
+          badgeManager.unlockBadge(badge.id);
+          const retryShareData = badgeManager.generateShareData(badge.id, {
+            name: user.displayName || user.email,
+            displayName: user.displayName
+          });
+          if (retryShareData) {
+            setBadgeShareData(retryShareData);
+            setShowBadgeNotification(false);
+            setTimeout(() => {
+              setShowTwitterShare(true);
+              console.log('Twitter share modal should be shown (retry)');
+            }, 100);
+          }
+        }
       }
     } else {
       console.log('User is null, cannot share badge');
@@ -6468,6 +6496,30 @@ User Agent: ${userAgent}
           <div style={{ position: 'fixed', top: '10px', right: '10px', background: 'black', color: 'white', padding: '10px', zIndex: 99999, fontSize: '12px' }}>
             <div>showTwitterShare: {showTwitterShare ? 'true' : 'false'}</div>
             <div>badgeShareData: {badgeShareData ? 'exists' : 'null'}</div>
+            <div>showBadgeNotification: {showBadgeNotification ? 'true' : 'false'}</div>
+            <div>currentBadge: {currentBadge ? currentBadge.name : 'null'}</div>
+            <div>User badges count: {badgeManager.getUserBadges().length}</div>
+            <div>Welcome badge unlocked: {badgeManager.isBadgeUnlocked('welcome') ? 'true' : 'false'}</div>
+            <button 
+              onClick={() => {
+                badgeManager.unlockBadge('welcome');
+                console.log('Welcome badge unlocked manually');
+              }}
+              style={{ marginTop: '5px', padding: '2px 5px', fontSize: '10px' }}
+            >
+              Unlock Welcome Badge
+            </button>
+            <button 
+              onClick={() => {
+                const welcomeBadge = BADGES.find(b => b.id === 'welcome');
+                if (welcomeBadge) {
+                  handleBadgeShare(welcomeBadge);
+                }
+              }}
+              style={{ marginTop: '5px', padding: '2px 5px', fontSize: '10px' }}
+            >
+              Test Share Welcome Badge
+            </button>
           </div>
         )}
 
