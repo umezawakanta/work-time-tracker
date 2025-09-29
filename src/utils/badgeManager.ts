@@ -210,6 +210,24 @@ class BadgeManager {
     return unlockedBadges;
   }
 
+  // ログインボーナスをチェック・付与
+  public checkLoginBonus(): Badge | null {
+    const today = new Date().toDateString();
+    const lastLoginDate = localStorage.getItem('lastLoginDate');
+    
+    // 今日初回ログインの場合のみボーナス付与
+    if (lastLoginDate !== today) {
+      localStorage.setItem('lastLoginDate', today);
+      
+      const loginBadge = BADGES.find(b => b.id === 'login_bonus');
+      if (loginBadge && this.unlockBadge(loginBadge.id)) {
+        return loginBadge;
+      }
+    }
+    
+    return null;
+  }
+
   // 既存ユーザー向けのバッジ付与
   public grantExistingUserBadges(): Badge[] {
     const unlockedBadges: Badge[] = [];

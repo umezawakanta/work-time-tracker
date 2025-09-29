@@ -1321,6 +1321,15 @@ ${errorInfo.stack}
   useEffect(() => {
     if (isLoggedIn && user) {
       console.log('Checking badges for user:', user);
+      
+      // ログインボーナスをチェック
+      const loginBonus = badgeManager.checkLoginBonus();
+      if (loginBonus) {
+        console.log('Login bonus earned:', loginBonus);
+        handleBadgeUnlocked(loginBonus);
+        return; // ログインボーナスが付与された場合は他のバッジチェックをスキップ
+      }
+      
       // 既存ユーザー向けのバッジ付与（初回のみ）
       const hasExistingBadges = localStorage.getItem('userBadges');
       console.log('Has existing badges:', !!hasExistingBadges);

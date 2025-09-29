@@ -15,6 +15,17 @@ export const BADGES: Badge[] = [
     xpReward: 50
   },
   {
+    id: 'login_bonus',
+    name: 'ログインボーナス',
+    description: 'ログインしました',
+    icon: '🌟',
+    rarity: 'common',
+    category: 'daily',
+    unlockCondition: 'ログインする',
+    shareText: 'ログインボーナスを獲得しました！今日も頑張ります 🌟 #WorkTimeTracker #ログイン',
+    xpReward: 10
+  },
+  {
     id: 'first_work',
     name: '初めての作業',
     description: '初めて作業を開始しました',
