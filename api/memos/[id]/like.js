@@ -1,11 +1,10 @@
 // メモのいいね機能API
 
-import { NextApiRequest, NextApiResponse } from 'next';
-import { verifyJWT } from '../../utils/validation';
-import { connectDB } from '../../utils/database';
-import { Memo } from '../../../src/server/models/Memo';
+const { verifyJWT } = require('../../utils/validation');
+const { connectDB } = require('../../utils/database');
+const { Memo } = require('../../../src/server/models/Memo');
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+module.exports = async function handler(req, res) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
     ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin || '') ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
@@ -114,7 +113,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // いいねを削除
-      memo.likes = memo.likes.filter((likeUserId: string) => likeUserId !== userId);
+      memo.likes = memo.likes.filter((likeUserId) => likeUserId !== userId);
       await memo.save();
 
       return res.status(200).json({
@@ -138,4 +137,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
-}
+};

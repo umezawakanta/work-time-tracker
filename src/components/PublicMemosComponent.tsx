@@ -58,30 +58,73 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const [excludeTags, setExcludeTags] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  // いいね状態を初期化
+  // いいね状態を初期化（バッチ処理で効率化）
   const initializeLikeStates = async () => {
+    if (publicMemos.length === 0) {
+      console.log('公開メモが空のため、いいね状態の初期化をスキップします');
+      return;
+    }
+    
+    console.log(`いいね状態を初期化中... (メモ数: ${publicMemos.length})`);
     const likeStates: { [memoId: string]: { isLiked: boolean; likeCount: number } } = {};
     
-    for (const memo of publicMemos) {
-      try {
-        const response = await fetch(`/api/memos/${memo.id}/like`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+    // 並列処理でAPIリクエストを効率化（最大5件ずつ処理）
+    const batchSize = 5;
+    const batches = [];
+    for (let i = 0; i < publicMemos.length; i += batchSize) {
+      batches.push(publicMemos.slice(i, i + batchSize));
+    }
+    
+    for (const batch of batches) {
+      const promises = batch.map(async (memo) => {
+        try {
+          console.log(`いいね状態を取得中: ${memo.id}`);
+          const response = await fetch(`/api/memos/${memo.id}/like`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
-        });
-        const data = await response.json();
-        if (data.success) {
-          likeStates[memo.id] = {
-            isLiked: data.isLiked,
-            likeCount: data.likeCount
+          
+          const data = await response.json();
+          if (data.success) {
+            console.log(`いいね状態取得成功: ${memo.id}`, data);
+            return {
+              memoId: memo.id,
+              isLiked: data.isLiked,
+              likeCount: data.likeCount
+            };
+          }
+          return null;
+        } catch (error) {
+          console.warn(`いいね状態の取得をスキップしました (メモID: ${memo.id}):`, error.message);
+          return {
+            memoId: memo.id,
+            isLiked: false,
+            likeCount: 0
           };
         }
+      });
+      
+      try {
+        const results = await Promise.allSettled(promises);
+        results.forEach((result) => {
+          if (result.status === 'fulfilled' && result.value) {
+            likeStates[result.value.memoId] = {
+              isLiked: result.value.isLiked,
+              likeCount: result.value.likeCount
+            };
+          }
+        });
       } catch (error) {
-        console.error(`いいね状態の取得に失敗しました (メモID: ${memo.id}):`, error);
-        likeStates[memo.id] = { isLiked: false, likeCount: 0 };
+        console.error('バッチ処理中にエラーが発生しました:', error);
       }
     }
     
+    console.log('いいね状態の初期化完了:', likeStates);
     setMemoLikes(likeStates);
   };
   
@@ -100,12 +143,12 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   // ローディング状態管理
   const [isLoading, setIsLoading] = useState(false);
 
-  // いいね状態を初期化
+  // いいね状態を初期化（初回のみ実行）
   useEffect(() => {
-    if (publicMemos.length > 0) {
+    if (publicMemos.length > 0 && Object.keys(memoLikes).length === 0) {
       initializeLikeStates();
     }
-  }, [publicMemos]);
+  }, [publicMemos.length]); // publicMemos.lengthのみを依存関係に
 
   // 公開メモの読み込み関数をPublicMemosComponent内で定義
   const loadPublicMemosLocal = async () => {
@@ -975,23 +1018,29 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                     
                     {/* いいねボタン */}
                     <div className="memo-actions">
-                      <LikeButton
-                        memoId={memo.id}
-                        authorId={memo.userId}
-                        initialLikeCount={memoLikes[memo.id]?.likeCount || 0}
-                        initialIsLiked={memoLikes[memo.id]?.isLiked || false}
-                        onLikeChange={(likeCount, isLiked) => {
-                          setMemoLikes(prev => ({
-                            ...prev,
-                            [memo.id]: { isLiked, likeCount }
-                          }));
-                        }}
-                        onRewardReceived={(reward) => {
-                          console.log('いいね報酬を受信しました:', reward);
-                          // ここで報酬通知を表示することも可能
-                        }}
-                        className="memo-like-button"
-                      />
+                      {memoLikes[memo.id] !== undefined ? (
+                        <LikeButton
+                          memoId={memo.id}
+                          authorId={memo.userId}
+                          initialLikeCount={memoLikes[memo.id]?.likeCount || 0}
+                          initialIsLiked={memoLikes[memo.id]?.isLiked || false}
+                          onLikeChange={(likeCount, isLiked) => {
+                            setMemoLikes(prev => ({
+                              ...prev,
+                              [memo.id]: { isLiked, likeCount }
+                            }));
+                          }}
+                          onRewardReceived={(reward) => {
+                            console.log('いいね報酬を受信しました:', reward);
+                            // ここで報酬通知を表示することも可能
+                          }}
+                          className="memo-like-button"
+                        />
+                      ) : (
+                        <div className="like-loading">
+                          <span>⏳</span>
+                        </div>
+                      )}
                     </div>
                     
                     {/* タグ表示・編集 */}
