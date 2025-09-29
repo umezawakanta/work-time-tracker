@@ -14,6 +14,7 @@ export interface IMemo extends mongoose.Document {
   status?: 'pending' | 'in_progress' | 'resolved' | 'closed';
   adminResponse?: string;
   adminResponseDate?: Date;
+  likes?: string[]; // いいねしたユーザーIDの配列
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +40,7 @@ const MemoSchema = new mongoose.Schema<IMemo>({
   },
   adminResponse: { type: String },
   adminResponseDate: { type: Date },
+  likes: [{ type: String }], // いいねしたユーザーIDの配列
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

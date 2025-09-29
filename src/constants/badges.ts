@@ -585,6 +585,73 @@ export const BADGES: Badge[] = [
     unlockCondition: '年間収支を記録する',
     shareText: 'ファイナンシャルプランナーになりました！年間収支を記録しました 📋 #WorkTimeTracker #ファイナンシャルプランニング',
     xpReward: 400
+  },
+  // いいね関連バッジ
+  {
+    id: 'first_like',
+    name: '初回いいね',
+    description: '初めてのいいねを獲得しました',
+    icon: '👍',
+    rarity: 'common',
+    category: 'social',
+    unlockCondition: '初めてのいいねを獲得する',
+    shareText: '初回いいねを獲得しました！誰かがあなたのメモを気に入ってくれました 👍 #WorkTimeTracker #いいね',
+    xpReward: 20
+  },
+  {
+    id: 'liked_writer',
+    name: '人気ライター',
+    description: '10個のいいねを獲得しました',
+    icon: '❤️',
+    rarity: 'rare',
+    category: 'social',
+    unlockCondition: '10個のいいねを獲得する',
+    shareText: '人気ライターになりました！10個のいいねを獲得しました ❤️ #WorkTimeTracker #人気ライター',
+    xpReward: 100
+  },
+  {
+    id: 'popular_author',
+    name: '人気作家',
+    description: '50個のいいねを獲得しました',
+    icon: '🌟',
+    rarity: 'epic',
+    category: 'social',
+    unlockCondition: '50個のいいねを獲得する',
+    shareText: '人気作家になりました！50個のいいねを獲得しました 🌟 #WorkTimeTracker #人気作家',
+    xpReward: 300
+  },
+  {
+    id: 'viral_creator',
+    name: 'バイラルクリエイター',
+    description: '100個のいいねを獲得しました',
+    icon: '🔥',
+    rarity: 'legendary',
+    category: 'social',
+    unlockCondition: '100個のいいねを獲得する',
+    shareText: 'バイラルクリエイターになりました！100個のいいねを獲得しました 🔥 #WorkTimeTracker #バイラル',
+    xpReward: 500
+  },
+  {
+    id: 'like_magnet',
+    name: 'いいねマグネット',
+    description: '1つのメモで10個のいいねを獲得しました',
+    icon: '🧲',
+    rarity: 'epic',
+    category: 'social',
+    unlockCondition: '1つのメモで10個のいいねを獲得する',
+    shareText: 'いいねマグネットになりました！1つのメモで10個のいいねを獲得しました 🧲 #WorkTimeTracker #いいねマグネット',
+    xpReward: 200
+  },
+  {
+    id: 'community_favorite',
+    name: 'コミュニティの寵児',
+    description: '5つのメモでそれぞれ5個以上のいいねを獲得しました',
+    icon: '👑',
+    rarity: 'legendary',
+    category: 'social',
+    unlockCondition: '5つのメモでそれぞれ5個以上のいいねを獲得する',
+    shareText: 'コミュニティの寵児になりました！5つのメモでそれぞれ5個以上のいいねを獲得しました 👑 #WorkTimeTracker #コミュニティ',
+    xpReward: 400
   }
 ];
 

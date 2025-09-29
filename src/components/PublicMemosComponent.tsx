@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './PublicMemosComponent.css';
+import './LikeButton.css';
 import type { Memo, Reply, User } from '../types';
 import { EXCLUDED_MEMO_CATEGORIES } from '../utils/requestFormatters';
+import LikeButton from './LikeButton';
 
 interface PublicMemosComponentProps {
   publicMemos: Memo[];
@@ -47,11 +49,41 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   // 公開メモのローディング状態をPublicMemosComponent内で管理
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
   
+  // いいね状態管理
+  const [memoLikes, setMemoLikes] = useState<{ [memoId: string]: { isLiked: boolean; likeCount: number } }>({});
+  
   // フィルタリング状態
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [tagFilter, setTagFilter] = useState<string>('');
   const [excludeTags, setExcludeTags] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+
+  // いいね状態を初期化
+  const initializeLikeStates = async () => {
+    const likeStates: { [memoId: string]: { isLiked: boolean; likeCount: number } } = {};
+    
+    for (const memo of publicMemos) {
+      try {
+        const response = await fetch(`/api/memos/${memo._id}/like`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
+        const data = await response.json();
+        if (data.success) {
+          likeStates[memo._id] = {
+            isLiked: data.isLiked,
+            likeCount: data.likeCount
+          };
+        }
+      } catch (error) {
+        console.error(`いいね状態の取得に失敗しました (メモID: ${memo._id}):`, error);
+        likeStates[memo._id] = { isLiked: false, likeCount: 0 };
+      }
+    }
+    
+    setMemoLikes(likeStates);
+  };
   
   // ソート状態
   const [sortBy, setSortBy] = useState<'createdAt' | 'updatedAt'>('createdAt');
@@ -67,6 +99,13 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   
   // ローディング状態管理
   const [isLoading, setIsLoading] = useState(false);
+
+  // いいね状態を初期化
+  useEffect(() => {
+    if (publicMemos.length > 0) {
+      initializeLikeStates();
+    }
+  }, [publicMemos]);
 
   // 公開メモの読み込み関数をPublicMemosComponent内で定義
   const loadPublicMemosLocal = async () => {
@@ -932,6 +971,27 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                     
                     <div className="memo-content">
                       <p>{memo.content}</p>
+                    </div>
+                    
+                    {/* いいねボタン */}
+                    <div className="memo-actions">
+                      <LikeButton
+                        memoId={memo._id}
+                        authorId={memo.userId}
+                        initialLikeCount={memoLikes[memo._id]?.likeCount || 0}
+                        initialIsLiked={memoLikes[memo._id]?.isLiked || false}
+                        onLikeChange={(likeCount, isLiked) => {
+                          setMemoLikes(prev => ({
+                            ...prev,
+                            [memo._id]: { isLiked, likeCount }
+                          }));
+                        }}
+                        onRewardReceived={(reward) => {
+                          console.log('いいね報酬を受信しました:', reward);
+                          // ここで報酬通知を表示することも可能
+                        }}
+                        className="memo-like-button"
+                      />
                     </div>
                     
                     {/* タグ表示・編集 */}
