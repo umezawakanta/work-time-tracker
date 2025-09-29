@@ -64,21 +64,21 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     
     for (const memo of publicMemos) {
       try {
-        const response = await fetch(`/api/memos/${memo._id}/like`, {
+        const response = await fetch(`/api/memos/${memo.id}/like`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
           }
         });
         const data = await response.json();
         if (data.success) {
-          likeStates[memo._id] = {
+          likeStates[memo.id] = {
             isLiked: data.isLiked,
             likeCount: data.likeCount
           };
         }
       } catch (error) {
-        console.error(`いいね状態の取得に失敗しました (メモID: ${memo._id}):`, error);
-        likeStates[memo._id] = { isLiked: false, likeCount: 0 };
+        console.error(`いいね状態の取得に失敗しました (メモID: ${memo.id}):`, error);
+        likeStates[memo.id] = { isLiked: false, likeCount: 0 };
       }
     }
     
@@ -976,14 +976,14 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                     {/* いいねボタン */}
                     <div className="memo-actions">
                       <LikeButton
-                        memoId={memo._id}
+                        memoId={memo.id}
                         authorId={memo.userId}
-                        initialLikeCount={memoLikes[memo._id]?.likeCount || 0}
-                        initialIsLiked={memoLikes[memo._id]?.isLiked || false}
+                        initialLikeCount={memoLikes[memo.id]?.likeCount || 0}
+                        initialIsLiked={memoLikes[memo.id]?.isLiked || false}
                         onLikeChange={(likeCount, isLiked) => {
                           setMemoLikes(prev => ({
                             ...prev,
-                            [memo._id]: { isLiked, likeCount }
+                            [memo.id]: { isLiked, likeCount }
                           }));
                         }}
                         onRewardReceived={(reward) => {

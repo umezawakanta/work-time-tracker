@@ -79,6 +79,7 @@ export interface Book {
 // メモ関連の型定義
 export interface Memo {
   id: string;
+  _id: string;
   title: string;
   content: string;
   category: string;
@@ -86,6 +87,7 @@ export interface Memo {
   isPublic: boolean;
   isFamilyOnly?: boolean;
   isAdminOnly?: boolean;
+  userId: string;
   author?: string;
   postType?: 'update_request' | 'error_report' | 'general';
   status?: 'pending' | 'in_progress' | 'resolved' | 'closed';
