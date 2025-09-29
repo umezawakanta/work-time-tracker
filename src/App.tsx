@@ -6455,13 +6455,10 @@ User Agent: ${userAgent}
           <div className="twitter-share-modal">
             <div className="twitter-share-overlay" onClick={handleTwitterShareClose} />
             <div className="twitter-share-content">
-              <div style={{ background: 'white', padding: '20px', borderRadius: '8px', maxWidth: '500px', width: '100%' }}>
-                <h3>バッジをシェア</h3>
-                <p>バッジ: {badgeShareData.badge.name}</p>
-                <p>テキスト: {badgeShareData.shareText}</p>
-                <p>URL: {badgeShareData.shareUrl}</p>
-                <button onClick={handleTwitterShareClose}>閉じる</button>
-              </div>
+              <TwitterShare
+                shareData={badgeShareData}
+                onClose={handleTwitterShareClose}
+              />
             </div>
           </div>
         )}

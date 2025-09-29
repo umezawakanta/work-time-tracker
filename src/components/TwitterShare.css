@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 10001;
+  z-index: 10020;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,6 +29,7 @@
   border-radius: 20px;
   padding: 30px;
   max-width: 600px;
+  z-index: 10021;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
