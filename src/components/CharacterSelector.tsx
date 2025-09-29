@@ -18,6 +18,21 @@ const CharacterSelector: React.FC<CharacterSelectorProps> = ({
   currentSettings,
   availableCharacters
 }) => {
+  // currentSettingsがundefinedの場合のデフォルト値
+  const safeCurrentSettings = currentSettings || {
+    selectedCharacterId: '',
+    customizations: {},
+    preferences: {
+      animationSpeed: 'normal' as const,
+      showAnimations: true,
+      soundEffects: true,
+      autoInteract: false
+    },
+    achievements: [],
+    unlockedCharacters: [],
+    totalExperience: 0,
+    playTime: 0
+  };
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
   const [filterRarity, setFilterRarity] = useState<string>('all');
@@ -26,10 +41,10 @@ const CharacterSelector: React.FC<CharacterSelectorProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      const current = availableCharacters.find(c => c.id === currentSettings.selectedCharacterId);
+      const current = availableCharacters.find(c => c.id === safeCurrentSettings.selectedCharacterId);
       setSelectedCharacter(current || null);
     }
-  }, [isOpen, currentSettings.selectedCharacterId, availableCharacters]);
+  }, [isOpen, safeCurrentSettings.selectedCharacterId, availableCharacters]);
 
   const filteredCharacters = availableCharacters
     .filter(character => {

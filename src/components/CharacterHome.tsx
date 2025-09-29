@@ -660,8 +660,11 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
       {/* モーダルコンポーネント */}
       {showCharacterSelector && (
         <CharacterSelector
-          onSelectCharacter={handleCharacterSelect}
+          isOpen={showCharacterSelector}
           onClose={() => setShowCharacterSelector(false)}
+          onCharacterSelect={handleCharacterSelect}
+          currentSettings={characterSettings}
+          availableCharacters={availableCharacters}
         />
       )}
 
