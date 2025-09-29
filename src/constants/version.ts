@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.4.1";
+export const APP_VERSION = "1.4.2";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,29 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.4.2",
+    date: "2025-01-29",
+    changes: [
+      "キャラクター機能とバッジシステムの統合を実装",
+      "ユーザー登録時にバッジを自動付与する機能を追加",
+      "バッジをX（Twitter）でシェアできる機能を実装",
+      "既存ユーザーへのバッジと経験値の付与機能を追加",
+      "キャラクターの成長システムを実装（経験値・バッジに基づく成長）",
+      "キャラクターのおうち機能内でバッジと成長情報を確認可能に",
+      "ヘッダーからバッジボタンを削除し、キャラクター機能に統合",
+      "CharacterHomeコンポーネントにバッジと成長タブを追加",
+      "キャラクター選択機能のエラーハンドリングを強化",
+      "キャラクター成長表示の安全性を向上（null/undefinedチェック）",
+      "バッジシステムとキャラクター成長システムの連携を実装",
+      "既存ユーザーへの一括バッジ付与機能を実装",
+      "CharacterGrowthDisplayコンポーネントのエラーを修正",
+      "CharacterSelectorコンポーネントのプロパティ不足エラーを修正",
+      "availableCharacters未定義エラーを修正",
+      "キャラクター機能の型安全性を向上"
+    ],
+    type: "feature"
+  },
   {
     version: "1.4.1",
     date: "2025-01-29",
