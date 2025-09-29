@@ -1,11 +1,11 @@
-const { mongoose, ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
+const { mongoose: mongooseDB, ensureDatabaseConnection: ensureDBConn, verifyJWT: verifyToken, handleError } = require('../utils/database');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
 // Book Schema を直接定義
-const BookSchema = new mongoose.Schema({
+const BookSchema = new mongooseDB.Schema({
   title: { type: String, required: true },
   author: { type: String, required: true },
   isbn: { type: String, required: false },
@@ -30,7 +30,7 @@ BookSchema.pre('save', function(next) {
   next();
 });
 
-const Book = mongoose.models.Book || mongoose.model('Book', BookSchema);
+const Book = mongooseDB.models.Book || mongooseDB.model('Book', BookSchema);
 
 // CORS設定
 const setCorsHeaders = (res, origin) => {
@@ -46,7 +46,7 @@ const setCorsHeaders = (res, origin) => {
 };
 
 module.exports = async (req, res) => {
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   setCorsHeaders(res, origin);
 
   if (req.method === 'OPTIONS') {
@@ -57,10 +57,10 @@ module.exports = async (req, res) => {
   try {
     
     // Ensure database connection
-    await ensureDatabaseConnection();
+    await ensureDBConn();
 
     // Verify JWT token
-    const userInfo = await verifyJWT(req);
+    const userInfo = await verifyToken(req);
     if (!userInfo) {
       return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }

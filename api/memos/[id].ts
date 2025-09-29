@@ -1,9 +1,9 @@
-const { Memo } = require('../utils/schemas');
-const { setCorsHeaders, ensureDatabaseConnection, verifyJWT } = require('../utils/database');
+const { Memo: MemoModel } = require('../utils/schemas');
+const { setCorsHeaders: setCors, ensureDatabaseConnection: ensureDB, verifyJWT: verifyToken } = require('../utils/database');
 
 module.exports = async (req, res) => {
   const { origin } = req.headers;
-  setCorsHeaders(res, origin);
+  setCors(res, origin);
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -13,10 +13,10 @@ module.exports = async (req, res) => {
   try {
     
     // Ensure database connection
-    await ensureDatabaseConnection();
+    await ensureDB();
 
     // Verify JWT token
-    const userInfo = await verifyJWT(req);
+    const userInfo = await verifyToken(req);
     if (!userInfo) {
       return res.status(401).json({
         success: false,
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
 
     if (req.method === 'GET') {
       // 特定のメモを取得
-      const memo = await Memo.findOne({ _id: id, userId: userInfo.userId });
+      const memo = await MemoModel.findOne({ _id: id, userId: userInfo.userId });
       if (!memo) {
         return res.status(404).json({
           success: false,
@@ -67,13 +67,11 @@ module.exports = async (req, res) => {
       const updateData = req.body || {};
       
       // タイトルがない場合は内容の一行目をタイトルとして使用
-      if (updateData.title !== undefined && (!updateData.title || !updateData.title.trim())) {
-        if (updateData.content) {
-          updateData.title = updateData.content.split('\n')[0].trim() || '無題';
-        }
+      if (updateData.title !== undefined && (!updateData.title || !updateData.title.trim()) && updateData.content) {
+        updateData.title = updateData.content.split('\n')[0].trim() || '無題';
       }
       
-      const memo = await Memo.findOneAndUpdate(
+      const memo = await MemoModel.findOneAndUpdate(
         { _id: id, userId: userInfo.userId },
         { ...updateData, updatedAt: new Date() },
         { new: true, runValidators: true }
@@ -106,7 +104,7 @@ module.exports = async (req, res) => {
       });
     } else if (req.method === 'DELETE') {
       // メモを削除
-      const memo = await Memo.findOneAndDelete({ _id: id, userId: userInfo.userId });
+      const memo = await MemoModel.findOneAndDelete({ _id: id, userId: userInfo.userId });
       if (!memo) {
         return res.status(404).json({
           success: false,
