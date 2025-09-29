@@ -5087,7 +5087,9 @@ User Agent: ${userAgent}
 
   // 不具合報告の報酬処理
   const processBugReportRewards = async (reportType: 'bug' | 'feature' | 'improvement', reportId: string, reportData: any) => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     try {
       // 報告履歴を記録
