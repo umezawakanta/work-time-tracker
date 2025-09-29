@@ -1596,21 +1596,6 @@ ${errorInfo.stack}
     });
   };
 
-  // テスト用シェア関数
-  const handleTestShare = () => {
-    console.log('TEST SHARE CLICKED');
-    showBadgeShareModal({
-      id: 'test',
-      name: 'テストバッジ',
-      description: 'テスト用のバッジです',
-      icon: '🧪',
-      rarity: 'common' as const,
-      category: 'special' as const,
-      unlockCondition: 'テスト用',
-      shareText: 'テストバッジを獲得しました！ #WorkTimeTracker #テスト',
-      xpReward: 100
-    });
-  };
 
   // グローバルエラーハンドリング
   useEffect(() => {
@@ -6789,7 +6774,6 @@ User Agent: ${userAgent}
             isTimeTrackingActive={isTimeTrackingActive}
             handleUpdateRequest={handleUpdateRequest}
             handleBugReport={handleBugReport}
-            handleTestShare={handleTestShare}
           />
 
           {/* 通知コンポーネント */}
