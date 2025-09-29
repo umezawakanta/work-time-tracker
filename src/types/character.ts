@@ -20,6 +20,10 @@ export interface Character {
   growthStage: 'baby' | 'child' | 'teen' | 'adult' | 'master';
   evolutionLevel: number; // 進化レベル
   stats: CharacterStats;
+  // 進化システム
+  evolution: CharacterEvolution;
+  currentForm: string; // 現在のフォームID
+  availableForms: string[]; // 利用可能なフォームIDリスト
 }
 
 export interface CharacterStats {
@@ -28,6 +32,45 @@ export interface CharacterStats {
   creativity: number; // 創造性（アイデア生成に影響）
   endurance: number; // 持久力（長時間作業に影響）
   social: number; // 社交性（コミュニケーションに影響）
+}
+
+export interface CharacterEvolution {
+  forms: CharacterForm[];
+  currentFormId: string;
+  evolutionHistory: EvolutionEvent[];
+}
+
+export interface CharacterForm {
+  id: string;
+  name: string;
+  description: string;
+  level: number; // 進化に必要なレベル
+  requirements: {
+    level?: number;
+    experience?: number;
+    badges?: string[];
+    stats?: Partial<CharacterStats>;
+  };
+  appearance: {
+    svg: string;
+    color: string;
+    size: 'small' | 'medium' | 'large';
+    specialEffects?: string[];
+  };
+  animations: CharacterAnimations;
+  personality: CharacterPersonality;
+  statBonuses?: Partial<CharacterStats>;
+  specialAbilities?: string[];
+}
+
+export interface EvolutionEvent {
+  id: string;
+  characterId: string;
+  fromForm: string;
+  toForm: string;
+  level: number;
+  timestamp: Date;
+  trigger: 'level' | 'experience' | 'badge' | 'manual';
 }
 
 export interface CharacterCustomization {

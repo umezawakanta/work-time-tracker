@@ -10,6 +10,7 @@ import CharacterCollection from './CharacterCollection';
 import CharacterShare from './CharacterShare';
 import BadgeGallery from './BadgeGallery';
 import CharacterGrowthDisplay from './CharacterGrowthDisplay';
+import CharacterEvolution from './CharacterEvolution';
 import { Badge } from '../types/badge';
 import { badgeManager } from '../utils/badgeManager';
 import { characterGrowthManager } from '../utils/characterGrowthManager';
@@ -92,7 +93,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   });
 
   // 新しいキャラクター機能の状態
-  const [activeTab, setActiveTab] = useState<'home' | 'characters' | 'progress' | 'customization' | 'minigame' | 'collection' | 'share' | 'badges' | 'growth'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'characters' | 'progress' | 'customization' | 'minigame' | 'collection' | 'share' | 'badges' | 'growth' | 'evolution'>('home');
   const [showCharacterSelector, setShowCharacterSelector] = useState(false);
   const [showCharacterProgress, setShowCharacterProgress] = useState(false);
   const [showCharacterCustomization, setShowCharacterCustomization] = useState(false);
@@ -100,6 +101,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   const [showCharacterCollection, setShowCharacterCollection] = useState(false);
   const [showCharacterShare, setShowCharacterShare] = useState(false);
   const [showBadgeGallery, setShowBadgeGallery] = useState(false);
+  const [showCharacterEvolution, setShowCharacterEvolution] = useState(false);
   const [availableCharacters, setAvailableCharacters] = useState<CharacterType[]>([]);
 
   // デフォルトキャラクター
@@ -310,6 +312,12 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
           onClick={() => setActiveTab('growth')}
         >
           🌱 成長
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'evolution' ? 'active' : ''}`}
+          onClick={() => setActiveTab('evolution')}
+        >
+          ✨ 進化
         </button>
       </div>
 
@@ -573,6 +581,35 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
                 <CharacterGrowthDisplay
                   character={selectedCharacter}
                   characterSettings={characterSettings}
+                />
+              </div>
+            ) : (
+              <div className="no-character-message">
+                <p>キャラクターを選択してください</p>
+                <button
+                  className="select-character-btn"
+                  onClick={() => setShowCharacterSelector(true)}
+                >
+                  🎭 キャラクターを選択
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'evolution' && (
+          <div className="evolution-content">
+            {selectedCharacter && selectedCharacter.id ? (
+              <div className="evolution-wrapper">
+                <CharacterEvolution
+                  character={selectedCharacter}
+                  onEvolutionComplete={(evolvedCharacter) => {
+                    // 進化完了時の処理
+                    console.log('Character evolved:', evolvedCharacter);
+                    // 必要に応じて親コンポーネントに通知
+                    onCharacterSelect?.(evolvedCharacter);
+                  }}
+                  onClose={() => setShowCharacterEvolution(false)}
                 />
               </div>
             ) : (

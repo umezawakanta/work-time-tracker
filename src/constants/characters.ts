@@ -63,7 +63,27 @@ export const SAMPLE_CHARACTERS: Character[] = [
     },
     description: '可愛らしくて親しみやすいキャラクター。いつもあなたを応援してくれます。',
     rarity: 'common',
-    unlockConditions: []
+    unlockConditions: [],
+    // 成長システム
+    totalExperience: 0,
+    badges: [],
+    growthStage: 'baby',
+    evolutionLevel: 0,
+    stats: {
+      strength: 1,
+      intelligence: 1,
+      creativity: 2,
+      endurance: 1,
+      social: 2
+    },
+    // 進化システム
+    evolution: {
+      forms: [],
+      currentFormId: 'cute-baby',
+      evolutionHistory: []
+    },
+    currentForm: 'cute-baby',
+    availableForms: ['cute-baby']
   },
   {
     id: 'cool-001',
@@ -124,7 +144,27 @@ export const SAMPLE_CHARACTERS: Character[] = [
     },
     description: 'クールでスタイリッシュなキャラクター。冷静で的確なアドバイスをしてくれます。',
     rarity: 'rare',
-    unlockConditions: ['work_hours_10', 'consecutive_days_3']
+    unlockConditions: ['work_hours_10', 'consecutive_days_3'],
+    // 成長システム
+    totalExperience: 0,
+    badges: [],
+    growthStage: 'baby',
+    evolutionLevel: 0,
+    stats: {
+      strength: 2,
+      intelligence: 3,
+      creativity: 1,
+      endurance: 2,
+      social: 1
+    },
+    // 進化システム
+    evolution: {
+      forms: [],
+      currentFormId: 'cool-baby',
+      evolutionHistory: []
+    },
+    currentForm: 'cool-baby',
+    availableForms: ['cool-baby']
   },
   {
     id: 'mysterious-001',

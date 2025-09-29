@@ -36,6 +36,209 @@ export const BADGES: Badge[] = [
     shareText: 'お疲れ様でした！今日も頑張りました 👋 #WorkTimeTracker #ログアウト',
     xpReward: 5
   },
+  // 新しいバッジタイプ - 作業時間関連
+  {
+    id: 'work_hours_1',
+    name: '作業開始',
+    description: '1時間の作業を完了しました',
+    icon: '⏰',
+    rarity: 'common',
+    category: 'work',
+    unlockCondition: '1時間の作業を完了する',
+    shareText: '1時間の作業を完了しました！集中力が身についてきました ⏰ #WorkTimeTracker #作業時間',
+    xpReward: 20
+  },
+  {
+    id: 'work_hours_5',
+    name: '集中力向上',
+    description: '5時間の作業を完了しました',
+    icon: '🎯',
+    rarity: 'common',
+    category: 'work',
+    unlockCondition: '5時間の作業を完了する',
+    shareText: '5時間の作業を完了しました！集中力が向上しています 🎯 #WorkTimeTracker #集中力',
+    xpReward: 50
+  },
+  {
+    id: 'work_hours_10',
+    name: '作業マスター',
+    description: '10時間の作業を完了しました',
+    icon: '💪',
+    rarity: 'rare',
+    category: 'work',
+    unlockCondition: '10時間の作業を完了する',
+    shareText: '10時間の作業を完了しました！作業マスターの称号を獲得 💪 #WorkTimeTracker #作業マスター',
+    xpReward: 100
+  },
+  {
+    id: 'work_hours_25',
+    name: '作業の達人',
+    description: '25時間の作業を完了しました',
+    icon: '🏆',
+    rarity: 'epic',
+    category: 'work',
+    unlockCondition: '25時間の作業を完了する',
+    shareText: '25時間の作業を完了しました！作業の達人になりました 🏆 #WorkTimeTracker #達人',
+    xpReward: 250
+  },
+  {
+    id: 'work_hours_50',
+    name: '作業の神',
+    description: '50時間の作業を完了しました',
+    icon: '👑',
+    rarity: 'legendary',
+    category: 'work',
+    unlockCondition: '50時間の作業を完了する',
+    shareText: '50時間の作業を完了しました！作業の神になりました 👑 #WorkTimeTracker #神',
+    xpReward: 500
+  },
+  // 連続作業関連
+  {
+    id: 'work_streak_3',
+    name: '継続の始まり',
+    description: '3日連続で作業しました',
+    icon: '🔥',
+    rarity: 'common',
+    category: 'streak',
+    unlockCondition: '3日連続で作業する',
+    shareText: '3日連続で作業しました！継続の始まりです 🔥 #WorkTimeTracker #継続',
+    xpReward: 30
+  },
+  {
+    id: 'work_streak_14',
+    name: '習慣の力',
+    description: '14日連続で作業しました',
+    icon: '⚡',
+    rarity: 'rare',
+    category: 'streak',
+    unlockCondition: '14日連続で作業する',
+    shareText: '14日連続で作業しました！習慣の力が身についています ⚡ #WorkTimeTracker #習慣',
+    xpReward: 150
+  },
+  {
+    id: 'work_streak_30',
+    name: '継続の王',
+    description: '30日連続で作業しました',
+    icon: '👑',
+    rarity: 'epic',
+    category: 'streak',
+    unlockCondition: '30日連続で作業する',
+    shareText: '30日連続で作業しました！継続の王になりました 👑 #WorkTimeTracker #継続の王',
+    xpReward: 300
+  },
+  {
+    id: 'work_streak_100',
+    name: '継続の神',
+    description: '100日連続で作業しました',
+    icon: '🌟',
+    rarity: 'legendary',
+    category: 'streak',
+    unlockCondition: '100日連続で作業する',
+    shareText: '100日連続で作業しました！継続の神になりました 🌟 #WorkTimeTracker #継続の神',
+    xpReward: 1000
+  },
+  // 時間管理関連
+  {
+    id: 'perfect_timing',
+    name: '完璧なタイミング',
+    description: '予定通りの時間で作業を完了しました',
+    icon: '⏱️',
+    rarity: 'rare',
+    category: 'timing',
+    unlockCondition: '予定通りの時間で作業を完了する',
+    shareText: '完璧なタイミングで作業を完了しました！時間管理が上手になりました ⏱️ #WorkTimeTracker #時間管理',
+    xpReward: 75
+  },
+  {
+    id: 'early_bird',
+    name: '早起きの達人',
+    description: '朝早くから作業を開始しました',
+    icon: '🌅',
+    rarity: 'common',
+    category: 'timing',
+    unlockCondition: '朝6時前に作業を開始する',
+    shareText: '早起きの達人になりました！朝の時間を有効活用しています 🌅 #WorkTimeTracker #早起き',
+    xpReward: 40
+  },
+  {
+    id: 'night_owl',
+    name: '夜型の達人',
+    description: '夜遅くまで作業を続けました',
+    icon: '🦉',
+    rarity: 'common',
+    category: 'timing',
+    unlockCondition: '夜11時以降まで作業を続ける',
+    shareText: '夜型の達人になりました！夜の時間を有効活用しています 🦉 #WorkTimeTracker #夜型',
+    xpReward: 40
+  },
+  // ソーシャル関連
+  {
+    id: 'social_butterfly',
+    name: 'ソーシャルバタフライ',
+    description: 'キャラクターを5回シェアしました',
+    icon: '🦋',
+    rarity: 'rare',
+    category: 'social',
+    unlockCondition: 'キャラクターを5回シェアする',
+    shareText: 'ソーシャルバタフライになりました！多くの人にキャラクターをシェアしています 🦋 #WorkTimeTracker #シェア',
+    xpReward: 100
+  },
+  {
+    id: 'influencer',
+    name: 'インフルエンサー',
+    description: 'バッジを10回シェアしました',
+    icon: '📱',
+    rarity: 'epic',
+    category: 'social',
+    unlockCondition: 'バッジを10回シェアする',
+    shareText: 'インフルエンサーになりました！多くの人に影響を与えています 📱 #WorkTimeTracker #インフルエンサー',
+    xpReward: 200
+  },
+  // 特別なバッジ
+  {
+    id: 'first_blood',
+    name: 'ファーストブラッド',
+    description: '初めてのバッジを獲得しました',
+    icon: '🩸',
+    rarity: 'common',
+    category: 'special',
+    unlockCondition: '初めてのバッジを獲得する',
+    shareText: 'ファーストブラッド！初めてのバッジを獲得しました 🩸 #WorkTimeTracker #初回',
+    xpReward: 25
+  },
+  {
+    id: 'collector',
+    name: 'コレクター',
+    description: '10個のバッジを獲得しました',
+    icon: '📚',
+    rarity: 'rare',
+    category: 'special',
+    unlockCondition: '10個のバッジを獲得する',
+    shareText: 'コレクターになりました！10個のバッジを集めました 📚 #WorkTimeTracker #コレクター',
+    xpReward: 150
+  },
+  {
+    id: 'master_collector',
+    name: 'マスターコレクター',
+    description: '25個のバッジを獲得しました',
+    icon: '🏆',
+    rarity: 'epic',
+    category: 'special',
+    unlockCondition: '25個のバッジを獲得する',
+    shareText: 'マスターコレクターになりました！25個のバッジを集めました 🏆 #WorkTimeTracker #マスターコレクター',
+    xpReward: 300
+  },
+  {
+    id: 'legendary_collector',
+    name: 'レジェンダリーコレクター',
+    description: '50個のバッジを獲得しました',
+    icon: '👑',
+    rarity: 'legendary',
+    category: 'special',
+    unlockCondition: '50個のバッジを獲得する',
+    shareText: 'レジェンダリーコレクターになりました！50個のバッジを集めました 👑 #WorkTimeTracker #レジェンダリー',
+    xpReward: 500
+  },
   {
     id: 'first_work',
     name: '初めての作業',
@@ -59,7 +262,7 @@ export const BADGES: Badge[] = [
     xpReward: 100
   },
   {
-    id: 'work_streak_30',
+    id: 'work_streak_30_milestone',
     name: '習慣の達人',
     description: '30日連続で作業を記録しました',
     icon: '💪',

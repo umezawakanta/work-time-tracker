@@ -246,6 +246,180 @@ class BadgeManager {
     return null;
   }
 
+  // 作業時間に基づくバッジをチェック
+  public checkWorkTimeBadges(totalWorkHours: number): Badge[] {
+    const unlockedBadges: Badge[] = [];
+    
+    // 作業時間バッジをチェック
+    const workTimeBadges = BADGES.filter(b => b.category === 'work');
+    workTimeBadges.forEach(badge => {
+      const hours = parseInt(badge.id.split('_')[2]);
+      if (totalWorkHours >= hours && !this.isBadgeUnlocked(badge.id)) {
+        if (this.unlockBadge(badge.id)) {
+          unlockedBadges.push(badge);
+        }
+      }
+    });
+    
+    return unlockedBadges;
+  }
+
+  // 連続作業日数に基づくバッジをチェック
+  public checkStreakBadges(consecutiveDays: number): Badge[] {
+    const unlockedBadges: Badge[] = [];
+    
+    // 連続作業バッジをチェック
+    const streakBadges = BADGES.filter(b => b.category === 'streak');
+    streakBadges.forEach(badge => {
+      const days = parseInt(badge.id.split('_')[2]);
+      if (consecutiveDays >= days && !this.isBadgeUnlocked(badge.id)) {
+        if (this.unlockBadge(badge.id)) {
+          unlockedBadges.push(badge);
+        }
+      }
+    });
+    
+    return unlockedBadges;
+  }
+
+  // 時間管理バッジをチェック
+  public checkTimingBadges(workStartTime: Date, workEndTime: Date, plannedDuration: number): Badge[] {
+    const unlockedBadges: Badge[] = [];
+    
+    // 完璧なタイミングバッジ
+    const actualDuration = (workEndTime.getTime() - workStartTime.getTime()) / (1000 * 60 * 60); // 時間
+    const timeDiff = Math.abs(actualDuration - plannedDuration);
+    
+    if (timeDiff <= 0.1 && !this.isBadgeUnlocked('perfect_timing')) { // 6分以内の誤差
+      if (this.unlockBadge('perfect_timing')) {
+        const badge = BADGES.find(b => b.id === 'perfect_timing');
+        if (badge) unlockedBadges.push(badge);
+      }
+    }
+    
+    // 早起きバッジ
+    const startHour = workStartTime.getHours();
+    if (startHour < 6 && !this.isBadgeUnlocked('early_bird')) {
+      if (this.unlockBadge('early_bird')) {
+        const badge = BADGES.find(b => b.id === 'early_bird');
+        if (badge) unlockedBadges.push(badge);
+      }
+    }
+    
+    // 夜型バッジ
+    const endHour = workEndTime.getHours();
+    if (endHour >= 23 && !this.isBadgeUnlocked('night_owl')) {
+      if (this.unlockBadge('night_owl')) {
+        const badge = BADGES.find(b => b.id === 'night_owl');
+        if (badge) unlockedBadges.push(badge);
+      }
+    }
+    
+    return unlockedBadges;
+  }
+
+  // ソーシャルバッジをチェック
+  public checkSocialBadges(shareCount: number, badgeShareCount: number): Badge[] {
+    const unlockedBadges: Badge[] = [];
+    
+    // ソーシャルバタフライバッジ
+    if (shareCount >= 5 && !this.isBadgeUnlocked('social_butterfly')) {
+      if (this.unlockBadge('social_butterfly')) {
+        const badge = BADGES.find(b => b.id === 'social_butterfly');
+        if (badge) unlockedBadges.push(badge);
+      }
+    }
+    
+    // インフルエンサーバッジ
+    if (badgeShareCount >= 10 && !this.isBadgeUnlocked('influencer')) {
+      if (this.unlockBadge('influencer')) {
+        const badge = BADGES.find(b => b.id === 'influencer');
+        if (badge) unlockedBadges.push(badge);
+      }
+    }
+    
+    return unlockedBadges;
+  }
+
+  // コレクションバッジをチェック
+  public checkCollectionBadges(): Badge[] {
+    const unlockedBadges: Badge[] = [];
+    const totalBadges = this.userBadges.length;
+    
+    // ファーストブラッドバッジ
+    if (totalBadges === 1 && !this.isBadgeUnlocked('first_blood')) {
+      if (this.unlockBadge('first_blood')) {
+        const badge = BADGES.find(b => b.id === 'first_blood');
+        if (badge) unlockedBadges.push(badge);
+      }
+    }
+    
+    // コレクターバッジ
+    if (totalBadges >= 10 && !this.isBadgeUnlocked('collector')) {
+      if (this.unlockBadge('collector')) {
+        const badge = BADGES.find(b => b.id === 'collector');
+        if (badge) unlockedBadges.push(badge);
+      }
+    }
+    
+    // マスターコレクターバッジ
+    if (totalBadges >= 25 && !this.isBadgeUnlocked('master_collector')) {
+      if (this.unlockBadge('master_collector')) {
+        const badge = BADGES.find(b => b.id === 'master_collector');
+        if (badge) unlockedBadges.push(badge);
+      }
+    }
+    
+    // レジェンダリーコレクターバッジ
+    if (totalBadges >= 50 && !this.isBadgeUnlocked('legendary_collector')) {
+      if (this.unlockBadge('legendary_collector')) {
+        const badge = BADGES.find(b => b.id === 'legendary_collector');
+        if (badge) unlockedBadges.push(badge);
+      }
+    }
+    
+    return unlockedBadges;
+  }
+
+  // バッジをカテゴリ別に取得
+  public getBadgesByCategory(category: string): Badge[] {
+    return BADGES.filter(badge => badge.category === category);
+  }
+
+  // バッジをレアリティ別に取得
+  public getBadgesByRarity(rarity: string): Badge[] {
+    return BADGES.filter(badge => badge.rarity === rarity);
+  }
+
+  // ユーザーのバッジ統計を取得
+  public getBadgeStats(): {
+    total: number;
+    byCategory: { [category: string]: number };
+    byRarity: { [rarity: string]: number };
+    completionRate: number;
+  } {
+    const total = this.userBadges.length;
+    const byCategory: { [category: string]: number } = {};
+    const byRarity: { [rarity: string]: number } = {};
+    
+    this.userBadges.forEach(userBadge => {
+      const badge = BADGES.find(b => b.id === userBadge.badgeId);
+      if (badge) {
+        byCategory[badge.category] = (byCategory[badge.category] || 0) + 1;
+        byRarity[badge.rarity] = (byRarity[badge.rarity] || 0) + 1;
+      }
+    });
+    
+    const completionRate = total / BADGES.length;
+    
+    return {
+      total,
+      byCategory,
+      byRarity,
+      completionRate
+    };
+  }
+
   // 既存ユーザー向けのバッジ付与
   public grantExistingUserBadges(): Badge[] {
     const unlockedBadges: Badge[] = [];

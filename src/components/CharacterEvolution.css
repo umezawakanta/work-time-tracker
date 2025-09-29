@@ -1,0 +1,395 @@
+/* CharacterEvolution.css - キャラクター進化表示のスタイル */
+
+.character-evolution {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.evolution-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.evolution-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.close-button {
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: #ff3742;
+  transform: scale(1.1);
+}
+
+/* 現在のフォーム */
+.current-form-section {
+  margin-bottom: 30px;
+}
+
+.current-form-section h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.current-form-section h4::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(135deg, #4ECDC4 0%, #45b7b8 100%);
+  border-radius: 2px;
+}
+
+.current-form {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 15px;
+  border: 2px solid #dee2e6;
+}
+
+.form-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.form-info h5 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.form-info p {
+  margin: 0 0 8px 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.form-level {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 600;
+}
+
+/* 利用可能なフォーム */
+.available-forms-section {
+  margin-bottom: 30px;
+}
+
+.available-forms-section h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.available-forms-section h4::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+  border-radius: 2px;
+}
+
+.forms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.form-card {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-card.current {
+  border-color: #4ECDC4;
+  background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+}
+
+.form-card.evolvable {
+  border-color: #FF6B6B;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+}
+
+.form-card.locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f8f9fa;
+}
+
+.form-card .form-icon {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.form-card .form-info h5 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+}
+
+.form-card .form-info p {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.form-requirements {
+  font-size: 0.7rem;
+  color: #888;
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.current-badge {
+  background: #4ECDC4;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.evolve-button {
+  background: #FF6B6B;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.evolve-button:hover {
+  background: #ff5252;
+  transform: scale(1.05);
+}
+
+/* 進化履歴 */
+.evolution-history-section {
+  margin-bottom: 20px;
+}
+
+.evolution-history-section h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.evolution-history-section h4::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(135deg, #9370DB 0%, #8A2BE2 100%);
+  border-radius: 2px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #9370DB;
+}
+
+.history-icon {
+  font-size: 1.2rem;
+  color: #9370DB;
+}
+
+.history-info {
+  flex: 1;
+}
+
+.history-text {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.history-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* 進化アニメーション */
+.evolution-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.evolution-overlay {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.evolution-content h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.evolution-progress {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4ECDC4 0%, #45b7b8 100%);
+  border-radius: 4px;
+  transition: width 0.1s ease;
+}
+
+.evolution-forms {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.from-form,
+.to-form {
+  text-align: center;
+}
+
+.form-icon {
+  font-size: 4rem;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.form-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.evolution-arrow {
+  font-size: 2rem;
+  color: #4ECDC4;
+  font-weight: bold;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .character-evolution {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  .forms-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .current-form {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .evolution-forms {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .evolution-arrow {
+    transform: rotate(90deg);
+  }
+}
