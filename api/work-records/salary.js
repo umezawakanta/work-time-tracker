@@ -120,9 +120,15 @@ module.exports = async function handler(req, res) {
         console.log('Validation failed:', { date: !!date, amount: amount !== undefined, type: !!type });
         
         const missingFields = [];
-        if (!date) missingFields.push('日付');
-        if (amount === undefined) missingFields.push('金額');
-        if (!type) missingFields.push('タイプ');
+        if (!date) {
+          missingFields.push('日付');
+        }
+        if (amount === undefined) {
+          missingFields.push('金額');
+        }
+        if (!type) {
+          missingFields.push('タイプ');
+        }
         
         return res.status(400).json({
           success: false,

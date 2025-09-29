@@ -67,6 +67,8 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     
     console.log(`いいね状態を初期化中... (メモ数: ${publicMemos.length})`);
     const likeStates: { [memoId: string]: { isLiked: boolean; likeCount: number } } = {};
+    let errorCount = 0;
+    const maxErrors = 3; // 最大エラー数を制限
     
     // 並列処理でAPIリクエストを効率化（最大5件ずつ処理）
     const batchSize = 5;
@@ -100,7 +102,15 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
           }
           return null;
         } catch (error) {
+          errorCount++;
           console.warn(`いいね状態の取得をスキップしました (メモID: ${memo.id}):`, error instanceof Error ? error.message : 'Unknown error');
+          
+          // エラーが多すぎる場合は処理を中断
+          if (errorCount >= maxErrors) {
+            console.error(`エラーが${maxErrors}回発生したため、いいね状態の初期化を中断します`);
+            throw new Error('Too many errors during like state initialization');
+          }
+          
           return {
             memoId: memo.id,
             isLiked: false,
@@ -144,11 +154,16 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   // いいね状態を初期化（初回のみ実行）
+  const [isInitializing, setIsInitializing] = useState(false);
+  
   useEffect(() => {
-    if (publicMemos.length > 0 && Object.keys(memoLikes).length === 0) {
-      initializeLikeStates();
+    if (publicMemos.length > 0 && Object.keys(memoLikes).length === 0 && !isInitializing) {
+      setIsInitializing(true);
+      initializeLikeStates().finally(() => {
+        setIsInitializing(false);
+      });
     }
-  }, [publicMemos.length]); // publicMemos.lengthのみを依存関係に
+  }, [publicMemos.length, memoLikes, isInitializing]);
 
   // 公開メモの読み込み関数をPublicMemosComponent内で定義
   const loadPublicMemosLocal = async () => {
@@ -219,7 +234,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
     });
     
     // ソートを適用
-    const sorted = filtered.sort((a, b) => {
+    return filtered.sort((a, b) => {
       const aDate = new Date(a[sortBy]);
       const bDate = new Date(b[sortBy]);
       
@@ -229,10 +244,6 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         return bDate.getTime() - aDate.getTime();
       }
     });
-    
-    
-    
-    return sorted;
   };
 
   // ステータス更新

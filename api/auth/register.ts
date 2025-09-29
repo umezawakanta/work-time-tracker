@@ -1,6 +1,6 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-const bcrypt = require('bcryptjs');
-const { mongoose, jwt, ensureDatabaseConnection } = require('../utils/database');
+const bcryptjs = require('bcryptjs');
+const { mongoose: mongooseLib, jwt: jwtLib, ensureDatabaseConnection, User } = require('../utils/database');
 const dotenv = require('dotenv');
 // Type definitions are now in comments for reference
 const { 
@@ -18,45 +18,7 @@ dotenv.config();
 // Database connection utility is now imported from database.ts
 
 
-// User schema
-const UserSchema = new mongoose.Schema(
-  {
-    email: { type: String, required: true, unique: true, index: true },
-    displayName: { type: String, required: true },
-    password: { type: String, required: true },
-    role: { type: String, default: "user" },
-    isVerified: { type: Boolean, default: false },
-    isAdmin: { type: Boolean, default: false },
-    roles: [{ type: String }],
-    avatar: { type: String },
-    preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
-    status: {
-      type: String,
-      enum: ["active", "inactive", "suspended"],
-      default: "active",
-    },
-  },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
-);
-
-// Virtual for user ID
-UserSchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
-
-// Ensure virtual fields are serialized
-UserSchema.set("toJSON", {
-  virtuals: true,
-  transform: function (doc, ret) {
-    const { _id, __v, password, ...cleanRet } = ret;
-    return cleanRet;
-  },
-});
-
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
+// User model is now imported from database utility
 
 /**
  * Register request interface
@@ -82,7 +44,7 @@ const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 module.exports = async function handler(req, res) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
 
   const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
@@ -179,7 +141,7 @@ module.exports = async function handler(req, res) {
 
     // パスワードのハッシュ化
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcryptjs.hash(password, saltRounds);
 
     // 新しいユーザーを作成
     const newUser = new User({

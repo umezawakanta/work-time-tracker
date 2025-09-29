@@ -2,7 +2,36 @@
 
 const { verifyJWT } = require('../../utils/validation');
 const { ensureDatabaseConnection: connectDB } = require('../../utils/database');
-const { Memo } = require('../../../src/server/models/Memo');
+const mongoose = require('mongoose');
+
+// Memoスキーマを直接定義
+const MemoSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  content: { type: String, required: true },
+  category: { type: String, required: true },
+  tags: [{ type: String }],
+  isPublic: { type: Boolean, default: false },
+  isFamilyOnly: { type: Boolean, default: false },
+  isAdminOnly: { type: Boolean, default: false },
+  userId: { type: String, required: true },
+  postType: { 
+    type: String, 
+    enum: ['update_request', 'error_report', 'general'], 
+    default: 'general' 
+  },
+  status: { 
+    type: String, 
+    enum: ['pending', 'in_progress', 'resolved', 'closed'], 
+    default: 'pending' 
+  },
+  adminResponse: { type: String },
+  adminResponseDate: { type: Date },
+  likes: [{ type: String }],
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+const Memo = mongoose.models.Memo || mongoose.model('Memo', MemoSchema);
 
 module.exports = async function handler(req, res) {
   // CORS設定

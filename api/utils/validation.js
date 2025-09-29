@@ -29,7 +29,7 @@ const validateDisplayName = (displayName) => {
 
 // CORS設定の共通関数
 const setupCORS = (req, res) => {
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = [
     'http://localhost:3000',
     'https://work-time-tracker-five.vercel.app'

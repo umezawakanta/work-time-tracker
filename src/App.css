@@ -1,3 +1,6 @@
+/* こども向けフォントの読み込み */
+@import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;700&family=Hachi+Maru+Pop&family=Yomogi&family=Nico+Moji&family=Shippori+Mincho:wght@400;700&family=Sawarabi+Mincho&family=Sawarabi+Gothic&display=swap');
+
 /* リセットとベーススタイル */
 * {
   margin: 0;
@@ -3616,10 +3619,6 @@ figure, figcaption, details, summary, mark, small, sub, sup,
   font-size: var(--font-size) !important;
   line-height: var(--line-height) !important;
 }
-
-/* こども向けフォントの読み込み */
-@import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;700&family=Hachi+Maru+Pop&family=Yomogi&family=Nico+Moji&family=Shippori+Mincho:wght@400;700&family=Sawarabi+Mincho&family=Sawarabi+Gothic&display=swap');
-
 
 /* ゆでたまごタイマーセクション */
 .egg-timer-section {
