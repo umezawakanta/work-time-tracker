@@ -25,6 +25,10 @@ import CharacterDisplay from "./components/CharacterDisplay";
 import CharacterNotification from "./components/CharacterNotification";
 import CharacterProgress from "./components/CharacterProgress";
 import CharacterCustomizationComponent from "./components/CharacterCustomization";
+import CharacterMiniGame from "./components/CharacterMiniGame";
+import CharacterCollection from "./components/CharacterCollection";
+import CharacterShare from "./components/CharacterShare";
+import CharacterAchievementGallery from "./components/CharacterAchievementGallery";
 import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
@@ -334,6 +338,18 @@ function App({
   
   // キャラクターカスタマイズの状態
   const [showCharacterCustomization, setShowCharacterCustomization] = useState(false);
+  
+  // キャラクターミニゲームの状態
+  const [showCharacterMiniGame, setShowCharacterMiniGame] = useState(false);
+  
+  // キャラクターコレクションの状態
+  const [showCharacterCollection, setShowCharacterCollection] = useState(false);
+  
+  // キャラクター共有の状態
+  const [showCharacterShare, setShowCharacterShare] = useState(false);
+  
+  // キャラクターアチーブメントギャラリーの状態
+  const [showCharacterAchievementGallery, setShowCharacterAchievementGallery] = useState(false);
 
   // ジャンル管理の状態
   const [showGenreManagement, setShowGenreManagement] = useState(false);
@@ -1940,6 +1956,52 @@ ${errorInfo.stack}
       // キャラクターマネージャーに保存
       characterManager.updateCharacterCustomization(selectedCharacter.id, customization);
     }
+  };
+
+  // ミニゲーム完了ハンドラー
+  const handleMiniGameComplete = (score: number, rewards: { experience: number; items: string[] }) => {
+    console.log('Mini game completed:', { score, rewards });
+    
+    // 経験値を追加
+    const result = characterManager.addExperience(rewards.experience);
+    
+    if (result.leveledUp) {
+      handleCharacterLevelUp(result.newLevel);
+    }
+    
+    if (result.achievements.length > 0) {
+      result.achievements.forEach(achievement => {
+        handleCharacterAchievement(achievement.id);
+      });
+    }
+    
+    // アイテムを保存
+    if (selectedCharacter && rewards.items.length > 0) {
+      rewards.items.forEach(itemId => {
+        characterManager.addGameItem(selectedCharacter.id, itemId);
+      });
+      console.log('Items earned:', rewards.items);
+    }
+  };
+
+  // ミニゲーム表示ハンドラー
+  const handleMiniGameToggle = () => {
+    setShowCharacterMiniGame(!showCharacterMiniGame);
+  };
+
+  // コレクション表示ハンドラー
+  const handleCollectionToggle = () => {
+    setShowCharacterCollection(!showCharacterCollection);
+  };
+
+  // 共有表示ハンドラー
+  const handleShareToggle = () => {
+    setShowCharacterShare(!showCharacterShare);
+  };
+
+  // アチーブメントギャラリー表示ハンドラー
+  const handleAchievementGalleryToggle = () => {
+    setShowCharacterAchievementGallery(!showCharacterAchievementGallery);
   };
 
   // テーマ適用関数
@@ -6245,6 +6307,59 @@ User Agent: ${userAgent}
             </div>
           </div>
         )}
+
+        {/* キャラクターミニゲーム */}
+        {showCharacterMiniGame && (
+          <div className="character-minigame-modal">
+            <div className="character-minigame-overlay" onClick={() => setShowCharacterMiniGame(false)} />
+            <div className="character-minigame-content">
+              <CharacterMiniGame
+                character={selectedCharacter}
+                onGameComplete={handleMiniGameComplete}
+                onClose={() => setShowCharacterMiniGame(false)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* キャラクターコレクション */}
+        {showCharacterCollection && (
+          <div className="character-collection-modal">
+            <div className="character-collection-overlay" onClick={() => setShowCharacterCollection(false)} />
+            <div className="character-collection-content">
+              <CharacterCollection
+                character={selectedCharacter}
+                onClose={() => setShowCharacterCollection(false)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* キャラクター共有 */}
+        {showCharacterShare && (
+          <div className="character-share-modal">
+            <div className="character-share-overlay" onClick={() => setShowCharacterShare(false)} />
+            <div className="character-share-content">
+              <CharacterShare
+                character={selectedCharacter}
+                onClose={() => setShowCharacterShare(false)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* キャラクターアチーブメントギャラリー */}
+        {showCharacterAchievementGallery && (
+          <div className="character-achievement-gallery-modal">
+            <div className="character-achievement-gallery-overlay" onClick={() => setShowCharacterAchievementGallery(false)} />
+            <div className="character-achievement-gallery-content">
+              <CharacterAchievementGallery
+                character={selectedCharacter}
+                onClose={() => setShowCharacterAchievementGallery(false)}
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -6323,6 +6438,10 @@ User Agent: ${userAgent}
                 onAchievement={handleCharacterAchievement}
                 onProgressClick={handleCharacterProgressToggle}
                 onCustomizeClick={handleCharacterCustomizationToggle}
+                onMiniGameClick={handleMiniGameToggle}
+                onCollectionClick={handleCollectionToggle}
+                onShareClick={handleShareToggle}
+                onAchievementGalleryClick={handleAchievementGalleryToggle}
               />
             </div>
 

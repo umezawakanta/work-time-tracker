@@ -411,7 +411,11 @@
 }
 
 .progress-button,
-.customize-button {
+.customize-button,
+.minigame-button,
+.collection-button,
+.share-button,
+.achievement-gallery-button {
   background: linear-gradient(135deg, #4ECDC4 0%, #45b7b8 100%);
   color: white;
   border: none;
@@ -431,8 +435,32 @@
   box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
 }
 
+.minigame-button {
+  background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);
+  box-shadow: 0 2px 8px rgba(155, 89, 182, 0.3);
+}
+
+.collection-button {
+  background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
+  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+}
+
+.share-button {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+.achievement-gallery-button {
+  background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
 .progress-button:hover,
-.customize-button:hover {
+.customize-button:hover,
+.minigame-button:hover,
+.collection-button:hover,
+.share-button:hover,
+.achievement-gallery-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
 }
@@ -441,8 +469,28 @@
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
 }
 
+.minigame-button:hover {
+  box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
+}
+
+.collection-button:hover {
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+}
+
+.share-button:hover {
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
+}
+
+.achievement-gallery-button:hover {
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
 .progress-button:active,
-.customize-button:active {
+.customize-button:active,
+.minigame-button:active,
+.collection-button:active,
+.share-button:active,
+.achievement-gallery-button:active {
   transform: translateY(0);
 }
 

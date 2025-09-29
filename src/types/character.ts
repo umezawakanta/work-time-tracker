@@ -13,6 +13,7 @@ export interface Character {
   description: string;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
   unlockConditions?: string[];
+  gameItems?: string[];
 }
 
 export interface CharacterCustomization {

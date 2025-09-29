@@ -1,0 +1,394 @@
+/* CharacterCollection.css - キャラクターコレクションのスタイル */
+
+.character-collection {
+  background: white;
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-header {
+  background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collection-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.close-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.collection-tabs {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 15px 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.tab-button:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.tab-button.active {
+  color: #4ECDC4;
+  border-bottom-color: #4ECDC4;
+  background: white;
+}
+
+.collection-progress {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ECDC4 0%, #45b7b8 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.collection-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.collection-item {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.collection-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.collection-item.unlocked {
+  border-color: #4ECDC4;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.collection-item.locked {
+  opacity: 0.6;
+  background: #f5f5f5;
+}
+
+.collection-item.common {
+  border-left: 4px solid #6c757d;
+}
+
+.collection-item.rare {
+  border-left: 4px solid #007bff;
+}
+
+.collection-item.epic {
+  border-left: 4px solid #6f42c1;
+}
+
+.collection-item.legendary {
+  border-left: 4px solid #fd7e14;
+}
+
+.item-emoji {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.item-info {
+  text-align: center;
+}
+
+.item-name {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.item-description {
+  margin: 0 0 8px 0;
+  font-size: 0.8rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.item-rarity {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.item-unlocked-date {
+  font-size: 0.7rem;
+  color: #888;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+  border-radius: 15px;
+}
+
+.item-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10020;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.item-detail-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.item-detail-content {
+  position: relative;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  z-index: 10021;
+}
+
+.close-detail-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-detail-button:hover {
+  background: rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+}
+
+.detail-emoji {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.detail-name {
+  margin: 0 0 15px 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.detail-description {
+  margin: 0 0 20px 0;
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.detail-rarity,
+.detail-category {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.detail-status {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.detail-status.unlocked {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+  border: 2px solid #c3e6cb;
+}
+
+.detail-status.locked {
+  background: #f8d7da;
+  color: #721c24;
+  border: 2px solid #f5c6cb;
+}
+
+.detail-unlocked-date {
+  font-size: 0.8rem;
+  margin-top: 8px;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .character-collection {
+    margin: 10px;
+    max-width: none;
+    max-height: 90vh;
+  }
+  
+  .collection-header {
+    padding: 15px;
+  }
+  
+  .collection-header h3 {
+    font-size: 1.3rem;
+  }
+  
+  .collection-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tab-button {
+    padding: 12px 8px;
+    font-size: 0.8rem;
+    min-width: 100px;
+  }
+  
+  .collection-content {
+    padding: 15px;
+  }
+  
+  .collection-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  
+  .collection-item {
+    padding: 12px;
+  }
+  
+  .item-emoji {
+    font-size: 1.5rem;
+  }
+  
+  .item-name {
+    font-size: 0.9rem;
+  }
+  
+  .item-description {
+    font-size: 0.7rem;
+  }
+  
+  .item-detail-modal {
+    padding: 10px;
+  }
+  
+  .item-detail-content {
+    padding: 20px;
+  }
+  
+  .detail-emoji {
+    font-size: 3rem;
+  }
+  
+  .detail-name {
+    font-size: 1.5rem;
+  }
+}

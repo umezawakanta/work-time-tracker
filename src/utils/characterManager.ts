@@ -210,6 +210,30 @@ export class CharacterManager {
     return character?.customization || null;
   }
 
+  // ミニゲームアイテム管理
+  public addGameItem(characterId: string, itemId: string): void {
+    const character = this.characters.find(c => c.id === characterId);
+    if (character) {
+      if (!character.gameItems) {
+        character.gameItems = [];
+      }
+      if (!character.gameItems.includes(itemId)) {
+        character.gameItems.push(itemId);
+        this.saveSettings();
+      }
+    }
+  }
+
+  public getGameItems(characterId: string): string[] {
+    const character = this.characters.find(c => c.id === characterId);
+    return character?.gameItems || [];
+  }
+
+  public hasGameItem(characterId: string, itemId: string): boolean {
+    const character = this.characters.find(c => c.id === characterId);
+    return character?.gameItems?.includes(itemId) || false;
+  }
+
   // レベルアップチェック
   private checkLevelUp(character: Character): boolean {
     const requiredExp = this.getRequiredExperience(character.level);

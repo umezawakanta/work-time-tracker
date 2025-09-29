@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Character, UserCharacterSettings } from '../types/character';
 import { MESSAGE_TEMPLATES, ANIMATION_CONFIG } from '../constants/characters';
+import CharacterParticles from './CharacterParticles';
 import './CharacterDisplay.css';
 
 interface CharacterDisplayProps {
@@ -12,6 +13,10 @@ interface CharacterDisplayProps {
   onAchievement?: (achievementId: string) => void;
   onProgressClick?: () => void;
   onCustomizeClick?: () => void;
+  onMiniGameClick?: () => void;
+  onCollectionClick?: () => void;
+  onShareClick?: () => void;
+  onAchievementGalleryClick?: () => void;
 }
 
 const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
@@ -22,13 +27,18 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
   onLevelUp,
   onAchievement,
   onProgressClick,
-  onCustomizeClick
+  onCustomizeClick,
+  onMiniGameClick,
+  onCollectionClick,
+  onShareClick,
+  onAchievementGalleryClick
 }) => {
   const [currentAnimation, setCurrentAnimation] = useState<string>('idle');
   const [isAnimating, setIsAnimating] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [currentMessage, setCurrentMessage] = useState('');
   const [messageQueue, setMessageQueue] = useState<string[]>([]);
+  const [particleEffect, setParticleEffect] = useState<{ type: 'celebration' | 'levelup' | 'achievement' | 'work' | 'idle'; active: boolean }>({ type: 'idle', active: false });
   const [lastInteraction, setLastInteraction] = useState<Date | null>(null);
   
   const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -83,6 +93,9 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
         const randomAnimation = randomAnimations[Math.floor(Math.random() * randomAnimations.length)];
         setCurrentAnimation(randomAnimation);
         
+        // パーティクルエフェクトをトリガー
+        triggerParticleEffect('idle');
+        
         setTimeout(() => {
           setCurrentAnimation('idle');
         }, ANIMATION_CONFIG.durations[randomAnimation as keyof typeof ANIMATION_CONFIG.durations] * 1000);
@@ -103,6 +116,14 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
     messageTimeoutRef.current = setTimeout(() => {
       setShowMessage(false);
       setCurrentMessage('');
+    }, 3000);
+  };
+
+  // パーティクルエフェクトをトリガー
+  const triggerParticleEffect = (type: 'celebration' | 'levelup' | 'achievement' | 'work' | 'idle') => {
+    setParticleEffect({ type, active: true });
+    setTimeout(() => {
+      setParticleEffect(prev => ({ ...prev, active: false }));
     }, 3000);
   };
 
@@ -128,6 +149,9 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
     ];
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     showTemporaryMessage(randomMessage);
+
+    // パーティクルエフェクトをトリガー
+    triggerParticleEffect('celebration');
 
     // アニメーション終了
     setTimeout(() => {
@@ -201,6 +225,12 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
           }
         }}
       >
+        {/* パーティクルエフェクト */}
+        <CharacterParticles
+          isActive={particleEffect.active}
+          type={particleEffect.type}
+          intensity="medium"
+        />
         <div 
           className="character-avatar"
           data-size={character.customization?.size || 'medium'}
@@ -263,6 +293,42 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
               title="カスタマイズ"
             >
               🎨 カスタマイズ
+            </button>
+          )}
+          {onMiniGameClick && (
+            <button 
+              className="minigame-button"
+              onClick={onMiniGameClick}
+              title="ミニゲーム"
+            >
+              🎮 ゲーム
+            </button>
+          )}
+          {onCollectionClick && (
+            <button 
+              className="collection-button"
+              onClick={onCollectionClick}
+              title="コレクション"
+            >
+              📚 コレクション
+            </button>
+          )}
+          {onShareClick && (
+            <button 
+              className="share-button"
+              onClick={onShareClick}
+              title="共有"
+            >
+              📤 共有
+            </button>
+          )}
+          {onAchievementGalleryClick && (
+            <button 
+              className="achievement-gallery-button"
+              onClick={onAchievementGalleryClick}
+              title="アチーブメントギャラリー"
+            >
+              🏆 ギャラリー
             </button>
           )}
         </div>

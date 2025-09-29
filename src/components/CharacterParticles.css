@@ -1,0 +1,211 @@
+/* CharacterParticles.css - キャラクターパーティクルエフェクトのスタイル */
+
+.particle-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* お祝いパーティクル */
+.particle-celebration .particle {
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  border-radius: 50%;
+  animation: celebrationFloat 3s ease-out forwards;
+}
+
+@keyframes celebrationFloat {
+  0% {
+    transform: translateY(0) scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* レベルアップパーティクル */
+.particle-levelup .particle {
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(45deg, #4ECDC4, #45b7b8);
+  border-radius: 50%;
+  animation: levelupRise 2.5s ease-out forwards;
+}
+
+@keyframes levelupRise {
+  0% {
+    transform: translateY(0) scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(-30px) scale(1) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-80px) scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* アチーブメントパーティクル */
+.particle-achievement .particle {
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+  border-radius: 50%;
+  animation: achievementBurst 2s ease-out forwards;
+}
+
+@keyframes achievementBurst {
+  0% {
+    transform: translateY(0) scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  20% {
+    transform: translateY(-20px) scale(1.2) rotate(90deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-60px) scale(0) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+/* 作業パーティクル */
+.particle-work .particle {
+  width: 4px;
+  height: 4px;
+  background: linear-gradient(45deg, #9B59B6, #8E44AD);
+  border-radius: 50%;
+  animation: workFloat 4s ease-in-out infinite;
+}
+
+@keyframes workFloat {
+  0%, 100% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-20px) scale(1);
+    opacity: 1;
+  }
+}
+
+/* アイドルパーティクル */
+.particle-idle .particle {
+  width: 3px;
+  height: 3px;
+  background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+  border-radius: 50%;
+  animation: idleDrift 6s ease-in-out infinite;
+}
+
+@keyframes idleDrift {
+  0%, 100% {
+    transform: translateY(0) translateX(0) scale(0.5);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateY(-10px) translateX(5px) scale(0.8);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-5px) translateX(-5px) scale(1);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-15px) translateX(3px) scale(0.7);
+    opacity: 0.4;
+  }
+}
+
+/* パーティクルの種類別スタイル */
+.particle-celebration .particle:nth-child(odd) {
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+}
+
+.particle-celebration .particle:nth-child(even) {
+  background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+}
+
+.particle-levelup .particle:nth-child(odd) {
+  background: linear-gradient(45deg, #4ECDC4, #45b7b8);
+}
+
+.particle-levelup .particle:nth-child(even) {
+  background: linear-gradient(45deg, #17a2b8, #138496);
+}
+
+.particle-achievement .particle:nth-child(odd) {
+  background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+}
+
+.particle-achievement .particle:nth-child(even) {
+  background: linear-gradient(45deg, #E74C3C, #C0392B);
+}
+
+.particle-work .particle:nth-child(odd) {
+  background: linear-gradient(45deg, #9B59B6, #8E44AD);
+}
+
+.particle-work .particle:nth-child(even) {
+  background: linear-gradient(45deg, #8E44AD, #7D3C98);
+}
+
+.particle-idle .particle:nth-child(odd) {
+  background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+}
+
+.particle-idle .particle:nth-child(even) {
+  background: linear-gradient(45deg, #bdc3c7, #95a5a6);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .particle {
+    transform: scale(0.8);
+  }
+  
+  .particle-celebration .particle {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .particle-levelup .particle {
+    width: 5px;
+    height: 5px;
+  }
+  
+  .particle-achievement .particle {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .particle-work .particle {
+    width: 3px;
+    height: 3px;
+  }
+  
+  .particle-idle .particle {
+    width: 2px;
+    height: 2px;
+  }
+}
