@@ -1,4 +1,4 @@
-const { mongoose: mongooseDB, ensureDatabaseConnection: ensureDBConn, verifyJWT: verifyAuth, handleError } = require('../utils/database');
+const { mongoose: mongooseDB, ensureDatabaseConnection: ensureDBConn, verifyJWT: verifyAuth, handleAPIError: handleAPIError } = require('../utils/database');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
@@ -62,19 +62,19 @@ module.exports = async (req, res) => {
     // Verify JWT token
     const userInfo = await verifyAuth(req);
     if (!userInfo) {
-      return handleError(res, { statusCode: 401, message: '認証が必要です' });
+      return handleAPIError(res, { statusCode: 401, message: '認証が必要です' });
     }
 
     const { id } = req.query;
     if (!id) {
-      return handleError(res, { statusCode: 400, message: '本のIDが必要です' });
+      return handleAPIError(res, { statusCode: 400, message: '本のIDが必要です' });
     }
 
     if (req.method === 'GET') {
       // 特定の本を取得
       const book = await Book.findById(id);
       if (!book) {
-        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
+        return handleAPIError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
 
@@ -112,7 +112,7 @@ module.exports = async (req, res) => {
       );
 
       if (!book) {
-        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
+        return handleAPIError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
 
@@ -143,7 +143,7 @@ module.exports = async (req, res) => {
       // 本を削除
       const book = await Book.findByIdAndDelete(id);
       if (!book) {
-        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
+        return handleAPIError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
 
@@ -152,10 +152,10 @@ module.exports = async (req, res) => {
         message: '本を削除しました',
       });
     } else {
-      return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
+      return handleAPIError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
     }
   } catch (error) {
     console.error('❌ Book detail API error:', error);
-    return handleError(res, error, 'サーバーエラーが発生しました');
+    return handleAPIError(res, error, 'サーバーエラーが発生しました');
   }
 };
