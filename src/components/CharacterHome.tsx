@@ -102,6 +102,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   const [showCharacterShare, setShowCharacterShare] = useState(false);
   const [showCharacterAchievementGallery, setShowCharacterAchievementGallery] = useState(false);
   const [showBadgeGallery, setShowBadgeGallery] = useState(false);
+  const [availableCharacters, setAvailableCharacters] = useState<CharacterType[]>([]);
 
   // デフォルトキャラクター
   const defaultCharacters: Character[] = [
@@ -136,6 +137,22 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
       setCharacters(defaultCharacters);
       localStorage.setItem('characters', JSON.stringify(defaultCharacters));
     }
+  }, []);
+
+  // 利用可能なキャラクターを初期化
+  useEffect(() => {
+    const loadAvailableCharacters = async () => {
+      try {
+        const characters = await characterManager.getAvailableCharacters();
+        setAvailableCharacters(characters);
+      } catch (error) {
+        console.error('Failed to load available characters:', error);
+        // エラーの場合はデフォルトキャラクターを設定
+        setAvailableCharacters([]);
+      }
+    };
+    
+    loadAvailableCharacters();
   }, []);
 
   const filteredCharacters = characters.filter(character => {
