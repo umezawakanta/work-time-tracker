@@ -1,4 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { Character as CharacterType, UserCharacterSettings } from '../types/character';
+import { characterManager } from '../utils/characterManager';
+import CharacterDisplay from './CharacterDisplay';
+import CharacterSelector from './CharacterSelector';
+import CharacterProgress from './CharacterProgress';
+import CharacterCustomizationComponent from './CharacterCustomization';
+import CharacterMiniGame from './CharacterMiniGame';
+import CharacterCollection from './CharacterCollection';
+import CharacterShare from './CharacterShare';
+import CharacterAchievementGallery from './CharacterAchievementGallery';
 import './CharacterHome.css';
 
 interface Character {
@@ -19,6 +29,15 @@ interface CharacterHomeProps {
   closeOtherFeatures: (activeFeature: string) => void;
   onSelectCharacter?: (character: Character) => void;
   currentCharacter?: Character | null;
+  // 新しいキャラクター機能のプロパティ
+  selectedCharacter?: CharacterType | null;
+  characterSettings?: UserCharacterSettings;
+  workState?: 'idle' | 'working' | 'break' | 'completed';
+  onCharacterInteraction?: (interaction: string) => void;
+  onCharacterLevelUp?: (newLevel: number) => void;
+  onCharacterAchievement?: (achievementId: string) => void;
+  onCharacterSelect?: (character: CharacterType) => void;
+  onCharacterSettingsUpdate?: (updates: Partial<UserCharacterSettings>) => void;
 }
 
 const CharacterHome: React.FC<CharacterHomeProps> = ({ 
@@ -26,7 +45,15 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   setShowCharacterHome, 
   closeOtherFeatures, 
   onSelectCharacter, 
-  currentCharacter 
+  currentCharacter,
+  selectedCharacter,
+  characterSettings,
+  workState = 'idle',
+  onCharacterInteraction,
+  onCharacterLevelUp,
+  onCharacterAchievement,
+  onCharacterSelect,
+  onCharacterSettingsUpdate
 }) => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -40,6 +67,16 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
     isPublic: true
   });
 
+  // 新しいキャラクター機能の状態
+  const [activeTab, setActiveTab] = useState<'home' | 'characters' | 'progress' | 'customization' | 'minigame' | 'collection' | 'share' | 'gallery'>('home');
+  const [showCharacterSelector, setShowCharacterSelector] = useState(false);
+  const [showCharacterProgress, setShowCharacterProgress] = useState(false);
+  const [showCharacterCustomization, setShowCharacterCustomization] = useState(false);
+  const [showCharacterMiniGame, setShowCharacterMiniGame] = useState(false);
+  const [showCharacterCollection, setShowCharacterCollection] = useState(false);
+  const [showCharacterShare, setShowCharacterShare] = useState(false);
+  const [showCharacterAchievementGallery, setShowCharacterAchievementGallery] = useState(false);
+
   // デフォルトキャラクター
   const defaultCharacters: Character[] = [
     {
@@ -47,65 +84,16 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
       name: 'メインキャラクター',
       author: 'システム',
       svg: `<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-        <!-- 角丸の背景（iOSアイコン風） -->
         <rect width="512" height="512" fill="#1DA1F2" rx="112" ry="112"/>
-        
-        <!-- 体の黒い輪郭 -->
         <ellipse cx="256" cy="360" rx="135" ry="110" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
-        
-        <!-- 体の緑色部分 -->
         <ellipse cx="256" cy="360" rx="110" ry="85" fill="#4CAF50"/>
-        
-        <!-- 頭の黒い輪郭 -->
         <circle cx="256" cy="190" r="120" fill="#3a4556" stroke="#2c3344" stroke-width="12"/>
-        
-        <!-- 頭の黄色い顔 -->
         <circle cx="256" cy="190" r="95" fill="#FFD700"/>
-        
-        <!-- 左目 -->
         <circle cx="225" cy="175" r="10" fill="#1a1a1a"/>
-        
-        <!-- 右目 -->
         <circle cx="287" cy="175" r="10" fill="#1a1a1a"/>
-        
-        <!-- 口（大きく開いた黒い楕円） -->
         <ellipse cx="256" cy="215" rx="30" ry="25" fill="#1a1a1a"/>
       </svg>`,
       description: '青い背景に黄色い頭と緑色の体のメインキャラクターです。',
-      likes: 0,
-      createdAt: new Date().toISOString(),
-      isPublic: true,
-      tags: ['デフォルト', 'メイン']
-    },
-    {
-      id: 'default-2',
-      name: 'クラシックキャラクター',
-      author: 'システム',
-      svg: `<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-        <!-- 背景 -->
-        <rect width="512" height="512" fill="#3b82f6" rx="80"/>
-        
-        <!-- キャラクターの頭（明るい黄色） -->
-        <circle cx="256" cy="220" r="100" fill="#ffff00" stroke="#1f2937" stroke-width="8"/>
-        
-        <!-- 目（大きな黒い円形） -->
-        <circle cx="230" cy="200" r="12" fill="#1f2937"/>
-        <circle cx="282" cy="200" r="12" fill="#1f2937"/>
-        
-        <!-- 目のハイライト（白い点） -->
-        <circle cx="235" cy="195" r="3" fill="#ffffff"/>
-        <circle cx="287" cy="195" r="3" fill="#ffffff"/>
-        
-        <!-- 口（上下逆さまの半円形） -->
-        <path d="M 220 240 A 20 15 0 0 0 292 240" fill="#1f2937"/>
-        
-        <!-- 舌（白い楕円形） -->
-        <ellipse cx="256" cy="235" rx="8" ry="5" fill="#ffffff"/>
-        
-        <!-- 胴体（緑色、小さく） -->
-        <ellipse cx="256" cy="370" rx="50" ry="40" fill="#22c55e" stroke="#1f2937" stroke-width="8"/>
-      </svg>`,
-      description: 'シンプルで可愛いクラシックなデザインのキャラクターです。',
       likes: 0,
       createdAt: new Date().toISOString(),
       isPublic: true,
@@ -181,6 +169,44 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
     }
   };
 
+  // 新しいキャラクター機能のハンドラー
+  const handleCharacterSelect = (character: CharacterType) => {
+    onCharacterSelect?.(character);
+    setShowCharacterSelector(false);
+  };
+
+  const handleCharacterInteraction = (interaction: string) => {
+    onCharacterInteraction?.(interaction);
+  };
+
+  const handleCharacterLevelUp = (newLevel: number) => {
+    onCharacterLevelUp?.(newLevel);
+  };
+
+  const handleCharacterAchievement = (achievementId: string) => {
+    onCharacterAchievement?.(achievementId);
+  };
+
+  const handleCharacterSettingsUpdate = (updates: Partial<UserCharacterSettings>) => {
+    onCharacterSettingsUpdate?.(updates);
+  };
+
+  const handleMiniGameComplete = (score: number, rewards: { experience: number; items: string[] }) => {
+    console.log('Mini game completed:', { score, rewards });
+    // 経験値を追加
+    if (selectedCharacter) {
+      const result = characterManager.addExperience(rewards.experience);
+      if (result.leveledUp) {
+        handleCharacterLevelUp(result.newLevel);
+      }
+      if (result.achievements.length > 0) {
+        result.achievements.forEach(achievement => {
+          handleCharacterAchievement(achievement.id);
+        });
+      }
+    }
+  };
+
   return (
     <div className="character-home">
       <div className="character-home-header">
@@ -188,41 +214,314 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         <p>みんなが作ったキャラクターが集まる場所です</p>
       </div>
 
-      <div className="character-controls">
-        <div className="search-section">
-          <input
-            type="text"
-            placeholder="キャラクターを検索..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
-          />
-        </div>
-
-        <div className="filter-section">
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="category-select"
-            aria-label="キャラクターカテゴリを選択"
-          >
-            <option value="all">すべて</option>
-            <option value="my">私のキャラクター</option>
-            <option value="デフォルト">デフォルト</option>
-            <option value="クラシック">クラシック</option>
-            <option value="かわいい">かわいい</option>
-            <option value="クール">クール</option>
-          </select>
-        </div>
-
+      {/* タブナビゲーション */}
+      <div className="character-tabs">
         <button
-          onClick={() => setShowCreateForm(true)}
-          className="create-character-btn"
+          className={`tab-button ${activeTab === 'home' ? 'active' : ''}`}
+          onClick={() => setActiveTab('home')}
         >
-          ✨ 新しいキャラクターを作る
+          🏠 ホーム
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'characters' ? 'active' : ''}`}
+          onClick={() => setActiveTab('characters')}
+        >
+          🎭 キャラクター
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'progress' ? 'active' : ''}`}
+          onClick={() => setActiveTab('progress')}
+        >
+          📊 進捗
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'customization' ? 'active' : ''}`}
+          onClick={() => setActiveTab('customization')}
+        >
+          🎨 カスタマイズ
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'minigame' ? 'active' : ''}`}
+          onClick={() => setActiveTab('minigame')}
+        >
+          🎮 ゲーム
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'collection' ? 'active' : ''}`}
+          onClick={() => setActiveTab('collection')}
+        >
+          📚 コレクション
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'share' ? 'active' : ''}`}
+          onClick={() => setActiveTab('share')}
+        >
+          📤 共有
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'gallery' ? 'active' : ''}`}
+          onClick={() => setActiveTab('gallery')}
+        >
+          🏆 ギャラリー
         </button>
       </div>
 
+      {/* タブコンテンツ */}
+      <div className="character-tab-content">
+        {activeTab === 'home' && (
+          <div className="home-content">
+            {/* 現在のキャラクター表示 */}
+            {selectedCharacter && characterSettings && (
+              <div className="current-character-section">
+                <h3>現在のキャラクター</h3>
+                <CharacterDisplay
+                  character={selectedCharacter}
+                  settings={characterSettings}
+                  workState={workState}
+                  onInteraction={handleCharacterInteraction}
+                  onLevelUp={handleCharacterLevelUp}
+                  onAchievement={handleCharacterAchievement}
+                  onProgressClick={() => setShowCharacterProgress(true)}
+                  onCustomizeClick={() => setShowCharacterCustomization(true)}
+                  onMiniGameClick={() => setShowCharacterMiniGame(true)}
+                  onCollectionClick={() => setShowCharacterCollection(true)}
+                  onShareClick={() => setShowCharacterShare(true)}
+                  onAchievementGalleryClick={() => setShowCharacterAchievementGallery(true)}
+                />
+              </div>
+            )}
+
+            {/* キャラクター選択ボタン */}
+            <div className="character-actions">
+              <button
+                className="select-character-btn"
+                onClick={() => setShowCharacterSelector(true)}
+              >
+                🎭 キャラクターを選択
+              </button>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'characters' && (
+          <div className="characters-content">
+            <div className="character-controls">
+              <div className="search-section">
+                <input
+                  type="text"
+                  placeholder="キャラクターを検索..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="search-input"
+                />
+              </div>
+
+              <div className="filter-section">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="category-select"
+                  aria-label="キャラクターカテゴリを選択"
+                >
+                  <option value="all">すべて</option>
+                  <option value="my">私のキャラクター</option>
+                  <option value="デフォルト">デフォルト</option>
+                  <option value="クラシック">クラシック</option>
+                  <option value="かわいい">かわいい</option>
+                  <option value="クール">クール</option>
+                </select>
+              </div>
+
+              <button
+                onClick={() => setShowCreateForm(true)}
+                className="create-character-btn"
+              >
+                ✨ 新しいキャラクターを作る
+              </button>
+            </div>
+
+            <div className="character-grid">
+              {filteredCharacters.map(character => (
+                <div key={character.id} className="character-card">
+                  <div className="character-preview">
+                    <div 
+                      className="character-svg"
+                      dangerouslySetInnerHTML={{ __html: character.svg }}
+                    />
+                  </div>
+                  <div className="character-info">
+                    <h3>{character.name}</h3>
+                    <p>{character.description}</p>
+                    <div className="character-meta">
+                      <span className="author">by {character.author}</span>
+                      <span className="likes">❤️ {character.likes}</span>
+                    </div>
+                    <div className="character-tags">
+                      {character.tags.map(tag => (
+                        <span key={tag} className="tag">{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="character-actions">
+                    <button
+                      onClick={() => onSelectCharacter?.(character)}
+                      className="select-btn"
+                    >
+                      選択
+                    </button>
+                    <button
+                      onClick={() => handleLikeCharacter(character.id)}
+                      className="like-btn"
+                    >
+                      ❤️
+                    </button>
+                    {character.author === 'ユーザー' && (
+                      <button
+                        onClick={() => handleDeleteCharacter(character.id)}
+                        className="delete-btn"
+                      >
+                        削除
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'progress' && (
+          <div className="progress-content">
+            {selectedCharacter && characterSettings ? (
+              <CharacterProgress
+                character={selectedCharacter}
+                settings={characterSettings}
+                onClose={() => setShowCharacterProgress(false)}
+              />
+            ) : (
+              <div className="no-character-message">
+                <p>キャラクターを選択してください</p>
+                <button
+                  className="select-character-btn"
+                  onClick={() => setShowCharacterSelector(true)}
+                >
+                  🎭 キャラクターを選択
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'customization' && (
+          <div className="customization-content">
+            {selectedCharacter && characterSettings ? (
+              <CharacterCustomizationComponent
+                character={selectedCharacter}
+                settings={characterSettings}
+                onCustomizationChange={handleCharacterSettingsUpdate}
+                onClose={() => setShowCharacterCustomization(false)}
+              />
+            ) : (
+              <div className="no-character-message">
+                <p>キャラクターを選択してください</p>
+                <button
+                  className="select-character-btn"
+                  onClick={() => setShowCharacterSelector(true)}
+                >
+                  🎭 キャラクターを選択
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'minigame' && (
+          <div className="minigame-content">
+            {selectedCharacter ? (
+              <CharacterMiniGame
+                character={selectedCharacter}
+                onGameComplete={handleMiniGameComplete}
+                onClose={() => setShowCharacterMiniGame(false)}
+              />
+            ) : (
+              <div className="no-character-message">
+                <p>キャラクターを選択してください</p>
+                <button
+                  className="select-character-btn"
+                  onClick={() => setShowCharacterSelector(true)}
+                >
+                  🎭 キャラクターを選択
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'collection' && (
+          <div className="collection-content">
+            {selectedCharacter ? (
+              <CharacterCollection
+                character={selectedCharacter}
+                onClose={() => setShowCharacterCollection(false)}
+              />
+            ) : (
+              <div className="no-character-message">
+                <p>キャラクターを選択してください</p>
+                <button
+                  className="select-character-btn"
+                  onClick={() => setShowCharacterSelector(true)}
+                >
+                  🎭 キャラクターを選択
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'share' && (
+          <div className="share-content">
+            {selectedCharacter ? (
+              <CharacterShare
+                character={selectedCharacter}
+                onClose={() => setShowCharacterShare(false)}
+              />
+            ) : (
+              <div className="no-character-message">
+                <p>キャラクターを選択してください</p>
+                <button
+                  className="select-character-btn"
+                  onClick={() => setShowCharacterSelector(true)}
+                >
+                  🎭 キャラクターを選択
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'gallery' && (
+          <div className="gallery-content">
+            {selectedCharacter ? (
+              <CharacterAchievementGallery
+                character={selectedCharacter}
+                onClose={() => setShowCharacterAchievementGallery(false)}
+              />
+            ) : (
+              <div className="no-character-message">
+                <p>キャラクターを選択してください</p>
+                <button
+                  className="select-character-btn"
+                  onClick={() => setShowCharacterSelector(true)}
+                >
+                  🎭 キャラクターを選択
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* キャラクター作成フォーム */}
       {showCreateForm && (
         <div className="create-character-modal">
           <div className="modal-content">
@@ -242,7 +541,6 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
                 value={newCharacter.description}
                 onChange={(e) => setNewCharacter({...newCharacter, description: e.target.value})}
                 placeholder="キャラクターの説明を入力"
-                rows={3}
               />
             </div>
             <div className="form-group">
@@ -250,7 +548,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
               <textarea
                 value={newCharacter.svg}
                 onChange={(e) => setNewCharacter({...newCharacter, svg: e.target.value})}
-                placeholder="SVGコードを貼り付けてください"
+                placeholder="SVGコードを入力"
                 rows={10}
               />
             </div>
@@ -259,21 +557,11 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
               <input
                 type="text"
                 value={newCharacter.tags?.join(', ') || ''}
-                onChange={(e) => setNewCharacter({...newCharacter, tags: e.target.value.split(',').map(tag => tag.trim())})}
-                placeholder="例: かわいい, クール, シンプル"
+                onChange={(e) => setNewCharacter({...newCharacter, tags: e.target.value.split(', ').filter(tag => tag.trim())})}
+                placeholder="タグをカンマ区切りで入力"
               />
             </div>
-            <div className="form-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={newCharacter.isPublic}
-                  onChange={(e) => setNewCharacter({...newCharacter, isPublic: e.target.checked})}
-                />
-                みんなに公開する
-              </label>
-            </div>
-            <div className="modal-buttons">
+            <div className="form-actions">
               <button onClick={handleCreateCharacter} className="create-btn">
                 作成
               </button>
@@ -285,54 +573,81 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
         </div>
       )}
 
-      <div className="character-gallery">
-        {filteredCharacters.map(character => (
-          <div key={character.id} className="character-card">
-            <div className="character-preview">
-              <div 
-                className="character-svg"
-                dangerouslySetInnerHTML={{ __html: character.svg }}
-              />
-            </div>
-            <div className="character-info">
-              <h3>{character.name}</h3>
-              <p className="character-author">by {character.author}</p>
-              <p className="character-description">{character.description}</p>
-              <div className="character-tags">
-                {character.tags.map(tag => (
-                  <span key={tag} className="tag">{tag}</span>
-                ))}
-              </div>
-              <div className="character-actions">
-                <button
-                  onClick={() => onSelectCharacter?.(character)}
-                  className={`select-btn ${currentCharacter?.id === character.id ? 'selected' : ''}`}
-                >
-                  {currentCharacter?.id === character.id ? '選択中' : '選択'}
-                </button>
-                <button
-                  onClick={() => handleLikeCharacter(character.id)}
-                  className="like-btn"
-                >
-                  ❤️ {character.likes}
-                </button>
-                {character.author === 'ユーザー' && (
-                  <button
-                    onClick={() => handleDeleteCharacter(character.id)}
-                    className="delete-btn"
-                  >
-                    🗑️
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* モーダルコンポーネント */}
+      {showCharacterSelector && (
+        <CharacterSelector
+          onSelectCharacter={handleCharacterSelect}
+          onClose={() => setShowCharacterSelector(false)}
+        />
+      )}
 
-      {filteredCharacters.length === 0 && (
-        <div className="no-characters">
-          <p>キャラクターが見つかりませんでした</p>
+      {showCharacterProgress && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <CharacterProgress
+              character={selectedCharacter!}
+              settings={characterSettings!}
+              onClose={() => setShowCharacterProgress(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showCharacterCustomization && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <CharacterCustomizationComponent
+              character={selectedCharacter!}
+              settings={characterSettings!}
+              onCustomizationChange={handleCharacterSettingsUpdate}
+              onClose={() => setShowCharacterCustomization(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showCharacterMiniGame && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <CharacterMiniGame
+              character={selectedCharacter!}
+              onGameComplete={handleMiniGameComplete}
+              onClose={() => setShowCharacterMiniGame(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showCharacterCollection && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <CharacterCollection
+              character={selectedCharacter!}
+              onClose={() => setShowCharacterCollection(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showCharacterShare && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <CharacterShare
+              character={selectedCharacter!}
+              onClose={() => setShowCharacterShare(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showCharacterAchievementGallery && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <CharacterAchievementGallery
+              character={selectedCharacter!}
+              onClose={() => setShowCharacterAchievementGallery(false)}
+            />
+          </div>
         </div>
       )}
     </div>

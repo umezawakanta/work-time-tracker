@@ -6406,7 +6406,6 @@ User Agent: ${userAgent}
             isTimeTrackingActive={isTimeTrackingActive}
             handleUpdateRequest={handleUpdateRequest}
             handleBugReport={handleBugReport}
-            onCharacterSelectClick={() => setShowCharacterSelector(true)}
           />
 
           {/* 通知コンポーネント */}
@@ -6891,6 +6890,14 @@ User Agent: ${userAgent}
                 showCharacterHome={showCharacterHome}
                 setShowCharacterHome={setShowCharacterHome}
                 closeOtherFeatures={closeOtherFeatures}
+                selectedCharacter={selectedCharacter}
+                characterSettings={characterSettings}
+                workState={workState}
+                onCharacterInteraction={handleCharacterInteraction}
+                onCharacterLevelUp={handleCharacterLevelUp}
+                onCharacterAchievement={handleCharacterAchievement}
+                onCharacterSelect={handleCharacterSelect}
+                onCharacterSettingsUpdate={handleCharacterSettingsUpdate}
               />
             </div>
           </div>

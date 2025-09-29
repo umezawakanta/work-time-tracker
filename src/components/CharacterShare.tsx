@@ -154,10 +154,14 @@ const CharacterShare: React.FC<CharacterShareProps> = ({
             </div>
             {shareText && (
               <div className="share-text-preview">
+                <label htmlFor="share-text" className="sr-only">共有テキスト</label>
                 <textarea 
+                  id="share-text"
                   value={shareText} 
                   readOnly 
                   className="share-textarea"
+                  placeholder="共有テキストがここに表示されます"
+                  aria-label="共有テキスト"
                 />
               </div>
             )}
@@ -178,11 +182,15 @@ const CharacterShare: React.FC<CharacterShareProps> = ({
             </div>
             {shareUrl && (
               <div className="share-url-preview">
+                <label htmlFor="share-url" className="sr-only">共有URL</label>
                 <input 
+                  id="share-url"
                   type="text" 
                   value={shareUrl} 
                   readOnly 
                   className="share-input"
+                  placeholder="共有URLがここに表示されます"
+                  aria-label="共有URL"
                 />
               </div>
             )}
