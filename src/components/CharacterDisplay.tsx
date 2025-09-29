@@ -11,7 +11,6 @@ interface CharacterDisplayProps {
   onInteraction?: (interaction: string) => void;
   onLevelUp?: (newLevel: number) => void;
   onAchievement?: (achievementId: string) => void;
-  onProgressClick?: () => void;
   onCustomizeClick?: () => void;
   onMiniGameClick?: () => void;
   onCollectionClick?: () => void;
@@ -25,7 +24,6 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
   onInteraction,
   onLevelUp,
   onAchievement,
-  onProgressClick,
   onCustomizeClick,
   onMiniGameClick,
   onCollectionClick,
@@ -275,15 +273,6 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
           <span className="exp-text">{character.experience} EXP</span>
         </div>
         <div className="character-actions">
-          {onProgressClick && (
-            <button 
-              className="progress-button"
-              onClick={onProgressClick}
-              title="進捗を表示"
-            >
-              📊 進捗
-            </button>
-          )}
           {onCustomizeClick && (
             <button 
               className="customize-button"

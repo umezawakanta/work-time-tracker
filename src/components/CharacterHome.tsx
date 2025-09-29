@@ -328,7 +328,6 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
                   onInteraction={handleCharacterInteraction}
                   onLevelUp={handleCharacterLevelUp}
                   onAchievement={handleCharacterAchievement}
-                  onProgressClick={() => setShowCharacterProgress(true)}
                   onCustomizeClick={() => setShowCharacterCustomization(true)}
                   onMiniGameClick={() => setShowCharacterMiniGame(true)}
                   onCollectionClick={() => setShowCharacterCollection(true)}
