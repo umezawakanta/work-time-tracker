@@ -30,6 +30,7 @@ import CharacterCollection from "./components/CharacterCollection";
 import CharacterShare from "./components/CharacterShare";
 import BadgeNotification from "./components/BadgeNotification";
 import TwitterShare from "./components/TwitterShare";
+import SimpleShareModal from "./components/SimpleShareModal";
 import BadgeGallery from "./components/BadgeGallery";
 import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
 import {
@@ -357,8 +358,6 @@ function App({
   // バッジシステムの状態
   const [showBadgeNotification, setShowBadgeNotification] = useState(false);
   const [currentBadge, setCurrentBadge] = useState<Badge | null>(null);
-  const [showTwitterShare, setShowTwitterShare] = useState(false);
-  const [badgeShareData, setBadgeShareData] = useState<BadgeShareData | null>(null);
 
   // ジャンル管理の状態
   const [showGenreManagement, setShowGenreManagement] = useState(false);
@@ -1346,15 +1345,272 @@ ${errorInfo.stack}
     }
   }, [isLoggedIn, user]);
 
-  // デバッグ用：showTwitterShareの状態変化を監視
-  useEffect(() => {
-    console.log('showTwitterShare state changed:', showTwitterShare);
-  }, [showTwitterShare]);
 
-  // デバッグ用：badgeShareDataの状態変化を監視
-  useEffect(() => {
-    console.log('badgeShareData state changed:', badgeShareData);
-  }, [badgeShareData]);
+  // バッジシェアモーダルを表示する関数
+  const showBadgeShareModal = (badge: Badge) => {
+    console.log('Showing badge share modal for:', badge);
+    
+    // 既存のモーダルを削除
+    const existingModal = document.getElementById('badge-share-modal');
+    if (existingModal) {
+      document.body.removeChild(existingModal);
+    }
+    
+    // シェアデータを生成
+    const shareData = {
+      badge: badge,
+      user: user ? { name: user.email, displayName: user.displayName } : { name: 'ユーザー', displayName: 'ユーザー' },
+      shareUrl: `${window.location.origin}?badge=${badge.id}`,
+      shareText: badge.shareText || `${badge.name}を獲得しました！ #WorkTimeTracker`,
+      shareImageUrl: undefined
+    };
+    
+    // モーダル要素を作成
+    const modal = document.createElement('div');
+    modal.id = 'badge-share-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    `;
+    
+    modal.innerHTML = `
+      <div style="
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 600px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        position: relative;
+      ">
+        <!-- ヘッダー -->
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 25px;
+          padding-bottom: 15px;
+          border-bottom: 2px solid #f0f0f0;
+        ">
+          <h3 style="margin: 0; color: #333;">X（Twitter）でシェア</h3>
+          <button id="close-badge-modal" style="
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+          ">
+            ✕
+          </button>
+        </div>
+        
+        <!-- バッジ情報 -->
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          padding: 20px;
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border-radius: 15px;
+          border: 2px solid #dee2e6;
+          margin-bottom: 25px;
+        ">
+          <div style="font-size: 3rem; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));">${badge.icon}</div>
+          <div>
+            <h4 style="margin: 0 0 8px 0; color: #333; font-size: 1.2rem; font-weight: 700;">${badge.name}</h4>
+            <p style="margin: 0; color: #666; font-size: 0.9rem; line-height: 1.4;">${badge.description}</p>
+          </div>
+        </div>
+        
+        <!-- シェアテキスト -->
+        <div style="margin-bottom: 25px;">
+          <label style="font-weight: 600; color: #333; font-size: 0.9rem; display: block; margin-bottom: 8px;">シェアテキスト</label>
+          <textarea
+            id="share-text"
+            readonly
+            rows="3"
+            style="
+              width: 100%;
+              padding: 12px;
+              border: 2px solid #dee2e6;
+              border-radius: 8px;
+              font-size: 0.9rem;
+              line-height: 1.4;
+              resize: vertical;
+              min-height: 80px;
+              font-family: inherit;
+              box-sizing: border-box;
+            "
+          >${shareData.shareText}</textarea>
+          <button id="copy-text" style="
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+          ">
+            📋 コピー
+          </button>
+        </div>
+        
+        <!-- シェアURL -->
+        <div style="margin-bottom: 25px;">
+          <label style="font-weight: 600; color: #333; font-size: 0.9rem; display: block; margin-bottom: 8px;">シェアURL</label>
+          <input
+            id="share-url"
+            type="text"
+            readonly
+            value="${shareData.shareUrl}"
+            style="
+              width: 100%;
+              padding: 12px;
+              border: 2px solid #dee2e6;
+              border-radius: 8px;
+              font-size: 0.9rem;
+              font-family: inherit;
+              box-sizing: border-box;
+            "
+          />
+          <button id="copy-url" style="
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+          ">
+            📋 コピー
+          </button>
+        </div>
+        
+        <!-- ボタン -->
+        <div style="
+          display: flex;
+          gap: 15px;
+          justify-content: center;
+        ">
+          <button id="twitter-share" style="
+            background: #1da1f2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 150px;
+            justify-content: center;
+          ">
+            <span style="font-size: 1.2rem; font-weight: bold;">𝕏</span>
+            Xでシェア
+          </button>
+          
+          <button id="cancel-share" style="
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+          ">
+            キャンセル
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // イベントリスナーを設定
+    const closeModal = () => {
+      document.body.removeChild(modal);
+    };
+    
+    // 閉じるボタン
+    document.getElementById('close-badge-modal')?.addEventListener('click', closeModal);
+    document.getElementById('cancel-share')?.addEventListener('click', closeModal);
+    
+    // 背景クリックで閉じる
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+    
+    // テキストコピー
+    document.getElementById('copy-text')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(shareData.shareText);
+        alert('シェアテキストをコピーしました！');
+      } catch (error) {
+        console.error('Failed to copy text:', error);
+        alert('コピーに失敗しました');
+      }
+    });
+    
+    // URLコピー
+    document.getElementById('copy-url')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(shareData.shareUrl);
+        alert('URLをコピーしました！');
+      } catch (error) {
+        console.error('Failed to copy URL:', error);
+        alert('コピーに失敗しました');
+      }
+    });
+    
+    // Twitterシェア
+    document.getElementById('twitter-share')?.addEventListener('click', () => {
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.shareText)}&url=${encodeURIComponent(shareData.shareUrl)}`;
+      window.open(twitterUrl, '_blank', 'width=600,height=400');
+    });
+  };
+
+  // テスト用シェア関数
+  const handleTestShare = () => {
+    console.log('TEST SHARE CLICKED');
+    showBadgeShareModal({
+      id: 'test',
+      name: 'テストバッジ',
+      description: 'テスト用のバッジです',
+      icon: '🧪',
+      rarity: 'common' as const,
+      category: 'special' as const,
+      unlockCondition: 'テスト用',
+      shareText: 'テストバッジを獲得しました！ #WorkTimeTracker #テスト',
+      xpReward: 100
+    });
+  };
 
   // グローバルエラーハンドリング
   useEffect(() => {
@@ -2081,52 +2337,18 @@ ${errorInfo.stack}
       const isUnlocked = badgeManager.isBadgeUnlocked(badge.id);
       console.log('Badge unlocked status:', isUnlocked);
       
-      const shareData = badgeManager.generateShareData(badge.id, {
-        name: user.displayName || user.email,
-        displayName: user.displayName
-      });
-      
-      console.log('Generated share data:', shareData);
-      
-      if (shareData) {
-        setBadgeShareData(shareData);
-        setShowBadgeNotification(false);
-        
-        // 状態更新を確実にするため、少し遅延してからモーダルを表示
-        setTimeout(() => {
-          console.log('Setting showTwitterShare to true');
-          setShowTwitterShare(true);
-          console.log('Twitter share modal should be shown');
-        }, 100);
+      if (isUnlocked) {
+        console.log('Badge is unlocked, showing share modal');
+        showBadgeShareModal(badge);
       } else {
-        console.log('Failed to generate share data - badge may not be unlocked');
-        // デバッグ用：バッジを強制的にアンロックしてシェアを試行
-        if (!isUnlocked) {
-          console.log('Attempting to unlock badge for sharing');
-          badgeManager.unlockBadge(badge.id);
-          const retryShareData = badgeManager.generateShareData(badge.id, {
-            name: user.displayName || user.email,
-            displayName: user.displayName
-          });
-          if (retryShareData) {
-            setBadgeShareData(retryShareData);
-            setShowBadgeNotification(false);
-            setTimeout(() => {
-              setShowTwitterShare(true);
-              console.log('Twitter share modal should be shown (retry)');
-            }, 100);
-          }
-        }
+        console.log('Badge is not unlocked, cannot share');
+        alert('このバッジはまだ獲得していません。');
       }
     } else {
       console.log('User is null, cannot share badge');
     }
   };
 
-  const handleTwitterShareClose = () => {
-    setShowTwitterShare(false);
-    setBadgeShareData(null);
-  };
 
   const handleBadgeClick = (badge: Badge) => {
     // バッジをクリックした時の処理（シェア機能を呼び出し）
@@ -6489,46 +6711,11 @@ User Agent: ${userAgent}
           />
         )}
 
-        {/* X（Twitter）シェア */}
-        {(() => {
-          console.log('Rendering Twitter share section...');
-          console.log('showTwitterShare:', showTwitterShare);
-          console.log('badgeShareData:', badgeShareData);
-          console.log('Condition result:', showTwitterShare && badgeShareData);
-          
-          if (showTwitterShare && badgeShareData) {
-            console.log('Rendering Twitter share modal!');
-            return (
-              <div className="twitter-share-modal">
-                <div className="twitter-share-overlay" onClick={handleTwitterShareClose} />
-                <div className="twitter-share-content">
-                  <TwitterShare
-                    shareData={badgeShareData}
-                    onClose={handleTwitterShareClose}
-                  />
-                </div>
-              </div>
-            );
-          } else {
-            console.log('Not rendering Twitter share modal');
-            return null;
-          }
-        })()}
         
-        {/* デバッグ用：条件分岐の確認 */}
-        {process.env.NODE_ENV === 'development' && (
-          <div style={{ position: 'fixed', top: '50px', right: '10px', background: 'red', color: 'white', padding: '10px', zIndex: 99999, fontSize: '12px' }}>
-            <div>showTwitterShare: {showTwitterShare ? 'true' : 'false'}</div>
-            <div>badgeShareData exists: {badgeShareData ? 'true' : 'false'}</div>
-            <div>Condition result: {(showTwitterShare && badgeShareData) ? 'true' : 'false'}</div>
-          </div>
-        )}
         
         {/* デバッグ用の状態表示 */}
         {process.env.NODE_ENV === 'development' && (
           <div style={{ position: 'fixed', top: '10px', right: '10px', background: 'black', color: 'white', padding: '10px', zIndex: 99999, fontSize: '12px' }}>
-            <div>showTwitterShare: {showTwitterShare ? 'true' : 'false'}</div>
-            <div>badgeShareData: {badgeShareData ? 'exists' : 'null'}</div>
             <div>showBadgeNotification: {showBadgeNotification ? 'true' : 'false'}</div>
             <div>currentBadge: {currentBadge ? currentBadge.name : 'null'}</div>
             <div>User badges count: {badgeManager.getUserBadges().length}</div>
@@ -6602,6 +6789,7 @@ User Agent: ${userAgent}
             isTimeTrackingActive={isTimeTrackingActive}
             handleUpdateRequest={handleUpdateRequest}
             handleBugReport={handleBugReport}
+            handleTestShare={handleTestShare}
           />
 
           {/* 通知コンポーネント */}

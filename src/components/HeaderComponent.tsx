@@ -29,6 +29,7 @@ interface HeaderComponentProps {
   isTimeTrackingActive: boolean;
   handleUpdateRequest: (updateRequest: any) => Promise<void>;
   handleBugReport: (bugReport: any) => Promise<void>;
+  handleTestShare?: () => void;
 }
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -47,6 +48,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   isTimeTrackingActive,
   handleUpdateRequest,
   handleBugReport,
+  handleTestShare,
 }) => {
   // 更新要望モーダルの状態をHeaderComponent内で管理
   const [showUpdateRequestModal, setShowUpdateRequestModal] = useState(false);
@@ -105,6 +107,29 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       {/* 右上固定：シェアボタン、不具合報告ボタン、更新要望ボタン、ログアウトボタン */}
       <div className="header-top-right">
         <ShareButtonComponent />
+        {handleTestShare && (
+          <button
+            onClick={() => {
+              console.log('Test share button clicked in HeaderComponent');
+              handleTestShare();
+            }}
+            className="test-share-button"
+            title="テストシェアダイアログ"
+            style={{
+              background: '#ff6b6b',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '8px 12px',
+              cursor: 'pointer',
+              fontSize: '0.9em',
+              marginRight: '8px'
+            }}
+          >
+            <i className="bi bi-share"></i>
+            <span>テストシェア</span>
+          </button>
+        )}
         <button
           onClick={() => setShowBugReportModal(true)}
           className="bug-report-button"
