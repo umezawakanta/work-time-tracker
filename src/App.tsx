@@ -6490,17 +6490,30 @@ User Agent: ${userAgent}
         )}
 
         {/* X（Twitter）シェア */}
-        {showTwitterShare && badgeShareData && (
-          <div className="twitter-share-modal">
-            <div className="twitter-share-overlay" onClick={handleTwitterShareClose} />
-            <div className="twitter-share-content">
-              <TwitterShare
-                shareData={badgeShareData}
-                onClose={handleTwitterShareClose}
-              />
-            </div>
-          </div>
-        )}
+        {(() => {
+          console.log('Rendering Twitter share section...');
+          console.log('showTwitterShare:', showTwitterShare);
+          console.log('badgeShareData:', badgeShareData);
+          console.log('Condition result:', showTwitterShare && badgeShareData);
+          
+          if (showTwitterShare && badgeShareData) {
+            console.log('Rendering Twitter share modal!');
+            return (
+              <div className="twitter-share-modal">
+                <div className="twitter-share-overlay" onClick={handleTwitterShareClose} />
+                <div className="twitter-share-content">
+                  <TwitterShare
+                    shareData={badgeShareData}
+                    onClose={handleTwitterShareClose}
+                  />
+                </div>
+              </div>
+            );
+          } else {
+            console.log('Not rendering Twitter share modal');
+            return null;
+          }
+        })()}
         
         {/* デバッグ用：条件分岐の確認 */}
         {process.env.NODE_ENV === 'development' && (
