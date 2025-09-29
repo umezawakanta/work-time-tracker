@@ -11,6 +11,7 @@ import CharacterShare from './CharacterShare';
 import BadgeGallery from './BadgeGallery';
 import CharacterGrowthDisplay from './CharacterGrowthDisplay';
 import CharacterEvolution from './CharacterEvolution';
+import CurrencyDisplay from './CurrencyDisplay';
 import { Badge } from '../types/badge';
 import { badgeManager } from '../utils/badgeManager';
 import { characterGrowthManager } from '../utils/characterGrowthManager';
@@ -44,6 +45,8 @@ interface CharacterHomeProps {
   onCharacterSelect?: (character: CharacterType) => void;
   onCharacterSettingsUpdate?: (updates: Partial<UserCharacterSettings>) => void;
   onBadgeClick?: (badge: Badge) => void;
+  // 仮想通貨表示用
+  userId?: string;
 }
 
 const CharacterHome: React.FC<CharacterHomeProps> = ({ 
@@ -78,7 +81,8 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   onCharacterAchievement = () => {},
   onCharacterSelect = () => {},
   onCharacterSettingsUpdate = () => {},
-  onBadgeClick = () => {}
+  onBadgeClick = () => {},
+  userId = ''
 }) => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -318,6 +322,12 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
           onClick={() => setActiveTab('evolution')}
         >
           ✨ 進化
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'currency' ? 'active' : ''}`}
+          onClick={() => setActiveTab('currency')}
+        >
+          🪙 通貨
         </button>
       </div>
 
@@ -623,6 +633,47 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
                 </button>
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'currency' && (
+          <div className="currency-content">
+            <div className="currency-section">
+              <h3>🪙 仮想通貨</h3>
+              <p>不具合報告や機能提案で獲得したワークコインを管理できます。</p>
+              
+              {userId ? (
+                <CurrencyDisplay 
+                  userId={userId} 
+                  showDetails={true}
+                  className="main-currency-display"
+                />
+              ) : (
+                <div className="no-user-message">
+                  <p>ログインが必要です</p>
+                </div>
+              )}
+            </div>
+
+            <div className="currency-info-section">
+              <h4>💡 ワークコインの獲得方法</h4>
+              <ul className="currency-earning-methods">
+                <li>🐛 不具合報告: 10-50ワークコイン</li>
+                <li>💡 機能提案: 15-60ワークコイン</li>
+                <li>⚡ 改善提案: 20-80ワークコイン</li>
+                <li>🎖️ バッジ獲得: 追加ボーナス</li>
+              </ul>
+            </div>
+
+            <div className="currency-usage-section">
+              <h4>🛒 ワークコインの使い道</h4>
+              <ul className="currency-usage-methods">
+                <li>🎭 新しいキャラクターの購入</li>
+                <li>👕 キャラクターの衣装・アクセサリー</li>
+                <li>🎨 カスタマイズアイテム</li>
+                <li>✨ 特別なエフェクト</li>
+              </ul>
+            </div>
           </div>
         )}
       </div>

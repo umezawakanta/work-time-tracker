@@ -473,6 +473,107 @@ class BadgeManager {
       completionRate: Math.round((unlockedCount / totalBadges) * 100)
     };
   }
+
+  // 不具合報告のバッジをチェック
+  public checkBugReportBadges(reportType: 'bug' | 'feature' | 'improvement'): Badge[] {
+    const unlockedBadges: Badge[] = [];
+    
+    // 初回報告バッジ
+    const firstReportBadge = this.checkFirstReportBadge(reportType);
+    if (firstReportBadge) {
+      unlockedBadges.push(firstReportBadge);
+    }
+
+    // 累計報告バッジ
+    const cumulativeBadges = this.checkCumulativeReportBadges();
+    unlockedBadges.push(...cumulativeBadges);
+
+    return unlockedBadges;
+  }
+
+  // 初回報告バッジをチェック
+  private checkFirstReportBadge(reportType: 'bug' | 'feature' | 'improvement'): Badge | null {
+    const reportCounts = this.getReportCounts();
+    
+    if (reportType === 'bug' && reportCounts.bug === 1) {
+      const badge = BADGES.find(b => b.id === 'bug_reporter');
+      if (badge && this.unlockBadge(badge.id)) {
+        return badge;
+      }
+    }
+    
+    if (reportType === 'feature' && reportCounts.feature === 1) {
+      const badge = BADGES.find(b => b.id === 'feature_advocate');
+      if (badge && this.unlockBadge(badge.id)) {
+        return badge;
+      }
+    }
+    
+    if (reportType === 'improvement' && reportCounts.improvement === 1) {
+      const badge = BADGES.find(b => b.id === 'improvement_suggester');
+      if (badge && this.unlockBadge(badge.id)) {
+        return badge;
+      }
+    }
+
+    return null;
+  }
+
+  // 累計報告バッジをチェック
+  private checkCumulativeReportBadges(): Badge[] {
+    const unlockedBadges: Badge[] = [];
+    const reportCounts = this.getReportCounts();
+    const totalReports = reportCounts.bug + reportCounts.feature + reportCounts.improvement;
+
+    // バグハンター（5個の不具合報告）
+    if (reportCounts.bug >= 5) {
+      const badge = BADGES.find(b => b.id === 'bug_hunter');
+      if (badge && !this.isBadgeUnlocked(badge.id) && this.unlockBadge(badge.id)) {
+        unlockedBadges.push(badge);
+      }
+    }
+
+    // コミュニティヘルパー（10個の報告・提案）
+    if (totalReports >= 10) {
+      const badge = BADGES.find(b => b.id === 'community_helper');
+      if (badge && !this.isBadgeUnlocked(badge.id) && this.unlockBadge(badge.id)) {
+        unlockedBadges.push(badge);
+      }
+    }
+
+    // 品質ガーディアン（25個の報告・提案）
+    if (totalReports >= 25) {
+      const badge = BADGES.find(b => b.id === 'quality_guardian');
+      if (badge && !this.isBadgeUnlocked(badge.id) && this.unlockBadge(badge.id)) {
+        unlockedBadges.push(badge);
+      }
+    }
+
+    return unlockedBadges;
+  }
+
+  // 報告数を取得
+  private getReportCounts(): { bug: number; feature: number; improvement: number } {
+    const reportHistory = JSON.parse(localStorage.getItem('reportHistory') || '[]');
+    
+    return reportHistory.reduce((counts: any, report: any) => {
+      if (report.type === 'bug') counts.bug++;
+      else if (report.type === 'feature') counts.feature++;
+      else if (report.type === 'improvement') counts.improvement++;
+      return counts;
+    }, { bug: 0, feature: 0, improvement: 0 });
+  }
+
+  // 報告履歴を記録
+  public recordReport(reportType: 'bug' | 'feature' | 'improvement', reportId: string): void {
+    const reportHistory = JSON.parse(localStorage.getItem('reportHistory') || '[]');
+    reportHistory.push({
+      type: reportType,
+      id: reportId,
+      timestamp: new Date().toISOString()
+    });
+    localStorage.setItem('reportHistory', JSON.stringify(reportHistory));
+  }
 }
 
 export const badgeManager = new BadgeManager();

@@ -1,0 +1,167 @@
+/* 仮想通貨表示コンポーネントのスタイル */
+
+.currency-display-simple {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  color: #8b4513;
+  min-width: 60px;
+  justify-content: center;
+}
+
+.currency-display-simple .currency-icon {
+  font-size: 16px;
+}
+
+.currency-display-simple .currency-amount {
+  font-size: 14px;
+}
+
+.currency-display {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-width: 200px;
+}
+
+.currency-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.currency-header:hover {
+  background: linear-gradient(135deg, #ffed4e, #ffd700);
+}
+
+.currency-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.currency-total {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.currency-label {
+  font-size: 12px;
+  color: #8b4513;
+  font-weight: 500;
+}
+
+.currency-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: #8b4513;
+}
+
+.currency-toggle {
+  font-size: 12px;
+  color: #8b4513;
+  transition: transform 0.2s ease;
+}
+
+.currency-toggle.expanded {
+  transform: rotate(180deg);
+}
+
+.currency-details {
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.currency-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.currency-item:last-child {
+  border-bottom: none;
+}
+
+.currency-item-icon {
+  font-size: 18px;
+  margin-right: 12px;
+  width: 24px;
+  text-align: center;
+}
+
+.currency-item-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.currency-item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.currency-item-amount {
+  font-size: 14px;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.currency-actions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: center;
+}
+
+.currency-refresh-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.currency-refresh-btn:hover {
+  background: #0056b3;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .currency-display {
+    min-width: 180px;
+  }
+  
+  .currency-header {
+    padding: 10px 12px;
+  }
+  
+  .currency-details {
+    padding: 10px 12px;
+  }
+  
+  .currency-amount {
+    font-size: 16px;
+  }
+  
+  .currency-item-name,
+  .currency-item-amount {
+    font-size: 13px;
+  }
+}

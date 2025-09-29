@@ -51,6 +51,7 @@ import { Badge, BadgeShareData } from "./types/badge";
 import { badgeManager } from "./utils/badgeManager";
 import { BADGES } from "./constants/badges";
 import { characterManager } from "./utils/characterManager";
+import { currencyManager } from "./utils/currencyManager";
 import {
   buildApiUrl,
   createUserIdParam,
@@ -5016,6 +5017,12 @@ User Agent: ${userAgent}
       });
 
       if (response.ok) {
+        const memoData = await response.json();
+        const reportId = memoData.memo?.id || `feature_${Date.now()}`;
+        
+        // 報酬システムを実行
+        await processBugReportRewards('feature', reportId, updateRequest);
+        
         setMessage("更新要望を送信しました。ありがとうございます。");
         // モーダルの閉じる処理はHeaderComponent内で管理
       } else {
@@ -5054,6 +5061,12 @@ User Agent: ${userAgent}
       });
 
       if (response.ok) {
+        const memoData = await response.json();
+        const reportId = memoData.memo?.id || `bug_${Date.now()}`;
+        
+        // 報酬システムを実行
+        await processBugReportRewards('bug', reportId, bugReport);
+        
         setMessage("不具合報告を送信しました。ありがとうございます。");
         // モーダルの閉じる処理はHeaderComponent内で管理
       } else {
@@ -5064,6 +5077,53 @@ User Agent: ${userAgent}
       console.error("不具合報告送信エラー:", error);
       setMessage("不具合報告の送信に失敗しました。もう一度お試しください。");
       throw error;
+    }
+  };
+
+  // 不具合報告の報酬処理
+  const processBugReportRewards = async (reportType: 'bug' | 'feature' | 'improvement', reportId: string, reportData: any) => {
+    if (!user) return;
+
+    try {
+      // 報告履歴を記録
+      badgeManager.recordReport(reportType, reportId);
+
+      // バッジをチェック
+      const unlockedBadges = badgeManager.checkBugReportBadges(reportType);
+      
+      // 経験値を計算（バッジの経験値 + 基本報酬）
+      const baseXP = reportType === 'bug' ? 20 : reportType === 'feature' ? 30 : 40;
+      const badgeXP = unlockedBadges.reduce((total, badge) => total + badge.xpReward, 0);
+      const totalXP = baseXP + badgeXP;
+
+      // キャラクターに経験値を追加
+      if (selectedCharacter) {
+        characterManager.addExperience(parseInt(selectedCharacter.id), totalXP);
+      }
+
+      // 仮想通貨を計算
+      const severity = reportData.severity || 'medium';
+      const currencyRewards = currencyManager.calculateBugReportReward(reportType, severity);
+      
+      // 仮想通貨を付与
+      currencyManager.grantReward(
+        user.id,
+        currencyRewards,
+        'bug_report',
+        `${reportType}報告: ${reportData.title}`,
+        { reportId, reportType, severity }
+      );
+
+      // バッジ通知を表示
+      if (unlockedBadges.length > 0) {
+        const firstBadge = unlockedBadges[0];
+        setCurrentBadge(firstBadge);
+        setShowBadgeNotification(true);
+      }
+
+      console.log(`報酬付与完了: ${totalXP}XP, ${currencyRewards[0]?.amount || 0}ワークコイン`);
+    } catch (error) {
+      console.error('報酬処理エラー:', error);
     }
   };
 
@@ -7278,6 +7338,7 @@ User Agent: ${userAgent}
                   onCharacterSelect={handleCharacterSelect}
                   onCharacterSettingsUpdate={handleCharacterSettingsUpdate}
                   onBadgeClick={handleBadgeClick}
+                  userId={user?.id || ''}
                 />
               </div>
             </div>

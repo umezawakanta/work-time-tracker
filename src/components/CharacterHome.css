@@ -504,3 +504,114 @@
     width: 100%;
   }
 }
+
+/* 仮想通貨タブのスタイル */
+.currency-content {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin: 10px 0;
+}
+
+.currency-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.currency-section h3 {
+  margin: 0 0 10px 0;
+  color: #495057;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.currency-section p {
+  margin: 0 0 20px 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.main-currency-display {
+  margin: 20px 0;
+}
+
+.no-user-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.currency-info-section,
+.currency-usage-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.currency-info-section h4,
+.currency-usage-section h4 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.currency-earning-methods,
+.currency-usage-methods {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.currency-earning-methods li,
+.currency-usage-methods li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+  color: #495057;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.currency-earning-methods li:last-child,
+.currency-usage-methods li:last-child {
+  border-bottom: none;
+}
+
+.currency-earning-methods li::before,
+.currency-usage-methods li::before {
+  content: "•";
+  color: #28a745;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .currency-content {
+    padding: 15px;
+  }
+  
+  .currency-section,
+  .currency-info-section,
+  .currency-usage-section {
+    padding: 15px;
+  }
+  
+  .currency-section h3 {
+    font-size: 18px;
+  }
+  
+  .currency-info-section h4,
+  .currency-usage-section h4 {
+    font-size: 15px;
+  }
+}

@@ -337,6 +337,73 @@ export const BADGES: Badge[] = [
     unlockCondition: '1日で8時間の作業を記録する',
     shareText: '1日で8時間の作業を記録しました！完璧な一日でした ⭐ #WorkTimeTracker #完璧な一日',
     xpReward: 150
+  },
+  // 不具合報告関連バッジ
+  {
+    id: 'bug_reporter',
+    name: 'バグハンター',
+    description: '初めての不具合を報告しました',
+    icon: '🐛',
+    rarity: 'common',
+    category: 'contribution',
+    unlockCondition: '初めての不具合を報告する',
+    shareText: 'バグハンターになりました！初めての不具合を報告しました 🐛 #WorkTimeTracker #バグ報告',
+    xpReward: 30
+  },
+  {
+    id: 'bug_hunter',
+    name: 'バグハンター',
+    description: '5個の不具合を報告しました',
+    icon: '🔍',
+    rarity: 'rare',
+    category: 'contribution',
+    unlockCondition: '5個の不具合を報告する',
+    shareText: 'バグハンターになりました！5個の不具合を報告しました 🔍 #WorkTimeTracker #バグハンター',
+    xpReward: 100
+  },
+  {
+    id: 'feature_advocate',
+    name: '機能提案者',
+    description: '初めての機能提案をしました',
+    icon: '💡',
+    rarity: 'common',
+    category: 'contribution',
+    unlockCondition: '初めての機能提案をする',
+    shareText: '機能提案者になりました！初めての機能提案をしました 💡 #WorkTimeTracker #機能提案',
+    xpReward: 40
+  },
+  {
+    id: 'improvement_suggester',
+    name: '改善提案者',
+    description: '初めての改善提案をしました',
+    icon: '⚡',
+    rarity: 'common',
+    category: 'contribution',
+    unlockCondition: '初めての改善提案をする',
+    shareText: '改善提案者になりました！初めての改善提案をしました ⚡ #WorkTimeTracker #改善提案',
+    xpReward: 50
+  },
+  {
+    id: 'community_helper',
+    name: 'コミュニティヘルパー',
+    description: '10個の報告・提案をしました',
+    icon: '🤝',
+    rarity: 'epic',
+    category: 'contribution',
+    unlockCondition: '10個の報告・提案をする',
+    shareText: 'コミュニティヘルパーになりました！10個の報告・提案をしました 🤝 #WorkTimeTracker #コミュニティ',
+    xpReward: 200
+  },
+  {
+    id: 'quality_guardian',
+    name: '品質ガーディアン',
+    description: '25個の報告・提案をしました',
+    icon: '🛡️',
+    rarity: 'legendary',
+    category: 'contribution',
+    unlockCondition: '25個の報告・提案をする',
+    shareText: '品質ガーディアンになりました！25個の報告・提案をしました 🛡️ #WorkTimeTracker #品質ガーディアン',
+    xpReward: 500
   }
 ];
 
