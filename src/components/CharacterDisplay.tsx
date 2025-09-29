@@ -16,7 +16,6 @@ interface CharacterDisplayProps {
   onMiniGameClick?: () => void;
   onCollectionClick?: () => void;
   onShareClick?: () => void;
-  onAchievementGalleryClick?: () => void;
 }
 
 const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
@@ -31,7 +30,6 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
   onMiniGameClick,
   onCollectionClick,
   onShareClick,
-  onAchievementGalleryClick
 }) => {
   const [currentAnimation, setCurrentAnimation] = useState<string>('idle');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -320,15 +318,6 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
               title="共有"
             >
               📤 共有
-            </button>
-          )}
-          {onAchievementGalleryClick && (
-            <button 
-              className="achievement-gallery-button"
-              onClick={onAchievementGalleryClick}
-              title="アチーブメントギャラリー"
-            >
-              🏆 ギャラリー
             </button>
           )}
         </div>

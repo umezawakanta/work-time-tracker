@@ -8,7 +8,6 @@ import CharacterCustomizationComponent from './CharacterCustomization';
 import CharacterMiniGame from './CharacterMiniGame';
 import CharacterCollection from './CharacterCollection';
 import CharacterShare from './CharacterShare';
-import CharacterAchievementGallery from './CharacterAchievementGallery';
 import BadgeGallery from './BadgeGallery';
 import CharacterGrowthDisplay from './CharacterGrowthDisplay';
 import { Badge } from '../types/badge';
@@ -93,14 +92,13 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
   });
 
   // 新しいキャラクター機能の状態
-  const [activeTab, setActiveTab] = useState<'home' | 'characters' | 'progress' | 'customization' | 'minigame' | 'collection' | 'share' | 'gallery' | 'badges' | 'growth'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'characters' | 'progress' | 'customization' | 'minigame' | 'collection' | 'share' | 'badges' | 'growth'>('home');
   const [showCharacterSelector, setShowCharacterSelector] = useState(false);
   const [showCharacterProgress, setShowCharacterProgress] = useState(false);
   const [showCharacterCustomization, setShowCharacterCustomization] = useState(false);
   const [showCharacterMiniGame, setShowCharacterMiniGame] = useState(false);
   const [showCharacterCollection, setShowCharacterCollection] = useState(false);
   const [showCharacterShare, setShowCharacterShare] = useState(false);
-  const [showCharacterAchievementGallery, setShowCharacterAchievementGallery] = useState(false);
   const [showBadgeGallery, setShowBadgeGallery] = useState(false);
   const [availableCharacters, setAvailableCharacters] = useState<CharacterType[]>([]);
 
@@ -300,12 +298,6 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
           onClick={() => setActiveTab('share')}
         >
           📤 共有
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'gallery' ? 'active' : ''}`}
-          onClick={() => setActiveTab('gallery')}
-        >
-          🏆 ギャラリー
         </button>
         <button
           className={`tab-button ${activeTab === 'badges' ? 'active' : ''}`}
@@ -564,28 +556,6 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
           </div>
         )}
 
-        {activeTab === 'gallery' && (
-          <div className="gallery-content">
-            {selectedCharacter ? (
-              <div className="gallery-wrapper">
-                <CharacterAchievementGallery
-                  character={selectedCharacter}
-                  onClose={() => setShowCharacterAchievementGallery(false)}
-                />
-              </div>
-            ) : (
-              <div className="no-character-message">
-                <p>キャラクターを選択してください</p>
-                <button
-                  className="select-character-btn"
-                  onClick={() => setShowCharacterSelector(true)}
-                >
-                  🎭 キャラクターを選択
-                </button>
-              </div>
-            )}
-          </div>
-        )}
 
         {activeTab === 'badges' && (
           <div className="badges-content">

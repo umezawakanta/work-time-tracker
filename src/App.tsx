@@ -28,7 +28,6 @@ import CharacterCustomizationComponent from "./components/CharacterCustomization
 import CharacterMiniGame from "./components/CharacterMiniGame";
 import CharacterCollection from "./components/CharacterCollection";
 import CharacterShare from "./components/CharacterShare";
-import CharacterAchievementGallery from "./components/CharacterAchievementGallery";
 import BadgeNotification from "./components/BadgeNotification";
 import TwitterShare from "./components/TwitterShare";
 import BadgeGallery from "./components/BadgeGallery";
@@ -353,8 +352,6 @@ function App({
   // キャラクター共有の状態
   const [showCharacterShare, setShowCharacterShare] = useState(false);
   
-  // キャラクターアチーブメントギャラリーの状態
-  const [showCharacterAchievementGallery, setShowCharacterAchievementGallery] = useState(false);
 
   // バッジシステムの状態
   const [showBadgeNotification, setShowBadgeNotification] = useState(false);
@@ -2045,10 +2042,6 @@ ${errorInfo.stack}
     setShowCharacterShare(!showCharacterShare);
   };
 
-  // アチーブメントギャラリー表示ハンドラー
-  const handleAchievementGalleryToggle = () => {
-    setShowCharacterAchievementGallery(!showCharacterAchievementGallery);
-  };
 
   // バッジ関連のハンドラー
   const handleBadgeUnlocked = (badge: Badge) => {
@@ -6447,18 +6440,6 @@ User Agent: ${userAgent}
           </div>
         )}
 
-        {/* キャラクターアチーブメントギャラリー */}
-        {showCharacterAchievementGallery && (
-          <div className="character-achievement-gallery-modal">
-            <div className="character-achievement-gallery-overlay" onClick={() => setShowCharacterAchievementGallery(false)} />
-            <div className="character-achievement-gallery-content">
-              <CharacterAchievementGallery
-                character={selectedCharacter}
-                onClose={() => setShowCharacterAchievementGallery(false)}
-              />
-            </div>
-          </div>
-        )}
 
         {/* バッジ通知 */}
         {showBadgeNotification && currentBadge && (
@@ -6573,7 +6554,6 @@ User Agent: ${userAgent}
                 onMiniGameClick={handleMiniGameToggle}
                 onCollectionClick={handleCollectionToggle}
                 onShareClick={handleShareToggle}
-                onAchievementGalleryClick={handleAchievementGalleryToggle}
               />
             </div> */}
 
