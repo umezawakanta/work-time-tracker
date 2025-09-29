@@ -1,5 +1,6 @@
 import React from 'react';
 import { BadgeShareData } from '../types/badge';
+import './SimpleShareModal.css';
 
 interface SimpleShareModalProps {
   shareData: BadgeShareData;
@@ -29,118 +30,45 @@ const SimpleShareModal: React.FC<SimpleShareModalProps> = ({
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 10000,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)'
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '10px',
-        padding: '20px',
-        maxWidth: '500px',
-        width: '90%',
-        maxHeight: '80vh',
-        overflow: 'auto'
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '20px'
-        }}>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
           <h3>X（Twitter）でシェア</h3>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '20px',
-              cursor: 'pointer'
-            }}
-          >
+          <button onClick={onClose} className="close-button">
             ✕
           </button>
         </div>
         
-        <div style={{ marginBottom: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-            <span style={{ fontSize: '30px' }}>{shareData.badge.icon}</span>
-            <div>
-              <h4 style={{ margin: 0 }}>{shareData.badge.name}</h4>
-              <p style={{ margin: 0, color: '#666' }}>{shareData.badge.description}</p>
+        <div className="badge-info">
+          <div className="badge-display">
+            <span className="badge-icon">{shareData.badge.icon}</span>
+            <div className="badge-details">
+              <h4>{shareData.badge.name}</h4>
+              <p>{shareData.badge.description}</p>
             </div>
           </div>
         </div>
         
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="share-text" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+        <div className="form-group">
+          <label htmlFor="share-text" className="form-label">
             シェアテキスト
           </label>
           <textarea
             id="share-text"
             value={shareData.shareText}
             readOnly
-            style={{
-              width: '100%',
-              padding: '10px',
-              border: '1px solid #ccc',
-              borderRadius: '5px',
-              minHeight: '80px',
-              resize: 'vertical'
-            }}
+            className="form-textarea"
           />
-          <button
-            onClick={handleCopyText}
-            style={{
-              marginTop: '10px',
-              padding: '8px 16px',
-              backgroundColor: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
+          <button onClick={handleCopyText} className="copy-button">
             📋 コピー
           </button>
         </div>
         
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-          <button
-            onClick={handleTwitterShare}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: '#1da1f2',
-              color: 'white',
-              border: 'none',
-              borderRadius: '25px',
-              cursor: 'pointer',
-              fontSize: '16px',
-              fontWeight: 'bold'
-            }}
-          >
+        <div className="button-group">
+          <button onClick={handleTwitterShare} className="twitter-button">
             𝕏 Xでシェア
           </button>
-          <button
-            onClick={onClose}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '25px',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}
-          >
+          <button onClick={onClose} className="cancel-button">
             キャンセル
           </button>
         </div>
