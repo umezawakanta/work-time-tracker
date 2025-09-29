@@ -189,7 +189,7 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
           ...getCharacterStyle(),
           '--character-color': character.customization?.color || '#FF6B6B',
           '--character-size': character.customization?.size || 'medium'
-        } as React.CSSProperties}
+        } as any}
         onClick={handleCharacterClick}
         role="button"
         tabIndex={0}
