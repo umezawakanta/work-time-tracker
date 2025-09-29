@@ -7,12 +7,14 @@ interface CharacterProgressProps {
   character: Character | null;
   settings: UserCharacterSettings;
   onAchievementClick?: (achievement: CharacterAchievement) => void;
+  onClose?: () => void;
 }
 
 const CharacterProgress: React.FC<CharacterProgressProps> = ({
   character,
   settings,
-  onAchievementClick
+  onAchievementClick,
+  onClose
 }) => {
   if (!character) {
     return (
@@ -50,6 +52,11 @@ const CharacterProgress: React.FC<CharacterProgressProps> = ({
       <div className="progress-header">
         <h3>{character.name}の進捗</h3>
         <div className="character-level">Lv.{character.level}</div>
+        {onClose && (
+          <button className="close-button" onClick={onClose}>
+            ✕
+          </button>
+        )}
       </div>
 
       <div className="progress-section">

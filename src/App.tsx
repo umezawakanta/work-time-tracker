@@ -6288,6 +6288,7 @@ User Agent: ${userAgent}
                 character={selectedCharacter}
                 settings={characterSettings}
                 onAchievementClick={handleAchievementClick}
+                onClose={() => setShowCharacterProgress(false)}
               />
             </div>
           </div>
@@ -6426,8 +6427,8 @@ User Agent: ${userAgent}
           </div>
 
           <main className="dashboard-main">
-            {/* キャラクター表示 */}
-            <div className="character-display-wrapper">
+            {/* キャラクター表示 - 一時的に非表示 */}
+            {/* <div className="character-display-wrapper">
               <CharacterDisplay
                 character={selectedCharacter}
                 settings={characterSettings}
@@ -6442,7 +6443,7 @@ User Agent: ${userAgent}
                 onShareClick={handleShareToggle}
                 onAchievementGalleryClick={handleAchievementGalleryToggle}
               />
-            </div>
+            </div> */}
 
             {getVisibleFeatures().map((feature) => {
               if (feature.id === "time-tracking") {
