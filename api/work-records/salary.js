@@ -72,7 +72,7 @@ module.exports = async function handler(req, res) {
       console.log('JWT verification failed');
       return res.status(401).json({ message: '認証が必要です' });
     }
-    const userId = userInfo.userId;
+    const { userId } = userInfo;
     console.log('User ID:', userId);
 
     if (req.method === 'GET') {
