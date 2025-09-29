@@ -419,7 +419,6 @@
   justify-content: center;
 }
 
-.customize-button,
 .minigame-button,
 .collection-button,
 .share-button,
@@ -437,11 +436,6 @@
   flex: 1;
   min-width: 60px;
   backdrop-filter: blur(10px);
-}
-
-.customize-button {
-  background: rgba(255, 107, 107, 0.8);
-  border-color: rgba(255, 107, 107, 0.3);
 }
 
 .minigame-button {
@@ -465,7 +459,6 @@
 }
 
 .progress-button:hover,
-.customize-button:hover,
 .minigame-button:hover,
 .collection-button:hover,
 .share-button:hover,
@@ -478,7 +471,6 @@
 /* 個別のホバー効果は統一されたスタイルを使用 */
 
 .progress-button:active,
-.customize-button:active,
 .minigame-button:active,
 .collection-button:active,
 .share-button:active,
