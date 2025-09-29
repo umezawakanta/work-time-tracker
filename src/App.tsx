@@ -2076,9 +2076,13 @@ ${errorInfo.stack}
       
       if (shareData) {
         setBadgeShareData(shareData);
-        setShowTwitterShare(true);
         setShowBadgeNotification(false);
-        console.log('Twitter share modal should be shown');
+        
+        // 状態更新を確実にするため、少し遅延してからモーダルを表示
+        setTimeout(() => {
+          setShowTwitterShare(true);
+          console.log('Twitter share modal should be shown');
+        }, 100);
       } else {
         console.log('Failed to generate share data');
       }
@@ -6470,11 +6474,22 @@ User Agent: ${userAgent}
           <div className="twitter-share-modal">
             <div className="twitter-share-overlay" onClick={handleTwitterShareClose} />
             <div className="twitter-share-content">
-              <TwitterShare
-                shareData={badgeShareData}
-                onClose={handleTwitterShareClose}
-              />
+              <div style={{ background: 'white', padding: '20px', borderRadius: '8px', maxWidth: '500px', width: '100%' }}>
+                <h3>バッジをシェア</h3>
+                <p>バッジ: {badgeShareData.badge.name}</p>
+                <p>テキスト: {badgeShareData.shareText}</p>
+                <p>URL: {badgeShareData.shareUrl}</p>
+                <button onClick={handleTwitterShareClose}>閉じる</button>
+              </div>
             </div>
+          </div>
+        )}
+        
+        {/* デバッグ用の状態表示 */}
+        {process.env.NODE_ENV === 'development' && (
+          <div style={{ position: 'fixed', top: '10px', right: '10px', background: 'black', color: 'white', padding: '10px', zIndex: 99999, fontSize: '12px' }}>
+            <div>showTwitterShare: {showTwitterShare ? 'true' : 'false'}</div>
+            <div>badgeShareData: {badgeShareData ? 'exists' : 'null'}</div>
           </div>
         )}
 

@@ -2,7 +2,7 @@ const { Memo } = require('../utils/schemas');
 const { setCorsHeaders, ensureDatabaseConnection, verifyJWT } = require('../utils/database');
 
 module.exports = async (req, res) => {
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   setCorsHeaders(res, origin);
 
   if (req.method === 'OPTIONS') {
