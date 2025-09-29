@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Add all trusted preview origins here (explicitly enumerate if possible)
   // (For dynamic environments, consider using env vars or a config to auto-list legitimate preview domains)
   const allowedOrigins = [
-    'http://localhost:3000',
+    'http://localhost:9000',
     'https://work-time-tracker-five.vercel.app',
     // For example, explicitly list expected preview deploy URLs:
     // 'https://work-time-tracker-five-abcde123.vercel.app',

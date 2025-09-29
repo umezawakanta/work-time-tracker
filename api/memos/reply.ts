@@ -66,7 +66,7 @@ const ReplyModel = mongooseDB.models.Reply || mongooseDB.model("Reply", ReplySch
 module.exports = async function handler(req, res) {
   // CORS設定
   const { origin } = req.headers;
-  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
+  const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
 
   const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
   

@@ -1,5 +1,19 @@
 const { Memo: MemoModel } = require('../utils/schemas');
-const { setCorsHeaders: setCors, ensureDatabaseConnection: ensureDB, verifyJWT: verifyToken } = require('../utils/database');
+const { ensureDatabaseConnection: ensureDB, verifyJWT: verifyToken } = require('../utils/database');
+
+// CORS設定
+const setCorsHeaders = (res, origin) => {
+  const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
+  const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
+  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
+
+  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+};
 
 // Debug logging
 console.log('MemoModel imported:', !!MemoModel);
@@ -7,7 +21,7 @@ console.log('MemoModel type:', typeof MemoModel);
 
 module.exports = async (req, res) => {
   const { origin } = req.headers;
-  setCors(res, origin);
+  setCorsHeaders(res, origin);
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();

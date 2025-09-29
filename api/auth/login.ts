@@ -37,7 +37,7 @@ async function readJson(req) {
 async function handler(req, res) {
   // CORS設定
   const { origin } = req.headers;
-  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
+  const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   
   // 明示的に"null"オリジンをブロックし、認証情報の漏洩を防ぐ

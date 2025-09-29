@@ -162,7 +162,7 @@ const getRealApiMetrics = async () => {
 
 // CORS設定
 const setCorsHeaders = (res, origin) => {
-  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-five.vercel.app'];
+  const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
 
