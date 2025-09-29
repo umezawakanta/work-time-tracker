@@ -19,20 +19,23 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
   const [badgeStats, setBadgeStats] = useState<any>(null);
 
   useEffect(() => {
-    // 成長進捗を計算
-    const progress = characterGrowthManager.getGrowthProgress(character);
-    setGrowthProgress(progress);
+    // キャラクターが存在し、必要なプロパティがある場合のみ処理
+    if (character && character.id) {
+      // 成長進捗を計算
+      const progress = characterGrowthManager.getGrowthProgress(character);
+      setGrowthProgress(progress);
 
-    // バッジ統計を取得
-    const stats = badgeManager.getBadgeStats();
-    setBadgeStats(stats);
+      // バッジ統計を取得
+      const stats = badgeManager.getBadgeStats();
+      setBadgeStats(stats);
+    }
   }, [character]);
 
   if (!growthProgress || !badgeStats) {
     return <div className="loading">読み込み中...</div>;
   }
 
-  const growthStageInfo = characterGrowthManager.getGrowthStageInfo(character.growthStage);
+  const growthStageInfo = characterGrowthManager.getGrowthStageInfo(character.growthStage || 'baby');
 
   return (
     <div className="character-growth-display">
@@ -79,9 +82,9 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
               <div className="stat-bar">
                 <div 
                   className="stat-fill strength"
-                  style={{ width: `${character.stats.strength}%` }}
+                  style={{ width: `${character.stats?.strength || 10}%` }}
                 ></div>
-                <span className="stat-value">{character.stats.strength}</span>
+                <span className="stat-value">{character.stats?.strength || 10}</span>
               </div>
             </div>
             <div className="stat-item">
@@ -90,9 +93,9 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
               <div className="stat-bar">
                 <div 
                   className="stat-fill intelligence"
-                  style={{ width: `${character.stats.intelligence}%` }}
+                  style={{ width: `${character.stats?.intelligence || 10}%` }}
                 ></div>
-                <span className="stat-value">{character.stats.intelligence}</span>
+                <span className="stat-value">{character.stats?.intelligence || 10}</span>
               </div>
             </div>
             <div className="stat-item">
@@ -101,9 +104,9 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
               <div className="stat-bar">
                 <div 
                   className="stat-fill creativity"
-                  style={{ width: `${character.stats.creativity}%` }}
+                  style={{ width: `${character.stats?.creativity || 10}%` }}
                 ></div>
-                <span className="stat-value">{character.stats.creativity}</span>
+                <span className="stat-value">{character.stats?.creativity || 10}</span>
               </div>
             </div>
             <div className="stat-item">
@@ -112,9 +115,9 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
               <div className="stat-bar">
                 <div 
                   className="stat-fill endurance"
-                  style={{ width: `${character.stats.endurance}%` }}
+                  style={{ width: `${character.stats?.endurance || 10}%` }}
                 ></div>
-                <span className="stat-value">{character.stats.endurance}</span>
+                <span className="stat-value">{character.stats?.endurance || 10}</span>
               </div>
             </div>
             <div className="stat-item">
@@ -123,9 +126,9 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
               <div className="stat-bar">
                 <div 
                   className="stat-fill social"
-                  style={{ width: `${character.stats.social}%` }}
+                  style={{ width: `${character.stats?.social || 10}%` }}
                 ></div>
-                <span className="stat-value">{character.stats.social}</span>
+                <span className="stat-value">{character.stats?.social || 10}</span>
               </div>
             </div>
           </div>

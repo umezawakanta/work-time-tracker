@@ -583,7 +583,7 @@ const CharacterHome: React.FC<CharacterHomeProps> = ({
 
         {activeTab === 'growth' && (
           <div className="growth-content">
-            {selectedCharacter ? (
+            {selectedCharacter && selectedCharacter.id ? (
               <div className="growth-wrapper">
                 <CharacterGrowthDisplay
                   character={selectedCharacter}

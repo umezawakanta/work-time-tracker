@@ -241,7 +241,10 @@ class CharacterGrowthManager {
   } {
     const requiredExp = this.getRequiredExperience(character.level);
     const progress = (character.experience / requiredExp) * 100;
-    const totalStats = Object.values(character.stats).reduce((sum, stat) => sum + stat, 0);
+    
+    // ステータスが存在しない場合は初期化
+    const stats = character.stats || this.getInitialStats(character.type);
+    const totalStats = Object.values(stats).reduce((sum, stat) => sum + stat, 0);
     const maxStats = 500; // 各ステータス最大100 × 5種類
 
     return {
@@ -249,8 +252,8 @@ class CharacterGrowthManager {
       nextLevelExp: requiredExp,
       currentExp: character.experience,
       progress: Math.round(progress),
-      growthStage: this.getGrowthStageInfo(character.growthStage).name,
-      evolutionLevel: character.evolutionLevel,
+      growthStage: this.getGrowthStageInfo(character.growthStage || this.getGrowthStage(character.level)).name,
+      evolutionLevel: character.evolutionLevel || 1,
       totalStats,
       maxStats
     };
