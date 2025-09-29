@@ -306,7 +306,7 @@ export const BADGES: Badge[] = [
     xpReward: 100
   },
   {
-    id: 'early_bird',
+    id: 'early_bird_special',
     name: '早起きの達人',
     description: '朝6時前に作業を開始しました',
     icon: '🌅',
@@ -317,7 +317,7 @@ export const BADGES: Badge[] = [
     xpReward: 50
   },
   {
-    id: 'night_owl',
+    id: 'night_owl_special',
     name: '夜型の達人',
     description: '夜22時以降に作業を開始しました',
     icon: '🦉',

@@ -20,7 +20,7 @@ const ensureDatabaseConnection = async () => {
   console.warn('[memos/status] Database not connected, attempting to connect...');
   
   try {
-    const MONGODB_URI = process.env.MONGODB_URI;
+    const { MONGODB_URI } = process.env;
     
     if (!MONGODB_URI) {
       throw new Error('MONGODB_URI environment variable is not set');
@@ -85,7 +85,7 @@ const setCorsHeaders = (res, origin) => {
 };
 
 module.exports = async (req, res) => {
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   setCorsHeaders(res, origin);
 
   if (req.method === 'OPTIONS') {
