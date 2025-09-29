@@ -7,7 +7,7 @@ export interface Badge {
   icon: string; // 絵文字またはアイコン
   imageUrl?: string; // バッジ画像のURL
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  category: 'registration' | 'achievement' | 'milestone' | 'special';
+  category: 'registration' | 'achievement' | 'milestone' | 'special' | 'daily' | 'work' | 'streak' | 'timing' | 'social' | 'contribution' | 'writing';
   unlockCondition: string;
   unlockedAt?: Date;
   shareText: string; // シェア用のテキスト

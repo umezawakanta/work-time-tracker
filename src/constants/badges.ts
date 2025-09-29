@@ -2,6 +2,9 @@
 
 import { Badge } from '../types/badge';
 
+// 型定義の確認用 - 実際の型定義と一致していることを確認
+type BadgeCategory = 'registration' | 'achievement' | 'milestone' | 'special' | 'daily' | 'work' | 'streak' | 'timing' | 'social' | 'contribution' | 'writing';
+
 export const BADGES: Badge[] = [
   {
     id: 'welcome',

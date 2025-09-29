@@ -381,15 +381,6 @@ class BadgeManager {
     return unlockedBadges;
   }
 
-  // バッジをカテゴリ別に取得
-  public getBadgesByCategory(category: string): Badge[] {
-    return BADGES.filter(badge => badge.category === category);
-  }
-
-  // バッジをレアリティ別に取得
-  public getBadgesByRarity(rarity: string): Badge[] {
-    return BADGES.filter(badge => badge.rarity === rarity);
-  }
 
   // ユーザーのバッジ統計を取得
   public getBadgeStats(): {
@@ -451,28 +442,6 @@ class BadgeManager {
     return userBadges.reduce((total, badge) => total + badge.xpReward, 0);
   }
 
-  // バッジの統計情報を取得
-  public getBadgeStats() {
-    const userBadges = this.getUserBadges();
-    const totalBadges = BADGES.length;
-    const unlockedCount = userBadges.length;
-    const totalXP = this.getTotalBadgeXP();
-
-    const rarityCounts = {
-      common: userBadges.filter(b => b.rarity === 'common').length,
-      rare: userBadges.filter(b => b.rarity === 'rare').length,
-      epic: userBadges.filter(b => b.rarity === 'epic').length,
-      legendary: userBadges.filter(b => b.rarity === 'legendary').length
-    };
-
-    return {
-      totalBadges,
-      unlockedCount,
-      totalXP,
-      rarityCounts,
-      completionRate: Math.round((unlockedCount / totalBadges) * 100)
-    };
-  }
 
   // 不具合報告のバッジをチェック
   public checkBugReportBadges(reportType: 'bug' | 'feature' | 'improvement'): Badge[] {
