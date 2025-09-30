@@ -3,7 +3,7 @@
 import { Badge } from '../types/badge';
 
 // 型定義の確認用 - 実際の型定義と一致していることを確認
-type BadgeCategory = 'registration' | 'achievement' | 'milestone' | 'special' | 'daily' | 'work' | 'streak' | 'timing' | 'social' | 'contribution' | 'writing';
+type BadgeCategory = 'registration' | 'achievement' | 'milestone' | 'special' | 'daily' | 'work' | 'streak' | 'timing' | 'social' | 'contribution' | 'writing' | 'reorder';
 
 export const BADGES: Badge[] = [
   {
@@ -652,6 +652,73 @@ export const BADGES: Badge[] = [
     unlockCondition: '5つのメモでそれぞれ5個以上のいいねを獲得する',
     shareText: 'コミュニティの寵児になりました！5つのメモでそれぞれ5個以上のいいねを獲得しました 👑 #WorkTimeTracker #コミュニティ',
     xpReward: 400
+  },
+  // 並べ替え関連のバッジ
+  {
+    id: 'first_reorder',
+    name: '初めての並べ替え',
+    description: '初めて機能の並べ替えを行いました',
+    icon: '🔄',
+    rarity: 'common',
+    category: 'reorder',
+    unlockCondition: '初めて機能の並べ替えを行う',
+    shareText: '初めて機能の並べ替えを行いました！カスタマイズの第一歩です 🔄 #WorkTimeTracker #カスタマイズ',
+    xpReward: 15
+  },
+  {
+    id: 'reorder_5',
+    name: '並べ替えマスター',
+    description: '5回機能の並べ替えを行いました',
+    icon: '📋',
+    rarity: 'common',
+    category: 'reorder',
+    unlockCondition: '5回機能の並べ替えを行う',
+    shareText: '5回機能の並べ替えを行いました！カスタマイズが上手になってきました 📋 #WorkTimeTracker #カスタマイズ',
+    xpReward: 30
+  },
+  {
+    id: 'reorder_10',
+    name: '並べ替えエキスパート',
+    description: '10回機能の並べ替えを行いました',
+    icon: '⚙️',
+    rarity: 'rare',
+    category: 'reorder',
+    unlockCondition: '10回機能の並べ替えを行う',
+    shareText: '10回機能の並べ替えを行いました！カスタマイズのエキスパートです ⚙️ #WorkTimeTracker #カスタマイズ',
+    xpReward: 60
+  },
+  {
+    id: 'reorder_25',
+    name: '並べ替えの達人',
+    description: '25回機能の並べ替えを行いました',
+    icon: '🎯',
+    rarity: 'epic',
+    category: 'reorder',
+    unlockCondition: '25回機能の並べ替えを行う',
+    shareText: '25回機能の並べ替えを行いました！並べ替えの達人になりました 🎯 #WorkTimeTracker #カスタマイズ',
+    xpReward: 120
+  },
+  {
+    id: 'reorder_streak_3',
+    name: '連続並べ替え',
+    description: '3日連続で機能の並べ替えを行いました',
+    icon: '🔥',
+    rarity: 'rare',
+    category: 'reorder',
+    unlockCondition: '3日連続で機能の並べ替えを行う',
+    shareText: '3日連続で機能の並べ替えを行いました！カスタマイズの習慣が身につきました 🔥 #WorkTimeTracker #カスタマイズ',
+    xpReward: 80
+  },
+  {
+    id: 'perfect_reorder',
+    name: '完璧な並べ替え',
+    description: 'すべての機能を並べ替えました',
+    icon: '✨',
+    rarity: 'epic',
+    category: 'reorder',
+    unlockCondition: 'すべての機能を並べ替える',
+    shareText: '完璧な並べ替えを達成しました！すべての機能をカスタマイズしました ✨ #WorkTimeTracker #カスタマイズ',
+    xpReward: 100
   }
 ];
 

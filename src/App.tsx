@@ -28,6 +28,8 @@ import CharacterCustomizationComponent from "./components/CharacterCustomization
 import CharacterMiniGame from "./components/CharacterMiniGame";
 import CharacterCollection from "./components/CharacterCollection";
 import CharacterShare from "./components/CharacterShare";
+import { reorderRewardManager } from "./utils/reorderRewardManager";
+import RewardNotification from "./components/RewardNotification";
 import BadgeNotification from "./components/BadgeNotification";
 import TwitterShare from "./components/TwitterShare";
 import SimpleShareModal from "./components/SimpleShareModal";
@@ -280,6 +282,10 @@ function App({
 
   // タイマーセクションの表示状態
   const [showTimers, setShowTimers] = useState(false);
+
+  // 報酬通知の状態
+  const [showRewardNotificationModal, setShowRewardNotificationModal] = useState(false);
+  const [currentReward, setCurrentReward] = useState<any>(null);
 
   // 注意: timerPresetsは各コンポーネントで個別に管理される
   // 理由: 各コンポーネントで個別のタイマープリセット機能を管理することで、状態の分散を防ぐ
@@ -3447,8 +3453,47 @@ ${errorInfo.stack}
     }
   };
 
-  const handleFeatureReorder = (newOrder: string[]) => {
+  const handleFeatureReorder = async (newOrder: string[]) => {
+    const currentSettings = userSettings || getDefaultUserSettings();
+    const oldOrder = currentSettings.featureOrder;
+    
+    // 設定を更新
     updateUserSettings({ featureOrder: newOrder });
+    
+    // 並べ替えが実際に変更された場合のみ報酬を処理
+    if (JSON.stringify(oldOrder) !== JSON.stringify(newOrder)) {
+      try {
+        const reorderData = {
+          fromOrder: oldOrder,
+          toOrder: newOrder,
+          reorderCount: 1
+        };
+        
+        const rewardResult = await reorderRewardManager.processReorderReward(
+          user?.id || '',
+          reorderData
+        );
+        
+        // 報酬がある場合は通知を表示
+        if (rewardResult.experience > 0 || rewardResult.workCoins > 0 || rewardResult.badges.length > 0) {
+          showRewardNotification(rewardResult);
+        }
+      } catch (error) {
+        console.error('並べ替え報酬の処理中にエラーが発生しました:', error);
+      }
+    }
+  };
+
+  // 報酬通知を表示する関数
+  const showRewardNotification = (reward: any) => {
+    setCurrentReward(reward);
+    setShowRewardNotificationModal(true);
+  };
+
+  // 報酬通知を閉じる関数
+  const closeRewardNotification = () => {
+    setShowRewardNotificationModal(false);
+    setCurrentReward(null);
   };
 
   // デフォルトのユーザー設定を作成
@@ -6969,6 +7014,14 @@ User Agent: ${userAgent}
             badge={currentBadge}
             onClose={handleBadgeNotificationClose}
             onShare={handleBadgeShare}
+          />
+        )}
+
+        {/* 報酬通知 */}
+        {showRewardNotificationModal && currentReward && (
+          <RewardNotification
+            reward={currentReward}
+            onClose={closeRewardNotification}
           />
         )}
 
