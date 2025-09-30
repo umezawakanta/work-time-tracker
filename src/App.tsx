@@ -55,6 +55,8 @@ import PayPayCardWidget from "./components/PayPayCardWidget";
 import PayPayCardUpdateForm from "./components/PayPayCardUpdateForm";
 import PayPayCardTransactionHistory from "./components/PayPayCardTransactionHistory";
 import { PayPayCardManager } from "./utils/paypayCardManager";
+import FinancialOverviewDashboard from "./components/FinancialOverviewDashboard";
+import { FinancialOverviewManager } from "./utils/financialOverviewManager";
 import TwitterShare from "./components/TwitterShare";
 import SimpleShareModal from "./components/SimpleShareModal";
 import BadgeGallery from "./components/BadgeGallery";
@@ -7771,6 +7773,13 @@ User Agent: ${userAgent}
                         }}
                       />
                     )}
+
+                    {/* 財務統合ダッシュボード */}
+                    {user && (
+                      <FinancialOverviewDashboard
+                        userId={user.id}
+                      />
+                    )}
                   </div>
                 );
               } else {
@@ -8256,6 +8265,10 @@ const AppWithProviders = () => {
   const [showPayPayCardTransactionHistory, setShowPayPayCardTransactionHistory] = useState(false);
   const [selectedPayPayCardId, setSelectedPayPayCardId] = useState<string | null>(null);
   const paypayCardManager = PayPayCardManager.getInstance();
+
+  // 財務統合管理システムの状態
+  const [showFinancialOverview, setShowFinancialOverview] = useState(false);
+  const financialOverviewManager = FinancialOverviewManager.getInstance();
 
   // 無駄遣い記録保存処理
   const handleWasteRecordSave = (record: any) => {
