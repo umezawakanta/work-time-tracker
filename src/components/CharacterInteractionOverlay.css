@@ -1,0 +1,297 @@
+/* CharacterInteractionOverlay.css - キャラクター相互作用オーバーレイのスタイル */
+
+.character-interaction-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.interaction-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.interaction-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  pointer-events: auto;
+}
+
+.interaction-message {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.message-bubble {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  max-width: 400px;
+  text-align: center;
+  animation: bounceIn 0.6s ease-out;
+}
+
+.message-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 15px solid #764ba2;
+}
+
+.message-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.message-indicator {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  font-weight: 300;
+}
+
+.interaction-animations {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.animation-effect {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffd700;
+  border-radius: 50%;
+  animation: sparkleFloat 2s ease-in-out infinite;
+}
+
+.sparkle-1 {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.sparkle-2 {
+  top: 30%;
+  right: 20%;
+  animation-delay: 0.5s;
+}
+
+.sparkle-3 {
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 1s;
+}
+
+/* アニメーション効果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes sparkleFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 0.7;
+  }
+}
+
+/* 特定のアニメーション効果 */
+.animation-effect.wave_and_sparkle {
+  animation: waveAndSparkle 2s ease-in-out infinite;
+}
+
+.animation-effect.bark_and_tail_wag {
+  animation: barkAndTailWag 1.5s ease-in-out infinite;
+}
+
+.animation-effect.celebration_dance {
+  animation: celebrationDance 2s ease-in-out infinite;
+}
+
+.animation-effect.bounce_and_sparkle {
+  animation: bounceAndSparkle 1.5s ease-in-out infinite;
+}
+
+.animation-effect.run_faster {
+  animation: runFaster 2s ease-in-out infinite;
+}
+
+.animation-effect.wings_spread {
+  animation: wingsSpread 2s ease-in-out infinite;
+}
+
+.animation-effect.tail_wag_enthusiastic {
+  animation: tailWagEnthusiastic 1s ease-in-out infinite;
+}
+
+@keyframes waveAndSparkle {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-10deg) scale(1.1);
+  }
+  75% {
+    transform: rotate(10deg) scale(1.1);
+  }
+}
+
+@keyframes barkAndTailWag {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+  }
+}
+
+@keyframes celebrationDance {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+  75% {
+    transform: translateY(-10px) rotate(-5deg);
+  }
+}
+
+@keyframes bounceAndSparkle {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.1);
+  }
+}
+
+@keyframes runFaster {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes wingsSpread {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+}
+
+@keyframes tailWagEnthusiastic {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .message-bubble {
+    max-width: 300px;
+    padding: 1rem 1.5rem;
+  }
+  
+  .message-text {
+    font-size: 1rem;
+  }
+  
+  .interaction-animations {
+    width: 80px;
+    height: 80px;
+  }
+}

@@ -32,6 +32,9 @@ import { reorderRewardManager } from "./utils/reorderRewardManager";
 import { CharacterDataEnhancer } from "./utils/characterDataEnhancer";
 import RewardNotification from "./components/RewardNotification";
 import BadgeNotification from "./components/BadgeNotification";
+import CharacterInteractionOverlay from "./components/CharacterInteractionOverlay";
+import { CharacterInteractionManager } from "./utils/characterInteractionManager";
+import { CharacterStateManager } from "./utils/characterStateManager";
 import TwitterShare from "./components/TwitterShare";
 import SimpleShareModal from "./components/SimpleShareModal";
 import BadgeGallery from "./components/BadgeGallery";
@@ -344,6 +347,7 @@ function App({
   // キャラクター関連の状態
   const [characterSettings, setCharacterSettings] = useState<UserCharacterSettings>(characterManager.getSettings());
   const [showCharacterSelector, setShowCharacterSelector] = useState(false);
+
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterType | null>(() => {
     const character = characterManager.getCurrentCharacter();
     return character ? CharacterDataEnhancer.enhanceCharacterWithSvg(character as any) : null;
@@ -1036,6 +1040,7 @@ function App({
         });
     }
   };
+
 
   // 通知件数を計算する関数
   const calculateNotificationCount = () => {
@@ -8007,6 +8012,18 @@ const AppWithProviders = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
 
+  // キャラクター連動システムの状態
+  const [characterInteractionResult, setCharacterInteractionResult] = useState<any>(null);
+  const [showCharacterInteraction, setShowCharacterInteraction] = useState(false);
+  const characterInteractionManager = CharacterInteractionManager.getInstance();
+  const characterStateManager = CharacterStateManager.getInstance();
+
+  // キャラクター相互作用完了処理
+  const handleCharacterInteractionComplete = () => {
+    setShowCharacterInteraction(false);
+    setCharacterInteractionResult(null);
+  };
+
   return (
     <AuthProvider
       onLogin={async (e: React.FormEvent) => {
@@ -8285,6 +8302,14 @@ const AppWithProviders = () => {
           </MoodLogProvider>
         </TimerPresetProvider>
       </TimeTrackingStateProvider>
+      
+      {/* キャラクター相互作用オーバーレイ */}
+      {showCharacterInteraction && (
+        <CharacterInteractionOverlay
+          interactionResult={characterInteractionResult}
+          onComplete={handleCharacterInteractionComplete}
+        />
+      )}
     </AuthProvider>
   );
 };
