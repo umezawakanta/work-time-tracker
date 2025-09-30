@@ -1,5 +1,19 @@
 /* PublicMemosComponent.css - 公開メモコンポーネント専用のスタイル */
 
+/* スピンアニメーション */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .public-memos-section {
   margin-bottom: 2rem;
 }
@@ -341,6 +355,17 @@
 
 .delete-memo-button:hover {
   background: #c82333;
+}
+
+.delete-memo-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.delete-memo-button:disabled:hover {
+  background: #dc3545;
+  transform: none;
 }
 
 /* 削除確認ダイアログ */

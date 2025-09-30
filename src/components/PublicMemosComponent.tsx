@@ -24,6 +24,7 @@ interface PublicMemosComponentProps {
   onUpdateMemoTags?: (memoId: string, tags: string[]) => Promise<void>;
   onEditMemo?: (memo: Memo) => void;
   onDeleteMemo?: (memoId: string) => Promise<void>;
+  deletingMemoId?: string | null;
 }
 
 const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
@@ -45,6 +46,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   onUpdateMemoTags,
   onEditMemo,
   onDeleteMemo,
+  deletingMemoId,
 }) => {
   // 公開メモのローディング状態をPublicMemosComponent内で管理
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
@@ -1176,8 +1178,13 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
                           onClick={() => handleDeleteConfirm(memo)}
                           className="delete-memo-button"
                           title="メモを削除"
+                          disabled={deletingMemoId === memo.id}
                         >
-                          🗑️ 削除
+                          {deletingMemoId === memo.id ? (
+                            <i className="bi bi-arrow-clockwise spin"></i>
+                          ) : (
+                            '🗑️ 削除'
+                          )}
                         </button>
                       </div>
                     )}

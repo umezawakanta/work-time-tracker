@@ -13,6 +13,7 @@ interface MemosComponentProps {
   loadMemos: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
   handleDeleteMemo: (memoId: string, memoTitle: string) => void;
+  deletingMemoId: string | null;
   user: any;
   handleCreateMemo: (e: React.FormEvent) => void;
   handleUpdateMemo: (e: React.FormEvent) => void;
@@ -55,6 +56,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   loadMemos,
   closeOtherFeatures,
   handleDeleteMemo,
+  deletingMemoId,
   handleCreateMemo,
   handleUpdateMemo,
   editingMemo,
@@ -919,8 +921,13 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                         }}
                         className="delete-button"
                         title="削除"
+                        disabled={deletingMemoId === memo.id}
                       >
-                        <i className="bi bi-trash"></i>
+                        {deletingMemoId === memo.id ? (
+                          <i className="bi bi-arrow-clockwise spin"></i>
+                        ) : (
+                          <i className="bi bi-trash"></i>
+                        )}
                       </button>
                     </div>
                   </div>

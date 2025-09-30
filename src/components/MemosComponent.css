@@ -1,5 +1,19 @@
 /* MemosComponent.css - メモコンポーネント専用のスタイル */
 
+/* スピンアニメーション */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* メモヘッダーのスタイル */
 .memos-header {
   display: flex;
@@ -1403,6 +1417,17 @@
 .delete-button:hover {
   background: #ffcdd2;
   transform: scale(1.1);
+}
+
+.delete-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.delete-button:disabled:hover {
+  background: #ffebee;
+  transform: none;
 }
 
 /* ページネーション */

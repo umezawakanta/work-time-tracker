@@ -120,6 +120,8 @@ interface AppProps {
   setDisplayName: (displayName: string) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
+  deletingMemoId: string | null;
+  setDeletingMemoId: (id: string | null) => void;
   message: string;
   setMessage: (message: string) => void;
   isRegisterMode: boolean;
@@ -142,6 +144,8 @@ function App({
   setDisplayName, 
   loading, 
   setLoading, 
+  deletingMemoId,
+  setDeletingMemoId,
   message, 
   setMessage, 
   isRegisterMode, 
@@ -5704,6 +5708,9 @@ User Agent: ${userAgent}
       return;
     }
 
+    // 削除中のローディング状態を設定
+    setDeletingMemoId(memoId);
+
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(`/api/memos/${memoId}`, {
@@ -5719,18 +5726,30 @@ User Agent: ${userAgent}
       const data = await response.json();
 
       if (data.success) {
+        // 即座にUIからメモを削除（楽観的更新）
+        setMemos(prevMemos => prevMemos.filter(memo => memo.id !== memoId));
+        
         setMessage("メモを削除しました");
-        loadMemos();
-
+        
         // メモ件数更新イベントを発火
         window.dispatchEvent(new CustomEvent("memoDeleted"));
+        
+        // データを再読み込みして整合性を保つ
+        loadMemos();
       } else {
+        // エラーの場合は元のメモを復元
+        loadMemos();
         setMessage(`メモの削除失敗: ${data.message}`);
       }
     } catch (error) {
+      // エラーの場合は元のメモを復元
+      loadMemos();
       setMessage(
         `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
       );
+    } finally {
+      // ローディング状態をクリア
+      setDeletingMemoId(null);
     }
   };
 
@@ -7240,6 +7259,7 @@ User Agent: ${userAgent}
                     loadMemos={loadMemos}
                     closeOtherFeatures={closeOtherFeatures}
                     handleDeleteMemo={handleDeleteMemo}
+                    deletingMemoId={deletingMemoId}
                     user={user}
                     handleCreateMemo={handleCreateMemo}
                     handleUpdateMemo={handleUpdateMemo}
@@ -7293,6 +7313,7 @@ User Agent: ${userAgent}
                     onUpdateMemoTags={handleUpdateMemoTags}
                     onEditMemo={handleEditPublicMemo}
                     onDeleteMemo={handleDeletePublicMemo}
+                    deletingMemoId={deletingMemoId}
                   />
                 );
               } else if (feature.id === "work-records") {
@@ -7912,6 +7933,7 @@ const AppWithProviders = () => {
   const [user, setUser] = useState<User | null>(null);
   const [customTimerActive, setCustomTimerActive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deletingMemoId, setDeletingMemoId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -8069,6 +8091,8 @@ const AppWithProviders = () => {
               setDisplayName={setDisplayName}
               loading={loading}
               setLoading={setLoading}
+              deletingMemoId={deletingMemoId}
+              setDeletingMemoId={setDeletingMemoId}
               message={message}
               setMessage={setMessage}
               isRegisterMode={isRegisterMode}
