@@ -1,0 +1,489 @@
+/* カードローンウィジェットのスタイル */
+
+.card-loan-widget {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-loan-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-loan-widget.loading,
+.card-loan-widget.no-loan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.loading-spinner {
+  text-align: center;
+}
+
+.loading-spinner .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #e91e63;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.no-loan-content {
+  text-align: center;
+}
+
+.no-loan-content h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.no-loan-content p {
+  margin: 0 0 1.5rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.create-loan-button {
+  background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.create-loan-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.widget-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.widget-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-button {
+  background: #f5f5f5;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-button:hover {
+  background: #e0e0e0;
+}
+
+.action-button.update:hover {
+  background: #fce4ec;
+}
+
+.action-button.settings:hover {
+  background: #f3e5f5;
+}
+
+.loan-info {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #e91e63;
+}
+
+.loan-details {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.loan-type {
+  background: #e91e63;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.loan-name {
+  background: #fce4ec;
+  color: #c2185b;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.loan-account {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+  font-family: monospace;
+}
+
+.loan-holder {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.balance-display {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.balance-amount {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.balance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.last-updated {
+  font-size: 0.8rem;
+}
+
+.balance-notes {
+  font-style: italic;
+  color: #888;
+}
+
+.loan-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-item {
+  text-align: center;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.detail-value.interest-rate {
+  color: #e91e63;
+}
+
+.detail-value.next-payment {
+  color: #ff9800;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.stat-value.total-debt {
+  color: #f44336;
+}
+
+.stat-value.monthly-total {
+  color: #ff9800;
+}
+
+.stat-value.avg-rate {
+  color: #e91e63;
+}
+
+.recent-transactions {
+  margin-bottom: 1.5rem;
+}
+
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.transactions-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.view-all-button {
+  background: none;
+  border: none;
+  color: #e91e63;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.view-all-button:hover {
+  color: #c2185b;
+}
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.transaction-item:hover {
+  background: #e9ecef;
+}
+
+.transaction-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.transaction-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.transaction-description {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transaction-meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.transaction-type {
+  background: #fce4ec;
+  color: #c2185b;
+  padding: 0.125rem 0.375rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+}
+
+.transaction-category {
+  background: #e8f5e8;
+  color: #388e3c;
+  padding: 0.125rem 0.375rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+}
+
+.transaction-breakdown {
+  font-size: 0.8rem;
+  color: #888;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.breakdown-item {
+  background: #fff3e0;
+  color: #f57c00;
+  padding: 0.125rem 0.375rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+}
+
+.transaction-amount {
+  font-weight: bold;
+  font-size: 1rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.transaction-amount.borrowing,
+.transaction-amount.refinancing {
+  color: #f44336;
+}
+
+.transaction-amount.repayment,
+.transaction-amount.interest_payment {
+  color: #4caf50;
+}
+
+.transaction-amount.adjustment {
+  color: #ff9800;
+}
+
+.widget-footer {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.quick-repayment-button,
+.quick-borrowing-button {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.quick-repayment-button {
+  background: #e8f5e8;
+  color: #388e3c;
+  border: 1px solid #c8e6c9;
+}
+
+.quick-repayment-button:hover {
+  background: #c8e6c9;
+  transform: translateY(-1px);
+}
+
+.quick-borrowing-button {
+  background: #ffebee;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+}
+
+.quick-borrowing-button:hover {
+  background: #ffcdd2;
+  transform: translateY(-1px);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .card-loan-widget {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .balance-amount {
+    font-size: 2rem;
+  }
+  
+  .loan-details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .widget-footer {
+    flex-direction: column;
+  }
+  
+  .transaction-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .transaction-amount-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .loan-details {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

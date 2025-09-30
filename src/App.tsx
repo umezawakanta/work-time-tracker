@@ -47,6 +47,10 @@ import BankAccountWidget from "./components/BankAccountWidget";
 import BankAccountUpdateForm from "./components/BankAccountUpdateForm";
 import BankTransactionHistory from "./components/BankTransactionHistory";
 import { BankAccountManager } from "./utils/bankAccountManager";
+import CardLoanWidget from "./components/CardLoanWidget";
+import CardLoanUpdateForm from "./components/CardLoanUpdateForm";
+import CardLoanTransactionHistory from "./components/CardLoanTransactionHistory";
+import { CardLoanManager } from "./utils/cardLoanManager";
 import TwitterShare from "./components/TwitterShare";
 import SimpleShareModal from "./components/SimpleShareModal";
 import BadgeGallery from "./components/BadgeGallery";
@@ -179,6 +183,17 @@ interface AppProps {
   handleBankAccountUpdate: (accountId: string) => void;
   handleBankAccountSave: (account: any) => void;
   handleBankTransactionHistory: (accountId: string) => void;
+  // カードローン管理システムのprops
+  showCardLoan: boolean;
+  setShowCardLoan: (show: boolean) => void;
+  showCardLoanUpdate: boolean;
+  setShowCardLoanUpdate: (show: boolean) => void;
+  showCardLoanTransactionHistory: boolean;
+  setShowCardLoanTransactionHistory: (show: boolean) => void;
+  selectedCardLoanId: string | null;
+  handleCardLoanUpdate: (loanId: string) => void;
+  handleCardLoanSave: (loan: any) => void;
+  handleCardLoanTransactionHistory: (loanId: string) => void;
 }
 
 function App({ 
@@ -230,7 +245,18 @@ function App({
   selectedBankAccountId,
   handleBankAccountUpdate,
   handleBankAccountSave,
-  handleBankTransactionHistory
+  handleBankTransactionHistory,
+  // カードローン管理システムのprops
+  showCardLoan,
+  setShowCardLoan,
+  showCardLoanUpdate,
+  setShowCardLoanUpdate,
+  showCardLoanTransactionHistory,
+  setShowCardLoanTransactionHistory,
+  selectedCardLoanId,
+  handleCardLoanUpdate,
+  handleCardLoanSave,
+  handleCardLoanTransactionHistory
 }: AppProps) {
 
   // 注意: showErrorModalをサブコンポーネント側で定義することはできません
@@ -7693,6 +7719,19 @@ User Agent: ${userAgent}
                         }}
                       />
                     )}
+
+                    {/* カードローンウィジェット */}
+                    {user && (
+                      <CardLoanWidget
+                        userId={user.id}
+                        onUpdateBalance={handleCardLoanUpdate}
+                        onShowTransactions={handleCardLoanTransactionHistory}
+                        onShowSettings={() => {
+                          // 設定画面の実装（必要に応じて）
+                          alert('設定機能は今後実装予定です');
+                        }}
+                      />
+                    )}
                   </div>
                 );
               } else {
@@ -8165,6 +8204,13 @@ const AppWithProviders = () => {
   const [selectedBankAccountId, setSelectedBankAccountId] = useState<string | null>(null);
   const bankAccountManager = BankAccountManager.getInstance();
 
+  // カードローン管理システムの状態
+  const [showCardLoan, setShowCardLoan] = useState(false);
+  const [showCardLoanUpdate, setShowCardLoanUpdate] = useState(false);
+  const [showCardLoanTransactionHistory, setShowCardLoanTransactionHistory] = useState(false);
+  const [selectedCardLoanId, setSelectedCardLoanId] = useState<string | null>(null);
+  const cardLoanManager = CardLoanManager.getInstance();
+
   // 無駄遣い記録保存処理
   const handleWasteRecordSave = (record: any) => {
     setShowWasteRecordForm(false);
@@ -8200,6 +8246,25 @@ const AppWithProviders = () => {
   const handleBankTransactionHistory = (accountId: string) => {
     setSelectedBankAccountId(accountId);
     setShowBankTransactionHistory(true);
+  };
+
+  // カードローン更新処理
+  const handleCardLoanUpdate = (loanId: string) => {
+    setSelectedCardLoanId(loanId);
+    setShowCardLoanUpdate(true);
+  };
+
+  // カードローン保存処理
+  const handleCardLoanSave = (loan: any) => {
+    setShowCardLoanUpdate(false);
+    setSelectedCardLoanId(null);
+    // データの再読み込みはCardLoanWidget内で実行される
+  };
+
+  // カードローン取引履歴表示処理
+  const handleCardLoanTransactionHistory = (loanId: string) => {
+    setSelectedCardLoanId(loanId);
+    setShowCardLoanTransactionHistory(true);
   };
 
   return (
@@ -8389,6 +8454,17 @@ const AppWithProviders = () => {
               handleBankAccountUpdate={handleBankAccountUpdate}
               handleBankAccountSave={handleBankAccountSave}
               handleBankTransactionHistory={handleBankTransactionHistory}
+              // カードローン管理システムのprops
+              showCardLoan={showCardLoan}
+              setShowCardLoan={setShowCardLoan}
+              showCardLoanUpdate={showCardLoanUpdate}
+              setShowCardLoanUpdate={setShowCardLoanUpdate}
+              showCardLoanTransactionHistory={showCardLoanTransactionHistory}
+              setShowCardLoanTransactionHistory={setShowCardLoanTransactionHistory}
+              selectedCardLoanId={selectedCardLoanId}
+              handleCardLoanUpdate={handleCardLoanUpdate}
+              handleCardLoanSave={handleCardLoanSave}
+              handleCardLoanTransactionHistory={handleCardLoanTransactionHistory}
               handleLogin={async (e: React.FormEvent) => {
                 e.preventDefault();
                 setLoading(true);
@@ -8581,6 +8657,31 @@ const AppWithProviders = () => {
           onClose={() => {
             setShowBankTransactionHistory(false);
             setSelectedBankAccountId(null);
+          }}
+        />
+      )}
+
+      {/* カードローン更新フォーム */}
+      {showCardLoanUpdate && user && selectedCardLoanId && (
+        <CardLoanUpdateForm
+          userId={user.id}
+          loanId={selectedCardLoanId}
+          onSave={handleCardLoanSave}
+          onCancel={() => {
+            setShowCardLoanUpdate(false);
+            setSelectedCardLoanId(null);
+          }}
+        />
+      )}
+
+      {/* カードローン取引履歴 */}
+      {showCardLoanTransactionHistory && user && selectedCardLoanId && (
+        <CardLoanTransactionHistory
+          userId={user.id}
+          loanId={selectedCardLoanId}
+          onClose={() => {
+            setShowCardLoanTransactionHistory(false);
+            setSelectedCardLoanId(null);
           }}
         />
       )}
