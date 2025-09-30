@@ -95,7 +95,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         <div className="header-navigation">
           <UserInfoComponent
             user={user}
-            currentCharacter={currentCharacter}
+            currentCharacter={currentCharacter as any}
             onCharacterHomeToggle={handleCharacterHomeToggle}
             showThemeSettings={showThemeSettings}
             onThemeSettingsToggle={() => {
