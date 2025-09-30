@@ -45,6 +45,9 @@ const LoginComponent: React.FC<LoginComponentProps> = ({
   setIsLogin,
   loading,
   message,
+  currentCharacter,
+  userProgress,
+  showPersonalizedLogo = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
@@ -68,33 +71,58 @@ const LoginComponent: React.FC<LoginComponentProps> = ({
       <div className="login-card">
         <div className="login-header">
           <div className="app-logo">
-            <div className="logo-character">
-              <div className="character-halo"></div>
-              <div className="character-wings">
-                <div className="wing left-wing"></div>
-                <div className="wing right-wing"></div>
+            {/* パーソナライズされたロゴキャラクターまたはデフォルト */}
+            {showPersonalizedLogo && currentCharacter && currentCharacter.svg ? (
+              <div className="personalized-logo-character">
+                <div 
+                  className="selected-character-svg"
+                  dangerouslySetInnerHTML={{ __html: currentCharacter.svg }}
+                />
+                {userProgress && (
+                  <>
+                    <div className="logo-level-badge">
+                      <span>Lv.{userProgress.level}</span>
+                    </div>
+                    {userProgress.badgeCount > 0 && (
+                      <div className="logo-badge-indicator">
+                        <span>🏆 {userProgress.badgeCount}</span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
-              <div className="character-face">
-                <div className="character-eyes">
-                  <div className="eye left-eye"></div>
-                  <div className="eye right-eye"></div>
+            ) : (
+              <div className="logo-character">
+                <div className="character-halo"></div>
+                <div className="character-wings">
+                  <div className="wing left-wing"></div>
+                  <div className="wing right-wing"></div>
                 </div>
-                <div className="character-mouth"></div>
+                <div className="character-face">
+                  <div className="character-eyes">
+                    <div className="eye left-eye"></div>
+                    <div className="eye right-eye"></div>
+                  </div>
+                  <div className="character-mouth"></div>
+                </div>
+                <div className="character-body"></div>
+                <div className="sparkles">
+                  <div className="sparkle sparkle-1"></div>
+                  <div className="sparkle sparkle-2"></div>
+                  <div className="sparkle sparkle-3"></div>
+                  <div className="sparkle sparkle-4"></div>
+                  <div className="sparkle sparkle-5"></div>
+                  <div className="sparkle sparkle-6"></div>
+                </div>
               </div>
-              <div className="character-body"></div>
-              <div className="sparkles">
-                <div className="sparkle sparkle-1"></div>
-                <div className="sparkle sparkle-2"></div>
-                <div className="sparkle sparkle-3"></div>
-                <div className="sparkle sparkle-4"></div>
-                <div className="sparkle sparkle-5"></div>
-                <div className="sparkle sparkle-6"></div>
-              </div>
-            </div>
+            )}
           </div>
           <h1>Work Time Tracker</h1>
           <p className="app-description">
-            可愛いキャラクターと一緒に作業時間を管理しよう！
+            {!(showPersonalizedLogo && currentCharacter)
+              ? '可愛いキャラクターと一緒に作業時間を管理しよう！'
+              : `${currentCharacter.name}と一緒に作業時間を管理しよう！`
+            }
           </p>
         </div>
 

@@ -29,6 +29,7 @@ import CharacterMiniGame from "./components/CharacterMiniGame";
 import CharacterCollection from "./components/CharacterCollection";
 import CharacterShare from "./components/CharacterShare";
 import { reorderRewardManager } from "./utils/reorderRewardManager";
+import { CharacterDataEnhancer } from "./utils/characterDataEnhancer";
 import RewardNotification from "./components/RewardNotification";
 import BadgeNotification from "./components/BadgeNotification";
 import TwitterShare from "./components/TwitterShare";
@@ -343,7 +344,10 @@ function App({
   // キャラクター関連の状態
   const [characterSettings, setCharacterSettings] = useState<UserCharacterSettings>(characterManager.getSettings());
   const [showCharacterSelector, setShowCharacterSelector] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState<CharacterType | null>(characterManager.getCurrentCharacter());
+  const [selectedCharacter, setSelectedCharacter] = useState<CharacterType | null>(() => {
+    const character = characterManager.getCurrentCharacter();
+    return character ? CharacterDataEnhancer.enhanceCharacterWithSvg(character as any) : null;
+  });
   const [workState, setWorkState] = useState<'idle' | 'working' | 'break' | 'completed'>('idle');
   
   // キャラクター通知の状態
@@ -7079,6 +7083,15 @@ User Agent: ${userAgent}
         setIsLogin={(isLogin) => setIsRegisterMode(!isLogin)}
         loading={loading}
         message={message}
+        // パーソナライゼーション用のプロパティ
+        currentCharacter={selectedCharacter as any}
+        userProgress={selectedCharacter ? {
+          level: selectedCharacter.level || 1,
+          totalExperience: selectedCharacter.totalExperience || 0,
+          badgeCount: selectedCharacter.badges?.length || 0,
+          workHours: 0 // 実際の作業時間データを渡す
+        } : undefined}
+        showPersonalizedLogo={!!selectedCharacter}
       />
     );
   }
@@ -7089,7 +7102,7 @@ User Agent: ${userAgent}
         <div className="dashboard">
           <HeaderComponent
             user={user!}
-            currentCharacter={selectedCharacter as Character | null}
+            currentCharacter={selectedCharacter as any}
             showThemeSettings={showThemeSettings}
             showFontSettings={showFontSettings}
             showFeatureSettings={showFeatureSettings}
@@ -7585,7 +7598,7 @@ User Agent: ${userAgent}
               <div className="character-home-wrapper">
                 <CharacterHome
                   onSelectCharacter={handleSelectCharacter}
-                  currentCharacter={selectedCharacter as Character | null}
+                  currentCharacter={selectedCharacter as any}
                   showCharacterHome={showCharacterHome}
                   setShowCharacterHome={setShowCharacterHome}
                   closeOtherFeatures={closeOtherFeatures}

@@ -55,6 +55,122 @@
   animation: float 3s ease-in-out infinite;
 }
 
+/* ========================================
+   パーソナライズされたロゴキャラクター用のスタイル
+   ======================================== */
+
+.personalized-logo-character {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  animation: personalizedFloat 3s ease-in-out infinite;
+}
+
+.personalized-logo-character .selected-character-svg {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.personalized-logo-character .selected-character-svg svg {
+  width: 80px;
+  height: 80px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.logo-level-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+  z-index: 15;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: logoBadgePulse 2s ease-in-out infinite;
+}
+
+.logo-badge-indicator {
+  position: absolute;
+  bottom: -8px;
+  left: -8px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #333;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+  z-index: 15;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: logoBadgePulse 2s ease-in-out infinite 0.5s;
+}
+
+/* アニメーション */
+@keyframes personalizedFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(-3px) scale(1.02);
+    opacity: 1;
+  }
+}
+
+@keyframes logoBadgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .personalized-logo-character {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .personalized-logo-character .selected-character-svg svg {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .logo-level-badge,
+  .logo-badge-indicator {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .personalized-logo-character {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .personalized-logo-character .selected-character-svg svg {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .logo-level-badge,
+  .logo-badge-indicator {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+}
+
 /* ログイン画面専用のキャラクタースタイル - メインのキャラクターコンポーネントと競合しないようにスコープを限定 */
 .login-container .character-halo {
   position: absolute;
