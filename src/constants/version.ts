@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.4.2";
+export const APP_VERSION = "1.4.3";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,27 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.4.3",
+    date: "2025-01-29",
+    changes: [
+      "メモ削除機能のUX向上（即時UI反映機能を実装）",
+      "削除中のローディングアニメーション（スピンアイコン）を追加",
+      "削除ボタンの無効化状態と視覚的フィードバックを改善",
+      "エラー時の自動復元機能を実装",
+      "プライベートメモと公開メモの両方に対応",
+      "setCorsHeaders関数の未定義エラーを修正",
+      "CORS設定の適切な実装",
+      "500 Internal Server Errorの解決",
+      "deletingMemoId stateによる削除中メモの追跡",
+      "楽観的更新による即座のUI反映",
+      "エラーハンドリングの強化",
+      "スピンアニメーション（@keyframes spin）の実装",
+      "削除ボタンの無効化状態スタイルの追加",
+      "レスポンシブデザインの改善"
+    ],
+    type: "improvement"
+  },
   {
     version: "1.4.2",
     date: "2025-01-29",
