@@ -673,24 +673,82 @@
   gap: 0.5rem;
 }
 
-.default-categories-section,
-.custom-categories-section {
+/* ジャンル管理セクション */
+.default-genres-section,
+.custom-genres-section,
+.deleted-genres-section {
   margin-bottom: 1.5rem;
 }
 
-.default-categories-section h4,
-.custom-categories-section h4 {
+.default-genres-section h4,
+.custom-genres-section h4,
+.deleted-genres-section h4 {
   margin: 0 0 0.75rem 0;
   color: #495057;
   font-size: 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-weight: 600;
 }
 
-.default-genre {
+.default-genres-section h4::before {
+  content: "📋";
+  font-size: 1.2rem;
+}
+
+.custom-genres-section h4::before {
+  content: "✏️";
+  font-size: 1.2rem;
+}
+
+.deleted-genres-section h4::before {
+  content: "🗑️";
+  font-size: 1.2rem;
+}
+
+/* ジャンルアイテムのスタイル */
+.genre-item {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.genre-item:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.genre-item.default-genre {
   background: #fff3cd;
   border: 1px solid #ffeaa7;
+}
+
+.genre-item.custom-genre {
+  background: #e7f3ff;
+  border: 1px solid #b3d9ff;
+}
+
+.genre-item.deleted-genre {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  opacity: 0.8;
+}
+
+.genre-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.genre-name {
+  font-weight: 500;
+  color: #495057;
+  flex: 1;
 }
 
 .genre-type {
@@ -700,7 +758,28 @@
   border-radius: 12px;
   font-size: 0.7rem;
   font-weight: 500;
-  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+.genre-item.default-genre .genre-type {
+  background: #ffc107;
+  color: #212529;
+}
+
+.genre-item.custom-genre .genre-type {
+  background: #007bff;
+  color: white;
+}
+
+.genre-item.deleted-genre .genre-type {
+  background: #dc3545;
+  color: white;
+}
+
+.genre-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
 }
 
 .restore-genre-button {
@@ -712,10 +791,156 @@
   cursor: pointer;
   font-size: 0.8rem;
   transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .restore-genre-button:hover {
   background: #218838;
+}
+
+/* ジャンル編集フォーム */
+.genre-edit-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+}
+
+.genre-edit-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.genre-edit-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* ジャンル追加セクション */
+.add-genre-section {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.add-genre-section h4 {
+  margin: 0 0 0.75rem 0;
+  color: #495057;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-genre-section h4::before {
+  content: "➕";
+  font-size: 1.2rem;
+}
+
+.add-genre-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.genre-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.genre-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.add-genre-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.add-genre-button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.add-genre-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+/* ジャンルボタン */
+.edit-genre-button,
+.delete-genre-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.edit-genre-button:hover {
+  background: #5a6268;
+}
+
+.delete-genre-button {
+  background: #dc3545;
+}
+
+.delete-genre-button:hover {
+  background: #c82333;
+}
+
+.save-genre-button,
+.cancel-genre-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s ease;
+}
+
+.save-genre-button:hover:not(:disabled) {
+  background: #218838;
+}
+
+.save-genre-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.cancel-genre-button {
+  background: #6c757d;
+}
+
+.cancel-genre-button:hover {
+  background: #5a6268;
 }
 
 .genre-management-actions {
