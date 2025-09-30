@@ -39,6 +39,14 @@ import WasteAnalysisDashboard from "./components/WasteAnalysisDashboard";
 import WasteRecordForm from "./components/WasteRecordForm";
 import WasteGoalForm from "./components/WasteGoalForm";
 import { WasteAnalysisManager } from "./utils/wasteAnalysisManager";
+import CashBalanceWidget from "./components/CashBalanceWidget";
+import CashBalanceUpdateForm from "./components/CashBalanceUpdateForm";
+import CashTransactionHistory from "./components/CashTransactionHistory";
+import { CashBalanceManager } from "./utils/cashBalanceManager";
+import BankAccountWidget from "./components/BankAccountWidget";
+import BankAccountUpdateForm from "./components/BankAccountUpdateForm";
+import BankTransactionHistory from "./components/BankTransactionHistory";
+import { BankAccountManager } from "./utils/bankAccountManager";
 import TwitterShare from "./components/TwitterShare";
 import SimpleShareModal from "./components/SimpleShareModal";
 import BadgeGallery from "./components/BadgeGallery";
@@ -152,6 +160,25 @@ interface AppProps {
   setShowWasteGoalForm: (show: boolean) => void;
   handleWasteRecordSave: (record: any) => void;
   handleWasteGoalSave: (goal: any) => void;
+  // 現金残高管理システムのprops
+  showCashBalance: boolean;
+  setShowCashBalance: (show: boolean) => void;
+  showCashBalanceUpdate: boolean;
+  setShowCashBalanceUpdate: (show: boolean) => void;
+  showCashTransactionHistory: boolean;
+  setShowCashTransactionHistory: (show: boolean) => void;
+  handleCashBalanceUpdate: (balance: any) => void;
+  // 銀行口座管理システムのprops
+  showBankAccount: boolean;
+  setShowBankAccount: (show: boolean) => void;
+  showBankAccountUpdate: boolean;
+  setShowBankAccountUpdate: (show: boolean) => void;
+  showBankTransactionHistory: boolean;
+  setShowBankTransactionHistory: (show: boolean) => void;
+  selectedBankAccountId: string | null;
+  handleBankAccountUpdate: (accountId: string) => void;
+  handleBankAccountSave: (account: any) => void;
+  handleBankTransactionHistory: (accountId: string) => void;
 }
 
 function App({ 
@@ -184,7 +211,26 @@ function App({
   showWasteGoalForm,
   setShowWasteGoalForm,
   handleWasteRecordSave,
-  handleWasteGoalSave
+  handleWasteGoalSave,
+  // 現金残高管理システムのprops
+  showCashBalance,
+  setShowCashBalance,
+  showCashBalanceUpdate,
+  setShowCashBalanceUpdate,
+  showCashTransactionHistory,
+  setShowCashTransactionHistory,
+  handleCashBalanceUpdate,
+  // 銀行口座管理システムのprops
+  showBankAccount,
+  setShowBankAccount,
+  showBankAccountUpdate,
+  setShowBankAccountUpdate,
+  showBankTransactionHistory,
+  setShowBankTransactionHistory,
+  selectedBankAccountId,
+  handleBankAccountUpdate,
+  handleBankAccountSave,
+  handleBankTransactionHistory
 }: AppProps) {
 
   // 注意: showErrorModalをサブコンポーネント側で定義することはできません
@@ -7621,6 +7667,32 @@ User Agent: ${userAgent}
                         📊 ダッシュボードを開く
                       </button>
                     </div>
+                    
+                    {/* 現金残高ウィジェット */}
+                    {user && (
+                      <CashBalanceWidget
+                        userId={user.id}
+                        onUpdateBalance={() => setShowCashBalanceUpdate(true)}
+                        onShowTransactions={() => setShowCashTransactionHistory(true)}
+                        onShowSettings={() => {
+                          // 設定画面の実装（必要に応じて）
+                          alert('設定機能は今後実装予定です');
+                        }}
+                      />
+                    )}
+
+                    {/* 銀行口座ウィジェット */}
+                    {user && (
+                      <BankAccountWidget
+                        userId={user.id}
+                        onUpdateBalance={handleBankAccountUpdate}
+                        onShowTransactions={handleBankTransactionHistory}
+                        onShowSettings={() => {
+                          // 設定画面の実装（必要に応じて）
+                          alert('設定機能は今後実装予定です');
+                        }}
+                      />
+                    )}
                   </div>
                 );
               } else {
@@ -8080,6 +8152,19 @@ const AppWithProviders = () => {
   const [showWasteGoalForm, setShowWasteGoalForm] = useState(false);
   const wasteAnalysisManager = WasteAnalysisManager.getInstance();
 
+  // 現金残高管理システムの状態
+  const [showCashBalance, setShowCashBalance] = useState(false);
+  const [showCashBalanceUpdate, setShowCashBalanceUpdate] = useState(false);
+  const [showCashTransactionHistory, setShowCashTransactionHistory] = useState(false);
+  const cashBalanceManager = CashBalanceManager.getInstance();
+
+  // 銀行口座管理システムの状態
+  const [showBankAccount, setShowBankAccount] = useState(false);
+  const [showBankAccountUpdate, setShowBankAccountUpdate] = useState(false);
+  const [showBankTransactionHistory, setShowBankTransactionHistory] = useState(false);
+  const [selectedBankAccountId, setSelectedBankAccountId] = useState<string | null>(null);
+  const bankAccountManager = BankAccountManager.getInstance();
+
   // 無駄遣い記録保存処理
   const handleWasteRecordSave = (record: any) => {
     setShowWasteRecordForm(false);
@@ -8090,6 +8175,31 @@ const AppWithProviders = () => {
   const handleWasteGoalSave = (goal: any) => {
     setShowWasteGoalForm(false);
     // データの再読み込みはWasteAnalysisDashboard内で実行される
+  };
+
+  // 現金残高更新処理
+  const handleCashBalanceUpdate = (balance: any) => {
+    setShowCashBalanceUpdate(false);
+    // データの再読み込みはCashBalanceWidget内で実行される
+  };
+
+  // 銀行口座更新処理
+  const handleBankAccountUpdate = (accountId: string) => {
+    setSelectedBankAccountId(accountId);
+    setShowBankAccountUpdate(true);
+  };
+
+  // 銀行口座保存処理
+  const handleBankAccountSave = (account: any) => {
+    setShowBankAccountUpdate(false);
+    setSelectedBankAccountId(null);
+    // データの再読み込みはBankAccountWidget内で実行される
+  };
+
+  // 銀行取引履歴表示処理
+  const handleBankTransactionHistory = (accountId: string) => {
+    setSelectedBankAccountId(accountId);
+    setShowBankTransactionHistory(true);
   };
 
   return (
@@ -8260,6 +8370,25 @@ const AppWithProviders = () => {
               setShowWasteGoalForm={setShowWasteGoalForm}
               handleWasteRecordSave={handleWasteRecordSave}
               handleWasteGoalSave={handleWasteGoalSave}
+              // 現金残高管理システムのprops
+              showCashBalance={showCashBalance}
+              setShowCashBalance={setShowCashBalance}
+              showCashBalanceUpdate={showCashBalanceUpdate}
+              setShowCashBalanceUpdate={setShowCashBalanceUpdate}
+              showCashTransactionHistory={showCashTransactionHistory}
+              setShowCashTransactionHistory={setShowCashTransactionHistory}
+              handleCashBalanceUpdate={handleCashBalanceUpdate}
+              // 銀行口座管理システムのprops
+              showBankAccount={showBankAccount}
+              setShowBankAccount={setShowBankAccount}
+              showBankAccountUpdate={showBankAccountUpdate}
+              setShowBankAccountUpdate={setShowBankAccountUpdate}
+              showBankTransactionHistory={showBankTransactionHistory}
+              setShowBankTransactionHistory={setShowBankTransactionHistory}
+              selectedBankAccountId={selectedBankAccountId}
+              handleBankAccountUpdate={handleBankAccountUpdate}
+              handleBankAccountSave={handleBankAccountSave}
+              handleBankTransactionHistory={handleBankTransactionHistory}
               handleLogin={async (e: React.FormEvent) => {
                 e.preventDefault();
                 setLoading(true);
@@ -8411,6 +8540,48 @@ const AppWithProviders = () => {
           userId={user.id}
           onSave={handleWasteGoalSave}
           onCancel={() => setShowWasteGoalForm(false)}
+        />
+      )}
+
+      {/* 現金残高更新フォーム */}
+      {showCashBalanceUpdate && user && (
+        <CashBalanceUpdateForm
+          userId={user.id}
+          onSave={handleCashBalanceUpdate}
+          onCancel={() => setShowCashBalanceUpdate(false)}
+        />
+      )}
+
+      {/* 現金取引履歴 */}
+      {showCashTransactionHistory && user && (
+        <CashTransactionHistory
+          userId={user.id}
+          onClose={() => setShowCashTransactionHistory(false)}
+        />
+      )}
+
+      {/* 銀行口座更新フォーム */}
+      {showBankAccountUpdate && user && selectedBankAccountId && (
+        <BankAccountUpdateForm
+          userId={user.id}
+          accountId={selectedBankAccountId}
+          onSave={handleBankAccountSave}
+          onCancel={() => {
+            setShowBankAccountUpdate(false);
+            setSelectedBankAccountId(null);
+          }}
+        />
+      )}
+
+      {/* 銀行取引履歴 */}
+      {showBankTransactionHistory && user && selectedBankAccountId && (
+        <BankTransactionHistory
+          userId={user.id}
+          accountId={selectedBankAccountId}
+          onClose={() => {
+            setShowBankTransactionHistory(false);
+            setSelectedBankAccountId(null);
+          }}
         />
       )}
     </AuthProvider>
