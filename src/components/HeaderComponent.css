@@ -37,6 +37,101 @@
   gap: 0.25rem; /* タイトルと挨拶の間隔 */
 }
 
+/* ヘッダー用の走行mini-character - 大幅改善版 */
+.header-mini-character {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.header-mini-character .mini-character {
+  width: 35px;
+  height: 35px;
+  animation: miniCharacterRunning 2s ease-in-out infinite;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.header-mini-character .mini-character-face {
+  width: 22px;
+  height: 22px;
+  top: 3px;
+  animation: miniCharacterRunningFace 0.8s ease-in-out infinite;
+}
+
+.header-mini-character .mini-character-eyes {
+  top: 5px;
+  gap: 2px;
+}
+
+.header-mini-character .mini-eye {
+  width: 2px;
+  height: 2px;
+}
+
+.header-mini-character .mini-character-mouth {
+  bottom: 4px;
+  width: 6px;
+  height: 3px;
+}
+
+.header-mini-character .mini-character-body {
+  width: 20px;
+  height: 14px;
+  top: 22px;
+}
+
+.header-mini-character .mini-character-halo {
+  width: 22px;
+  height: 3px;
+  top: -2px;
+}
+
+.header-mini-character .mini-character-wings {
+  top: 8px;
+  animation: miniCharacterRunningWings 0.6s ease-in-out infinite;
+}
+
+.header-mini-character .mini-wing {
+  width: 9px;
+  height: 11px;
+}
+
+/* 走行時の埃エフェクト */
+.header-mini-character .mini-character::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: miniCharacterDust 0.8s ease-out infinite;
+  transform: translateX(-50%);
+}
+
+.header-mini-character .mini-character::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 60%;
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  animation: miniCharacterDust 0.8s ease-out infinite 0.2s;
+  transform: translateX(-50%);
+}
+
 
 /* 右側：ナビゲーション */
 .header-right {

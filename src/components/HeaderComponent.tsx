@@ -70,6 +70,24 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
           currentCharacter={currentCharacter as any}
         />
         <VersionInfoComponent />
+        {/* ヘッダー用の走行mini-character */}
+        <div className="header-mini-character">
+          <div className="mini-character running">
+            <div className="mini-character-halo"></div>
+            <div className="mini-character-wings">
+              <div className="mini-wing left-mini-wing"></div>
+              <div className="mini-wing right-mini-wing"></div>
+            </div>
+            <div className="mini-character-face">
+              <div className="mini-character-eyes">
+                <div className="mini-eye left-mini-eye"></div>
+                <div className="mini-eye right-mini-eye"></div>
+              </div>
+              <div className="mini-character-mouth"></div>
+            </div>
+            <div className="mini-character-body"></div>
+          </div>
+        </div>
       </div>
       
       {/* 右側：ナビゲーション要素 */}
