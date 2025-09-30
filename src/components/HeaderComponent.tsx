@@ -10,7 +10,8 @@ import UserGreetingComponent from "./UserGreetingComponent";
 import ShareButtonComponent from "./ShareButtonComponent";
 import UpdateRequestModal from "./UpdateRequestModal";
 import BugReportModal from "./BugReportModal";
-import type { User, Character } from "../types";
+import type { User } from "../types";
+import type { Character } from "../types/character";
 import VersionInfoComponent from "./VersionInfo";
 
 interface HeaderComponentProps {
@@ -55,7 +56,11 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   return (
     <header className="dashboard-header">
       {/* 左側：キャラクター（絶対保持） */}
-      <HeaderLeftComponent isTimeTrackingActive={isTimeTrackingActive} />
+      <HeaderLeftComponent 
+        isTimeTrackingActive={isTimeTrackingActive}
+        currentCharacter={currentCharacter}
+        showCharacterInfo={true}
+      />
       
       {/* 中央：タイトルと挨拶 */}
       <div className="header-center">

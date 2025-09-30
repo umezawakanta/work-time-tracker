@@ -1,13 +1,21 @@
 import React from 'react';
 import './CharacterComponent.css';
+import type { Character } from '../types/character';
 
 interface CharacterComponentProps {
   isTimeTrackingActive: boolean;
+  currentCharacter?: Character | null;
+  showCharacterInfo?: boolean;
 }
 
-const CharacterComponent: React.FC<CharacterComponentProps> = ({ isTimeTrackingActive }) => {
+const CharacterComponent: React.FC<CharacterComponentProps> = ({ 
+  isTimeTrackingActive, 
+  currentCharacter, 
+  showCharacterInfo = false 
+}) => {
   return (
     <div className="character-container">
+      {/* 既存のキャラクターデザイン - 絶対に変更しない */}
       <div className={`character ${isTimeTrackingActive ? 'running' : ''}`}>
         <div className="character-halo"></div>
         <div className="character-wings">
@@ -45,6 +53,51 @@ const CharacterComponent: React.FC<CharacterComponentProps> = ({ isTimeTrackingA
           </div>
         )}
       </div>
+
+      {/* 新しい機能 - 既存デザインの上にオーバーレイ */}
+      {showCharacterInfo && currentCharacter && (
+        <>
+          {/* 選択中のキャラクター表示 */}
+          <div className="character-overlay">
+            <div 
+              className="selected-character-svg"
+              dangerouslySetInnerHTML={{ __html: currentCharacter.svg }}
+            />
+          </div>
+
+          {/* レベル表示 */}
+          <div className="character-level-badge">
+            <span className="level-text">Lv.{currentCharacter.level}</span>
+          </div>
+
+          {/* 経験値バー */}
+          <div className="character-exp-bar">
+            <div 
+              className="exp-fill"
+              style={{ 
+                width: `${Math.min((currentCharacter.experience / (currentCharacter.level * 100)) * 100, 100)}%` 
+              }}
+            />
+          </div>
+
+          {/* バッジ表示 */}
+          {currentCharacter.badges && currentCharacter.badges.length > 0 && (
+            <div className="character-badges">
+              {currentCharacter.badges.slice(0, 3).map((badgeId, index) => (
+                <div 
+                  key={badgeId} 
+                  className="character-badge"
+                  style={{ 
+                    animationDelay: `${index * 0.2}s` 
+                  }}
+                >
+                  🏆
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

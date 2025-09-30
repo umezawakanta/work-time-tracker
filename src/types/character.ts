@@ -24,6 +24,8 @@ export interface Character {
   evolution: CharacterEvolution;
   currentForm: string; // 現在のフォームID
   availableForms: string[]; // 利用可能なフォームIDリスト
+  // 表示用
+  svg?: string; // SVGコンテンツ
 }
 
 export interface CharacterStats {

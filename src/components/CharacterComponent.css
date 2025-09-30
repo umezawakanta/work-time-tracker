@@ -439,3 +439,182 @@
     transform: scale(1.1);
   }
 }
+
+/* ========================================
+   新しい機能用のスタイル - 既存デザインの上にオーバーレイ
+   ======================================== */
+
+/* 選択中のキャラクターオーバーレイ */
+.character-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.8;
+  animation: characterOverlayFloat 3s ease-in-out infinite;
+}
+
+.selected-character-svg {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-character-svg svg {
+  width: 60px;
+  height: 60px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* レベル表示バッジ */
+.character-level-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+  z-index: 15;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: levelBadgePulse 2s ease-in-out infinite;
+}
+
+.level-text {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 経験値バー */
+.character-exp-bar {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  z-index: 12;
+}
+
+.exp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ecdc4, #44a08d);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+  animation: expBarGlow 2s ease-in-out infinite;
+}
+
+
+/* バッジ表示 */
+.character-badges {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  right: -15px;
+  display: flex;
+  justify-content: space-around;
+  z-index: 14;
+  pointer-events: none;
+}
+
+.character-badge {
+  font-size: 12px;
+  animation: badgeFloat 2s ease-in-out infinite;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+
+/* アニメーション */
+@keyframes characterOverlayFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-2px) scale(1.02);
+    opacity: 1;
+  }
+}
+
+@keyframes levelBadgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@keyframes expBarGlow {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(78, 205, 196, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(78, 205, 196, 0.8);
+  }
+}
+
+@keyframes badgeFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-3px) rotate(5deg);
+    opacity: 1;
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .character-level-badge {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+  
+  .character-exp-bar {
+    width: 50px;
+    height: 3px;
+  }
+  
+  .character-badge {
+    font-size: 10px;
+  }
+  
+  .selected-character-svg svg {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .character-level-badge {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+  
+  .character-exp-bar {
+    width: 40px;
+    height: 2px;
+  }
+  
+  .character-badge {
+    font-size: 9px;
+  }
+  
+  .selected-character-svg svg {
+    width: 40px;
+    height: 40px;
+  }
+}
