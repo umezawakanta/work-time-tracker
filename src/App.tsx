@@ -3025,7 +3025,7 @@ ${errorInfo.stack}
         // 報酬システムを実行
         try {
           const diaryId = data.diary?._id || `diary_${Date.now()}`;
-          const rewardResult = await diaryRewardManager.processDiaryReward({
+          const rewardResult = await diaryRewardManager.processDiaryReward(user?.id || '', {
             title: diaryTitle,
             content: diaryContent,
             mood: parseInt(diaryMood),
@@ -3141,7 +3141,7 @@ ${errorInfo.stack}
       if (data.success) {
         // 更新時も報酬システムを実行（初回投稿時のみ報酬を付与するように制御）
         try {
-          const rewardResult = await diaryRewardManager.processDiaryReward({
+          const rewardResult = await diaryRewardManager.processDiaryReward(user?.id || '', {
             title: diaryTitle,
             content: diaryContent,
             mood: parseInt(diaryMood),

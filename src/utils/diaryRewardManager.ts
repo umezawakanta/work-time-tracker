@@ -22,7 +22,7 @@ class DiaryRewardManager {
   private processedDiaries: Set<string> = new Set();
 
   // 日記投稿時の報酬を計算・付与
-  public async processDiaryReward(diaryData: {
+  public async processDiaryReward(userId: string, diaryData: {
     title: string;
     content: string;
     mood: number;
