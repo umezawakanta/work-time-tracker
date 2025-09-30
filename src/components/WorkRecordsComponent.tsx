@@ -469,6 +469,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setEditingIncomeExpenseRecord(record);
     setIncomeExpenseAmount(record.amount.toString());
     setIncomeExpenseDate(record.date);
+    setIncomeExpenseType(record.type);
+    setIncomeExpenseNotes(record.notes || '');
     setSelectedRecordType(record.type);
     setShowIncomeExpenseForm(true);
   };
