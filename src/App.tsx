@@ -2938,7 +2938,7 @@ ${errorInfo.stack}
         // 報酬システムを実行
         try {
           const recordId = data.record?._id || `record_${Date.now()}`;
-          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward({
+          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward(user.id, {
             type: incomeExpenseType,
             amount: amount,
             notes: incomeExpenseNotes,
@@ -3054,7 +3054,7 @@ ${errorInfo.stack}
       if (data.success) {
         // 更新時も報酬システムを実行（初回投稿時のみ報酬を付与するように制御）
         try {
-          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward({
+          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward(user.id, {
             type: incomeExpenseType,
             amount: amount,
             notes: incomeExpenseNotes,

@@ -22,7 +22,7 @@ class IncomeExpenseRewardManager {
   private processedRecords: Set<string> = new Set();
 
   // 収入・支出投稿時の報酬を計算・付与
-  public async processIncomeExpenseReward(recordData: {
+  public async processIncomeExpenseReward(userId: string, recordData: {
     type: 'income' | 'expense';
     amount: number;
     notes: string;
