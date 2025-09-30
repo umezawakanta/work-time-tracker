@@ -7091,7 +7091,7 @@ User Agent: ${userAgent}
           badgeCount: selectedCharacter.badges?.length || 0,
           workHours: 0 // 実際の作業時間データを渡す
         } : undefined}
-        showPersonalizedLogo={!!selectedCharacter}
+        showPersonalizedLogo={false}
       />
     );
   }

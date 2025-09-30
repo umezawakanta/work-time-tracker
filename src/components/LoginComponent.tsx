@@ -71,28 +71,8 @@ const LoginComponent: React.FC<LoginComponentProps> = ({
       <div className="login-card">
         <div className="login-header">
           <div className="app-logo">
-            {/* パーソナライズされたロゴキャラクターまたはデフォルト */}
-            {showPersonalizedLogo && currentCharacter && currentCharacter.svg ? (
-              <div className="personalized-logo-character">
-                <div 
-                  className="selected-character-svg"
-                  dangerouslySetInnerHTML={{ __html: currentCharacter.svg }}
-                />
-                {userProgress && (
-                  <>
-                    <div className="logo-level-badge">
-                      <span>Lv.{userProgress.level}</span>
-                    </div>
-                    {userProgress.badgeCount > 0 && (
-                      <div className="logo-badge-indicator">
-                        <span>🏆 {userProgress.badgeCount}</span>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="logo-character">
+            {/* デフォルトの天使キャラクター */}
+            <div className="logo-character">
                 <div className="character-halo"></div>
                 <div className="character-wings">
                   <div className="wing left-wing"></div>
@@ -115,14 +95,10 @@ const LoginComponent: React.FC<LoginComponentProps> = ({
                   <div className="sparkle sparkle-6"></div>
                 </div>
               </div>
-            )}
           </div>
           <h1>Work Time Tracker</h1>
           <p className="app-description">
-            {!(showPersonalizedLogo && currentCharacter)
-              ? '可愛いキャラクターと一緒に作業時間を管理しよう！'
-              : `${currentCharacter.name}と一緒に作業時間を管理しよう！`
-            }
+            可愛いキャラクターと一緒に作業時間を管理しよう！
           </p>
         </div>
 

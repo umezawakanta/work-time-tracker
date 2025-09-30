@@ -57,14 +57,6 @@ const CharacterComponent: React.FC<CharacterComponentProps> = ({
       {/* 新しい機能 - 既存デザインの上にオーバーレイ */}
       {showCharacterInfo && currentCharacter && (
         <>
-          {/* 選択中のキャラクター表示 */}
-          <div className="character-overlay">
-            <div 
-              className="selected-character-svg"
-              dangerouslySetInnerHTML={{ __html: currentCharacter.svg }}
-            />
-          </div>
-
           {/* レベル表示 */}
           <div className="character-level-badge">
             <span className="level-text">Lv.{currentCharacter.level}</span>
