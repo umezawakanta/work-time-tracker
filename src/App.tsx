@@ -51,6 +51,10 @@ import CardLoanWidget from "./components/CardLoanWidget";
 import CardLoanUpdateForm from "./components/CardLoanUpdateForm";
 import CardLoanTransactionHistory from "./components/CardLoanTransactionHistory";
 import { CardLoanManager } from "./utils/cardLoanManager";
+import PayPayCardWidget from "./components/PayPayCardWidget";
+import PayPayCardUpdateForm from "./components/PayPayCardUpdateForm";
+import PayPayCardTransactionHistory from "./components/PayPayCardTransactionHistory";
+import { PayPayCardManager } from "./utils/paypayCardManager";
 import TwitterShare from "./components/TwitterShare";
 import SimpleShareModal from "./components/SimpleShareModal";
 import BadgeGallery from "./components/BadgeGallery";
@@ -194,6 +198,17 @@ interface AppProps {
   handleCardLoanUpdate: (loanId: string) => void;
   handleCardLoanSave: (loan: any) => void;
   handleCardLoanTransactionHistory: (loanId: string) => void;
+  // PayPayカード管理システムのprops
+  showPayPayCard: boolean;
+  setShowPayPayCard: (show: boolean) => void;
+  showPayPayCardUpdate: boolean;
+  setShowPayPayCardUpdate: (show: boolean) => void;
+  showPayPayCardTransactionHistory: boolean;
+  setShowPayPayCardTransactionHistory: (show: boolean) => void;
+  selectedPayPayCardId: string | null;
+  handlePayPayCardUpdate: (cardId: string) => void;
+  handlePayPayCardSave: (card: any) => void;
+  handlePayPayCardTransactionHistory: (cardId: string) => void;
 }
 
 function App({ 
@@ -256,7 +271,18 @@ function App({
   selectedCardLoanId,
   handleCardLoanUpdate,
   handleCardLoanSave,
-  handleCardLoanTransactionHistory
+  handleCardLoanTransactionHistory,
+  // PayPayカード管理システムのprops
+  showPayPayCard,
+  setShowPayPayCard,
+  showPayPayCardUpdate,
+  setShowPayPayCardUpdate,
+  showPayPayCardTransactionHistory,
+  setShowPayPayCardTransactionHistory,
+  selectedPayPayCardId,
+  handlePayPayCardUpdate,
+  handlePayPayCardSave,
+  handlePayPayCardTransactionHistory
 }: AppProps) {
 
   // 注意: showErrorModalをサブコンポーネント側で定義することはできません
@@ -7732,6 +7758,19 @@ User Agent: ${userAgent}
                         }}
                       />
                     )}
+
+                    {/* PayPayカードウィジェット */}
+                    {user && (
+                      <PayPayCardWidget
+                        userId={user.id}
+                        onUpdateBalance={handlePayPayCardUpdate}
+                        onShowTransactions={handlePayPayCardTransactionHistory}
+                        onShowSettings={() => {
+                          // 設定画面の実装（必要に応じて）
+                          alert('設定機能は今後実装予定です');
+                        }}
+                      />
+                    )}
                   </div>
                 );
               } else {
@@ -8211,6 +8250,13 @@ const AppWithProviders = () => {
   const [selectedCardLoanId, setSelectedCardLoanId] = useState<string | null>(null);
   const cardLoanManager = CardLoanManager.getInstance();
 
+  // PayPayカード管理システムの状態
+  const [showPayPayCard, setShowPayPayCard] = useState(false);
+  const [showPayPayCardUpdate, setShowPayPayCardUpdate] = useState(false);
+  const [showPayPayCardTransactionHistory, setShowPayPayCardTransactionHistory] = useState(false);
+  const [selectedPayPayCardId, setSelectedPayPayCardId] = useState<string | null>(null);
+  const paypayCardManager = PayPayCardManager.getInstance();
+
   // 無駄遣い記録保存処理
   const handleWasteRecordSave = (record: any) => {
     setShowWasteRecordForm(false);
@@ -8265,6 +8311,25 @@ const AppWithProviders = () => {
   const handleCardLoanTransactionHistory = (loanId: string) => {
     setSelectedCardLoanId(loanId);
     setShowCardLoanTransactionHistory(true);
+  };
+
+  // PayPayカード更新処理
+  const handlePayPayCardUpdate = (cardId: string) => {
+    setSelectedPayPayCardId(cardId);
+    setShowPayPayCardUpdate(true);
+  };
+
+  // PayPayカード保存処理
+  const handlePayPayCardSave = (card: any) => {
+    setShowPayPayCardUpdate(false);
+    setSelectedPayPayCardId(null);
+    // データの再読み込みはPayPayCardWidget内で実行される
+  };
+
+  // PayPayカード取引履歴表示処理
+  const handlePayPayCardTransactionHistory = (cardId: string) => {
+    setSelectedPayPayCardId(cardId);
+    setShowPayPayCardTransactionHistory(true);
   };
 
   return (
@@ -8465,6 +8530,17 @@ const AppWithProviders = () => {
               handleCardLoanUpdate={handleCardLoanUpdate}
               handleCardLoanSave={handleCardLoanSave}
               handleCardLoanTransactionHistory={handleCardLoanTransactionHistory}
+              // PayPayカード管理システムのprops
+              showPayPayCard={showPayPayCard}
+              setShowPayPayCard={setShowPayPayCard}
+              showPayPayCardUpdate={showPayPayCardUpdate}
+              setShowPayPayCardUpdate={setShowPayPayCardUpdate}
+              showPayPayCardTransactionHistory={showPayPayCardTransactionHistory}
+              setShowPayPayCardTransactionHistory={setShowPayPayCardTransactionHistory}
+              selectedPayPayCardId={selectedPayPayCardId}
+              handlePayPayCardUpdate={handlePayPayCardUpdate}
+              handlePayPayCardSave={handlePayPayCardSave}
+              handlePayPayCardTransactionHistory={handlePayPayCardTransactionHistory}
               handleLogin={async (e: React.FormEvent) => {
                 e.preventDefault();
                 setLoading(true);
@@ -8682,6 +8758,31 @@ const AppWithProviders = () => {
           onClose={() => {
             setShowCardLoanTransactionHistory(false);
             setSelectedCardLoanId(null);
+          }}
+        />
+      )}
+
+      {/* PayPayカード更新フォーム */}
+      {showPayPayCardUpdate && user && selectedPayPayCardId && (
+        <PayPayCardUpdateForm
+          userId={user.id}
+          cardId={selectedPayPayCardId}
+          onSave={handlePayPayCardSave}
+          onCancel={() => {
+            setShowPayPayCardUpdate(false);
+            setSelectedPayPayCardId(null);
+          }}
+        />
+      )}
+
+      {/* PayPayカード取引履歴 */}
+      {showPayPayCardTransactionHistory && user && selectedPayPayCardId && (
+        <PayPayCardTransactionHistory
+          userId={user.id}
+          cardId={selectedPayPayCardId}
+          onClose={() => {
+            setShowPayPayCardTransactionHistory(false);
+            setSelectedPayPayCardId(null);
           }}
         />
       )}
