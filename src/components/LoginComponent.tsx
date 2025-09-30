@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './LoginComponent.css';
 import PrivacyPolicyComponent from './PrivacyPolicyComponent';
 import TermsOfServiceComponent from './TermsOfServiceComponent';
+import type { Character } from '../types/character';
 
 interface LoginComponentProps {
   onLogin: (e: React.FormEvent) => void;
@@ -18,6 +19,15 @@ interface LoginComponentProps {
   setIsLogin: (isLogin: boolean) => void;
   loading: boolean;
   message: string;
+  // 新しいプロパティ
+  currentCharacter?: Character | null;
+  userProgress?: {
+    level: number;
+    totalExperience: number;
+    badgeCount: number;
+    workHours: number;
+  };
+  showPersonalizedLogo?: boolean;
 }
 
 const LoginComponent: React.FC<LoginComponentProps> = ({

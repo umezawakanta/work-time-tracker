@@ -355,6 +355,202 @@
   }
 }
 
+/* ========================================
+   新しい機能用のスタイル - 既存デザインの上にオーバーレイ
+   ======================================== */
+
+/* 装飾レベル1 - 仕事バッジ */
+.dog-decoration-level-1 {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  animation: dogDecorationFloat 3s ease-in-out infinite;
+}
+
+.dog-work-badge {
+  font-size: 14px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* 装飾レベル2 - 達成スター */
+.dog-decoration-level-2 {
+  position: absolute;
+  top: -20px;
+  right: -5px;
+  z-index: 26;
+  animation: dogDecorationFloat 3s ease-in-out infinite 0.5s;
+}
+
+.dog-achievement-star {
+  font-size: 12px;
+  filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.5));
+}
+
+/* 装飾レベル3 - 成功トロフィー */
+.dog-decoration-level-3 {
+  position: absolute;
+  top: -18px;
+  left: -8px;
+  z-index: 27;
+  animation: dogDecorationFloat 3s ease-in-out infinite 1s;
+}
+
+.dog-success-crown {
+  font-size: 13px;
+  filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.7));
+}
+
+/* 装飾レベル4 - マスターバッジ */
+.dog-decoration-level-4 {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 28;
+  animation: dogDecorationFloat 4s ease-in-out infinite 1.5s;
+}
+
+.dog-master-badge {
+  font-size: 16px;
+  filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.8));
+}
+
+/* 連続作業エフェクト - 炎 */
+.dog-streak-effects {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 24;
+  animation: dogStreakFloat 2s ease-in-out infinite;
+}
+
+.streak-fire {
+  font-size: 12px;
+  filter: drop-shadow(0 2px 4px rgba(255, 69, 0, 0.6));
+}
+
+/* プロジェクトエフェクト - キラキラ */
+.dog-project-effects {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  z-index: 23;
+  pointer-events: none;
+}
+
+.project-sparkle {
+  position: absolute;
+  font-size: 8px;
+  animation: dogProjectSparkle 2s ease-in-out infinite;
+}
+
+.project-sparkle.sparkle-1 {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.project-sparkle.sparkle-2 {
+  top: 60%;
+  right: 20%;
+  animation-delay: 0.7s;
+}
+
+.project-sparkle.sparkle-3 {
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 1.4s;
+}
+
+/* 思考エフェクト - 思考バブル */
+.dog-thinking-effects {
+  position: absolute;
+  top: -20px;
+  left: -15px;
+  z-index: 22;
+  animation: dogThinkingFloat 2.5s ease-in-out infinite;
+}
+
+.thinking-bubble {
+  font-size: 10px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* 疲労エフェクト - 眠り */
+.dog-tired-effects {
+  position: absolute;
+  top: 5px;
+  left: -5px;
+  z-index: 21;
+  animation: dogTiredFloat 1.5s ease-in-out infinite;
+}
+
+.tired-zzz {
+  font-size: 10px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* アニメーション */
+@keyframes dogDecorationFloat {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-3px) scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes dogStreakFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-5px) scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes dogProjectSparkle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-6px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+@keyframes dogThinkingFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-8px) scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes dogTiredFloat {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-2px);
+    opacity: 1;
+  }
+}
+
 /* 高コントラストモード対応 */
 @media (prefers-contrast: high) {
   .dog-face {

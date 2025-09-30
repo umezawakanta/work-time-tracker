@@ -11,12 +11,12 @@ import ShareButtonComponent from "./ShareButtonComponent";
 import UpdateRequestModal from "./UpdateRequestModal";
 import BugReportModal from "./BugReportModal";
 import type { User } from "../types";
-import type { Character } from "../types/character";
+import type { Character as CharacterType } from "../types/character";
 import VersionInfoComponent from "./VersionInfo";
 
 interface HeaderComponentProps {
   user: User | null;
-  currentCharacter: Character | null;
+  currentCharacter: CharacterType | null;
   showThemeSettings: boolean;
   showFontSettings: boolean;
   showFeatureSettings: boolean;
@@ -67,7 +67,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         <HeaderTitleComponent />
         <UserGreetingComponent
           user={user}
-          currentCharacter={currentCharacter}
+          currentCharacter={currentCharacter as any}
         />
         <VersionInfoComponent />
       </div>
@@ -130,8 +130,26 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       </div>
 
       {/* 背景キャラクター（絶対保持） */}
-      <HetamaCharacterComponent />
-      <DogCharacterComponent />
+      <HetamaCharacterComponent 
+        currentCharacter={currentCharacter}
+        userActivity={user?.id ? {
+          totalExperience: currentCharacter?.totalExperience || 0,
+          badgeCount: currentCharacter?.badges?.length || 0,
+          workHours: 0, // 実際の作業時間データを渡す
+          level: currentCharacter?.level || 1
+        } : undefined}
+        showActivityReaction={true}
+      />
+      <DogCharacterComponent 
+        currentCharacter={currentCharacter}
+        workActivity={user?.id ? {
+          totalWorkHours: 0, // 実際の作業時間データを渡す
+          consecutiveDays: 0, // 実際の連続日数データを渡す
+          projectCount: 0, // 実際のプロジェクト数データを渡す
+          memoCount: 0 // 実際のメモ数データを渡す
+        } : undefined}
+        showWorkReaction={true}
+      />
 
       {/* 更新要望モーダル */}
       <UpdateRequestModal

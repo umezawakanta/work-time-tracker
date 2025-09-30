@@ -309,6 +309,204 @@
   }
 }
 
+/* ========================================
+   新しい機能用のスタイル - 既存デザインの上にオーバーレイ
+   ======================================== */
+
+/* 装飾レベル1 - 星 */
+.hetama-decoration-level-1 {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  animation: decorationFloat 3s ease-in-out infinite;
+}
+
+.decoration-star {
+  font-size: 16px;
+  filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.5));
+}
+
+/* 装飾レベル2 - 王冠 */
+.hetama-decoration-level-2 {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 21;
+  animation: decorationFloat 3s ease-in-out infinite 0.5s;
+}
+
+.decoration-crown {
+  font-size: 14px;
+  filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.7));
+}
+
+/* 装飾レベル3 - 翼 */
+.hetama-decoration-level-3 {
+  position: absolute;
+  top: 10px;
+  left: -10px;
+  right: -10px;
+  z-index: 19;
+  animation: decorationFloat 3s ease-in-out infinite 1s;
+}
+
+.decoration-wings {
+  font-size: 12px;
+  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.5));
+}
+
+/* 装飾レベル4 - 虹 */
+.hetama-decoration-level-4 {
+  position: absolute;
+  top: -30px;
+  left: -15px;
+  right: -15px;
+  z-index: 22;
+  animation: decorationFloat 4s ease-in-out infinite 1.5s;
+}
+
+.decoration-rainbow {
+  font-size: 18px;
+  filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));
+}
+
+/* 特別エフェクト - ダイヤモンド */
+.hetama-special-effects {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  z-index: 18;
+  pointer-events: none;
+}
+
+.special-sparkle {
+  position: absolute;
+  font-size: 10px;
+  animation: specialSparkleFloat 2s ease-in-out infinite;
+}
+
+.special-1 {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.special-2 {
+  top: 60%;
+  right: 20%;
+  animation-delay: 0.7s;
+}
+
+.special-3 {
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 1.4s;
+}
+
+/* ハートエフェクト */
+.hetama-heart-effects {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  right: -15px;
+  z-index: 17;
+  pointer-events: none;
+}
+
+.heart-effect {
+  position: absolute;
+  font-size: 12px;
+  animation: heartFloat 2.5s ease-in-out infinite;
+}
+
+.heart-1 {
+  top: 10px;
+  left: 20px;
+  animation-delay: 0s;
+}
+
+.heart-2 {
+  top: 30px;
+  right: 20px;
+  animation-delay: 0.8s;
+}
+
+.heart-3 {
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 1.6s;
+}
+
+/* 努力エフェクト - 汗 */
+.hetama-effort-effects {
+  position: absolute;
+  top: 5px;
+  right: -5px;
+  z-index: 16;
+  animation: effortFloat 1.5s ease-in-out infinite;
+}
+
+.effort-sweat {
+  font-size: 10px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* アニメーション */
+@keyframes decorationFloat {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px) scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes specialSparkleFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-8px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+@keyframes heartFloat {
+  0% {
+    transform: translateY(0px) scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px) scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes effortFloat {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 768px) {
   .bottom-right-character {
@@ -340,5 +538,34 @@
   
   .hetama-sparkle {
     font-size: 10px;
+  }
+
+  /* 新しい機能のレスポンシブ対応 */
+  .decoration-star {
+    font-size: 12px;
+  }
+  
+  .decoration-crown {
+    font-size: 10px;
+  }
+  
+  .decoration-wings {
+    font-size: 8px;
+  }
+  
+  .decoration-rainbow {
+    font-size: 14px;
+  }
+  
+  .special-sparkle {
+    font-size: 8px;
+  }
+  
+  .heart-effect {
+    font-size: 10px;
+  }
+  
+  .effort-sweat {
+    font-size: 8px;
   }
 }
