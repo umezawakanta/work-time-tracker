@@ -35,6 +35,10 @@ import BadgeNotification from "./components/BadgeNotification";
 import CharacterInteractionOverlay from "./components/CharacterInteractionOverlay";
 import { CharacterInteractionManager } from "./utils/characterInteractionManager";
 import { CharacterStateManager } from "./utils/characterStateManager";
+import WasteAnalysisDashboard from "./components/WasteAnalysisDashboard";
+import WasteRecordForm from "./components/WasteRecordForm";
+import WasteGoalForm from "./components/WasteGoalForm";
+import { WasteAnalysisManager } from "./utils/wasteAnalysisManager";
 import TwitterShare from "./components/TwitterShare";
 import SimpleShareModal from "./components/SimpleShareModal";
 import BadgeGallery from "./components/BadgeGallery";
@@ -139,6 +143,15 @@ interface AppProps {
   handleRegister: (e: React.FormEvent) => Promise<void>;
   handleLogout: () => void;
   verifyToken: (token: string) => Promise<void>;
+  // 無駄遣い監視システムのprops
+  showWasteAnalysis: boolean;
+  setShowWasteAnalysis: (show: boolean) => void;
+  showWasteRecordForm: boolean;
+  setShowWasteRecordForm: (show: boolean) => void;
+  showWasteGoalForm: boolean;
+  setShowWasteGoalForm: (show: boolean) => void;
+  handleWasteRecordSave: (record: any) => void;
+  handleWasteGoalSave: (goal: any) => void;
 }
 
 function App({ 
@@ -162,7 +175,16 @@ function App({
   handleLogin,
   handleRegister,
   handleLogout,
-  verifyToken
+  verifyToken,
+  // 無駄遣い監視システムのprops
+  showWasteAnalysis,
+  setShowWasteAnalysis,
+  showWasteRecordForm,
+  setShowWasteRecordForm,
+  showWasteGoalForm,
+  setShowWasteGoalForm,
+  handleWasteRecordSave,
+  handleWasteGoalSave
 }: AppProps) {
 
   // 注意: showErrorModalをサブコンポーネント側で定義することはできません
@@ -512,6 +534,12 @@ function App({
   const [editingIncomeExpenseRecord, setEditingIncomeExpenseRecord] =
     useState<IncomeExpenseRecord | null>(null);
   const [editingDiary, setEditingDiary] = useState<WorkDiary | null>(null);
+
+  // 無駄遣い監視機能の状態（propsから受け取る）
+  // showWasteAnalysis, setShowWasteAnalysis
+  // showWasteRecordForm, setShowWasteRecordForm  
+  // showWasteGoalForm, setShowWasteGoalForm
+  // handleWasteRecordSave, handleWasteGoalSave
 
   // 収入・支出記録フォームの状態
   const [incomeExpenseDate, setIncomeExpenseDate] = useState("");
@@ -977,6 +1005,12 @@ function App({
       description: "システム設計書とドキュメント",
       component: null, // 設計書ビューアーセクション
     },
+    {
+      id: "waste-analysis",
+      name: "無駄遣い監視",
+      description: "お金・時間・労力の無駄遣いを監視・改善",
+      component: null, // 無駄遣い監視ダッシュボード
+    },
   ];
 
   // 機能選択肢の定義
@@ -995,6 +1029,7 @@ function App({
     { value: "self-analysis", label: "じぶん図鑑" },
     { value: "sound-app", label: "音アプリ" },
     { value: "docs", label: "設計書" },
+    { value: "waste-analysis", label: "無駄遣い監視" },
     { value: "general", label: "全般" },
     { value: "other", label: "その他" },
   ];
@@ -7573,6 +7608,21 @@ User Agent: ${userAgent}
                     closeOtherFeatures={closeOtherFeatures}
                   />
                 );
+              } else if (feature.id === "waste-analysis") {
+                return (
+                  <div key={feature.id} className="waste-analysis-section">
+                    <div className="section-header">
+                      <h2>無駄遣い監視</h2>
+                      <p>お金・時間・労力の無駄遣いを監視・改善しましょう</p>
+                      <button 
+                        className="open-dashboard-button"
+                        onClick={() => setShowWasteAnalysis(true)}
+                      >
+                        📊 ダッシュボードを開く
+                      </button>
+                    </div>
+                  </div>
+                );
               } else {
                 console.log("Unknown feature:", feature.name, feature.id);
                 return null;
@@ -8024,6 +8074,24 @@ const AppWithProviders = () => {
     setCharacterInteractionResult(null);
   };
 
+  // 無駄遣い監視システムの状態
+  const [showWasteAnalysis, setShowWasteAnalysis] = useState(false);
+  const [showWasteRecordForm, setShowWasteRecordForm] = useState(false);
+  const [showWasteGoalForm, setShowWasteGoalForm] = useState(false);
+  const wasteAnalysisManager = WasteAnalysisManager.getInstance();
+
+  // 無駄遣い記録保存処理
+  const handleWasteRecordSave = (record: any) => {
+    setShowWasteRecordForm(false);
+    // データの再読み込みはWasteAnalysisDashboard内で実行される
+  };
+
+  // 無駄遣い目標保存処理
+  const handleWasteGoalSave = (goal: any) => {
+    setShowWasteGoalForm(false);
+    // データの再読み込みはWasteAnalysisDashboard内で実行される
+  };
+
   return (
     <AuthProvider
       onLogin={async (e: React.FormEvent) => {
@@ -8183,6 +8251,15 @@ const AppWithProviders = () => {
               user={user}
               isLoggedIn={isLoggedIn}
               isCheckingAuth={false}
+              // 無駄遣い監視システムのprops
+              showWasteAnalysis={showWasteAnalysis}
+              setShowWasteAnalysis={setShowWasteAnalysis}
+              showWasteRecordForm={showWasteRecordForm}
+              setShowWasteRecordForm={setShowWasteRecordForm}
+              showWasteGoalForm={showWasteGoalForm}
+              setShowWasteGoalForm={setShowWasteGoalForm}
+              handleWasteRecordSave={handleWasteRecordSave}
+              handleWasteGoalSave={handleWasteGoalSave}
               handleLogin={async (e: React.FormEvent) => {
                 e.preventDefault();
                 setLoading(true);
@@ -8308,6 +8385,32 @@ const AppWithProviders = () => {
         <CharacterInteractionOverlay
           interactionResult={characterInteractionResult}
           onComplete={handleCharacterInteractionComplete}
+        />
+      )}
+
+      {/* 無駄遣い監視ダッシュボード */}
+      {showWasteAnalysis && user && (
+        <WasteAnalysisDashboard
+          userId={user.id}
+          onClose={() => setShowWasteAnalysis(false)}
+        />
+      )}
+
+      {/* 無駄遣い記録フォーム */}
+      {showWasteRecordForm && user && (
+        <WasteRecordForm
+          userId={user.id}
+          onSave={handleWasteRecordSave}
+          onCancel={() => setShowWasteRecordForm(false)}
+        />
+      )}
+
+      {/* 無駄遣い目標フォーム */}
+      {showWasteGoalForm && user && (
+        <WasteGoalForm
+          userId={user.id}
+          onSave={handleWasteGoalSave}
+          onCancel={() => setShowWasteGoalForm(false)}
         />
       )}
     </AuthProvider>
