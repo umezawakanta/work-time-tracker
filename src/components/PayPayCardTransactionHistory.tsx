@@ -26,7 +26,7 @@ const PayPayCardTransactionHistory: React.FC<PayPayCardTransactionHistoryProps> 
   });
   const [showAddTransaction, setShowAddTransaction] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
-    type: 'purchase' as const,
+    type: 'purchase' as 'purchase' | 'payment' | 'cashback' | 'refund' | 'adjustment' | 'interest_charge',
     amount: 0,
     description: '',
     category: '',
