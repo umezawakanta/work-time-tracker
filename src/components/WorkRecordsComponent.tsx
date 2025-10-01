@@ -128,7 +128,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // コンポーネントマウント時の初期化
   useEffect(() => {
     console.log('WorkRecordsComponent useEffect triggered:', { user: user?.id, showWorkRecords });
-    if (user) {
+    if (user?.id) {
       console.log('Loading data for user:', user.id);
       loadIncomeExpenseRecords();
       loadWorkDiaries();
@@ -136,7 +136,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     } else {
       console.log('No user found, skipping data load');
     }
-  }, [user]); // showWorkRecordsを依存配列から削除
+  }, [user?.id]); // user.idのみを依存配列に含める
 
   // 収入・支出記録の読み込み
   const loadIncomeExpenseRecords = async () => {

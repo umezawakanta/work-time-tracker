@@ -140,7 +140,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
             if (!response.ok) {
               // 404エラーは無視（メモが存在しない場合）
               if (response.status === 404) {
-                // 404エラーのログを減らすため、警告レベルを下げる
+                // 404エラーは静かに無視
                 return {
                   memoId: memo.id,
                   isLiked: false,
@@ -161,8 +161,18 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
             }
             return null;
           } catch (error) {
-            errorCount++;
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            
+            // 404エラーやAbortErrorはログを出力しない
+            if (errorMessage.includes('404') || errorMessage.includes('AbortError')) {
+              return {
+                memoId: memo.id,
+                isLiked: false,
+                likeCount: 0
+              };
+            }
+            
+            errorCount++;
             console.warn(`いいね状態の取得をスキップしました (メモID: ${memo.id}):`, errorMessage);
             
             // エラーが多すぎる場合は処理を中断
