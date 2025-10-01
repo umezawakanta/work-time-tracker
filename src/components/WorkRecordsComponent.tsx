@@ -740,6 +740,18 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     closeOtherFeatures(feature);
   };
 
+  // 統合ダッシュボードが表示されている場合は、お仕事記録セクションを非表示にする
+  if (showComprehensiveDashboard) {
+    return (
+      <div className="work-records-section">
+        <ComprehensiveDashboard
+          userId={user?.id || ''}
+          onClose={() => setShowComprehensiveDashboard(false)}
+        />
+      </div>
+    );
+  }
+
   // お仕事記録セクションは常に表示
   if (!showWorkRecords) return null;
 
@@ -1297,13 +1309,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         user={user}
       />
 
-      {/* 統合ダッシュボード */}
-      {showComprehensiveDashboard && user && (
-        <ComprehensiveDashboard
-          userId={user.id}
-          onClose={() => setShowComprehensiveDashboard(false)}
-        />
-      )}
 
       {/* 削除確認モーダル */}
       <DeleteConfirmModal
