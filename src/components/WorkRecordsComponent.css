@@ -1971,6 +1971,13 @@
 
 .date-record-item.diary {
   border-left: 4px solid #17a2b8;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.date-record-item.diary .record-actions {
+  align-self: flex-end;
+  margin-top: 0.5rem;
 }
 
 .record-amount {
@@ -2024,9 +2031,11 @@
   background: #c82333;
 }
 
-.diary-content {
+.date-record-item.diary .diary-content {
   flex: 1;
-  margin-right: 1rem;
+  margin-right: 0;
+  margin-bottom: 0.5rem;
+  width: 100%;
 }
 
 .diary-title {
@@ -2041,6 +2050,9 @@
   line-height: 1.4;
   white-space: pre-wrap;
   word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .diary-mood,
