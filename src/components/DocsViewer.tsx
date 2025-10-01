@@ -114,6 +114,27 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
       path: '/docs/character-feature-test-specification.md',
       description: 'キャラクター機能の全機能テスト仕様、テストケース、品質保証',
       category: '品質保証'
+    },
+    {
+      id: 'work-time-tracker-user-manual',
+      title: 'Work Time Tracker ユーザーマニュアル',
+      path: '/doc/user-manual.md',
+      description: '包括的個人管理システムの使い方、機能説明、搾取要素監視、トラブルシューティング',
+      category: 'ユーザーガイド'
+    },
+    {
+      id: 'work-time-tracker-design',
+      title: 'Work Time Tracker 設計書',
+      path: '/doc/design-document.md',
+      description: '包括的個人管理システムのアーキテクチャ、データモデル、機能仕様、セキュリティ仕様',
+      category: 'アプリ設計'
+    },
+    {
+      id: 'work-time-tracker-test-specification',
+      title: 'Work Time Tracker 総合試験仕様書',
+      path: '/doc/test-specification.md',
+      description: '包括的個人管理システムの全機能テスト仕様、テストケース、品質保証、パフォーマンステスト',
+      category: '品質保証'
     }
   ];
 
