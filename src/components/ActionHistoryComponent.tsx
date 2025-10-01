@@ -239,6 +239,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                  placeholder="行動の詳細説明を入力"
+                  title="行動の説明"
                   rows={3}
                 />
               </div>
