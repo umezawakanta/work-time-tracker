@@ -54,6 +54,19 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
   const [wasteAnalysis, setWasteAnalysis] = useState<WasteAnalysis | null>(null);
   const [financialSummary, setFinancialSummary] = useState<FinancialSummary | null>(null);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
+  const [showPlanForm, setShowPlanForm] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
+  const [newPlan, setNewPlan] = useState<Partial<Plan>>({
+    title: '',
+    description: '',
+    category: '仕事',
+    priority: 'medium',
+    status: 'not-started',
+    startDate: new Date().toISOString().split('T')[0],
+    targetDate: new Date().toISOString().split('T')[0],
+    progress: 0,
+    milestones: []
+  });
 
   // マネージャーインスタンス
   const assetLiabilityManager = AssetLiabilityManager.getInstance();
@@ -178,6 +191,96 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
     return actions.sort((a, b) => {
       const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
       return priorityOrder[b.priority] - priorityOrder[a.priority];
+    });
+  };
+
+  // 計画の作成・編集・削除関数
+  const handleCreatePlan = () => {
+    if (!newPlan.title) return;
+    
+    const plan: Plan = {
+      id: Date.now().toString(),
+      title: newPlan.title,
+      description: newPlan.description || '',
+      category: newPlan.category || '仕事',
+      priority: newPlan.priority || 'medium',
+      status: newPlan.status || 'not-started',
+      startDate: newPlan.startDate || new Date().toISOString().split('T')[0],
+      targetDate: newPlan.targetDate || new Date().toISOString().split('T')[0],
+      progress: newPlan.progress || 0,
+      milestones: newPlan.milestones || [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    futurePlanningManager.createPlan(userId, plan);
+    setPlans(futurePlanningManager.getPlans(userId));
+    setShowPlanForm(false);
+    setNewPlan({
+      title: '',
+      description: '',
+      category: '仕事',
+      priority: 'medium',
+      status: 'not-started',
+      startDate: new Date().toISOString().split('T')[0],
+      targetDate: new Date().toISOString().split('T')[0],
+      progress: 0,
+      milestones: []
+    });
+  };
+
+  const handleEditPlan = (plan: Plan) => {
+    setEditingPlan(plan);
+    setNewPlan(plan);
+    setShowPlanForm(true);
+  };
+
+  const handleUpdatePlan = () => {
+    if (!editingPlan || !newPlan.title) return;
+    
+    const updatedPlan: Plan = {
+      ...editingPlan,
+      ...newPlan,
+      updatedAt: new Date().toISOString()
+    };
+    
+    futurePlanningManager.updatePlan(editingPlan.id, updatedPlan);
+    setPlans(futurePlanningManager.getPlans(userId));
+    setShowPlanForm(false);
+    setEditingPlan(null);
+    setNewPlan({
+      title: '',
+      description: '',
+      category: '仕事',
+      priority: 'medium',
+      status: 'not-started',
+      startDate: new Date().toISOString().split('T')[0],
+      targetDate: new Date().toISOString().split('T')[0],
+      progress: 0,
+      milestones: []
+    });
+  };
+
+  const handleDeletePlan = (planId: string) => {
+    if (confirm('この計画を削除しますか？')) {
+      futurePlanningManager.deletePlan(planId);
+      setPlans(futurePlanningManager.getPlans(userId));
+    }
+  };
+
+  const handleCancelPlan = () => {
+    setShowPlanForm(false);
+    setEditingPlan(null);
+    setNewPlan({
+      title: '',
+      description: '',
+      category: '仕事',
+      priority: 'medium',
+      status: 'not-started',
+      startDate: new Date().toISOString().split('T')[0],
+      targetDate: new Date().toISOString().split('T')[0],
+      progress: 0,
+      milestones: []
     });
   };
 
@@ -968,7 +1071,116 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
             <div className="goals-header">
               <h2>🎯 目標と計画</h2>
               <p>あなたの目標と計画の進捗状況を確認しましょう</p>
+              <button 
+                className="create-plan-button"
+                onClick={() => setShowPlanForm(true)}
+              >
+                ➕ 新しい計画を作成
+              </button>
             </div>
+
+            {/* 計画作成フォーム */}
+            {showPlanForm && (
+              <div className="plan-form-overlay">
+                <div className="plan-form">
+                  <h3>{editingPlan ? '計画を編集' : '新しい計画を作成'}</h3>
+                  
+                  <div className="form-group">
+                    <label>タイトル *</label>
+                    <input
+                      type="text"
+                      value={newPlan.title || ''}
+                      onChange={(e) => setNewPlan({...newPlan, title: e.target.value})}
+                      placeholder="例: 勤怠のWEB入力"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>説明</label>
+                    <textarea
+                      value={newPlan.description || ''}
+                      onChange={(e) => setNewPlan({...newPlan, description: e.target.value})}
+                      placeholder="計画の詳細を入力してください"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>カテゴリ</label>
+                      <select
+                        value={newPlan.category || '仕事'}
+                        onChange={(e) => setNewPlan({...newPlan, category: e.target.value})}
+                      >
+                        <option value="仕事">仕事</option>
+                        <option value="学習">学習</option>
+                        <option value="健康">健康</option>
+                        <option value="趣味">趣味</option>
+                        <option value="その他">その他</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>優先度</label>
+                      <select
+                        value={newPlan.priority || 'medium'}
+                        onChange={(e) => setNewPlan({...newPlan, priority: e.target.value as 'low' | 'medium' | 'high'})}
+                      >
+                        <option value="low">低</option>
+                        <option value="medium">中</option>
+                        <option value="high">高</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>開始日</label>
+                      <input
+                        type="date"
+                        value={newPlan.startDate || ''}
+                        onChange={(e) => setNewPlan({...newPlan, startDate: e.target.value})}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>締切日</label>
+                      <input
+                        type="date"
+                        value={newPlan.targetDate || ''}
+                        onChange={(e) => setNewPlan({...newPlan, targetDate: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>進捗 (%)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={newPlan.progress || 0}
+                      onChange={(e) => setNewPlan({...newPlan, progress: parseInt(e.target.value) || 0})}
+                    />
+                  </div>
+
+                  <div className="form-actions">
+                    <button 
+                      className="cancel-button"
+                      onClick={handleCancelPlan}
+                    >
+                      キャンセル
+                    </button>
+                    <button 
+                      className="save-button"
+                      onClick={editingPlan ? handleUpdatePlan : handleCreatePlan}
+                    >
+                      {editingPlan ? '更新' : '作成'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             
             <div className="goals-grid">
               {/* 進行中の計画 */}
@@ -977,21 +1189,80 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
                 <div className="active-plans-list">
                   {plans.filter(plan => plan.status === 'in-progress').map((plan, index) => (
                     <div key={index} className="active-plan-item">
-                      <div className="plan-title">{plan.title}</div>
-                      <div className="plan-progress">
-                        <div className="progress-bar">
-                          <div 
-                            className="progress-fill" 
-                            style={{ width: `${plan.progress}%` }}
-                          ></div>
+                      <div className="plan-content">
+                        <div className="plan-title">{plan.title}</div>
+                        <div className="plan-category">{plan.category}</div>
+                        <div className="plan-progress">
+                          <div className="progress-bar">
+                            <div 
+                              className="progress-fill" 
+                              style={{ width: `${plan.progress}%` }}
+                            ></div>
+                          </div>
+                          <span className="progress-text">{plan.progress}%</span>
                         </div>
-                        <span className="progress-text">{plan.progress}%</span>
+                        <div className="plan-deadline">
+                          締切: {new Date(plan.targetDate).toLocaleDateString('ja-JP')}
+                        </div>
                       </div>
-                      <div className="plan-deadline">
-                        締切: {new Date(plan.targetDate).toLocaleDateString('ja-JP')}
+                      <div className="plan-actions">
+                        <button 
+                          className="edit-button"
+                          onClick={() => handleEditPlan(plan)}
+                        >
+                          編集
+                        </button>
+                        <button 
+                          className="delete-button"
+                          onClick={() => handleDeletePlan(plan.id)}
+                        >
+                          削除
+                        </button>
                       </div>
                     </div>
                   ))}
+                  {plans.filter(plan => plan.status === 'in-progress').length === 0 && (
+                    <div className="no-plans">
+                      <p>進行中の計画はありません</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 未開始の計画 */}
+              <div className="goals-card pending-plans">
+                <h3>📋 未開始の計画</h3>
+                <div className="pending-plans-list">
+                  {plans.filter(plan => plan.status === 'not-started').map((plan, index) => (
+                    <div key={index} className="pending-plan-item">
+                      <div className="plan-content">
+                        <div className="plan-title">{plan.title}</div>
+                        <div className="plan-category">{plan.category}</div>
+                        <div className="plan-deadline">
+                          締切: {new Date(plan.targetDate).toLocaleDateString('ja-JP')}
+                        </div>
+                      </div>
+                      <div className="plan-actions">
+                        <button 
+                          className="edit-button"
+                          onClick={() => handleEditPlan(plan)}
+                        >
+                          編集
+                        </button>
+                        <button 
+                          className="delete-button"
+                          onClick={() => handleDeletePlan(plan.id)}
+                        >
+                          削除
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {plans.filter(plan => plan.status === 'not-started').length === 0 && (
+                    <div className="no-plans">
+                      <p>未開始の計画はありません</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1007,6 +1278,11 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
                       </div>
                     </div>
                   ))}
+                  {plans.filter(plan => plan.status === 'completed').length === 0 && (
+                    <div className="no-plans">
+                      <p>完了した計画はありません</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
