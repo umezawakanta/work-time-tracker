@@ -652,9 +652,9 @@ function App({
     useState(false);
 
   // デバッグ用：userSettingsの変更を監視
-  useEffect(() => {
-    console.log("userSettingsが変更されました:", userSettings);
-  }, [userSettings]);
+  // useEffect(() => {
+  //   console.log("userSettingsが変更されました:", userSettings);
+  // }, [userSettings]);
   const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<
     number | null
   >(null);
@@ -1208,15 +1208,15 @@ function App({
       .filter(Boolean) as Feature[];
 
     // デバッグ用ログ
-    console.log("機能表示デバッグ:", {
-      order,
-      hiddenFeatures,
-      visibleFeatures: visibleFeatures.map(f => f.id),
-      workRecordsInOrder: order.includes("work-records"),
-      workRecordsHidden: hiddenFeatures.includes("work-records"),
-      userSettings: userSettings,
-      features: features.map(f => f.id)
-    });
+    // console.log("機能表示デバッグ:", {
+    //   order,
+    //   hiddenFeatures,
+    //   visibleFeatures: visibleFeatures.map(f => f.id),
+    //   workRecordsInOrder: order.includes("work-records"),
+    //   workRecordsHidden: hiddenFeatures.includes("work-records"),
+    //   userSettings: userSettings,
+    //   features: features.map(f => f.id)
+    // });
 
     return visibleFeatures;
   };

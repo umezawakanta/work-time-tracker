@@ -192,20 +192,20 @@ export class AssetLiabilityManager {
     const userLiabilities = this.getLiabilities(userId);
 
     // 現金残高を資産として追加
-    const cashBalances = this.cashBalanceManager.getCashBalances(userId);
-    const totalCash = cashBalances.reduce((sum, balance) => sum + balance.amount, 0);
+    const cashBalance = this.cashBalanceManager.getCashBalance(userId);
+    const totalCash = cashBalance.amount;
 
     // 銀行口座残高を資産として追加
-    const bankAccounts = this.bankAccountManager.getBankAccounts(userId);
-    const totalBankBalance = bankAccounts.reduce((sum, account) => sum + account.balance, 0);
+    const bankAccount = this.bankAccountManager.getBankAccount(userId);
+    const totalBankBalance = bankAccount ? bankAccount.balance : 0;
 
     // カードローン負債を負債として追加
-    const cardLoans = this.cardLoanManager.getCardLoans(userId);
-    const totalCardLoanDebt = cardLoans.reduce((sum, loan) => sum + loan.remainingBalance, 0);
+    const cardLoan = this.cardLoanManager.getCardLoan(userId);
+    const totalCardLoanDebt = cardLoan ? cardLoan.remainingBalance : 0;
 
     // PayPayカード負債を負債として追加
-    const paypayCards = this.paypayCardManager.getPayPayCards(userId);
-    const totalPayPayDebt = paypayCards.reduce((sum, card) => sum + card.remainingBalance, 0);
+    const paypayCard = this.paypayCardManager.getPayPayCard(userId);
+    const totalPayPayDebt = paypayCard ? paypayCard.remainingBalance : 0;
 
     // 資産合計
     const totalAssets = userAssets.reduce((sum, asset) => sum + asset.currentValue, 0) + 

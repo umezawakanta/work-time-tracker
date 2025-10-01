@@ -726,7 +726,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     closeOtherFeatures(feature);
   };
 
-  if (!showWorkRecords) return null;
+  // お仕事記録セクションは常に表示
+  // if (!showWorkRecords) return null;
 
   return (
     <div className="work-records-section">
