@@ -88,9 +88,21 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       
       // より小さなバッチサイズで安全に処理
       const batchSize = 3;
+      
+      // 最近のメモのみを処理（30日以内）
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const recentMemos = publicMemos.filter(memo => {
+        const memoDate = new Date(memo.createdAt || memo.updatedAt || 0);
+        return memoDate >= thirtyDaysAgo;
+      });
+      
+      console.log(`最近のメモのみを処理: ${recentMemos.length}/${publicMemos.length} 件`);
+      
       const batches = [];
-      for (let i = 0; i < publicMemos.length; i += batchSize) {
-        batches.push(publicMemos.slice(i, i + batchSize));
+      for (let i = 0; i < recentMemos.length; i += batchSize) {
+        batches.push(recentMemos.slice(i, i + batchSize));
       }
       
       for (const batch of batches) {
@@ -101,6 +113,15 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         
         const promises = batch.map(async (memo) => {
           try {
+            // メモIDが有効でない場合はスキップ
+            if (!memo.id || typeof memo.id !== 'string' || memo.id.length < 10) {
+              return {
+                memoId: memo.id,
+                isLiked: false,
+                likeCount: 0
+              };
+            }
+            
             // console.log(`いいね状態を取得中: ${memo.id}`);
             
             // タイムアウト付きのfetch
@@ -119,7 +140,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
             if (!response.ok) {
               // 404エラーは無視（メモが存在しない場合）
               if (response.status === 404) {
-                console.warn(`メモが見つかりません: ${memo.id}`);
+                // 404エラーのログを減らすため、警告レベルを下げる
                 return {
                   memoId: memo.id,
                   isLiked: false,

@@ -136,7 +136,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     } else {
       console.log('No user found, skipping data load');
     }
-  }, [user, showWorkRecords]);
+  }, [user]); // showWorkRecordsを依存配列から削除
 
   // 収入・支出記録の読み込み
   const loadIncomeExpenseRecords = async () => {
