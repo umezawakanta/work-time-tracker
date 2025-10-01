@@ -446,6 +446,54 @@ export interface LearningRecord {
   updatedAt: string;
 }
 
+// 将来計画関連の型定義
+export interface Plan {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'not-started' | 'in-progress' | 'completed' | 'paused';
+  startDate: string;
+  targetDate: string;
+  completedDate?: string;
+  progress: number; // 0-100
+  milestones: Milestone[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Schedule {
+  id: string;
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  date: string;
+  category: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
+  location?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BudgetPlan {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  amount: number;
+  period: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  startDate: string;
+  endDate: string;
+  status: 'active' | 'paused' | 'completed' | 'cancelled';
+  actualAmount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // 料理レシピ関連の型定義
 export interface CookingPhase {
   name: string;

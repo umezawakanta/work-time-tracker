@@ -650,6 +650,11 @@ function App({
   const [draggedFeature, setDraggedFeature] = useState<string | null>(null);
   const [showDiaryReminderSettings, setShowDiaryReminderSettings] =
     useState(false);
+
+  // デバッグ用：userSettingsの変更を監視
+  useEffect(() => {
+    console.log("userSettingsが変更されました:", userSettings);
+  }, [userSettings]);
   const [diaryReminderSnoozeUntil, setDiaryReminderSnoozeUntil] = useState<
     number | null
   >(null);
@@ -1197,10 +1202,23 @@ function App({
       );
     }
 
-    return (order || [])
+    const visibleFeatures = (order || [])
       .filter((id) => !(hiddenFeatures || []).includes(id))
       .map((id) => features.find((f) => f.id === id))
       .filter(Boolean) as Feature[];
+
+    // デバッグ用ログ
+    console.log("機能表示デバッグ:", {
+      order,
+      hiddenFeatures,
+      visibleFeatures: visibleFeatures.map(f => f.id),
+      workRecordsInOrder: order.includes("work-records"),
+      workRecordsHidden: hiddenFeatures.includes("work-records"),
+      userSettings: userSettings,
+      features: features.map(f => f.id)
+    });
+
+    return visibleFeatures;
   };
 
   // 401エラーハンドリング用のヘルパー関数
@@ -6893,12 +6911,6 @@ User Agent: ${userAgent}
                       <h2>無駄遣い監視</h2>
                       <p>お金・時間・労力の無駄遣いを監視・改善しましょう</p>
                       <div className="dashboard-buttons">
-                        <button 
-                          className="open-dashboard-button comprehensive"
-                          onClick={() => {/* WorkRecordsComponentで管理 */}}
-                        >
-                          🏠 統合ダッシュボード
-                        </button>
                         <button 
                           className="open-dashboard-button"
                           onClick={() => setShowWasteAnalysis(true)}

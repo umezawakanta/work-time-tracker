@@ -25,6 +25,7 @@ import {
   PLAN_CATEGORIES,
   PLAN_STATUSES
 } from '../types/futurePlanning';
+import { Plan, Schedule, BudgetPlan } from '../types';
 import { WasteAnalysis } from '../types/wasteAnalysis';
 import { FinancialSummary } from '../types/financialOverview';
 import './ComprehensiveDashboard.css';
@@ -47,6 +48,9 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
   const [actionTrends, setActionTrends] = useState<ActionTrend[]>([]);
   const [planAnalysis, setPlanAnalysis] = useState<PlanAnalysis | null>(null);
   const [planRecommendations, setPlanRecommendations] = useState<PlanRecommendation[]>([]);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [budgetPlans, setBudgetPlans] = useState<BudgetPlan[]>([]);
   const [wasteAnalysis, setWasteAnalysis] = useState<WasteAnalysis | null>(null);
   const [financialSummary, setFinancialSummary] = useState<FinancialSummary | null>(null);
 
@@ -88,8 +92,14 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
       // 将来計画データ
       const planData = futurePlanningManager.generatePlanAnalysis(userId);
       const recommendations = futurePlanningManager.generateRecommendations(userId);
+      const plansData = futurePlanningManager.getPlans(userId);
+      const schedulesData = futurePlanningManager.getSchedules(userId);
+      const budgetPlansData = futurePlanningManager.getBudgetPlans(userId);
       setPlanAnalysis(planData);
       setPlanRecommendations(recommendations);
+      setPlans(plansData);
+      setSchedules(schedulesData);
+      setBudgetPlans(budgetPlansData);
 
       // 無駄遣い分析データ
       const endDate = new Date();

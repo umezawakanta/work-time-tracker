@@ -17,7 +17,7 @@ class FuturePlanningManager {
     return FuturePlanningManager.instance;
   }
 
-  private loadFromLocalStorage(): void {
+  public loadFromLocalStorage(): void {
     try {
       const storedPlans = localStorage.getItem('plans');
       if (storedPlans) {
@@ -81,7 +81,10 @@ class FuturePlanningManager {
     return true;
   }
 
-  public getPlans(): Plan[] {
+  public getPlans(userId?: string): Plan[] {
+    if (userId) {
+      return this.plans.filter(plan => plan.userId === userId);
+    }
     return [...this.plans];
   }
 
@@ -91,6 +94,13 @@ class FuturePlanningManager {
 
   public getPlansByCategory(category: string): Plan[] {
     return this.plans.filter(plan => plan.category === category);
+  }
+
+  public getSchedules(userId?: string): Schedule[] {
+    if (userId) {
+      return this.schedules.filter(schedule => schedule.userId === userId);
+    }
+    return [...this.schedules];
   }
 
   // スケジュール管理
@@ -185,7 +195,10 @@ class FuturePlanningManager {
     return true;
   }
 
-  public getBudgetPlans(): BudgetPlan[] {
+  public getBudgetPlans(userId?: string): BudgetPlan[] {
+    if (userId) {
+      return this.budgetPlans.filter(plan => plan.userId === userId);
+    }
     return [...this.budgetPlans];
   }
 
@@ -194,6 +207,141 @@ class FuturePlanningManager {
   }
 
   // 統計情報
+  public generatePlanAnalysis(userId?: string): PlanAnalysis {
+    const userPlans = userId ? this.plans.filter(plan => plan.userId === userId) : this.plans;
+    const totalPlans = userPlans.length;
+    const completedPlans = userPlans.filter(plan => plan.status === 'completed').length;
+    const inProgressPlans = userPlans.filter(plan => plan.status === 'in_progress').length;
+    const overduePlans = userPlans.filter(plan => 
+      plan.status === 'in_progress' && new Date(plan.targetDate) < new Date()
+    ).length;
+    const thisMonthPlans = userPlans.filter(plan => {
+      const planDate = new Date(plan.startDate);
+      const now = new Date();
+      return planDate.getMonth() === now.getMonth() && planDate.getFullYear() === now.getFullYear();
+    }).length;
+
+    const categoryStats: { [category: string]: { count: number; completed: number; averageProgress: number } } = {};
+    userPlans.forEach(plan => {
+      if (!categoryStats[plan.category]) {
+        categoryStats[plan.category] = { count: 0, completed: 0, averageProgress: 0 };
+      }
+      categoryStats[plan.category].count++;
+      if (plan.status === 'completed') {
+        categoryStats[plan.category].completed++;
+      }
+      categoryStats[plan.category].averageProgress += plan.progress;
+    });
+
+    Object.keys(categoryStats).forEach(category => {
+      const stats = categoryStats[category];
+      stats.averageProgress = stats.count > 0 ? stats.averageProgress / stats.count : 0;
+    });
+
+    const statusStats: { [status: string]: number } = {};
+    userPlans.forEach(plan => {
+      statusStats[plan.status] = (statusStats[plan.status] || 0) + 1;
+    });
+
+    const priorityStats: { [priority: string]: number } = {};
+    userPlans.forEach(plan => {
+      priorityStats[plan.priority] = (priorityStats[plan.priority] || 0) + 1;
+    });
+
+    return {
+      totalPlans,
+      completedPlans,
+      inProgressPlans,
+      overduePlans,
+      thisMonthPlans,
+      categoryStats,
+      statusStats,
+      priorityStats,
+      progressStats: {
+        notStarted: statusStats['not-started'] || 0,
+        inProgress: statusStats['in_progress'] || 0,
+        completed: statusStats['completed'] || 0,
+        paused: statusStats['paused'] || 0
+      },
+      completionRate: totalPlans > 0 ? (completedPlans / totalPlans) * 100 : 0,
+      averageProgress: totalPlans > 0 ? userPlans.reduce((sum, plan) => sum + plan.progress, 0) / totalPlans : 0,
+      lastUpdated: new Date()
+    };
+  }
+
+  public generateRecommendations(userId?: string): PlanRecommendation[] {
+    const userPlans = userId ? this.plans.filter(plan => plan.userId === userId) : this.plans;
+    const recommendations: PlanRecommendation[] = [];
+
+    const completedPlans = userPlans.filter(plan => plan.status === 'completed').length;
+    const totalPlans = userPlans.length;
+    const completionRate = totalPlans > 0 ? (completedPlans / totalPlans) * 100 : 0;
+
+    if (completionRate < 50) {
+      recommendations.push({
+        type: 'completion_rate',
+        title: '完了率が低いです',
+        description: `現在の完了率は${completionRate.toFixed(1)}%です。計画の見直しを検討してください。`,
+        priority: 'high',
+        suggestions: [
+          '計画をより小さなタスクに分割する',
+          '現実的な期限を設定する',
+          '優先度の低い計画を一時停止する'
+        ]
+      });
+    }
+
+    const overduePlans = userPlans.filter(plan => 
+      plan.status === 'in_progress' && new Date(plan.targetDate) < new Date()
+    );
+    if (overduePlans.length > 0) {
+      recommendations.push({
+        type: 'overdue_plans',
+        title: '期限切れの計画があります',
+        description: `${overduePlans.length}個の計画が期限を過ぎています。`,
+        priority: 'high',
+        suggestions: [
+          '期限を延長する',
+          '計画を完了させる',
+          '計画をキャンセルする'
+        ]
+      });
+    }
+
+    const lowProgressPlans = userPlans.filter(plan => 
+      plan.status === 'in_progress' && plan.progress < 25
+    );
+    if (lowProgressPlans.length > 0) {
+      recommendations.push({
+        type: 'low_progress',
+        title: '進捗が低い計画があります',
+        description: `${lowProgressPlans.length}個の計画の進捗が25%未満です。`,
+        priority: 'medium',
+        suggestions: [
+          '計画を再評価する',
+          'より具体的なアクションプランを作成する',
+          'サポートを求める'
+        ]
+      });
+    }
+
+    if (totalPlans > 10) {
+      recommendations.push({
+        type: 'too_many_plans',
+        title: '計画が多すぎます',
+        description: `現在${totalPlans}個の計画があります。集中力を高めるため、計画数を減らすことを検討してください。`,
+        priority: 'medium',
+        suggestions: [
+          '優先度の低い計画を一時停止する',
+          '計画を統合する',
+          '完了した計画を整理する'
+        ]
+      });
+    }
+
+    return recommendations;
+  }
+
   public getStatistics(): {
     totalPlans: number;
     completedPlans: number;
