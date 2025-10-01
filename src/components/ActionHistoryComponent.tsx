@@ -253,6 +253,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                       setCategory(e.target.value as any);
                       setSubcategory('');
                     }}
+                    title="カテゴリを選択"
+                    aria-label="カテゴリを選択"
                     required
                   >
                     {categories.map(cat => (
