@@ -53,6 +53,19 @@ class ActionHistoryManager {
     return newRecord;
   }
 
+  public updateActionRecord(id: string, updates: Partial<ActionRecord>): ActionRecord | null {
+    const index = this.actionRecords.findIndex(record => record._id === id);
+    if (index === -1) return null;
+
+    this.actionRecords[index] = {
+      ...this.actionRecords[index],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+    this.saveToLocalStorage();
+    return this.actionRecords[index];
+  }
+
   public getActionRecords(): ActionRecord[] {
     return [...this.actionRecords];
   }
