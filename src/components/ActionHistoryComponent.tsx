@@ -229,6 +229,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  placeholder="行動のタイトルを入力"
+                  title="行動のタイトル"
                   required
                 />
               </div>
