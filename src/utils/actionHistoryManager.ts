@@ -66,6 +66,15 @@ class ActionHistoryManager {
     return this.actionRecords[index];
   }
 
+  public deleteActionRecord(id: string): boolean {
+    const index = this.actionRecords.findIndex(record => record._id === id);
+    if (index === -1) return false;
+
+    this.actionRecords.splice(index, 1);
+    this.saveToLocalStorage();
+    return true;
+  }
+
   public getActionRecords(): ActionRecord[] {
     return [...this.actionRecords];
   }
