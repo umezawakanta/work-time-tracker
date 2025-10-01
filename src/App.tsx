@@ -624,7 +624,7 @@ function App({
   const [editReplyContent, setEditReplyContent] = useState("");
 
   // お仕事記録の状態
-  const [showWorkRecords, setShowWorkRecords] = useState(false);
+  const [showWorkRecords, setShowWorkRecords] = useState(true);
 
   // 音アプリの状態
   const [showSoundApp, setShowSoundApp] = useState(false);

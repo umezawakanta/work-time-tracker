@@ -116,6 +116,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   const [diaryBreakTime, setDiaryBreakTime] = useState(0);
   const [diaryProductivity, setDiaryProductivity] = useState(3);
   const [diaryTags, setDiaryTags] = useState<string[]>([]);
+  const [newDiaryTag, setNewDiaryTag] = useState("");
   const [monthlyMemo, setMonthlyMemo] = useState("");
   const [editingMonthlyMemo, setEditingMonthlyMemo] = useState(false);
 
@@ -126,27 +127,38 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // コンポーネントマウント時の初期化
   useEffect(() => {
-    if (showWorkRecords && user) {
+    console.log('WorkRecordsComponent useEffect triggered:', { user: user?.id, showWorkRecords });
+    if (user) {
+      console.log('Loading data for user:', user.id);
       loadIncomeExpenseRecords();
       loadWorkDiaries();
       loadMonthlyMemo();
+    } else {
+      console.log('No user found, skipping data load');
     }
-  }, [showWorkRecords, user]);
+  }, [user, showWorkRecords]);
 
   // 収入・支出記録の読み込み
   const loadIncomeExpenseRecords = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log('No user ID, skipping income/expense records load');
+      return;
+    }
 
+    console.log('Loading income/expense records for user:', user.id);
     try {
       const headers = createAuthHeaders();
-      const response = await apiFetch(`/api/income-expense-records?userId=${user.id}`, {
+      console.log('Making API call to:', `/api/work-records/salary`);
+      const response = await apiFetch(`/api/work-records/salary`, {
         method: 'GET',
         headers
       });
 
       const data = await response.json();
+      console.log('Income/expense records API response:', data);
       if (data.success) {
         setIncomeExpenseRecords(data.records);
+        console.log('収入・支出記録を読み込みました:', data.records.length, '件');
         logger.debug('収入・支出記録を読み込みました:', data.records.length, '件');
       } else {
         console.error("Failed to load income/expense records:", data.message);
@@ -158,18 +170,25 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 日記の読み込み
   const loadWorkDiaries = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log('No user ID, skipping work diaries load');
+      return;
+    }
 
+    console.log('Loading work diaries for user:', user.id);
     try {
       const headers = createAuthHeaders();
-      const response = await apiFetch(`/api/work-diaries?userId=${user.id}`, {
+      console.log('Making API call to:', `/api/work-records/diary?userId=${user.id}`);
+      const response = await apiFetch(`/api/work-records/diary?userId=${user.id}`, {
         method: 'GET',
         headers
       });
 
       const data = await response.json();
+      console.log('Work diaries API response:', data);
       if (data.success) {
         setWorkDiaries(data.diaries);
+        console.log('日記を読み込みました:', data.diaries.length, '件');
         logger.debug('日記を読み込みました:', data.diaries.length, '件');
       } else {
         console.error("Failed to load work diaries:", data.message);
@@ -229,20 +248,16 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
       const amount = normalizeAmountForStorage(incomeExpenseAmount);
       const requestBody = {
-        userId: user.id,
         date: incomeExpenseDate,
         amount: incomeExpenseType === "expense" ? -Math.abs(amount) : Math.abs(amount),
         type: incomeExpenseType,
         notes: incomeExpenseNotes,
-        category: incomeExpenseCategory || (incomeExpenseType === "income" ? "給与" : "その他支出"),
-        subcategory: incomeExpenseSubcategory || "",
-        tags: incomeExpenseTags,
       };
 
       console.log("Creating income/expense record:", requestBody);
 
       const headers = createAuthHeaders();
-      const response = await apiFetch('/api/income-expense-records', {
+      const response = await apiFetch('/api/work-records/salary', {
         method: 'POST',
         headers,
         body: JSON.stringify(requestBody)
@@ -312,7 +327,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       console.log("Updating income/expense record:", requestBody);
 
       const headers = createAuthHeaders();
-      const response = await apiFetch('/api/income-expense-records', {
+      const response = await apiFetch('/api/work-records/salary', {
         method: 'PUT',
         headers,
         body: JSON.stringify(requestBody)
@@ -366,7 +381,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
     try {
       const headers = createAuthHeaders();
-      const response = await apiFetch(`/api/income-expense-records/${id}`, {
+      const response = await apiFetch(`/api/work-records/salary?id=${id}`, {
         method: 'DELETE',
         headers
       });
@@ -397,11 +412,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       }
 
       const requestBody = {
-        userId: user.id,
         date: diaryDate,
         title: diaryTitle,
         content: diaryContent,
-        mood: parseInt(diaryMood),
+        mood: diaryMood,
         activities: diaryActivities,
         notes: diaryNotes,
         nextGoals: diaryNextGoals,
@@ -422,7 +436,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       console.log("Creating work diary:", requestBody);
 
       const headers = createAuthHeaders();
-      const response = await apiFetch('/api/work-diaries', {
+      const response = await apiFetch('/api/work-records/diary', {
         method: 'POST',
         headers,
         body: JSON.stringify(requestBody)
@@ -437,7 +451,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           const rewardResult = await diaryRewardManager.processDiaryReward(user.id, {
             title: diaryTitle,
             content: diaryContent,
-            mood: parseInt(diaryMood),
+            mood: diaryMood,
             workHours: diaryWorkHours,
             isPrivate: false,
             activities: [],
@@ -483,7 +497,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         date: diaryDate,
         title: diaryTitle,
         content: diaryContent,
-        mood: parseInt(diaryMood),
+        mood: diaryMood,
         activities: diaryActivities,
         notes: diaryNotes,
         nextGoals: diaryNextGoals,
@@ -504,7 +518,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       console.log("Updating work diary:", requestBody);
 
       const headers = createAuthHeaders();
-      const response = await apiFetch('/api/work-diaries', {
+      const response = await apiFetch('/api/work-records/diary', {
         method: 'PUT',
         headers,
         body: JSON.stringify(requestBody)
@@ -533,7 +547,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
     try {
       const headers = createAuthHeaders();
-      const response = await apiFetch(`/api/work-diaries/${id}`, {
+      const response = await apiFetch(`/api/work-records/diary/${id}`, {
         method: 'DELETE',
         headers
       });
@@ -577,10 +591,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 日記の編集
   const editDiary = (diary: WorkDiary) => {
-    setDiaryDate(diary.date.split("T")[0]);
+    setDiaryDate(new Date(diary.date).toISOString().split('T')[0]);
     setDiaryTitle(diary.title);
     setDiaryContent(diary.content);
-    setDiaryMood(diary.mood.toString());
+    setDiaryMood(diary.mood);
     setDiaryActivities(diary.activities || []);
     setDiaryNotes(diary.notes || "");
     setDiaryNextGoals(diary.nextGoals || []);
@@ -685,13 +699,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     if (type === "diary") {
       editDiary(record);
     } else {
-      setIncomeExpenseDate(record.date.split("T")[0]);
+      setIncomeExpenseDate(new Date(record.date).toISOString().split('T')[0]);
       setIncomeExpenseAmount(Math.abs(record.amount).toString());
       setIncomeExpenseType(record.type === "income" ? "income" : "expense");
       setIncomeExpenseNotes(record.notes || "");
-      setIncomeExpenseCategory(record.category || "");
-      setIncomeExpenseSubcategory(record.subcategory || "");
-      setIncomeExpenseTags(record.tags || []);
+      setIncomeExpenseCategory("");
+      setIncomeExpenseSubcategory("");
+      setIncomeExpenseTags([]);
       setEditingIncomeExpenseRecord(record);
       setShowIncomeExpenseForm(true);
     }
@@ -727,7 +741,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   };
 
   // お仕事記録セクションは常に表示
-  // if (!showWorkRecords) return null;
+  if (!showWorkRecords) return null;
 
   return (
     <div className="work-records-section">
@@ -802,6 +816,208 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             <button onClick={startEditingMonthlyMemo} className="edit-btn">
               編集
             </button>
+          </div>
+        )}
+      </div>
+
+      {/* 記録追加ボタン */}
+      <div className="record-actions">
+        <button 
+          className="add-record-btn income-expense"
+          onClick={() => {
+            setEditingIncomeExpenseRecord(null);
+            setIncomeExpenseDate(new Date().toISOString().split('T')[0]);
+            setIncomeExpenseAmount("");
+            setIncomeExpenseType("income");
+            setIncomeExpenseNotes("");
+            setIncomeExpenseCategory("");
+            setIncomeExpenseSubcategory("");
+            setIncomeExpenseTags([]);
+            setNewTag("");
+            setShowIncomeExpenseForm(true);
+          }}
+        >
+          💰 収入・支出を記録
+        </button>
+        <button 
+          className="add-record-btn diary"
+          onClick={() => {
+            setEditingDiary(null);
+            setDiaryDate(new Date().toISOString().split('T')[0]);
+            setDiaryTitle("");
+            setDiaryContent("");
+            setDiaryActivities([]);
+            setDiaryProductivity(5);
+            setDiaryGratitude("");
+            setDiaryReflection("");
+            setDiaryStressLevel(5);
+            setDiaryWorkHours(8);
+            setDiaryBreakTime(1);
+            setDiaryNotes("");
+            setDiaryTags([]);
+            setNewDiaryTag("");
+            setShowDiaryForm(true);
+          }}
+        >
+          📝 日記を記録
+        </button>
+      </div>
+
+      {/* 収入・支出記録一覧 */}
+      <div className="records-section">
+        <h3>収入・支出記録</h3>
+        {/* Debug: Rendering income/expense records: {incomeExpenseRecords.length} records */}
+        {incomeExpenseRecords.length === 0 ? (
+          <p className="no-records">記録がありません</p>
+        ) : (
+          <div className="records-list">
+            {incomeExpenseRecords
+              .filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate.getMonth() === currentMonth.getMonth() && 
+                       recordDate.getFullYear() === currentMonth.getFullYear();
+              })
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .map(record => (
+                <div key={record._id} className={`record-item ${record.type}`}>
+                  <div className="record-header">
+                    <span className="record-date">{new Date(record.date).toLocaleDateString('ja-JP')}</span>
+                    <span className="record-amount">
+                      {record.type === 'income' ? '+' : '-'}¥{record.amount.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="record-details">
+                    <span className="record-category">{record.type === "income" ? "収入" : "支出"}</span>
+                    {record.notes && <p className="record-notes">{record.notes}</p>}
+                  </div>
+                  <div className="record-actions">
+                    <button 
+                      className="edit-btn"
+                      onClick={() => {
+                        setEditingIncomeExpenseRecord(record);
+                        setIncomeExpenseDate(new Date(record.date).toISOString().split('T')[0]);
+                        setIncomeExpenseAmount(record.amount.toString());
+                        setIncomeExpenseType(record.type);
+                        setIncomeExpenseNotes(record.notes || "");
+                        setIncomeExpenseCategory("");
+                        setIncomeExpenseSubcategory("");
+                        setIncomeExpenseTags([]);
+                        setNewTag("");
+                        setShowIncomeExpenseForm(true);
+                      }}
+                    >
+                      編集
+                    </button>
+                    <button 
+                      className="delete-btn"
+                      onClick={() => {
+                        setDeletingRecordId(record._id);
+                        setDeletingRecordType(record.type);
+                        setShowDeleteModal(true);
+                      }}
+                    >
+                      削除
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
+      </div>
+
+      {/* 日記一覧 */}
+      <div className="diaries-section">
+        <h3>日記</h3>
+        {/* Debug: Rendering work diaries: {workDiaries.length} diaries */}
+        {workDiaries.length === 0 ? (
+          <p className="no-records">日記がありません</p>
+        ) : (
+          <div className="diaries-list">
+            {workDiaries
+              .filter(diary => {
+                const diaryDate = new Date(diary.date);
+                return diaryDate.getMonth() === currentMonth.getMonth() && 
+                       diaryDate.getFullYear() === currentMonth.getFullYear();
+              })
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .map(diary => (
+                <div key={diary._id} className="diary-item">
+                  <div className="diary-header">
+                    <span className="diary-date">{new Date(diary.date).toLocaleDateString('ja-JP')}</span>
+                    <span className="diary-title">{diary.title}</span>
+                  </div>
+                  <div className="diary-content">
+                    <p className="diary-text">{diary.content}</p>
+                    {diary.activities && diary.activities.length > 0 && (
+                      <div className="diary-activities">
+                        <strong>活動:</strong> {diary.activities.join(', ')}
+                      </div>
+                    )}
+                    <div className="diary-metrics">
+                      <span>生産性: {diary.productivity}/10</span>
+                      <span>ストレス: {diary.stressLevel}/10</span>
+                      <span>労働時間: {diary.workHours}時間</span>
+                      <span>休憩時間: {diary.breakTime}時間</span>
+                    </div>
+                    {diary.gratitude && (
+                      <div className="diary-gratitude">
+                        <strong>感謝:</strong> {diary.gratitude}
+                      </div>
+                    )}
+                    {diary.reflection && (
+                      <div className="diary-reflection">
+                        <strong>振り返り:</strong> {diary.reflection}
+                      </div>
+                    )}
+                    {diary.notes && (
+                      <div className="diary-notes">
+                        <strong>メモ:</strong> {diary.notes}
+                      </div>
+                    )}
+                    {diary.tags && diary.tags.length > 0 && (
+                      <div className="diary-tags">
+                        {diary.tags.map((tag, index) => (
+                          <span key={index} className="tag">{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="diary-actions">
+                    <button 
+                      className="edit-btn"
+                      onClick={() => {
+                        setEditingDiary(diary);
+                        setDiaryDate(new Date(diary.date).toISOString().split('T')[0]);
+                        setDiaryTitle(diary.title);
+                        setDiaryContent(diary.content);
+                        setDiaryActivities(diary.activities || []);
+                        setDiaryProductivity(diary.productivity);
+                        setDiaryGratitude(diary.gratitude || "");
+                        setDiaryReflection(diary.reflection || "");
+                        setDiaryStressLevel(diary.stressLevel);
+                        setDiaryWorkHours(diary.workHours);
+                        setDiaryBreakTime(diary.breakTime);
+                        setDiaryNotes(diary.notes || "");
+                        setDiaryTags(diary.tags || []);
+                        setNewDiaryTag("");
+                        setShowDiaryForm(true);
+                      }}
+                    >
+                      編集
+                    </button>
+                    <button 
+                      className="delete-btn"
+                      onClick={() => {
+                        setDeletingRecordId(diary._id);
+                        setDeletingRecordType("diary");
+                        setShowDeleteModal(true);
+                      }}
+                    >
+                      削除
+                    </button>
+                  </div>
+                </div>
+              ))}
           </div>
         )}
       </div>
@@ -904,6 +1120,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       value={newTag}
                       onChange={(e) => setNewTag(e.target.value)}
                       placeholder="タグを入力"
+                      title="タグを入力"
+                      aria-label="タグを入力"
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();

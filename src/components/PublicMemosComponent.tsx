@@ -101,7 +101,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         
         const promises = batch.map(async (memo) => {
           try {
-            console.log(`いいね状態を取得中: ${memo.id}`);
+            // console.log(`いいね状態を取得中: ${memo.id}`);
             
             // タイムアウト付きのfetch
             const controller = new AbortController();
@@ -131,7 +131,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
             
             const data = await response.json();
             if (data.success) {
-              console.log(`いいね状態取得成功: ${memo.id}`, data);
+              // console.log(`いいね状態取得成功: ${memo.id}`, data);
               return {
                 memoId: memo.id,
                 isLiked: data.isLiked,
@@ -173,7 +173,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
         }
       }
       
-      console.log('いいね状態の初期化完了:', likeStates);
+      // console.log('いいね状態の初期化完了:', likeStates);
       setMemoLikes(likeStates);
     } catch (error) {
       console.error('いいね状態の初期化でエラーが発生しました:', error);
