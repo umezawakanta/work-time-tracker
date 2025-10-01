@@ -740,6 +740,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     closeOtherFeatures(feature);
   };
 
+  // お仕事記録セクションは常に表示
+  if (!showWorkRecords) return null;
+
   // 統合ダッシュボードが表示されている場合は、お仕事記録セクションを非表示にする
   if (showComprehensiveDashboard) {
     return (
@@ -751,9 +754,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       </div>
     );
   }
-
-  // お仕事記録セクションは常に表示
-  if (!showWorkRecords) return null;
 
   return (
     <div className="work-records-section">
