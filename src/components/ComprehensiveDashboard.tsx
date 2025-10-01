@@ -36,7 +36,7 @@ interface ComprehensiveDashboardProps {
 }
 
 const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId, onClose }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'assets' | 'actions' | 'plans' | 'waste' | 'financial'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'today' | 'thisweek' | 'thismonth' | 'urgent' | 'goals'>('overview');
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('month');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +64,192 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
   useEffect(() => {
     loadAllData();
   }, [userId, selectedPeriod]);
+
+  // 今日のタスクと緊急事項を計算
+  const getTodayTasks = () => {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    
+    // 今日のスケジュール
+    const todaySchedules = schedules.filter(schedule => 
+      schedule.date === todayStr && schedule.status === 'scheduled'
+    );
+    
+    // 今日締切の計画
+    const todayDeadlines = plans.filter(plan => 
+      plan.targetDate === todayStr && plan.status !== 'completed'
+    );
+    
+    // 今週締切の計画（緊急度高い）
+    const weekDeadlines = plans.filter(plan => {
+      const targetDate = new Date(plan.targetDate);
+      const daysUntilDeadline = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilDeadline <= 7 && plan.status !== 'completed';
+    });
+    
+    return {
+      schedules: todaySchedules,
+      deadlines: todayDeadlines,
+      weekDeadlines: weekDeadlines
+    };
+  };
+
+  // 緊急の支出・収入を取得
+  const getUrgentFinancialItems = () => {
+    const urgentItems = [];
+    
+    // 負債の警告
+    if (assetLiabilitySummary) {
+      if (assetLiabilitySummary.totalLiabilities > assetLiabilitySummary.totalAssets * 0.5) {
+        urgentItems.push({
+          type: 'warning',
+          title: '負債比率が高い',
+          message: `負債が資産の50%を超えています（${Math.round(assetLiabilitySummary.totalLiabilities / assetLiabilitySummary.totalAssets * 100)}%）`,
+          priority: 'high'
+        });
+      }
+    }
+    
+    // 予算オーバー
+    if (financialSummary) {
+      const overBudget = financialSummary.expenses - financialSummary.budget;
+      if (overBudget > 0) {
+        urgentItems.push({
+          type: 'warning',
+          title: '予算オーバー',
+          message: `予算を${overBudget.toLocaleString()}円超過しています`,
+          priority: 'high'
+        });
+      }
+    }
+    
+    return urgentItems;
+  };
+
+  // 今すぐやるべきアクションを取得
+  const getImmediateActions = () => {
+    const actions = [];
+    const todayTasks = getTodayTasks();
+    const urgentFinancial = getUrgentFinancialItems();
+    
+    // 今日のスケジュール
+    todayTasks.schedules.forEach(schedule => {
+      actions.push({
+        type: 'schedule',
+        title: schedule.title,
+        time: schedule.startTime,
+        priority: schedule.priority,
+        action: '開始する'
+      });
+    });
+    
+    // 今日締切の計画
+    todayTasks.deadlines.forEach(plan => {
+      actions.push({
+        type: 'deadline',
+        title: plan.title,
+        time: '今日締切',
+        priority: 'high',
+        action: '完了する'
+      });
+    });
+    
+    // 緊急の金銭的問題
+    urgentFinancial.forEach(item => {
+      actions.push({
+        type: 'financial',
+        title: item.title,
+        time: '緊急',
+        priority: item.priority,
+        action: '対応する'
+      });
+    });
+    
+    return actions.sort((a, b) => {
+      const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    });
+  };
+
+  // 今やることをひとつ取得
+  const getCurrentFocus = () => {
+    const immediateActions = getImmediateActions();
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    // 現在の時間帯に基づいて適切なメッセージを生成
+    let timeBasedMessage = '';
+    if (currentHour >= 6 && currentHour < 9) {
+      timeBasedMessage = '朝の時間です。今日の計画を確認して、重要なタスクから始めましょう。';
+    } else if (currentHour >= 9 && currentHour < 12) {
+      timeBasedMessage = '午前中です。集中力が高い時間帯なので、重要な作業に取り組みましょう。';
+    } else if (currentHour >= 12 && currentHour < 13) {
+      timeBasedMessage = 'お昼休みの時間です。適度に休憩を取って、午後の準備をしましょう。';
+    } else if (currentHour >= 13 && currentHour < 17) {
+      timeBasedMessage = '午後の時間です。午前の調子を維持して、作業を続けましょう。';
+    } else if (currentHour >= 17 && currentHour < 19) {
+      timeBasedMessage = '夕方の時間です。今日の振り返りと明日の準備をしましょう。';
+    } else if (currentHour >= 19 && currentHour < 22) {
+      timeBasedMessage = '夜の時間です。今日の成果を確認し、明日の準備をしましょう。';
+    } else {
+      timeBasedMessage = '深夜の時間です。十分な休息を取って、明日に備えましょう。';
+    }
+    
+    // 最優先のアクションがある場合はそれを表示
+    if (immediateActions.length > 0) {
+      const topAction = immediateActions[0];
+      return {
+        message: `${topAction.title}を${topAction.action}。`,
+        type: topAction.type,
+        priority: topAction.priority,
+        time: topAction.time
+      };
+    }
+    
+    // 緊急の金銭的問題がある場合
+    const urgentFinancial = getUrgentFinancialItems();
+    if (urgentFinancial.length > 0) {
+      return {
+        message: `${urgentFinancial[0].title}。${urgentFinancial[0].message}`,
+        type: 'financial',
+        priority: 'high',
+        time: '緊急'
+      };
+    }
+    
+    // 今日のスケジュールがある場合
+    const todayTasks = getTodayTasks();
+    if (todayTasks.schedules.length > 0) {
+      const nextSchedule = todayTasks.schedules[0];
+      return {
+        message: `${nextSchedule.startTime}から${nextSchedule.title}があります。`,
+        type: 'schedule',
+        priority: nextSchedule.priority,
+        time: nextSchedule.startTime
+      };
+    }
+    
+    // 今週締切の計画がある場合
+    if (todayTasks.weekDeadlines.length > 0) {
+      const nextDeadline = todayTasks.weekDeadlines[0];
+      const targetDate = new Date(nextDeadline.targetDate);
+      const daysLeft = Math.ceil((targetDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return {
+        message: `${nextDeadline.title}が${daysLeft}日後に締切です。進捗を確認しましょう。`,
+        type: 'deadline',
+        priority: 'medium',
+        time: `${daysLeft}日後`
+      };
+    }
+    
+    // デフォルトの時間帯ベースのメッセージ
+    return {
+      message: timeBasedMessage,
+      type: 'general',
+      priority: 'low',
+      time: '今'
+    };
+  };
 
   const loadAllData = async () => {
     try {
@@ -208,43 +394,54 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
           className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
-          概要
+          🏠 概要
         </button>
         <button 
-          className={`tab ${activeTab === 'assets' ? 'active' : ''}`}
-          onClick={() => setActiveTab('assets')}
+          className={`tab ${activeTab === 'today' ? 'active' : ''}`}
+          onClick={() => setActiveTab('today')}
         >
-          資産・負債
+          📅 今日
         </button>
         <button 
-          className={`tab ${activeTab === 'actions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('actions')}
+          className={`tab ${activeTab === 'thisweek' ? 'active' : ''}`}
+          onClick={() => setActiveTab('thisweek')}
         >
-          行動記録
+          📊 今週
         </button>
         <button 
-          className={`tab ${activeTab === 'plans' ? 'active' : ''}`}
-          onClick={() => setActiveTab('plans')}
+          className={`tab ${activeTab === 'thismonth' ? 'active' : ''}`}
+          onClick={() => setActiveTab('thismonth')}
         >
-          将来計画
+          🗓️ 今月
         </button>
         <button 
-          className={`tab ${activeTab === 'waste' ? 'active' : ''}`}
-          onClick={() => setActiveTab('waste')}
+          className={`tab ${activeTab === 'urgent' ? 'active' : ''}`}
+          onClick={() => setActiveTab('urgent')}
         >
-          無駄遣い
+          ⚠️ 緊急
         </button>
         <button 
-          className={`tab ${activeTab === 'financial' ? 'active' : ''}`}
-          onClick={() => setActiveTab('financial')}
+          className={`tab ${activeTab === 'goals' ? 'active' : ''}`}
+          onClick={() => setActiveTab('goals')}
         >
-          財務
+          🎯 目標
         </button>
       </div>
 
       <div className="dashboard-content">
         {activeTab === 'overview' && (
           <div className="overview-tab">
+            {/* 今やることをひとつ表示 */}
+            <div className="current-focus-card">
+              <div className="focus-header">
+                <h2>🎯 今やること</h2>
+                <span className="focus-time">{getCurrentFocus().time}</span>
+              </div>
+              <div className={`focus-message priority-${getCurrentFocus().priority}`}>
+                {getCurrentFocus().message}
+              </div>
+            </div>
+            
             <div className="overview-grid">
               {/* 財務健全性スコア */}
               <div className="overview-card financial-health">
@@ -365,6 +562,402 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
                     <div key={index} className={`recommendation-item ${rec.priority}`}>
                       <span className="recommendation-title">{rec.title}</span>
                       <span className="recommendation-description">{rec.description}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 今日のタブ */}
+        {activeTab === 'today' && (
+          <div className="today-tab">
+            <div className="today-header">
+              <h2>📅 今日やるべきこと</h2>
+              <p>{new Date().toLocaleDateString('ja-JP', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+              })}</p>
+            </div>
+            
+            <div className="today-grid">
+              {/* 今すぐやるべきアクション */}
+              <div className="today-card immediate-actions">
+                <h3>⚡ 今すぐやるべきこと</h3>
+                <div className="actions-list">
+                  {getImmediateActions().map((action, index) => (
+                    <div key={index} className={`action-item priority-${action.priority}`}>
+                      <div className="action-content">
+                        <span className="action-title">{action.title}</span>
+                        <span className="action-time">{action.time}</span>
+                      </div>
+                      <button className="action-button">
+                        {action.action}
+                      </button>
+                    </div>
+                  ))}
+                  {getImmediateActions().length === 0 && (
+                    <div className="no-actions">
+                      <p>🎉 今すぐやるべきことはありません！</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 今日のスケジュール */}
+              <div className="today-card today-schedule">
+                <h3>📅 今日のスケジュール</h3>
+                <div className="schedule-list">
+                  {getTodayTasks().schedules.map((schedule, index) => (
+                    <div key={index} className="schedule-item">
+                      <div className="schedule-time">{schedule.startTime}</div>
+                      <div className="schedule-content">
+                        <div className="schedule-title">{schedule.title}</div>
+                        <div className="schedule-category">{schedule.category}</div>
+                      </div>
+                      <div className={`schedule-priority priority-${schedule.priority}`}>
+                        {schedule.priority === 'high' ? '高' : schedule.priority === 'medium' ? '中' : '低'}
+                      </div>
+                    </div>
+                  ))}
+                  {getTodayTasks().schedules.length === 0 && (
+                    <div className="no-schedule">
+                      <p>今日のスケジュールはありません</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 今日締切の計画 */}
+              <div className="today-card today-deadlines">
+                <h3>⏰ 今日締切の計画</h3>
+                <div className="deadlines-list">
+                  {getTodayTasks().deadlines.map((plan, index) => (
+                    <div key={index} className="deadline-item">
+                      <div className="deadline-title">{plan.title}</div>
+                      <div className="deadline-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${plan.progress}%` }}
+                          ></div>
+                        </div>
+                        <span className="progress-text">{plan.progress}%</span>
+                      </div>
+                    </div>
+                  ))}
+                  {getTodayTasks().deadlines.length === 0 && (
+                    <div className="no-deadlines">
+                      <p>今日締切の計画はありません</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 今週締切の計画 */}
+              <div className="today-card week-deadlines">
+                <h3>📊 今週締切の計画</h3>
+                <div className="week-deadlines-list">
+                  {getTodayTasks().weekDeadlines.map((plan, index) => {
+                    const targetDate = new Date(plan.targetDate);
+                    const today = new Date();
+                    const daysLeft = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    
+                    return (
+                      <div key={index} className="week-deadline-item">
+                        <div className="week-deadline-title">{plan.title}</div>
+                        <div className="week-deadline-info">
+                          <span className="days-left">{daysLeft}日後</span>
+                          <div className="week-progress-bar">
+                            <div 
+                              className="week-progress-fill" 
+                              style={{ width: `${plan.progress}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {getTodayTasks().weekDeadlines.length === 0 && (
+                    <div className="no-week-deadlines">
+                      <p>今週締切の計画はありません</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 今週のタブ */}
+        {activeTab === 'thisweek' && (
+          <div className="thisweek-tab">
+            <div className="thisweek-header">
+              <h2>📊 今週の目標と進捗</h2>
+              <p>今週の重要な目標と進捗状況を確認しましょう</p>
+            </div>
+            
+            <div className="thisweek-grid">
+              {/* 今週の目標 */}
+              <div className="thisweek-card weekly-goals">
+                <h3>🎯 今週の目標</h3>
+                <div className="goals-list">
+                  {plans.filter(plan => {
+                    const targetDate = new Date(plan.targetDate);
+                    const today = new Date();
+                    const daysUntilDeadline = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    return daysUntilDeadline <= 7 && plan.status !== 'completed';
+                  }).map((plan, index) => (
+                    <div key={index} className="goal-item">
+                      <div className="goal-title">{plan.title}</div>
+                      <div className="goal-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${plan.progress}%` }}
+                          ></div>
+                        </div>
+                        <span className="progress-text">{plan.progress}%</span>
+                      </div>
+                      <div className="goal-deadline">
+                        締切: {new Date(plan.targetDate).toLocaleDateString('ja-JP')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 今週のスケジュール */}
+              <div className="thisweek-card weekly-schedule">
+                <h3>📅 今週のスケジュール</h3>
+                <div className="weekly-schedule-list">
+                  {schedules.filter(schedule => {
+                    const scheduleDate = new Date(schedule.date);
+                    const today = new Date();
+                    const daysUntilSchedule = Math.ceil((scheduleDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    return daysUntilSchedule >= 0 && daysUntilSchedule <= 7;
+                  }).map((schedule, index) => (
+                    <div key={index} className="weekly-schedule-item">
+                      <div className="schedule-date">
+                        {new Date(schedule.date).toLocaleDateString('ja-JP', { 
+                          month: 'short', 
+                          day: 'numeric',
+                          weekday: 'short'
+                        })}
+                      </div>
+                      <div className="schedule-content">
+                        <div className="schedule-title">{schedule.title}</div>
+                        <div className="schedule-time">{schedule.startTime} - {schedule.endTime}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 今月のタブ */}
+        {activeTab === 'thismonth' && (
+          <div className="thismonth-tab">
+            <div className="thismonth-header">
+              <h2>🗓️ 今月の目標と進捗</h2>
+              <p>今月の重要な目標と進捗状況を確認しましょう</p>
+            </div>
+            
+            <div className="thismonth-grid">
+              {/* 今月の目標 */}
+              <div className="thismonth-card monthly-goals">
+                <h3>🎯 今月の目標</h3>
+                <div className="monthly-goals-list">
+                  {plans.filter(plan => {
+                    const targetDate = new Date(plan.targetDate);
+                    const today = new Date();
+                    const daysUntilDeadline = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    return daysUntilDeadline <= 30 && plan.status !== 'completed';
+                  }).map((plan, index) => (
+                    <div key={index} className="monthly-goal-item">
+                      <div className="monthly-goal-title">{plan.title}</div>
+                      <div className="monthly-goal-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${plan.progress}%` }}
+                          ></div>
+                        </div>
+                        <span className="progress-text">{plan.progress}%</span>
+                      </div>
+                      <div className="monthly-goal-deadline">
+                        締切: {new Date(plan.targetDate).toLocaleDateString('ja-JP')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 今月の予算 */}
+              <div className="thismonth-card monthly-budget">
+                <h3>💰 今月の予算</h3>
+                {financialSummary && (
+                  <div className="budget-content">
+                    <div className="budget-summary">
+                      <div className="budget-item">
+                        <span className="budget-label">予算:</span>
+                        <span className="budget-value">{formatCurrency(financialSummary.budget)}</span>
+                      </div>
+                      <div className="budget-item">
+                        <span className="budget-label">支出:</span>
+                        <span className="budget-value">{formatCurrency(financialSummary.expenses)}</span>
+                      </div>
+                      <div className="budget-item">
+                        <span className="budget-label">残り:</span>
+                        <span className={`budget-value ${financialSummary.budget - financialSummary.expenses < 0 ? 'over-budget' : ''}`}>
+                          {formatCurrency(financialSummary.budget - financialSummary.expenses)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="budget-progress">
+                      <div className="progress-bar">
+                        <div 
+                          className="progress-fill" 
+                          style={{ 
+                            width: `${Math.min(100, (financialSummary.expenses / financialSummary.budget) * 100)}%`,
+                            backgroundColor: financialSummary.expenses > financialSummary.budget ? '#ff4444' : '#4CAF50'
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 緊急のタブ */}
+        {activeTab === 'urgent' && (
+          <div className="urgent-tab">
+            <div className="urgent-header">
+              <h2>⚠️ 緊急対応が必要な事項</h2>
+              <p>今すぐ対応が必要な重要な事項を確認しましょう</p>
+            </div>
+            
+            <div className="urgent-grid">
+              {/* 緊急の金銭的問題 */}
+              <div className="urgent-card financial-urgent">
+                <h3>💰 緊急の金銭的問題</h3>
+                <div className="urgent-financial-list">
+                  {getUrgentFinancialItems().map((item, index) => (
+                    <div key={index} className={`urgent-item priority-${item.priority}`}>
+                      <div className="urgent-icon">⚠️</div>
+                      <div className="urgent-content">
+                        <div className="urgent-title">{item.title}</div>
+                        <div className="urgent-message">{item.message}</div>
+                      </div>
+                      <button className="urgent-action-button">
+                        対応する
+                      </button>
+                    </div>
+                  ))}
+                  {getUrgentFinancialItems().length === 0 && (
+                    <div className="no-urgent-financial">
+                      <p>🎉 緊急の金銭的問題はありません！</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 緊急の計画 */}
+              <div className="urgent-card plan-urgent">
+                <h3>📋 緊急の計画</h3>
+                <div className="urgent-plans-list">
+                  {plans.filter(plan => {
+                    const targetDate = new Date(plan.targetDate);
+                    const today = new Date();
+                    const daysUntilDeadline = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    return daysUntilDeadline <= 3 && plan.status !== 'completed';
+                  }).map((plan, index) => {
+                    const targetDate = new Date(plan.targetDate);
+                    const today = new Date();
+                    const daysLeft = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    
+                    return (
+                      <div key={index} className="urgent-plan-item">
+                        <div className="urgent-plan-title">{plan.title}</div>
+                        <div className="urgent-plan-info">
+                          <span className="days-left">{daysLeft}日後締切</span>
+                          <div className="urgent-progress-bar">
+                            <div 
+                              className="urgent-progress-fill" 
+                              style={{ width: `${plan.progress}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {plans.filter(plan => {
+                    const targetDate = new Date(plan.targetDate);
+                    const today = new Date();
+                    const daysUntilDeadline = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    return daysUntilDeadline <= 3 && plan.status !== 'completed';
+                  }).length === 0 && (
+                    <div className="no-urgent-plans">
+                      <p>🎉 緊急の計画はありません！</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 目標のタブ */}
+        {activeTab === 'goals' && (
+          <div className="goals-tab">
+            <div className="goals-header">
+              <h2>🎯 目標と計画</h2>
+              <p>あなたの目標と計画の進捗状況を確認しましょう</p>
+            </div>
+            
+            <div className="goals-grid">
+              {/* 進行中の計画 */}
+              <div className="goals-card active-plans">
+                <h3>🚀 進行中の計画</h3>
+                <div className="active-plans-list">
+                  {plans.filter(plan => plan.status === 'in-progress').map((plan, index) => (
+                    <div key={index} className="active-plan-item">
+                      <div className="plan-title">{plan.title}</div>
+                      <div className="plan-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${plan.progress}%` }}
+                          ></div>
+                        </div>
+                        <span className="progress-text">{plan.progress}%</span>
+                      </div>
+                      <div className="plan-deadline">
+                        締切: {new Date(plan.targetDate).toLocaleDateString('ja-JP')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 完了した計画 */}
+              <div className="goals-card completed-plans">
+                <h3>✅ 完了した計画</h3>
+                <div className="completed-plans-list">
+                  {plans.filter(plan => plan.status === 'completed').slice(0, 5).map((plan, index) => (
+                    <div key={index} className="completed-plan-item">
+                      <div className="plan-title">{plan.title}</div>
+                      <div className="plan-completed-date">
+                        完了: {plan.completedDate ? new Date(plan.completedDate).toLocaleDateString('ja-JP') : '不明'}
+                      </div>
                     </div>
                   ))}
                 </div>

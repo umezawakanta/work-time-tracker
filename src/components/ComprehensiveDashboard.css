@@ -780,3 +780,821 @@
     gap: 5px;
   }
 }
+
+/* 新しいタブのスタイル */
+
+/* 今やることを表示するカード */
+.current-focus-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.current-focus-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
+}
+
+.focus-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.focus-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.focus-time {
+  background: rgba(255,255,255,0.2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  backdrop-filter: blur(10px);
+}
+
+.focus-message {
+  font-size: 18px;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+  padding: 15px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.focus-message.priority-high {
+  background: rgba(255, 68, 68, 0.2);
+  border-color: rgba(255, 68, 68, 0.3);
+  animation: pulse 2s infinite;
+}
+
+.focus-message.priority-medium {
+  background: rgba(255, 165, 0, 0.2);
+  border-color: rgba(255, 165, 0, 0.3);
+}
+
+.focus-message.priority-low {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+  }
+}
+
+/* 今日のタブ */
+.today-tab {
+  padding: 20px;
+}
+
+.today-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.today-header h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.today-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+.today-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.today-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.today-card h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+/* 今すぐやるべきアクション */
+.actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #ddd;
+}
+
+.action-item.priority-high {
+  border-left-color: #ff4444;
+  background: #fff5f5;
+}
+
+.action-item.priority-medium {
+  border-left-color: #ffa500;
+  background: #fff8e1;
+}
+
+.action-item.priority-low {
+  border-left-color: #4CAF50;
+  background: #f1f8e9;
+}
+
+.action-content {
+  flex: 1;
+}
+
+.action-title {
+  display: block;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.action-time {
+  display: block;
+  font-size: 12px;
+  color: #666;
+}
+
+.action-button {
+  background: #2196F3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.action-button:hover {
+  background: #1976D2;
+}
+
+.no-actions {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+/* 今日のスケジュール */
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border-left: 4px solid #2196F3;
+}
+
+.schedule-time {
+  font-weight: bold;
+  color: #2196F3;
+  margin-right: 15px;
+  min-width: 60px;
+}
+
+.schedule-content {
+  flex: 1;
+}
+
+.schedule-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.schedule-category {
+  font-size: 12px;
+  color: #666;
+}
+
+.schedule-priority {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.schedule-priority.priority-high {
+  background: #ff4444;
+  color: white;
+}
+
+.schedule-priority.priority-medium {
+  background: #ffa500;
+  color: white;
+}
+
+.schedule-priority.priority-low {
+  background: #4CAF50;
+  color: white;
+}
+
+.no-schedule {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+/* 今日締切の計画 */
+.deadlines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deadline-item {
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+}
+
+.deadline-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.deadline-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #ff9800;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #666;
+  min-width: 35px;
+}
+
+.no-deadlines {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+/* 今週締切の計画 */
+.week-deadlines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.week-deadline-item {
+  padding: 12px;
+  border-radius: 8px;
+  background: #f3e5f5;
+  border-left: 4px solid #9c27b0;
+}
+
+.week-deadline-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.week-deadline-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.days-left {
+  font-size: 12px;
+  color: #9c27b0;
+  font-weight: bold;
+}
+
+.week-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.week-progress-fill {
+  height: 100%;
+  background: #9c27b0;
+  transition: width 0.3s ease;
+}
+
+.no-week-deadlines {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+/* 今週のタブ */
+.thisweek-tab {
+  padding: 20px;
+}
+
+.thisweek-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.thisweek-header h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.thisweek-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+.thisweek-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.thisweek-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.thisweek-card h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.goal-item {
+  padding: 15px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border-left: 4px solid #2196F3;
+}
+
+.goal-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.goal-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.goal-deadline {
+  font-size: 12px;
+  color: #666;
+}
+
+.weekly-schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.weekly-schedule-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border-left: 4px solid #4CAF50;
+}
+
+.schedule-date {
+  font-weight: bold;
+  color: #4CAF50;
+  margin-right: 15px;
+  min-width: 80px;
+}
+
+/* 今月のタブ */
+.thismonth-tab {
+  padding: 20px;
+}
+
+.thismonth-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.thismonth-header h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.thismonth-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+.thismonth-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.thismonth-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.thismonth-card h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.monthly-goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.monthly-goal-item {
+  padding: 15px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border-left: 4px solid #ff9800;
+}
+
+.monthly-goal-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.monthly-goal-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.monthly-goal-deadline {
+  font-size: 12px;
+  color: #666;
+}
+
+.budget-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.budget-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.budget-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.budget-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.budget-value {
+  font-weight: bold;
+  color: #2196F3;
+}
+
+.budget-value.over-budget {
+  color: #ff4444;
+}
+
+.budget-progress {
+  margin-top: 10px;
+}
+
+/* 緊急のタブ */
+.urgent-tab {
+  padding: 20px;
+}
+
+.urgent-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.urgent-header h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.urgent-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+.urgent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.urgent-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.urgent-card h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.urgent-financial-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.urgent-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-radius: 8px;
+  background: #fff5f5;
+  border-left: 4px solid #ff4444;
+}
+
+.urgent-icon {
+  font-size: 20px;
+  margin-right: 15px;
+}
+
+.urgent-content {
+  flex: 1;
+}
+
+.urgent-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.urgent-message {
+  font-size: 14px;
+  color: #666;
+}
+
+.urgent-action-button {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.urgent-action-button:hover {
+  background: #d32f2f;
+}
+
+.no-urgent-financial {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.urgent-plans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.urgent-plan-item {
+  padding: 15px;
+  border-radius: 8px;
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+}
+
+.urgent-plan-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.urgent-plan-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.urgent-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.urgent-progress-fill {
+  height: 100%;
+  background: #ff9800;
+  transition: width 0.3s ease;
+}
+
+.no-urgent-plans {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+/* 目標のタブ */
+.goals-tab {
+  padding: 20px;
+}
+
+.goals-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.goals-header h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.goals-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.goals-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.goals-card h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.active-plans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.active-plan-item {
+  padding: 15px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border-left: 4px solid #2196F3;
+}
+
+.plan-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.plan-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.plan-deadline {
+  font-size: 12px;
+  color: #666;
+}
+
+.completed-plans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.completed-plan-item {
+  padding: 12px;
+  border-radius: 8px;
+  background: #f1f8e9;
+  border-left: 4px solid #4CAF50;
+}
+
+.plan-completed-date {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* レスポンシブデザインの更新 */
+@media (max-width: 768px) {
+  .today-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .thisweek-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .thismonth-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .urgent-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .goals-grid {
+    grid-template-columns: 1fr;
+  }
+}
