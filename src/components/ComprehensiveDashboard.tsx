@@ -26,6 +26,24 @@ import {
   PLAN_STATUSES
 } from '../types/futurePlanning';
 import { Plan, Schedule, BudgetPlan } from '../types';
+
+// FuturePlanningManagerで使用されるPlanの型定義
+interface FuturePlan {
+  _id: string;
+  userId: string;
+  title: string;
+  description: string;
+  category: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'not-started' | 'in-progress' | 'completed' | 'paused';
+  startDate: string;
+  targetDate: string;
+  completedDate?: string;
+  progress: number;
+  milestones: any[];
+  createdAt: string;
+  updatedAt: string;
+}
 import { WasteAnalysis } from '../types/wasteAnalysis';
 import { FinancialSummary } from '../types/financialOverview';
 import './ComprehensiveDashboard.css';
@@ -48,15 +66,15 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
   const [actionTrends, setActionTrends] = useState<ActionTrend[]>([]);
   const [planAnalysis, setPlanAnalysis] = useState<PlanAnalysis | null>(null);
   const [planRecommendations, setPlanRecommendations] = useState<PlanRecommendation[]>([]);
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [plans, setPlans] = useState<FuturePlan[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [budgetPlans, setBudgetPlans] = useState<BudgetPlan[]>([]);
   const [wasteAnalysis, setWasteAnalysis] = useState<WasteAnalysis | null>(null);
   const [financialSummary, setFinancialSummary] = useState<FinancialSummary | null>(null);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
   const [showPlanForm, setShowPlanForm] = useState(false);
-  const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
-  const [newPlan, setNewPlan] = useState<Partial<Plan>>({
+  const [editingPlan, setEditingPlan] = useState<FuturePlan | null>(null);
+  const [newPlan, setNewPlan] = useState<Partial<FuturePlan>>({
     title: '',
     description: '',
     category: '仕事',
@@ -198,8 +216,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
   const handleCreatePlan = () => {
     if (!newPlan.title) return;
     
-    const plan: Plan = {
-      id: Date.now().toString(),
+    const planData = {
+      userId: userId,
       title: newPlan.title,
       description: newPlan.description || '',
       category: newPlan.category || '仕事',
@@ -208,12 +226,10 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
       startDate: newPlan.startDate || new Date().toISOString().split('T')[0],
       targetDate: newPlan.targetDate || new Date().toISOString().split('T')[0],
       progress: newPlan.progress || 0,
-      milestones: newPlan.milestones || [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      milestones: newPlan.milestones || []
     };
     
-    futurePlanningManager.createPlan(userId, plan);
+    futurePlanningManager.addPlan(planData);
     setPlans(futurePlanningManager.getPlans(userId));
     setShowPlanForm(false);
     setNewPlan({
@@ -229,7 +245,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
     });
   };
 
-  const handleEditPlan = (plan: Plan) => {
+  const handleEditPlan = (plan: FuturePlan) => {
     setEditingPlan(plan);
     setNewPlan(plan);
     setShowPlanForm(true);
@@ -238,13 +254,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
   const handleUpdatePlan = () => {
     if (!editingPlan || !newPlan.title) return;
     
-    const updatedPlan: Plan = {
-      ...editingPlan,
+    const updatedPlan = {
       ...newPlan,
       updatedAt: new Date().toISOString()
     };
     
-    futurePlanningManager.updatePlan(editingPlan.id, updatedPlan);
+    futurePlanningManager.updatePlan(editingPlan._id, updatedPlan);
     setPlans(futurePlanningManager.getPlans(userId));
     setShowPlanForm(false);
     setEditingPlan(null);
@@ -1214,7 +1229,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
                         </button>
                         <button 
                           className="delete-button"
-                          onClick={() => handleDeletePlan(plan.id)}
+                          onClick={() => handleDeletePlan(plan._id)}
                         >
                           削除
                         </button>
@@ -1251,7 +1266,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
                         </button>
                         <button 
                           className="delete-button"
-                          onClick={() => handleDeletePlan(plan.id)}
+                          onClick={() => handleDeletePlan(plan._id)}
                         >
                           削除
                         </button>

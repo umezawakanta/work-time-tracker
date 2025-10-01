@@ -4,6 +4,7 @@ permissions:
   contents: read
 
 on:
+  workflow_dispatch: # 手動実行のみ
   push:
     branches: [main, develop]
   pull_request:
@@ -24,7 +25,7 @@ jobs:
       - run: pnpm install
       - run: pnpm run build
       - name: Deploy to Vercel (Production)
-        if: github.ref == 'refs/heads/main'
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -33,7 +34,7 @@ jobs:
           vercel-args: '--prod'
       
       - name: Deploy to Vercel (Preview)
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'workflow_dispatch' && github.event_name == 'pull_request'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
