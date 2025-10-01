@@ -44,9 +44,9 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
         });
         setBadgeStats({
           total: 0,
-          unlocked: 0,
-          locked: 0,
-          byRarity: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 0 }
+          byCategory: {},
+          byRarity: { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 0 },
+          completionRate: 0
         });
       }
     }
@@ -165,15 +165,15 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
           <div className="badge-stats">
             <div className="badge-stat-item">
               <span className="badge-stat-label">獲得バッジ</span>
-              <span className="badge-stat-value">{badgeStats.unlockedCount} / {badgeStats.totalBadges}</span>
+              <span className="badge-stat-value">{badgeStats?.total || 0} / {badgeStats?.total || 0}</span>
             </div>
             <div className="badge-stat-item">
               <span className="badge-stat-label">総経験値</span>
-              <span className="badge-stat-value">{badgeStats.totalXP} XP</span>
+              <span className="badge-stat-value">0 XP</span>
             </div>
             <div className="badge-stat-item">
               <span className="badge-stat-label">完成率</span>
-              <span className="badge-stat-value">{badgeStats.completionRate}%</span>
+              <span className="badge-stat-value">{badgeStats?.completionRate || 0}%</span>
             </div>
           </div>
           <div className="badge-rarity-breakdown">
@@ -181,19 +181,19 @@ const CharacterGrowthDisplay: React.FC<CharacterGrowthDisplayProps> = ({
             <div className="rarity-stats">
               <div className="rarity-item common">
                 <span className="rarity-name">コモン</span>
-                <span className="rarity-count">{badgeStats.rarityCounts.common}</span>
+                <span className="rarity-count">{badgeStats?.byRarity?.common || 0}</span>
               </div>
               <div className="rarity-item rare">
                 <span className="rarity-name">レア</span>
-                <span className="rarity-count">{badgeStats.rarityCounts.rare}</span>
+                <span className="rarity-count">{badgeStats?.byRarity?.rare || 0}</span>
               </div>
               <div className="rarity-item epic">
                 <span className="rarity-name">エピック</span>
-                <span className="rarity-count">{badgeStats.rarityCounts.epic}</span>
+                <span className="rarity-count">{badgeStats?.byRarity?.epic || 0}</span>
               </div>
               <div className="rarity-item legendary">
                 <span className="rarity-name">レジェンダリー</span>
-                <span className="rarity-count">{badgeStats.rarityCounts.legendary}</span>
+                <span className="rarity-count">{badgeStats?.byRarity?.legendary || 0}</span>
               </div>
             </div>
           </div>
