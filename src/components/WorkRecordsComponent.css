@@ -1903,3 +1903,169 @@
   }
 }
 
+/* 選択した日付の記録表示 */
+.selected-date-records {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.selected-date-records h3 {
+  margin: 0 0 1.5rem 0;
+  color: #495057;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.no-records-message {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.date-records-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.date-income-records,
+.date-expense-records,
+.date-diary-records {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.date-income-records h4,
+.date-expense-records h4,
+.date-diary-records h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.date-record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.date-record-item.income {
+  border-left: 4px solid #28a745;
+}
+
+.date-record-item.expense {
+  border-left: 4px solid #dc3545;
+}
+
+.date-record-item.diary {
+  border-left: 4px solid #17a2b8;
+}
+
+.record-amount {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.record-amount.income {
+  color: #28a745;
+}
+
+.record-amount.expense {
+  color: #dc3545;
+}
+
+.record-category {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.record-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.record-actions .edit-button,
+.record-actions .delete-button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.record-actions .edit-button {
+  background: #007bff;
+  color: white;
+}
+
+.record-actions .edit-button:hover {
+  background: #0056b3;
+}
+
+.record-actions .delete-button {
+  background: #dc3545;
+  color: white;
+}
+
+.record-actions .delete-button:hover {
+  background: #c82333;
+}
+
+.diary-content {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.diary-title {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.25rem;
+}
+
+.diary-mood,
+.diary-activities,
+.diary-notes {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.diary-notes {
+  font-style: italic;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .date-records-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .date-record-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .record-actions {
+    align-self: flex-end;
+  }
+  
+  .diary-content {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+}
+

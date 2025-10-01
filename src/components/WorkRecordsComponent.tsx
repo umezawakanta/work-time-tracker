@@ -802,6 +802,129 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         />
       </div>
 
+      {/* 選択した日付の記録表示 */}
+      {selectedDate && (
+        <div className="selected-date-records">
+          <h3>📅 {selectedDate.toLocaleDateString('ja-JP', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            weekday: 'long'
+          })} の記録</h3>
+          
+          {(() => {
+            const dateRecords = getRecordsForDate(selectedDate);
+            const hasRecords = dateRecords.incomeRecords.length > 0 || 
+                             dateRecords.expenseRecords.length > 0 || 
+                             dateRecords.workDiaries.length > 0;
+            
+            if (!hasRecords) {
+              return (
+                <div className="no-records-message">
+                  <p>この日には記録がありません</p>
+                </div>
+              );
+            }
+
+            return (
+              <div className="date-records-grid">
+                {/* 収入記録 */}
+                {dateRecords.incomeRecords.length > 0 && (
+                  <div className="date-income-records">
+                    <h4>💰 収入記録</h4>
+                    {dateRecords.incomeRecords.map((record, index) => (
+                      <div key={index} className="date-record-item income">
+                        <div className="record-amount">+¥{record.amount.toLocaleString()}</div>
+                        <div className="record-category">{record.type === "income" ? "収入" : "支出"}</div>
+                        <div className="record-actions">
+                          <button 
+                            className="edit-button"
+                            onClick={() => editRecord(record)}
+                          >
+                            編集
+                          </button>
+                          <button 
+                            className="delete-button"
+                            onClick={() => handleDeleteClick(record._id, "income")}
+                          >
+                            削除
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* 支出記録 */}
+                {dateRecords.expenseRecords.length > 0 && (
+                  <div className="date-expense-records">
+                    <h4>💸 支出記録</h4>
+                    {dateRecords.expenseRecords.map((record, index) => (
+                      <div key={index} className="date-record-item expense">
+                        <div className="record-amount">-¥{record.amount.toLocaleString()}</div>
+                        <div className="record-category">{record.type === "income" ? "収入" : "支出"}</div>
+                        <div className="record-actions">
+                          <button 
+                            className="edit-button"
+                            onClick={() => editRecord(record)}
+                          >
+                            編集
+                          </button>
+                          <button 
+                            className="delete-button"
+                            onClick={() => handleDeleteClick(record._id, "expense")}
+                          >
+                            削除
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* 日記記録 */}
+                {dateRecords.workDiaries.length > 0 && (
+                  <div className="date-diary-records">
+                    <h4>📝 日記記録</h4>
+                    {dateRecords.workDiaries.map((diary, index) => (
+                      <div key={index} className="date-record-item diary">
+                        <div className="diary-content">
+                          <div className="diary-title">{diary.title || '日記'}</div>
+                          {diary.content && (
+                            <div className="diary-text">{diary.content}</div>
+                          )}
+                          <div className="diary-mood">気分: {diary.mood}/10</div>
+                          <div className="diary-activities">
+                            活動: {diary.activities?.join(', ') || 'なし'}
+                          </div>
+                          {diary.notes && (
+                            <div className="diary-notes">メモ: {diary.notes}</div>
+                          )}
+                        </div>
+                        <div className="record-actions">
+                          <button 
+                            className="edit-button"
+                            onClick={() => editDiary(diary)}
+                          >
+                            編集
+                          </button>
+                          <button 
+                            className="delete-button"
+                            onClick={() => handleDeleteClick(diary._id, "diary")}
+                          >
+                            削除
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
       {/* 月次メモ */}
       <div className="monthly-memo-section">
         <h3>月次メモ</h3>
