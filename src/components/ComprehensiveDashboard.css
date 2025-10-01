@@ -783,6 +783,67 @@
 
 /* 新しいタブのスタイル */
 
+/* 現在日時を表示するカード */
+.current-datetime-card {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.current-datetime-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
+}
+
+.datetime-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.datetime-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.current-time {
+  font-size: 48px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  letter-spacing: 2px;
+}
+
+.current-date {
+  font-size: 20px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.current-weekday {
+  font-size: 24px;
+  font-weight: bold;
+  background: rgba(255,255,255,0.2);
+  padding: 12px 20px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
 /* 今やることを表示するカード */
 .current-focus-card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1578,6 +1639,29 @@
 
 /* レスポンシブデザインの更新 */
 @media (max-width: 768px) {
+  .current-datetime-card {
+    padding: 20px;
+  }
+  
+  .datetime-content {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .current-time {
+    font-size: 36px;
+  }
+  
+  .current-date {
+    font-size: 18px;
+  }
+  
+  .current-weekday {
+    font-size: 20px;
+    padding: 10px 16px;
+  }
+  
   .today-grid {
     grid-template-columns: 1fr;
   }

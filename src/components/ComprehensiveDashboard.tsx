@@ -53,6 +53,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
   const [budgetPlans, setBudgetPlans] = useState<BudgetPlan[]>([]);
   const [wasteAnalysis, setWasteAnalysis] = useState<WasteAnalysis | null>(null);
   const [financialSummary, setFinancialSummary] = useState<FinancialSummary | null>(null);
+  const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
 
   // マネージャーインスタンス
   const assetLiabilityManager = AssetLiabilityManager.getInstance();
@@ -64,6 +65,15 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
   useEffect(() => {
     loadAllData();
   }, [userId, selectedPeriod]);
+
+  // リアルタイムで日時を更新
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000); // 1秒ごとに更新
+
+    return () => clearInterval(timer);
+  }, []);
 
   // 今日のタスクと緊急事項を計算
   const getTodayTasks = () => {
@@ -325,6 +335,32 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
     }).format(amount);
   };
 
+  // 日時をフォーマットする関数
+  const formatDateTime = (date: Date): { date: string; time: string; weekday: string } => {
+    const dateStr = date.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    const timeStr = date.toLocaleTimeString('ja-JP', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+    
+    const weekdayStr = date.toLocaleDateString('ja-JP', {
+      weekday: 'long'
+    });
+    
+    return {
+      date: dateStr,
+      time: timeStr,
+      weekday: weekdayStr
+    };
+  };
+
   const formatPercentage = (value: number): string => {
     return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
   };
@@ -431,6 +467,17 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
       <div className="dashboard-content">
         {activeTab === 'overview' && (
           <div className="overview-tab">
+            {/* 現在日時を表示 */}
+            <div className="current-datetime-card">
+              <div className="datetime-content">
+                <div className="datetime-main">
+                  <div className="current-time">{formatDateTime(currentDateTime).time}</div>
+                  <div className="current-date">{formatDateTime(currentDateTime).date}</div>
+                </div>
+                <div className="current-weekday">{formatDateTime(currentDateTime).weekday}</div>
+              </div>
+            </div>
+            
             {/* 今やることをひとつ表示 */}
             <div className="current-focus-card">
               <div className="focus-header">
