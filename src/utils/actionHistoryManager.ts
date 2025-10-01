@@ -75,4 +75,5 @@ class ActionHistoryManager {
   }
 }
 
+export { ActionHistoryManager };
 export const actionHistoryManager = ActionHistoryManager.getInstance();

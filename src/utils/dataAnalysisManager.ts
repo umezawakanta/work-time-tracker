@@ -353,4 +353,5 @@ class DataAnalysisManager {
   }
 }
 
+export { DataAnalysisManager };
 export const dataAnalysisManager = DataAnalysisManager.getInstance();

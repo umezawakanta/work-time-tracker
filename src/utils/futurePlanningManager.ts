@@ -227,4 +227,5 @@ class FuturePlanningManager {
   }
 }
 
+export { FuturePlanningManager };
 export const futurePlanningManager = FuturePlanningManager.getInstance();
