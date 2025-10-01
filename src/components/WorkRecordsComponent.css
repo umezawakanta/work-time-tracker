@@ -1975,6 +1975,9 @@
   align-items: flex-start;
   min-height: auto;
   height: auto;
+  max-width: none;
+  width: 100%;
+  overflow: visible;
 }
 
 .date-record-item.diary .record-actions {
@@ -2039,7 +2042,9 @@
   margin-bottom: 0.5rem;
   width: 100%;
   min-height: auto;
+  height: auto;
   overflow: visible;
+  max-width: none;
 }
 
 .diary-title {
@@ -2056,10 +2061,13 @@
   word-wrap: break-word;
   word-break: break-word;
   overflow-wrap: break-word;
-  max-width: 100%;
+  max-width: none;
+  width: 100%;
   overflow: visible;
-  text-overflow: unset;
+  text-overflow: clip;
   display: block;
+  height: auto;
+  min-height: auto;
 }
 
 .diary-mood,
