@@ -3086,7 +3086,7 @@ ${errorInfo.stack}
     }
 
     // お仕事記録関連
-    if (activeFeature !== "work-records") {
+    if (activeFeature !== "work-records" && activeFeature !== "comprehensive-dashboard") {
       setShowWorkRecords(false);
     }
 

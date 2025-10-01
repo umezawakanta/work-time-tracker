@@ -745,28 +745,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 統合ダッシュボードが表示されている場合は、お仕事記録セクションを非表示にする
   if (showComprehensiveDashboard) {
-    console.log('統合ダッシュボードを表示します。userId:', user?.id);
     return (
       <div className="work-records-section">
-        <div style={{ padding: '20px', background: '#f0f0f0', border: '2px solid #007bff' }}>
-          <h2>統合ダッシュボード（テスト表示）</h2>
-          <p>userId: {user?.id || 'なし'}</p>
-          <button 
-            onClick={() => {
-              console.log('統合ダッシュボードを閉じます');
-              setShowComprehensiveDashboard(false);
-            }}
-            style={{ padding: '10px 20px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }}
-          >
-            閉じる
-          </button>
-        </div>
         <ComprehensiveDashboard
           userId={user?.id || ''}
-          onClose={() => {
-            console.log('統合ダッシュボードを閉じます');
-            setShowComprehensiveDashboard(false);
-          }}
+          onClose={() => setShowComprehensiveDashboard(false)}
         />
       </div>
     );
@@ -781,10 +764,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           <button 
             className="open-dashboard-button comprehensive"
             onClick={() => {
-              console.log('統合ダッシュボードボタンがクリックされました');
               closeOtherFeatures('comprehensive-dashboard');
               setShowComprehensiveDashboard(true);
-              console.log('showComprehensiveDashboard を true に設定しました');
             }}
           >
             🏠 統合ダッシュボード
