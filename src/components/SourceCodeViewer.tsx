@@ -391,7 +391,7 @@ export default ${file.name.replace('.tsx', '').replace('.ts', '')};`;
             <i className="bi bi-code-slash"></i>
             ソースコード一覧
           </h2>
-          <button className="close-button" onClick={onClose}>
+          <button className="close-button" onClick={onClose} title="閉じる" aria-label="閉じる">
             <i className="bi bi-x-lg"></i>
           </button>
         </div>

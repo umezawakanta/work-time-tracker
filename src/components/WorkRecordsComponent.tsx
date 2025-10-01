@@ -451,7 +451,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           const rewardResult = await diaryRewardManager.processDiaryReward(user.id, {
             title: diaryTitle,
             content: diaryContent,
-            mood: diaryMood,
+            mood: parseInt(diaryMood),
             workHours: diaryWorkHours,
             isPrivate: false,
             activities: [],
@@ -844,13 +844,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                         <div className="record-actions">
                           <button 
                             className="edit-button"
-                            onClick={() => editRecord(record)}
+                            onClick={() => editRecord(record, record.type)}
                           >
                             編集
                           </button>
                           <button 
                             className="delete-button"
-                            onClick={() => handleDeleteClick(record._id, "income")}
+                            onClick={() => handleDeleteIncomeExpenseRecord(record._id)}
                           >
                             削除
                           </button>
@@ -876,13 +876,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                         <div className="record-actions">
                           <button 
                             className="edit-button"
-                            onClick={() => editRecord(record)}
+                            onClick={() => editRecord(record, record.type)}
                           >
                             編集
                           </button>
                           <button 
                             className="delete-button"
-                            onClick={() => handleDeleteClick(record._id, "expense")}
+                            onClick={() => handleDeleteIncomeExpenseRecord(record._id)}
                           >
                             削除
                           </button>
@@ -900,12 +900,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       <div key={index} className="date-record-item diary">
                         <div className="diary-content">
                           <div className="diary-title">{diary.title || '日記'}</div>
-                          {(diary.content || diary.description || diary.text || diary.body) && (
+                          {diary.content && (
                             <div className="diary-text">
-                              {diary.content || diary.description || diary.text || diary.body}
+                              {diary.content}
                             </div>
                           )}
-                          {!(diary.content || diary.description || diary.text || diary.body) && (
+                          {!diary.content && (
                             <div className="diary-text">本文がありません</div>
                           )}
                           <div className="diary-mood">気分: {diary.mood}/10</div>
@@ -925,7 +925,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           </button>
                           <button 
                             className="delete-button"
-                            onClick={() => handleDeleteClick(diary._id, "diary")}
+                            onClick={() => handleDeleteDiary(diary._id)}
                           >
                             削除
                           </button>
@@ -1185,6 +1185,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   value={incomeExpenseDate}
                   onChange={(e) => setIncomeExpenseDate(e.target.value)}
                   required
+                  title="日付を選択"
+                  placeholder="日付を選択"
                 />
               </div>
               <div className="form-group">
@@ -1348,6 +1350,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     value={diaryDate}
                     onChange={(e) => setDiaryDate(e.target.value)}
                     required
+                    title="日付を選択"
+                    placeholder="日付を選択"
                   />
                 </div>
                 <div className="form-group">
@@ -1393,6 +1397,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   <select
                     value={diaryEnergyLevel}
                     onChange={(e) => setDiaryEnergyLevel(parseInt(e.target.value))}
+                    title="エネルギーレベルを選択"
+                    aria-label="エネルギーレベルを選択"
                   >
                     <option value="1">🔋 とても低い</option>
                     <option value="2">🔋 低い</option>
