@@ -1953,12 +1953,17 @@
 .date-record-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 0.75rem;
   margin-bottom: 0.5rem;
   border-radius: 6px;
   border: 1px solid #e9ecef;
   background: #f8f9fa;
+}
+
+.record-content {
+  flex: 1;
+  margin-right: 1rem;
 }
 
 .date-record-item.income {
@@ -2001,6 +2006,13 @@
 .record-category {
   color: #6c757d;
   font-size: 0.9rem;
+}
+
+.record-notes {
+  color: #495057;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  font-style: italic;
 }
 
 .record-actions {

@@ -834,8 +834,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     <h4>💰 収入記録</h4>
                     {dateRecords.incomeRecords.map((record, index) => (
                       <div key={index} className="date-record-item income">
-                        <div className="record-amount">+¥{record.amount.toLocaleString()}</div>
-                        <div className="record-category">{record.type === "income" ? "収入" : "支出"}</div>
+                        <div className="record-content">
+                          <div className="record-amount">+¥{record.amount.toLocaleString()}</div>
+                          <div className="record-category">{record.type === "income" ? "収入" : "支出"}</div>
+                          {record.notes && (
+                            <div className="record-notes">メモ: {record.notes}</div>
+                          )}
+                        </div>
                         <div className="record-actions">
                           <button 
                             className="edit-button"
@@ -861,8 +866,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     <h4>💸 支出記録</h4>
                     {dateRecords.expenseRecords.map((record, index) => (
                       <div key={index} className="date-record-item expense">
-                        <div className="record-amount">-¥{record.amount.toLocaleString()}</div>
-                        <div className="record-category">{record.type === "income" ? "収入" : "支出"}</div>
+                        <div className="record-content">
+                          <div className="record-amount">-¥{record.amount.toLocaleString()}</div>
+                          <div className="record-category">{record.type === "income" ? "収入" : "支出"}</div>
+                          {record.notes && (
+                            <div className="record-notes">メモ: {record.notes}</div>
+                          )}
+                        </div>
                         <div className="record-actions">
                           <button 
                             className="edit-button"
