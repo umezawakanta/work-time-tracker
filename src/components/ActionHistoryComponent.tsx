@@ -170,6 +170,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
+          title="カテゴリを選択"
+          aria-label="カテゴリを選択"
         >
           <option value="all">すべてのカテゴリ</option>
           {categories.map(cat => (
