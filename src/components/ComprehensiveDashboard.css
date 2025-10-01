@@ -1736,6 +1736,22 @@
   background: #1976D2;
 }
 
+.complete-button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-right: 5px;
+}
+
+.complete-button:hover {
+  background: #45a049;
+}
+
 .delete-button {
   background: #f44336;
   color: white;

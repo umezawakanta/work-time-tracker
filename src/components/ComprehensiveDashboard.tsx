@@ -283,6 +283,13 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
     }
   };
 
+  const handleCompletePlan = (planId: string) => {
+    if (confirm('この計画を完了にしますか？')) {
+      futurePlanningManager.completePlan(planId);
+      setPlans(futurePlanningManager.getPlans(userId));
+    }
+  };
+
   const handleCancelPlan = () => {
     setShowPlanForm(false);
     setEditingPlan(null);
@@ -1222,6 +1229,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
                       </div>
                       <div className="plan-actions">
                         <button 
+                          className="complete-button"
+                          onClick={() => handleCompletePlan(plan._id)}
+                        >
+                          完了
+                        </button>
+                        <button 
                           className="edit-button"
                           onClick={() => handleEditPlan(plan)}
                         >
@@ -1258,6 +1271,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
                         </div>
                       </div>
                       <div className="plan-actions">
+                        <button 
+                          className="complete-button"
+                          onClick={() => handleCompletePlan(plan._id)}
+                        >
+                          完了
+                        </button>
                         <button 
                           className="edit-button"
                           onClick={() => handleEditPlan(plan)}

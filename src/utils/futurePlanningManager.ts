@@ -72,6 +72,17 @@ class FuturePlanningManager {
     return this.plans[index];
   }
 
+  public completePlan(id: string): Plan | null {
+    const plan = this.plans.find(plan => plan._id === id);
+    if (!plan) return null;
+
+    return this.updatePlan(id, {
+      status: 'completed',
+      completedDate: new Date().toISOString(),
+      progress: 100
+    });
+  }
+
   public deletePlan(id: string): boolean {
     const index = this.plans.findIndex(plan => plan._id === id);
     if (index === -1) return false;
