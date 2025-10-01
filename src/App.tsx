@@ -1329,6 +1329,11 @@ ${methodInfo ? `- ${methodInfo}` : ""}
 
       // 4xx, 5xxエラーをキャッチ
       if (!response.ok) {
+        // 404エラーの場合はエラー情報を作成せずに静かに無視
+        if (response.status === 404) {
+          return response;
+        }
+        
         const errorInfo = createErrorInfo(
           "API",
           response.status,
@@ -1337,23 +1342,18 @@ ${methodInfo ? `- ${methodInfo}` : ""}
           args[1]?.method || "GET"
         );
 
-        // 404エラーはログを出力しない（メモのいいね状態取得など）
-        if (response.status !== 404) {
-          console.error("APIエラーが発生しました:", errorInfo);
-        }
+        console.error("APIエラーが発生しました:", errorInfo);
 
-        // 404エラー以外の場合のみ詳細ログを出力
-        if (response.status !== 404) {
-          // エラー詳細を構築
-          // ApiErrorInfoをErrorInfoに変換してからフォーマット
-          const convertedErrorInfo = getErrorInfo(errorInfo);
-          console.log("変換されたエラー情報:", convertedErrorInfo);
-          const { statusInfo, methodInfo } = formatErrorInfo(
-            convertedErrorInfo || {}
-          );
-          console.log("フォーマットされたエラー情報:", { statusInfo, methodInfo });
-          
-          const errorDetails = `
+        // エラー詳細を構築
+        // ApiErrorInfoをErrorInfoに変換してからフォーマット
+        const convertedErrorInfo = getErrorInfo(errorInfo);
+        console.log("変換されたエラー情報:", convertedErrorInfo);
+        const { statusInfo, methodInfo } = formatErrorInfo(
+          convertedErrorInfo || {}
+        );
+        console.log("フォーマットされたエラー情報:", { statusInfo, methodInfo });
+        
+        const errorDetails = `
 APIエラーが発生しました。
 
 エラー詳細:
@@ -1364,16 +1364,15 @@ ${methodInfo ? `- ${methodInfo}` : ""}
 - ユーザーエージェント: ${errorInfo.userAgent}
 
 このエラーは自動的に検出されました。
-          `.trim();
+        `.trim();
 
-          // 2秒後に不具合報告画面に遷移
-          setTimeout(() => {
-            setShowMemos(true);
-            setShowMemoForm(true);
-            setMemoCategory("不具合報告");
-            setMemoContent(errorDetails);
-          }, 2000);
-        }
+        // 2秒後に不具合報告画面に遷移
+        setTimeout(() => {
+          setShowMemos(true);
+          setShowMemoForm(true);
+          setMemoCategory("不具合報告");
+          setMemoContent(errorDetails);
+        }, 2000);
       }
 
       return response;

@@ -122,18 +122,38 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
               };
             }
             
+            // 古いメモID（24文字未満）の場合はスキップ
+            if (memo.id.length < 24) {
+              return {
+                memoId: memo.id,
+                isLiked: false,
+                likeCount: 0
+              };
+            }
+            
             // console.log(`いいね状態を取得中: ${memo.id}`);
             
             // タイムアウト付きのfetch
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
             
-            const response = await fetch(`/api/memos/${memo.id}/like`, {
-              headers: {
-                'Authorization': `Bearer ${token}`
-              },
-              signal: controller.signal
-            });
+            let response;
+            try {
+              response = await fetch(`/api/memos/${memo.id}/like`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
+                signal: controller.signal
+              });
+            } catch (fetchError) {
+              // fetch自体が失敗した場合（ネットワークエラーなど）
+              clearTimeout(timeoutId);
+              return {
+                memoId: memo.id,
+                isLiked: false,
+                likeCount: 0
+              };
+            }
             
             clearTimeout(timeoutId);
             

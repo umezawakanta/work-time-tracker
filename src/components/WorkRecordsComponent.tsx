@@ -127,7 +127,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // コンポーネントマウント時の初期化
   useEffect(() => {
-    console.log('WorkRecordsComponent useEffect triggered:', { user: user?.id, showWorkRecords });
+    console.log('WorkRecordsComponent useEffect triggered:', { 
+      userId: user?.id, 
+      showWorkRecords,
+      userObject: user 
+    });
     if (user?.id) {
       console.log('Loading data for user:', user.id);
       loadIncomeExpenseRecords();

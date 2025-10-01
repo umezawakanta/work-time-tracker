@@ -284,6 +284,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                     type="datetime-local"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
+                    title="開始時間を選択"
+                    placeholder="開始時間を選択"
                     required
                   />
                 </div>
