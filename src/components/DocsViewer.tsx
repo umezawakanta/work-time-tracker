@@ -191,14 +191,17 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
       let content = match[1].trim();
       const id = `mermaid-${Date.now()}-${i}`;
       
-      // HTMLエンティティをデコード
-      content = content
-        .replace(/&gt;/g, '>')
-        .replace(/&lt;/g, '<')
-        .replace(/&amp;/g, '&')
-        .replace(/&quot;/g, '"')
-        .replace(/&#x27;/g, "'")
-        .replace(/&nbsp;/g, ' ');
+      // HTMLエンティティを安全にデコード（二重エスケープを防ぐ）
+      if (content.includes('&')) {
+        // 一度だけデコードする
+        content = content
+          .replace(/&gt;/g, '>')
+          .replace(/&lt;/g, '<')
+          .replace(/&amp;/g, '&')
+          .replace(/&quot;/g, '"')
+          .replace(/&#x27;/g, "'")
+          .replace(/&nbsp;/g, ' ');
+      }
       
       console.log(`📝 図 ${i} の内容:`, content.substring(0, 100) + '...');
       

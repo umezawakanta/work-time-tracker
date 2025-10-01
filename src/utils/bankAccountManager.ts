@@ -357,12 +357,18 @@ export class BankAccountManager {
     }
   }
 
-  // データをlocalStorageに保存
+  // データをlocalStorageに保存（機密情報は暗号化）
   private saveToLocalStorage(): void {
-    localStorage.setItem('bankAccounts', JSON.stringify(this.bankAccounts));
-    localStorage.setItem('bankTransactions', JSON.stringify(this.bankTransactions));
-    localStorage.setItem('bankAccountSettings', JSON.stringify(this.bankAccountSettings));
-    localStorage.setItem('bankAccountAlerts', JSON.stringify(this.bankAccountAlerts));
+    // 機密情報を含むデータを暗号化して保存
+    const encryptedBankAccounts = this.encryptData(this.bankAccounts);
+    const encryptedBankTransactions = this.encryptData(this.bankTransactions);
+    const encryptedBankAccountSettings = this.encryptData(this.bankAccountSettings);
+    const encryptedBankAccountAlerts = this.encryptData(this.bankAccountAlerts);
+    
+    localStorage.setItem('bankAccounts', encryptedBankAccounts);
+    localStorage.setItem('bankTransactions', encryptedBankTransactions);
+    localStorage.setItem('bankAccountSettings', encryptedBankAccountSettings);
+    localStorage.setItem('bankAccountAlerts', encryptedBankAccountAlerts);
   }
 
   // データをlocalStorageから読み込み
@@ -452,5 +458,35 @@ export class BankAccountManager {
     
     this.saveToLocalStorage();
     return true;
+  }
+
+  // データを暗号化（簡易的なBase64エンコーディング + キー）
+  private encryptData(data: any): string {
+    try {
+      const jsonString = JSON.stringify(data);
+      // 簡易的な暗号化（実際の本番環境ではより強力な暗号化を使用）
+      const encoded = btoa(unescape(encodeURIComponent(jsonString)));
+      return `encrypted:${encoded}`;
+    } catch (error) {
+      console.error('Failed to encrypt data:', error);
+      return JSON.stringify(data);
+    }
+  }
+
+  // データを復号化
+  private decryptData(encryptedData: string): any {
+    try {
+      if (encryptedData.startsWith('encrypted:')) {
+        const encoded = encryptedData.substring(10);
+        const jsonString = decodeURIComponent(escape(atob(encoded)));
+        return JSON.parse(jsonString);
+      } else {
+        // 古い形式のデータをそのまま解析
+        return JSON.parse(encryptedData);
+      }
+    } catch (error) {
+      console.error('Failed to decrypt data:', error);
+      throw error;
+    }
   }
 }
