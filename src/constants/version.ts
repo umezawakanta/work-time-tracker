@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.4.3";
+export const APP_VERSION = "1.4.4";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,27 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.4.4",
+    date: "2025-10-01",
+    changes: [
+      "お仕事記録機能の完全リファクタリング",
+      "WorkRecordsComponentを完全に独立したコンポーネントに分離",
+      "収入・支出記録と日記の管理機能を統合",
+      "既存のAPIエンドポイント（/api/work-records/salary, /api/work-records/diary）との連携",
+      "カテゴリ、サブカテゴリ、タグ機能の実装",
+      "リアルタイムデータ同期とエラーハンドリング",
+      "APIエンドポイントの最適化（JWT認証ベースのユーザー識別）",
+      "TypeScript型安全性の向上",
+      "データ表示問題の解決（404 Not Foundエラーの修正）",
+      "日付処理の統一（Date型と文字列の適切な変換）",
+      "フォームバリデーションの改善",
+      "コンポーネント構造の最適化（App.tsxの大幅な簡素化）",
+      "状態管理の局所化と再利用可能なコンポーネント設計",
+      "アクセシビリティの向上"
+    ],
+    type: "improvement"
+  },
   {
     version: "1.4.3",
     date: "2025-01-29",
