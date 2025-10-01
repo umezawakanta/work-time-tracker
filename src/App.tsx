@@ -57,6 +57,10 @@ import PayPayCardTransactionHistory from "./components/PayPayCardTransactionHist
 import { PayPayCardManager } from "./utils/paypayCardManager";
 import FinancialOverviewDashboard from "./components/FinancialOverviewDashboard";
 import { FinancialOverviewManager } from "./utils/financialOverviewManager";
+// import ComprehensiveDashboard from "./components/ComprehensiveDashboard"; // 独立したコンポーネント
+// import { AssetLiabilityManager } from "./utils/assetLiabilityManager"; // 独立したコンポーネント
+// import { ActionHistoryManager } from "./utils/actionHistoryManager"; // 独立したコンポーネント
+// import { FuturePlanningManager } from "./utils/futurePlanningManager"; // 独立したコンポーネント
 import TwitterShare from "./components/TwitterShare";
 import SimpleShareModal from "./components/SimpleShareModal";
 import BadgeGallery from "./components/BadgeGallery";
@@ -625,15 +629,6 @@ function App({
   // 音アプリの状態
   const [showSoundApp, setShowSoundApp] = useState(false);
   const [showDocs, setShowDocs] = useState(false);
-  const [incomeExpenseRecords, setIncomeExpenseRecords] = useState<
-    IncomeExpenseRecord[]
-  >([]);
-  const [workDiaries, setWorkDiaries] = useState<WorkDiary[]>([]);
-  const [showIncomeExpenseForm, setShowIncomeExpenseForm] = useState(false);
-  const [showDiaryForm, setShowDiaryForm] = useState(false);
-  const [editingIncomeExpenseRecord, setEditingIncomeExpenseRecord] =
-    useState<IncomeExpenseRecord | null>(null);
-  const [editingDiary, setEditingDiary] = useState<WorkDiary | null>(null);
 
   // 無駄遣い監視機能の状態（propsから受け取る）
   // showWasteAnalysis, setShowWasteAnalysis
@@ -641,37 +636,7 @@ function App({
   // showWasteGoalForm, setShowWasteGoalForm
   // handleWasteRecordSave, handleWasteGoalSave
 
-  // 収入・支出記録フォームの状態
-  const [incomeExpenseDate, setIncomeExpenseDate] = useState("");
-  const [incomeExpenseAmount, setIncomeExpenseAmount] = useState("");
-  const [incomeExpenseType, setIncomeExpenseType] = useState<
-    "income" | "expense"
-  >("income");
-  const [incomeExpenseNotes, setIncomeExpenseNotes] = useState("");
 
-  // 日記フォームの状態
-  const [diaryDate, setDiaryDate] = useState("");
-  const [diaryTitle, setDiaryTitle] = useState("");
-  const [diaryContent, setDiaryContent] = useState("");
-  const [diaryMood, setDiaryMood] = useState("4");
-  const [diaryActivities, setDiaryActivities] = useState<string[]>([]);
-  const [diaryTags, setDiaryTags] = useState<string[]>([]);
-  const [diaryIsPrivate, setDiaryIsPrivate] = useState(true);
-
-  // 新しい日記項目の状態
-  const [diaryWorkSummary, setDiaryWorkSummary] = useState("");
-  const [diaryAchievements, setDiaryAchievements] = useState<string[]>([]);
-  const [diaryChallenges, setDiaryChallenges] = useState<string[]>([]);
-  const [diaryLearnings, setDiaryLearnings] = useState<string[]>([]);
-  const [diaryNextGoals, setDiaryNextGoals] = useState<string[]>([]);
-  const [diaryEnergyLevel, setDiaryEnergyLevel] = useState(5);
-  const [diaryStressLevel, setDiaryStressLevel] = useState(5);
-  const [diaryWorkHours, setDiaryWorkHours] = useState(0);
-  const [diaryBreakTime, setDiaryBreakTime] = useState(0);
-  const [diaryProductivity, setDiaryProductivity] = useState(5);
-  const [diaryNotes, setDiaryNotes] = useState("");
-  const [diaryGratitude, setDiaryGratitude] = useState("");
-  const [diaryReflection, setDiaryReflection] = useState("");
 
   // 配列項目の一時入力状態
   const [newAchievement, setNewAchievement] = useState("");
@@ -690,7 +655,7 @@ function App({
   >(null);
 
   // カレンダーの状態
-  const [showCalendar, setShowCalendar] = useState(false);
+  // const [showCalendar, setShowCalendar] = useState(false); // WorkRecordsComponentで管理
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -2743,93 +2708,6 @@ ${errorInfo.stack}
     }, 100);
   };
 
-  // お仕事記録の関数
-  const loadIncomeExpenseRecords = async () => {
-    try {
-      if (!user?.id) {
-        console.log("ユーザーIDがありません");
-        return;
-      }
-
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        console.log("アクセストークンがありません");
-        setMessage("ログインが必要です");
-        return;
-      }
-
-      const response = await apiFetch("/api/work-records/salary", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setIncomeExpenseRecords(data.records);
-      } else {
-        console.error("Failed to load income/expense records:", data.message);
-        setMessage(`収入・支出記録の読み込みに失敗しました: ${data.message}`);
-      }
-    } catch (error) {
-      console.error("Failed to load income/expense records:", error);
-      setMessage(
-        `収入・支出記録の読み込みに失敗しました: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-    }
-  };
-
-  const loadWorkDiaries = async () => {
-    try {
-      if (!user?.id) {
-        console.warn("User ID not available, skipping work diaries load");
-        return;
-      }
-
-      const result = await executeAuthenticatedRequest(
-        setMessage,
-        async (token) => {
-          const userIdParam = createValidatedUserIdParam(user.id);
-          const url = buildApiUrl("/api/work-records/diary", userIdParam);
-          return await apiFetch(url, {
-            method: "GET",
-            headers: createAuthHeaders(token),
-          });
-        }
-      );
-
-      if (!result) {
-        return; // 認証エラーの場合
-      }
-
-      const data = await result.json();
-      if (data.success) {
-        setWorkDiaries(data.diaries);
-      } else {
-        console.error("Failed to load work diaries:", data.message);
-        setMessage(`日記の読み込みに失敗しました: ${data.message}`);
-      }
-    } catch (error) {
-      // エラー情報を取得してエラー報告モーダルを表示
-      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
-      if (errorInfo) {
-        setCurrentError(
-          error instanceof Error ? error : new Error(String(error))
-        );
-        setShowSimpleErrorModal(true);
-      }
-
-      console.error("Failed to load work diaries:", error);
-      setMessage(
-        `日記の読み込みに失敗しました: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-    }
-  };
 
   // ユーザーIDを直接受け取る関数
   const loadIncomeExpenseRecordsWithUserId = async (userId: string) => {
@@ -2848,7 +2726,7 @@ ${errorInfo.stack}
       });
       const data = await response.json();
       if (data.success) {
-        setIncomeExpenseRecords(data.records);
+        // setIncomeExpenseRecords(data.records); // WorkRecordsComponentで管理
       }
     } catch (error) {
       console.error("Failed to load income/expense records:", error);
@@ -2878,7 +2756,7 @@ ${errorInfo.stack}
       });
       const data = await response.json();
       if (data.success) {
-        setWorkDiaries(data.diaries);
+        // setWorkDiaries(data.diaries); // WorkRecordsComponentで管理
       }
     } catch (error) {
       console.error("Failed to load work diaries:", error);
@@ -2889,534 +2767,10 @@ ${errorInfo.stack}
   // 理由: 各コンポーネントで個別の時間記録機能を管理することで、状態の分散を防ぐ
   // const calculateProductivityStats = () => { ... }; // 削除
 
-  const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user?.id) {
-      return;
-    }
 
-    try {
-      // 入力値の検証
-      console.log("Input values:", {
-        incomeExpenseDate,
-        incomeExpenseAmount,
-        incomeExpenseType,
-        incomeExpenseNotes,
-      });
 
-      if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
-        setMessage("日付、金額、タイプは必須です。");
-        return;
-      }
 
-      const amount = normalizeAmountForStorage(incomeExpenseAmount);
 
-      const requestBody = {
-        date: incomeExpenseDate,
-        amount: amount,
-        type: incomeExpenseType,
-        transportation: 0,
-        overtime: 0,
-        bonus: 0,
-        notes: incomeExpenseNotes,
-      };
-
-      console.log("Creating income/expense record:", requestBody);
-
-      const response = await fetch("/api/work-records/salary", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      console.log("Response status:", response.status);
-      const data = await response.json();
-      if (data.success) {
-        // 報酬システムを実行
-        try {
-          const recordId = data.record?._id || `record_${Date.now()}`;
-          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward(user.id, {
-            type: incomeExpenseType,
-            amount: amount,
-            notes: incomeExpenseNotes,
-            date: incomeExpenseDate
-          }, recordId);
-
-          // 報酬結果を表示
-          let rewardMessage = "収入・支出記録が作成されました！";
-          if (rewardResult.badges.length > 0) {
-            rewardMessage += `\n🎉 バッジを${rewardResult.badges.length}個獲得しました！`;
-          }
-          if (rewardResult.experience > 0) {
-            rewardMessage += `\n⭐ ${rewardResult.experience}経験値を獲得しました！`;
-          }
-          if (rewardResult.workCoins > 0) {
-            rewardMessage += `\n🪙 ${rewardResult.workCoins}ワークコインを獲得しました！`;
-          }
-          if (rewardResult.leveledUp) {
-            rewardMessage += `\n🎊 キャラクターがレベル${rewardResult.newLevel}に上がりました！`;
-          }
-
-          setMessage(rewardMessage);
-        } catch (error) {
-          console.error('報酬処理でエラーが発生しました:', error);
-          setMessage("収入・支出記録が作成されました！（報酬処理でエラーが発生しました）");
-        }
-
-        setIncomeExpenseDate("");
-        setIncomeExpenseAmount("");
-        setIncomeExpenseType("income");
-        setIncomeExpenseNotes("");
-        setShowIncomeExpenseForm(false);
-        loadIncomeExpenseRecords();
-      } else {
-        console.error("API Error Response:", data);
-
-        // 詳細なエラーメッセージを作成
-        let errorMessage = `エラー: ${data.message}`;
-        if (data.details) {
-          const missingFields = [];
-          if (!data.details.date) {
-            missingFields.push("日付");
-          }
-          if (!data.details.amount) {
-            missingFields.push("金額");
-          }
-          if (!data.details.type) {
-            missingFields.push("タイプ");
-          }
-
-          if (missingFields.length > 0) {
-            errorMessage += `\n不足しているフィールド: ${missingFields.join(
-              ", "
-            )}`;
-          }
-        }
-
-        setMessage(errorMessage);
-      }
-    } catch (error) {
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  };
-
-  const handleUpdateIncomeExpenseRecord = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user?.id || !editingIncomeExpenseRecord) {
-      return;
-    }
-
-    try {
-      // 入力値の検証
-      console.log("Update input values:", {
-        incomeExpenseDate,
-        incomeExpenseAmount,
-        incomeExpenseType,
-        incomeExpenseNotes,
-      });
-
-      if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
-        setMessage("日付、金額、タイプは必須です。");
-        return;
-      }
-
-      const amount = normalizeAmountForStorage(incomeExpenseAmount);
-
-      const requestBody = {
-        id: editingIncomeExpenseRecord._id,
-        date: incomeExpenseDate,
-        amount: amount,
-        type: incomeExpenseType,
-        transportation: 0,
-        overtime: 0,
-        bonus: 0,
-        notes: incomeExpenseNotes,
-      };
-
-      console.log("Updating income/expense record:", requestBody);
-
-      const response = await fetch("/api/work-records/salary", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      console.log("Response status:", response.status);
-      const data = await response.json();
-      if (data.success) {
-        // 更新時も報酬システムを実行（初回投稿時のみ報酬を付与するように制御）
-        try {
-          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward(user.id, {
-            type: incomeExpenseType,
-            amount: amount,
-            notes: incomeExpenseNotes,
-            date: incomeExpenseDate
-          }, editingIncomeExpenseRecord._id);
-
-          // 報酬結果を表示（更新時は簡潔に）
-          let rewardMessage = "収入・支出記録を更新しました！";
-          if (rewardResult.badges.length > 0) {
-            rewardMessage += `\n🎉 バッジを${rewardResult.badges.length}個獲得しました！`;
-          }
-          if (rewardResult.experience > 0) {
-            rewardMessage += `\n⭐ ${rewardResult.experience}経験値を獲得しました！`;
-          }
-          if (rewardResult.workCoins > 0) {
-            rewardMessage += `\n🪙 ${rewardResult.workCoins}ワークコインを獲得しました！`;
-          }
-          if (rewardResult.leveledUp) {
-            rewardMessage += `\n🎊 キャラクターがレベル${rewardResult.newLevel}に上がりました！`;
-          }
-
-          setMessage(rewardMessage);
-        } catch (error) {
-          console.error('報酬処理でエラーが発生しました:', error);
-          setMessage("収入・支出記録を更新しました！（報酬処理でエラーが発生しました）");
-        }
-
-        setIncomeExpenseDate("");
-        setIncomeExpenseAmount("");
-        setIncomeExpenseType("income");
-        setIncomeExpenseNotes("");
-        setEditingIncomeExpenseRecord(null);
-        setShowIncomeExpenseForm(false);
-        // データを再読み込みして画面を更新
-        await loadIncomeExpenseRecords();
-        await loadWorkDiaries();
-      } else {
-        console.error("API Error Response:", data);
-
-        // 詳細なエラーメッセージを作成
-        let errorMessage = `エラー: ${data.message}`;
-        if (data.details) {
-          const missingFields = [];
-          if (!data.details.date) {
-            missingFields.push("日付");
-          }
-          if (!data.details.amount) {
-            missingFields.push("金額");
-          }
-          if (!data.details.type) {
-            missingFields.push("タイプ");
-          }
-
-          if (missingFields.length > 0) {
-            errorMessage += `\n不足しているフィールド: ${missingFields.join(
-              ", "
-            )}`;
-          }
-        }
-
-        setMessage(errorMessage);
-      }
-    } catch (error) {
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  };
-
-  const handleCreateDiary = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user?.id) {
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/work-records/diary", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          date: diaryDate,
-          title: diaryTitle,
-          content: diaryContent,
-          mood: diaryMood,
-          tags: diaryTags,
-          isPrivate: diaryIsPrivate,
-          // 新しい項目
-          activities: diaryActivities,
-          workSummary: diaryWorkSummary,
-          achievements: diaryAchievements,
-          challenges: diaryChallenges,
-          learnings: diaryLearnings,
-          nextGoals: diaryNextGoals,
-          energyLevel: diaryEnergyLevel,
-          stressLevel: diaryStressLevel,
-          workHours: diaryWorkHours,
-          breakTime: diaryBreakTime,
-          productivity: diaryProductivity,
-          notes: diaryNotes,
-          gratitude: diaryGratitude,
-          reflection: diaryReflection,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        // 報酬システムを実行
-        try {
-          const diaryId = data.diary?._id || `diary_${Date.now()}`;
-          const rewardResult = await diaryRewardManager.processDiaryReward(user?.id || '', {
-            title: diaryTitle,
-            content: diaryContent,
-            mood: parseInt(diaryMood),
-            workHours: diaryWorkHours || 0,
-            isPrivate: diaryIsPrivate,
-            activities: diaryActivities,
-            achievements: diaryAchievements,
-            energyLevel: diaryEnergyLevel,
-            productivity: diaryProductivity
-          }, diaryId);
-
-          // 報酬結果を表示
-          let rewardMessage = "日記が作成されました！";
-          if (rewardResult.badges.length > 0) {
-            rewardMessage += `\n🎉 バッジを${rewardResult.badges.length}個獲得しました！`;
-          }
-          if (rewardResult.experience > 0) {
-            rewardMessage += `\n⭐ ${rewardResult.experience}経験値を獲得しました！`;
-          }
-          if (rewardResult.workCoins > 0) {
-            rewardMessage += `\n🪙 ${rewardResult.workCoins}ワークコインを獲得しました！`;
-          }
-          if (rewardResult.leveledUp) {
-            rewardMessage += `\n🎊 キャラクターがレベル${rewardResult.newLevel}に上がりました！`;
-          }
-
-          setMessage(rewardMessage);
-        } catch (error) {
-          console.error('報酬処理でエラーが発生しました:', error);
-          setMessage("日記が作成されました！（報酬処理でエラーが発生しました）");
-        }
-
-        setDiaryDate("");
-        setDiaryTitle("");
-        setDiaryContent("");
-        setDiaryMood("4");
-        setDiaryTags([]);
-        setDiaryIsPrivate(true);
-        // 新しい項目もリセット
-        setDiaryActivities([]);
-        setDiaryWorkSummary("");
-        setDiaryAchievements([]);
-        setDiaryChallenges([]);
-        setDiaryLearnings([]);
-        setDiaryNextGoals([]);
-        setDiaryEnergyLevel(5);
-        setDiaryStressLevel(5);
-        setDiaryWorkHours(0);
-        setDiaryBreakTime(0);
-        setDiaryProductivity(5);
-        setDiaryNotes("");
-        setNewAchievement("");
-        setNewChallenge("");
-        setNewLearning("");
-        setNewNextGoal("");
-        setShowDiaryForm(false);
-        loadWorkDiaries();
-        // モーダルを閉じる
-        setShowWorkRecords(true);
-      } else {
-        setMessage(`エラー: ${data.message}`);
-      }
-    } catch (error) {
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  };
-
-  const handleUpdateDiary = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('更新処理開始:', { userId: user?.id, editingDiary });
-    if (!user?.id || !editingDiary) {
-      console.log('更新処理中止: ユーザーIDまたは編集対象の日記がありません');
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `/api/work-records/diary/${editingDiary._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.id,
-            date: diaryDate,
-            title: diaryTitle,
-            content: diaryContent,
-            mood: diaryMood,
-            tags: diaryTags,
-            isPrivate: diaryIsPrivate,
-            // 新しい項目
-            activities: diaryActivities,
-            workSummary: diaryWorkSummary,
-            achievements: diaryAchievements,
-            challenges: diaryChallenges,
-            learnings: diaryLearnings,
-            nextGoals: diaryNextGoals,
-            energyLevel: diaryEnergyLevel,
-            stressLevel: diaryStressLevel,
-            workHours: diaryWorkHours,
-            breakTime: diaryBreakTime,
-            productivity: diaryProductivity,
-            notes: diaryNotes,
-            gratitude: diaryGratitude,
-            reflection: diaryReflection,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      console.log('更新APIレスポンス:', data);
-      if (data.success) {
-        // 更新時も報酬システムを実行（初回投稿時のみ報酬を付与するように制御）
-        try {
-          const rewardResult = await diaryRewardManager.processDiaryReward(user?.id || '', {
-            title: diaryTitle,
-            content: diaryContent,
-            mood: parseInt(diaryMood),
-            workHours: diaryWorkHours || 0,
-            isPrivate: diaryIsPrivate,
-            activities: diaryActivities,
-            achievements: diaryAchievements,
-            energyLevel: diaryEnergyLevel,
-            productivity: diaryProductivity
-          }, editingDiary._id);
-
-          // 報酬結果を表示（更新時は簡潔に）
-          let rewardMessage = "日記を更新しました！";
-          if (rewardResult.badges.length > 0) {
-            rewardMessage += `\n🎉 バッジを${rewardResult.badges.length}個獲得しました！`;
-          }
-          if (rewardResult.experience > 0) {
-            rewardMessage += `\n⭐ ${rewardResult.experience}経験値を獲得しました！`;
-          }
-          if (rewardResult.workCoins > 0) {
-            rewardMessage += `\n🪙 ${rewardResult.workCoins}ワークコインを獲得しました！`;
-          }
-          if (rewardResult.leveledUp) {
-            rewardMessage += `\n🎊 キャラクターがレベル${rewardResult.newLevel}に上がりました！`;
-          }
-
-          setMessage(rewardMessage);
-        } catch (error) {
-          console.error('報酬処理でエラーが発生しました:', error);
-          setMessage("日記を更新しました！（報酬処理でエラーが発生しました）");
-        }
-
-        // データを再読み込み
-        await loadWorkDiaries();
-        // モーダルを閉じる（フォームはリセットしない）
-        setShowWorkRecords(true);
-      } else {
-        console.log('更新エラー:', data.message);
-        setMessage(`エラー: ${data.message}`);
-      }
-    } catch (error) {
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  };
-
-  const handleDeleteIncomeExpenseRecord = async (id: string) => {
-    try {
-      // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
-      // apiFetch: HTTPエラーの処理とエラー報告
-      const result = await executeAuthenticatedRequest(
-        setMessage,
-        async (token) => {
-          const url = buildApiUrl(
-            "/api/work-records/salary",
-            createIdParam(id)
-          );
-          return await apiFetch(url, {
-            method: "DELETE",
-            headers: createAuthHeaders(token),
-          });
-        }
-      );
-
-      if (!result) {
-        return; // 認証エラーの場合
-      }
-
-      const data = await result.json();
-      if (data.success) {
-        setMessage("収入・支出記録が削除されました！");
-        // データを再読み込みして画面を更新
-        await loadIncomeExpenseRecords();
-        await loadWorkDiaries();
-      } else {
-        setMessage(`エラー: ${data.message}`);
-      }
-    } catch (error) {
-      // エラー情報を取得してエラー報告モーダルを表示
-      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
-      if (errorInfo) {
-        setCurrentError(
-          error instanceof Error ? error : new Error(String(error))
-        );
-        setShowSimpleErrorModal(true);
-      }
-
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  };
-
-  const handleDeleteDiary = async (id: string) => {
-    try {
-      // executeAuthenticatedRequest: 認証トークンの取得とエラーハンドリング
-      // apiFetch: HTTPエラーの処理とエラー報告
-      const result = await executeAuthenticatedRequest(
-        setMessage,
-        async (token) => {
-          const url = buildApiUrl("/api/work-records/diary", createIdParam(id));
-          return await apiFetch(url, {
-            method: "DELETE",
-            headers: createAuthHeaders(token),
-          });
-        }
-      );
-
-      if (!result) {
-        return; // 認証エラーの場合
-      }
-
-      const data = await result.json();
-      if (data.success) {
-        setMessage("日記が削除されました！");
-        loadWorkDiaries();
-      } else {
-        setMessage(`エラー: ${data.message}`);
-      }
-    } catch (error) {
-      // エラー情報を取得してエラー報告モーダルを表示
-      const errorInfo = getErrorInfo(error instanceof Error ? error : null);
-      if (errorInfo) {
-        setCurrentError(
-          error instanceof Error ? error : new Error(String(error))
-        );
-        setShowSimpleErrorModal(true);
-      }
-
-      setMessage(
-        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-    }
-  };
 
   // 機能設定の関数
   const loadUserSettings = async () => {
@@ -3735,7 +3089,7 @@ ${errorInfo.stack}
       setShowFeatureSettings(false);
     }
     if (activeFeature !== "calendar") {
-      setShowCalendar(false);
+      // setShowCalendar(false); // WorkRecordsComponentで管理
     }
     if (activeFeature !== "record-detail") {
       setShowRecordDetail(false);
@@ -3921,22 +3275,19 @@ ${errorInfo.stack}
     const endDate = new Date(year, month + 1, 0);
 
     // 月間の記録を一度だけフィルタリング
-    const recordsInMonth = (incomeExpenseRecords || []).filter((record) => {
-      const recordDate = new Date(record.date);
-      return recordDate >= startDate && recordDate <= endDate;
-    });
+    const recordsInMonth: any[] = []; // WorkRecordsComponentで管理
 
     let totalIncome = 0;
     let totalExpense = 0;
 
     // フィルタリング済みの記録を処理
-    recordsInMonth.forEach((record) => {
-      if (record.type === "income") {
-        totalIncome += record.amount;
-      } else if (record.type === "expense") {
-        totalExpense += record.amount;
-      }
-    });
+    // recordsInMonth.forEach((record) => {
+    //   if (record.type === "income") {
+    //     totalIncome += record.amount;
+    //   } else if (record.type === "expense") {
+    //     totalExpense += record.amount;
+    //   }
+    // });
 
     const netIncome = totalIncome - totalExpense;
 
@@ -3946,9 +3297,9 @@ ${errorInfo.stack}
         totalIncome,
         totalExpense,
         netIncome,
-        recordsCount: incomeExpenseRecords?.length || 0,
+        recordsCount: 0, // WorkRecordsComponentで管理
         recordsInMonthCount: recordsInMonth.length,
-        recordsInMonthSample: recordsInMonth.slice(0, 10).map((record) => ({
+        recordsInMonthSample: recordsInMonth.slice(0, 10).map((record: any) => ({
           id: record._id,
           type: record.type,
           amount: record.amount,
@@ -3962,6 +3313,11 @@ ${errorInfo.stack}
       totalExpense,
       netIncome,
       recordCount: recordsInMonth.length,
+    } as {
+      totalIncome: number;
+      totalExpense: number;
+      netIncome: number;
+      recordCount: number;
     };
   };
 
@@ -3971,7 +3327,7 @@ ${errorInfo.stack}
     const jstDateStr = new Date(date.getTime() + 9 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0];
-    setDiaryDate(jstDateStr);
+    // setDiaryDate(jstDateStr); // WorkRecordsComponentで管理
   };
 
   const getRecordsForDate = (date: Date) => {
@@ -3983,25 +3339,16 @@ ${errorInfo.stack}
     );
     const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
 
-    const filteredIncomeExpenseRecords = (incomeExpenseRecords || []).filter(
-      (record) => {
-        // データベースの日付をUTC日付文字列に変換して比較
-        const recordDate = new Date(record.date);
-        const recordDateStr = recordDate.toISOString().split("T")[0];
-        return recordDateStr === selectedDateUTCStr;
-      }
-    );
+    const filteredIncomeExpenseRecords: any[] = []; // WorkRecordsComponentで管理
 
-    const filteredDiaries = (workDiaries || []).filter((diary) => {
-      // データベースの日付をUTC日付文字列に変換して比較
-      const diaryDate = new Date(diary.date);
-      const diaryDateStr = diaryDate.toISOString().split("T")[0];
-      return diaryDateStr === selectedDateUTCStr;
-    });
+    const filteredDiaries: any[] = []; // WorkRecordsComponentで管理
 
     return {
-      incomeExpenseRecords: filteredIncomeExpenseRecords,
-      diaries: filteredDiaries,
+      incomeExpenseRecords: [] as any[], // WorkRecordsComponentで管理
+      diaries: [] as any[], // WorkRecordsComponentで管理
+    } as {
+      incomeExpenseRecords: any[];
+      diaries: any[];
     };
   };
 
@@ -4030,9 +3377,9 @@ ${errorInfo.stack}
       );
       setSelectedRecordType("income");
       setShowRecordDetail(true);
-      setShowIncomeExpenseForm(false);
-      setShowDiaryForm(false);
-      setShowCalendar(false);
+      // setShowIncomeExpenseForm(false); // WorkRecordsComponentで管理
+      // setShowDiaryForm(false); // WorkRecordsComponentで管理
+      // setShowCalendar(false); // WorkRecordsComponentで管理
     } else if (
       type === "expense" &&
       (dayRecords.incomeExpenseRecords || []).filter(
@@ -4046,16 +3393,16 @@ ${errorInfo.stack}
       );
       setSelectedRecordType("expense");
       setShowRecordDetail(true);
-      setShowIncomeExpenseForm(false);
-      setShowDiaryForm(false);
-      setShowCalendar(false);
+      // setShowIncomeExpenseForm(false); // WorkRecordsComponentで管理
+      // setShowDiaryForm(false); // WorkRecordsComponentで管理
+      // setShowCalendar(false); // WorkRecordsComponentで管理
     } else if (type === "diary" && (dayRecords.diaries || []).length > 0) {
       setSelectedRecord((dayRecords.diaries || [])[0]);
       setSelectedRecordType("diary");
       setShowRecordDetail(true);
-      setShowIncomeExpenseForm(false);
-      setShowDiaryForm(false);
-      setShowCalendar(false);
+      // setShowIncomeExpenseForm(false); // WorkRecordsComponentで管理
+      // setShowDiaryForm(false); // WorkRecordsComponentで管理
+      // setShowCalendar(false); // WorkRecordsComponentで管理
     }
   };
 
@@ -4066,88 +3413,40 @@ ${errorInfo.stack}
     setSelectedRecord(record);
     setSelectedRecordType(type);
     setShowRecordDetail(true);
-    setShowIncomeExpenseForm(false);
-    setShowDiaryForm(false);
-    setShowCalendar(false);
+    // setShowIncomeExpenseForm(false); // WorkRecordsComponentで管理
+    // setShowDiaryForm(false); // WorkRecordsComponentで管理
+    // setShowCalendar(false); // WorkRecordsComponentで管理
   };
 
   const viewIncomeExpenseRecord = (record: any) => {
     setSelectedRecord(record);
     setSelectedRecordType("income");
     setShowRecordDetail(true);
-    setShowIncomeExpenseForm(false);
-    setShowDiaryForm(false);
-    setShowCalendar(false);
+    // setShowIncomeExpenseForm(false); // WorkRecordsComponentで管理
+    // setShowDiaryForm(false); // WorkRecordsComponentで管理
+    // setShowCalendar(false); // WorkRecordsComponentで管理
   };
 
   const viewDiary = (diary: any) => {
     setSelectedRecord(diary);
     setSelectedRecordType("diary");
     setShowRecordDetail(true);
-    setShowIncomeExpenseForm(false);
-    setShowDiaryForm(false);
-    setShowCalendar(false);
+    // setShowIncomeExpenseForm(false); // WorkRecordsComponentで管理
+    // setShowDiaryForm(false); // WorkRecordsComponentで管理
+    // setShowCalendar(false); // WorkRecordsComponentで管理
   };
 
   const editIncomeExpenseRecord = (record: any) => {
-    setIncomeExpenseDate(record.date.split("T")[0]);
-    setIncomeExpenseAmount(Math.abs(record.amount).toString()); // 絶対値で表示
-    setIncomeExpenseType(record.type === "income" ? "income" : "expense"); // タイプに基づいて設定
-    setIncomeExpenseNotes(record.notes || "");
-    setEditingIncomeExpenseRecord(record);
-    setShowIncomeExpenseForm(true);
-    setShowDiaryForm(false);
-    setShowCalendar(false);
+    // setIncomeExpenseDate(record.date.split("T")[0]); // WorkRecordsComponentで管理
+    // setIncomeExpenseAmount(Math.abs(record.amount).toString()); // WorkRecordsComponentで管理
+    // setIncomeExpenseType(record.type === "income" ? "income" : "expense"); // WorkRecordsComponentで管理
+    // setIncomeExpenseNotes(record.notes || ""); // WorkRecordsComponentで管理
+    // setEditingIncomeExpenseRecord(record); // WorkRecordsComponentで管理
+    // setShowIncomeExpenseForm(true); // WorkRecordsComponentで管理
+    // setShowDiaryForm(false); // WorkRecordsComponentで管理
+    // setShowCalendar(false); // WorkRecordsComponentで管理
   };
 
-  const editDiary = (diary: any) => {
-    // 日付を正しく処理（UTC変換を避けてローカル時間で表示）
-    let dateString = '';
-    if (diary.date) {
-      // 日付文字列が既にYYYY-MM-DD形式の場合はそのまま使用
-      if (diary.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        dateString = diary.date;
-      } else {
-        // その他の場合はローカル時間で処理
-        const diaryDate = new Date(diary.date);
-        const year = diaryDate.getFullYear();
-        const month = String(diaryDate.getMonth() + 1).padStart(2, '0');
-        const day = String(diaryDate.getDate()).padStart(2, '0');
-        dateString = `${year}-${month}-${day}`;
-      }
-    }
-    setDiaryDate(dateString);
-
-    setDiaryTitle(diary.title || "");
-    setDiaryContent(diary.content || "");
-    setDiaryMood(diary.mood || "");
-    setDiaryTags(diary.tags || []);
-    setDiaryIsPrivate(diary.isPrivate || false);
-    // 新しい項目の初期値設定
-    setDiaryActivities(diary.activities || []);
-    setDiaryWorkSummary(diary.workSummary || "");
-    setDiaryAchievements(diary.achievements || []);
-    setDiaryChallenges(diary.challenges || []);
-    setDiaryLearnings(diary.learnings || []);
-    setDiaryNextGoals(diary.nextGoals || []);
-    setDiaryEnergyLevel(diary.energyLevel || 5);
-    setDiaryStressLevel(diary.stressLevel || 5);
-    setDiaryWorkHours(diary.workHours || 0);
-    setDiaryBreakTime(diary.breakTime || 0);
-    setDiaryProductivity(diary.productivity || 5);
-    setDiaryNotes(diary.notes || "");
-    setDiaryGratitude(diary.gratitude || "");
-    setDiaryReflection(diary.reflection || "");
-    setNewAchievement("");
-    setNewChallenge("");
-    setNewLearning("");
-    setNewNextGoal("");
-    setEditingDiary(diary);
-    console.log('編集対象の日記を設定:', diary);
-    setShowDiaryForm(true);
-    setShowIncomeExpenseForm(false);
-    setShowCalendar(false);
-  };
 
   const navigateMonth = (direction: "prev" | "next") => {
     const newDate = new Date(currentDate);
@@ -4256,35 +3555,6 @@ ${errorInfo.stack}
   };
 
   // 日記フォームを開く関数（モーダル表示に変更）
-  const openDiaryForm = () => {
-    setShowIncomeExpenseForm(false);
-    setShowDiaryForm(false); // モーダル表示のためfalseに変更
-    setShowCalendar(false);
-    setShowWorkRecords(true);
-    // 今日の日付を設定
-    const today = new Date();
-    setDiaryDate(today.toISOString().split("T")[0]);
-    // フォームをリセット
-    setDiaryTitle("");
-    setDiaryContent("");
-    setDiaryMood("");
-    setDiaryActivities([]);
-    setDiaryNotes("");
-    setDiaryNextGoals([]);
-    setDiaryChallenges([]);
-    setDiaryAchievements([]);
-    setDiaryWorkSummary("");
-    setDiaryLearnings([]);
-    setDiaryEnergyLevel(5);
-    setDiaryStressLevel(5);
-    setDiaryWorkHours(0);
-    setDiaryBreakTime(0);
-    setDiaryProductivity(5);
-    setDiaryTags([]);
-    setDiaryGratitude("");
-    setDiaryReflection("");
-    setEditingDiary(null);
-  };
 
   // 利用可能なジャンル一覧を取得（デフォルト + カスタム）
   const getAllGenres = () => {
@@ -4604,8 +3874,8 @@ ${errorInfo.stack}
     if (isLoggedIn && user?.id) {
       loadProjects();
       loadReportSummary();
-      loadIncomeExpenseRecords();
-      loadWorkDiaries();
+      // loadIncomeExpenseRecords(); // WorkRecordsComponentで管理
+      // loadWorkDiaries(); // WorkRecordsComponentで管理
       loadUserSettings();
       loadMemos();
     }
@@ -4613,10 +3883,10 @@ ${errorInfo.stack}
 
   // 月が変更された時に月収支メモを読み込み
   useEffect(() => {
-    if (showCalendar) {
-      loadMonthlyMemo();
-    }
-  }, [currentDate, showCalendar]);
+    // if (showCalendar) { // WorkRecordsComponentで管理
+    //   loadMonthlyMemo();
+    // }
+  }, [currentDate]);
 
   // 注意: 認証関連の関数はAuthContextProviderで管理される
   // 理由: 認証状態を複数のコンポーネント間で共有し、一貫性を保つため
@@ -7381,8 +6651,8 @@ User Agent: ${userAgent}
                     key={feature.id}
                     showReports={showReports}
                     setShowReports={setShowReports}
-                    incomeExpenseRecords={incomeExpenseRecords}
-                    workDiaries={workDiaries}
+                    incomeExpenseRecords={[] as any[]} // WorkRecordsComponentで管理
+                    workDiaries={[] as any[]} // WorkRecordsComponentで管理
                     reportSummary={reportSummary}
                     loadReportSummary={loadReportSummary}
                     closeOtherFeatures={closeOtherFeatures}
@@ -7528,98 +6798,6 @@ User Agent: ${userAgent}
                     key={feature.id}
                     showWorkRecords={showWorkRecords}
                     setShowWorkRecords={setShowWorkRecords}
-                    showIncomeExpenseForm={showIncomeExpenseForm}
-                    setShowIncomeExpenseForm={setShowIncomeExpenseForm}
-                    showDiaryForm={showDiaryForm}
-                    setShowDiaryForm={setShowDiaryForm}
-                    showCalendar={showCalendar}
-                    setShowCalendar={setShowCalendar}
-                    incomeExpenseRecords={incomeExpenseRecords}
-                    workDiaries={workDiaries}
-                    currentMonth={currentMonth}
-                    setCurrentMonth={setCurrentMonth}
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                    selectedRecord={selectedRecord}
-                    setSelectedRecord={setSelectedRecord}
-                    selectedRecordType={selectedRecordType}
-                    setSelectedRecordType={setSelectedRecordType}
-                    editingIncomeExpenseRecord={editingIncomeExpenseRecord}
-                    setEditingIncomeExpenseRecord={
-                      setEditingIncomeExpenseRecord
-                    }
-                    editingDiary={editingDiary}
-                    setEditingDiary={setEditingDiary}
-                    incomeExpenseAmount={incomeExpenseAmount}
-                    setIncomeExpenseAmount={setIncomeExpenseAmount}
-                    incomeExpenseType={incomeExpenseType}
-                    setIncomeExpenseType={setIncomeExpenseType}
-                    incomeExpenseDate={incomeExpenseDate}
-                    setIncomeExpenseDate={setIncomeExpenseDate}
-                    incomeExpenseNotes={incomeExpenseNotes}
-                    setIncomeExpenseNotes={setIncomeExpenseNotes}
-                    diaryDate={diaryDate}
-                    setDiaryDate={setDiaryDate}
-                    diaryTitle={diaryTitle}
-                    setDiaryTitle={setDiaryTitle}
-                    diaryContent={diaryContent}
-                    setDiaryContent={setDiaryContent}
-                    diaryMood={diaryMood}
-                    setDiaryMood={setDiaryMood}
-                    diaryActivities={diaryActivities}
-                    setDiaryActivities={setDiaryActivities}
-                    diaryNotes={diaryNotes}
-                    setDiaryNotes={setDiaryNotes}
-                    diaryNextGoals={diaryNextGoals}
-                    setDiaryNextGoals={setDiaryNextGoals}
-                    diaryChallenges={diaryChallenges}
-                    setDiaryChallenges={setDiaryChallenges}
-                    diaryAchievements={diaryAchievements}
-                    setDiaryAchievements={setDiaryAchievements}
-                    diaryGratitude={diaryGratitude}
-                    setDiaryGratitude={setDiaryGratitude}
-                    diaryReflection={diaryReflection}
-                    setDiaryReflection={setDiaryReflection}
-                    diaryWorkSummary={diaryWorkSummary}
-                    setDiaryWorkSummary={setDiaryWorkSummary}
-                    diaryLearnings={diaryLearnings}
-                    setDiaryLearnings={setDiaryLearnings}
-                    diaryEnergyLevel={diaryEnergyLevel}
-                    setDiaryEnergyLevel={setDiaryEnergyLevel}
-                    diaryStressLevel={diaryStressLevel}
-                    setDiaryStressLevel={setDiaryStressLevel}
-                    diaryWorkHours={diaryWorkHours}
-                    setDiaryWorkHours={setDiaryWorkHours}
-                    diaryBreakTime={diaryBreakTime}
-                    setDiaryBreakTime={setDiaryBreakTime}
-                    diaryProductivity={diaryProductivity}
-                    setDiaryProductivity={setDiaryProductivity}
-                    diaryTags={diaryTags}
-                    setDiaryTags={setDiaryTags}
-                    monthlyMemo={monthlyMemo}
-                    setMonthlyMemo={setMonthlyMemo}
-                    editingMonthlyMemo={editingMonthlyMemo}
-                    setEditingMonthlyMemo={setEditingMonthlyMemo}
-                    loadIncomeExpenseRecords={loadIncomeExpenseRecords}
-                    loadWorkDiaries={loadWorkDiaries}
-                    handleCreateIncomeExpenseRecord={
-                      handleCreateIncomeExpenseRecord
-                    }
-                    handleUpdateIncomeExpenseRecord={
-                      handleUpdateIncomeExpenseRecord
-                    }
-                    handleCreateDiary={handleCreateDiary}
-                    handleUpdateDiary={handleUpdateDiary}
-                    handleDeleteIncomeExpenseRecord={
-                      handleDeleteIncomeExpenseRecord
-                    }
-                    handleDeleteDiary={handleDeleteDiary}
-                    editDiary={editDiary}
-                    openDiaryForm={openDiaryForm}
-                    loadMonthlyMemo={loadMonthlyMemo}
-                    saveMonthlyMemo={saveMonthlyMemo}
-                    startEditingMonthlyMemo={startEditingMonthlyMemo}
-                    cancelEditingMonthlyMemo={cancelEditingMonthlyMemo}
                     closeOtherFeatures={closeOtherFeatures}
                     user={user}
                   />
@@ -7714,12 +6892,20 @@ User Agent: ${userAgent}
                     <div className="section-header">
                       <h2>無駄遣い監視</h2>
                       <p>お金・時間・労力の無駄遣いを監視・改善しましょう</p>
-                      <button 
-                        className="open-dashboard-button"
-                        onClick={() => setShowWasteAnalysis(true)}
-                      >
-                        📊 ダッシュボードを開く
-                      </button>
+                      <div className="dashboard-buttons">
+                        <button 
+                          className="open-dashboard-button comprehensive"
+                          onClick={() => {/* WorkRecordsComponentで管理 */}}
+                        >
+                          🏠 統合ダッシュボード
+                        </button>
+                        <button 
+                          className="open-dashboard-button"
+                          onClick={() => setShowWasteAnalysis(true)}
+                        >
+                          📊 無駄遣い分析
+                        </button>
+                      </div>
                     </div>
                     
                     {/* 現金残高ウィジェット */}
@@ -8140,7 +7326,7 @@ User Agent: ${userAgent}
           setShowDiaryReminderSettings={setShowDiaryReminderSettings}
           diaryReminderSnoozeUntil={diaryReminderSnoozeUntil}
           setDiaryReminderSnoozeUntil={setDiaryReminderSnoozeUntil}
-          onOpenDiaryForm={openDiaryForm}
+          onOpenDiaryForm={() => {/* WorkRecordsComponentで管理 */}}
         />
 
         {/* エラー報告モーダル */}
@@ -8238,6 +7424,12 @@ const AppWithProviders = () => {
   const [showWasteRecordForm, setShowWasteRecordForm] = useState(false);
   const [showWasteGoalForm, setShowWasteGoalForm] = useState(false);
   const wasteAnalysisManager = WasteAnalysisManager.getInstance();
+
+  // 統合ダッシュボードの状態 - 独立したコンポーネント
+  // const [showComprehensiveDashboard, setShowComprehensiveDashboard] = useState(false);
+  // const assetLiabilityManager = AssetLiabilityManager.getInstance();
+  // const actionHistoryManager = ActionHistoryManager.getInstance();
+  // const futurePlanningManager = FuturePlanningManager.getInstance();
 
   // 現金残高管理システムの状態
   const [showCashBalance, setShowCashBalance] = useState(false);
@@ -8681,6 +7873,8 @@ const AppWithProviders = () => {
           onComplete={handleCharacterInteractionComplete}
         />
       )}
+
+      {/* 統合ダッシュボード - 独立したコンポーネント */}
 
       {/* 無駄遣い監視ダッシュボード */}
       {showWasteAnalysis && user && (

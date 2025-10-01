@@ -4,94 +4,14 @@ import type { IncomeExpenseRecord, WorkDiary, User } from '../types';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import CalendarComponent from './CalendarComponent';
 import { logger } from '../utils/logger';
+import { apiFetch } from '../utils/apiClient';
+import { createAuthHeaders } from '../utils/authUtils';
+import { incomeExpenseRewardManager } from '../utils/incomeExpenseRewardManager';
+import { diaryRewardManager } from '../utils/diaryRewardManager';
 
 interface WorkRecordsComponentProps {
   showWorkRecords: boolean;
   setShowWorkRecords: (show: boolean) => void;
-  showIncomeExpenseForm: boolean;
-  setShowIncomeExpenseForm: (show: boolean) => void;
-  showDiaryForm: boolean;
-  setShowDiaryForm: (show: boolean) => void;
-  showCalendar: boolean;
-  setShowCalendar: (show: boolean) => void;
-  incomeExpenseRecords: IncomeExpenseRecord[];
-  workDiaries: WorkDiary[];
-  currentMonth: Date;
-  setCurrentMonth: (date: Date) => void;
-  selectedDate: Date | null;
-  setSelectedDate: (date: Date | null) => void;
-  selectedRecord: any;
-  setSelectedRecord: (record: any) => void;
-  selectedRecordType: "income" | "expense" | "diary" | null;
-  setSelectedRecordType: React.Dispatch<React.SetStateAction<"income" | "expense" | "diary" | null>>;
-  editingIncomeExpenseRecord: any;
-  setEditingIncomeExpenseRecord: (record: any) => void;
-  editingDiary: any;
-  setEditingDiary: (diary: any) => void;
-  incomeExpenseAmount: string;
-  setIncomeExpenseAmount: (amount: string) => void;
-  incomeExpenseType: "income" | "expense";
-  setIncomeExpenseType: (type: "income" | "expense") => void;
-  incomeExpenseDate: string;
-  setIncomeExpenseDate: (date: string) => void;
-  incomeExpenseNotes: string;
-  setIncomeExpenseNotes: (notes: string) => void;
-  diaryDate: string;
-  setDiaryDate: (date: string) => void;
-  diaryTitle: string;
-  setDiaryTitle: (title: string) => void;
-  diaryContent: string;
-  setDiaryContent: (content: string) => void;
-  diaryMood: string;
-  setDiaryMood: (mood: string) => void;
-  diaryActivities: string[];
-  setDiaryActivities: React.Dispatch<React.SetStateAction<string[]>>;
-  diaryNotes: string;
-  setDiaryNotes: (notes: string) => void;
-  diaryNextGoals: string[];
-  setDiaryNextGoals: React.Dispatch<React.SetStateAction<string[]>>;
-  diaryChallenges: string[];
-  setDiaryChallenges: React.Dispatch<React.SetStateAction<string[]>>;
-  diaryAchievements: string[];
-  setDiaryAchievements: React.Dispatch<React.SetStateAction<string[]>>;
-  diaryGratitude: string;
-  setDiaryGratitude: (gratitude: string) => void;
-  diaryReflection: string;
-  setDiaryReflection: (reflection: string) => void;
-  diaryWorkSummary: string;
-  setDiaryWorkSummary: (summary: string) => void;
-  diaryLearnings: string[];
-  setDiaryLearnings: React.Dispatch<React.SetStateAction<string[]>>;
-  diaryEnergyLevel: number;
-  setDiaryEnergyLevel: (level: number) => void;
-  diaryStressLevel: number;
-  setDiaryStressLevel: (level: number) => void;
-  diaryWorkHours: number;
-  setDiaryWorkHours: (hours: number) => void;
-  diaryBreakTime: number;
-  setDiaryBreakTime: (time: number) => void;
-  diaryProductivity: number;
-  setDiaryProductivity: (productivity: number) => void;
-  diaryTags: string[];
-  setDiaryTags: React.Dispatch<React.SetStateAction<string[]>>;
-  monthlyMemo: string;
-  setMonthlyMemo: (memo: string) => void;
-  editingMonthlyMemo: boolean;
-  setEditingMonthlyMemo: (editing: boolean) => void;
-  loadIncomeExpenseRecords: () => Promise<void>;
-  loadWorkDiaries: () => Promise<void>;
-  handleCreateIncomeExpenseRecord: (e: React.FormEvent) => Promise<void>;
-  handleUpdateIncomeExpenseRecord: (e: React.FormEvent) => Promise<void>;
-  handleCreateDiary: (e: React.FormEvent) => Promise<void>;
-  handleUpdateDiary: (e: React.FormEvent) => Promise<void>;
-  handleDeleteIncomeExpenseRecord: (id: string) => Promise<void>;
-  handleDeleteDiary: (id: string) => Promise<void>;
-  editDiary: (diary: any) => void;
-  openDiaryForm: () => void;
-  loadMonthlyMemo: () => void;
-  saveMonthlyMemo: () => void;
-  startEditingMonthlyMemo: () => void;
-  cancelEditingMonthlyMemo: () => void;
   closeOtherFeatures: (activeFeature: string) => void;
   user: User | null;
 }
@@ -99,795 +19,758 @@ interface WorkRecordsComponentProps {
 const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   showWorkRecords,
   setShowWorkRecords,
-  showIncomeExpenseForm,
-  setShowIncomeExpenseForm,
-  showDiaryForm,
-  setShowDiaryForm,
-  showCalendar,
-  setShowCalendar,
-  incomeExpenseRecords,
-  workDiaries,
-  currentMonth,
-  setCurrentMonth,
-  selectedDate,
-  setSelectedDate,
-  selectedRecord,
-  setSelectedRecord,
-  selectedRecordType,
-  setSelectedRecordType,
-  editingIncomeExpenseRecord,
-  setEditingIncomeExpenseRecord,
-  editingDiary,
-  setEditingDiary,
-  incomeExpenseAmount,
-  setIncomeExpenseAmount,
-  incomeExpenseType,
-  setIncomeExpenseType,
-  incomeExpenseDate,
-  setIncomeExpenseDate,
-  incomeExpenseNotes,
-  setIncomeExpenseNotes,
-  diaryDate,
-  setDiaryDate,
-  diaryTitle,
-  setDiaryTitle,
-  diaryContent,
-  setDiaryContent,
-  diaryMood,
-  setDiaryMood,
-  diaryActivities,
-  setDiaryActivities,
-  diaryNotes,
-  setDiaryNotes,
-  diaryNextGoals,
-  setDiaryNextGoals,
-  diaryChallenges,
-  setDiaryChallenges,
-  diaryAchievements,
-  setDiaryAchievements,
-  diaryGratitude,
-  setDiaryGratitude,
-  diaryReflection,
-  setDiaryReflection,
-  diaryWorkSummary,
-  setDiaryWorkSummary,
-  diaryLearnings,
-  setDiaryLearnings,
-  diaryEnergyLevel,
-  setDiaryEnergyLevel,
-  diaryStressLevel,
-  setDiaryStressLevel,
-  diaryWorkHours,
-  setDiaryWorkHours,
-  diaryBreakTime,
-  setDiaryBreakTime,
-  diaryProductivity,
-  setDiaryProductivity,
-  diaryTags,
-  setDiaryTags,
-  monthlyMemo,
-  setMonthlyMemo,
-  editingMonthlyMemo,
-  setEditingMonthlyMemo,
-  loadIncomeExpenseRecords,
-  loadWorkDiaries,
-  handleCreateIncomeExpenseRecord,
-  handleUpdateIncomeExpenseRecord,
-  handleCreateDiary,
-  handleUpdateDiary,
-  handleDeleteIncomeExpenseRecord,
-  handleDeleteDiary,
-  editDiary,
-  openDiaryForm,
-  loadMonthlyMemo,
-  saveMonthlyMemo,
-  startEditingMonthlyMemo,
-  cancelEditingMonthlyMemo,
   closeOtherFeatures,
   user
 }) => {
-  // ローカル状態
-  const [incomeExpenseLoading, setIncomeExpenseLoading] = useState(false);
-  const [diaryLoading, setDiaryLoading] = useState(false);
-  const [showCalendarModal, setShowCalendarModal] = useState(false);
-  const [calendarViewMode, setCalendarViewMode] = useState<'month' | 'week'>('month');
-  const [currentWeekStart, setCurrentWeekStart] = useState(new Date());
-  const [editingWeeklyMemo, setEditingWeeklyMemo] = useState(false);
-  const [weeklyMemo, setWeeklyMemo] = useState('');
+  // 内部状態管理
+  const [incomeExpenseRecords, setIncomeExpenseRecords] = useState<IncomeExpenseRecord[]>([]);
+  const [workDiaries, setWorkDiaries] = useState<WorkDiary[]>([]);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<any>(null);
+  const [selectedRecordType, setSelectedRecordType] = useState<"income" | "expense" | "diary" | null>(null);
+  const [editingIncomeExpenseRecord, setEditingIncomeExpenseRecord] = useState<IncomeExpenseRecord | null>(null);
+  const [editingDiary, setEditingDiary] = useState<WorkDiary | null>(null);
+  const [showIncomeExpenseForm, setShowIncomeExpenseForm] = useState(false);
+  const [showDiaryForm, setShowDiaryForm] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showComprehensiveDashboard, setShowComprehensiveDashboard] = useState(false);
 
-  // 収入・支出記録読み込み関数をWorkRecordsComponent内で定義
-  const loadIncomeExpenseRecordsLocal = async () => {
-    setIncomeExpenseLoading(true);
-    try {
-      await loadIncomeExpenseRecords();
-    } finally {
-      setIncomeExpenseLoading(false);
-    }
-  };
+  // 収入・支出記録フォームの状態
+  const [incomeExpenseDate, setIncomeExpenseDate] = useState("");
+  const [incomeExpenseAmount, setIncomeExpenseAmount] = useState("");
+  const [incomeExpenseType, setIncomeExpenseType] = useState<"income" | "expense">("income");
+  const [incomeExpenseNotes, setIncomeExpenseNotes] = useState("");
 
-  // 日記読み込み関数をWorkRecordsComponent内で定義
-  const loadWorkDiariesLocal = async () => {
-    setDiaryLoading(true);
-    try {
-      await loadWorkDiaries();
-    } finally {
-      setDiaryLoading(false);
-    }
-  };
+  // 日記フォームの状態
+  const [diaryDate, setDiaryDate] = useState("");
+  const [diaryTitle, setDiaryTitle] = useState("");
+  const [diaryContent, setDiaryContent] = useState("");
+  const [diaryMood, setDiaryMood] = useState("3");
+  const [diaryActivities, setDiaryActivities] = useState<string[]>([]);
+  const [diaryNotes, setDiaryNotes] = useState("");
+  const [diaryNextGoals, setDiaryNextGoals] = useState<string[]>([]);
+  const [diaryChallenges, setDiaryChallenges] = useState<string[]>([]);
+  const [diaryAchievements, setDiaryAchievements] = useState<string[]>([]);
+  const [diaryGratitude, setDiaryGratitude] = useState("");
+  const [diaryReflection, setDiaryReflection] = useState("");
+  const [diaryWorkSummary, setDiaryWorkSummary] = useState("");
+  const [diaryLearnings, setDiaryLearnings] = useState<string[]>([]);
+  const [diaryEnergyLevel, setDiaryEnergyLevel] = useState(3);
+  const [diaryStressLevel, setDiaryStressLevel] = useState(3);
+  const [diaryWorkHours, setDiaryWorkHours] = useState(0);
+  const [diaryBreakTime, setDiaryBreakTime] = useState(0);
+  const [diaryProductivity, setDiaryProductivity] = useState(3);
+  const [diaryTags, setDiaryTags] = useState<string[]>([]);
+  const [monthlyMemo, setMonthlyMemo] = useState("");
+  const [editingMonthlyMemo, setEditingMonthlyMemo] = useState(false);
 
   // 削除確認モーダルの状態
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<{
-    id: string;
-    name: string;
-    type: string;
-  } | null>(null);
+  const [deletingRecordId, setDeletingRecordId] = useState<string | null>(null);
+  const [deletingRecordType, setDeletingRecordType] = useState<"income" | "expense" | "diary" | null>(null);
 
-  // データが更新されたときに選択された記録も更新
+  // コンポーネントマウント時の初期化
   useEffect(() => {
-    if (selectedDate) {
-      const records = getRecordsForDate(selectedDate);
-      if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.workDiaries.length > 0) {
-        setSelectedRecord(records);
-        // 複数の記録がある場合は、日記を優先表示
-        if (records.workDiaries.length > 0) {
-          setSelectedRecordType("diary");
-        } else if (records.incomeRecords.length > 0) {
-          setSelectedRecordType("income");
-        } else if (records.expenseRecords.length > 0) {
-          setSelectedRecordType("expense");
-        }
-      } else {
-        setSelectedRecord(null);
-        setSelectedRecordType(null);
-      }
+    if (showWorkRecords && user) {
+      loadIncomeExpenseRecords();
+      loadWorkDiaries();
+      loadMonthlyMemo();
     }
-  }, [selectedDate, incomeExpenseRecords.length, workDiaries.length, workDiaries]);
+  }, [showWorkRecords, user]);
 
-  // カレンダー用の月移動ハンドラー
-  const handleMonthChange = (direction: 'prev' | 'next') => {
-    const newMonth = new Date(currentMonth);
-    if (direction === 'prev') {
-      newMonth.setMonth(newMonth.getMonth() - 1);
-    } else {
-      newMonth.setMonth(newMonth.getMonth() + 1);
-    }
-    setCurrentMonth(newMonth);
-  };
+  // 収入・支出記録の読み込み
+  const loadIncomeExpenseRecords = async () => {
+    if (!user?.id) return;
 
-  // 指定された日付の記録を取得
-  const getRecordsForDate = (date: Date) => {
-    // ローカル時間で日付を比較（UTC変換を避ける）
-    const selectedYear = date.getFullYear();
-    const selectedMonth = date.getMonth();
-    const selectedDay = date.getDate();
-    
-    const incomeRecords = (incomeExpenseRecords || []).filter(record => {
-      const recordDate = new Date(record.date);
-      return recordDate.getFullYear() === selectedYear &&
-             recordDate.getMonth() === selectedMonth &&
-             recordDate.getDate() === selectedDay &&
-             record.type === 'income';
-    });
-    
-    const expenseRecords = (incomeExpenseRecords || []).filter(record => {
-      const recordDate = new Date(record.date);
-      return recordDate.getFullYear() === selectedYear &&
-             recordDate.getMonth() === selectedMonth &&
-             recordDate.getDate() === selectedDay &&
-             record.type === 'expense';
-    });
-    
-    const diaryRecords = (workDiaries || []).filter(diary => {
-      const diaryDate = new Date(diary.date);
-      return diaryDate.getFullYear() === selectedYear &&
-             diaryDate.getMonth() === selectedMonth &&
-             diaryDate.getDate() === selectedDay;
-    });
-    
-    return { incomeRecords, expenseRecords, workDiaries: diaryRecords };
-  };
-
-  // 週の統計を計算
-  const getWeeklySummary = (startDate: Date, endDate: Date) => {
-    const weeklyIncomeRecords = (incomeExpenseRecords || []).filter(record => {
-      const recordDate = new Date(record.date);
-      return recordDate >= startDate && recordDate <= endDate && record.type === 'income';
-    });
-    
-    const weeklyExpenseRecords = (incomeExpenseRecords || []).filter(record => {
-      const recordDate = new Date(record.date);
-      return recordDate >= startDate && recordDate <= endDate && record.type === 'expense';
-    });
-    
-    const weeklyDiaries = (workDiaries || []).filter(diary => {
-      const diaryDate = new Date(diary.date);
-      return diaryDate >= startDate && diaryDate <= endDate;
-    });
-    
-    const totalIncome = weeklyIncomeRecords.reduce((sum, record) => sum + record.amount, 0);
-    const totalExpense = weeklyExpenseRecords.reduce((sum, record) => sum + record.amount, 0);
-    const netBalance = totalIncome - totalExpense;
-    const averageMood = weeklyDiaries.length > 0 
-      ? weeklyDiaries.reduce((sum, diary) => sum + parseInt(diary.mood || '3'), 0) / weeklyDiaries.length 
-      : 0;
-    
-    return {
-      totalIncome,
-      totalExpense,
-      netBalance,
-      averageMood,
-      incomeRecordsCount: weeklyIncomeRecords.length,
-      expenseRecordsCount: weeklyExpenseRecords.length,
-      diariesCount: weeklyDiaries.length,
-    };
-  };
-
-  // 月の統計を計算
-  const getMonthlySummary = (year: number, month: number) => {
-    const monthlyIncomeRecords = (incomeExpenseRecords || []).filter(record => {
-      const recordDate = new Date(record.date);
-      return recordDate.getFullYear() === year && 
-             recordDate.getMonth() === month && 
-             record.type === 'income';
-    });
-    
-    const monthlyExpenseRecords = (incomeExpenseRecords || []).filter(record => {
-      const recordDate = new Date(record.date);
-      return recordDate.getFullYear() === year && 
-             recordDate.getMonth() === month && 
-             record.type === 'expense';
-    });
-    
-    const monthlyDiaries = (workDiaries || []).filter(diary => {
-      const diaryDate = new Date(diary.date);
-      return diaryDate.getFullYear() === year && diaryDate.getMonth() === month;
-    });
-    
-    const totalIncome = monthlyIncomeRecords.reduce((sum, record) => sum + record.amount, 0);
-    const totalExpense = monthlyExpenseRecords.reduce((sum, record) => sum + record.amount, 0);
-    const netBalance = totalIncome - totalExpense;
-    const averageMood = monthlyDiaries.length > 0 
-      ? monthlyDiaries.reduce((sum, diary) => sum + parseInt(diary.mood || '3'), 0) / monthlyDiaries.length 
-      : 0;
-    
-    return {
-      totalIncome,
-      totalExpense,
-      netBalance,
-      averageMood,
-      incomeRecordsCount: monthlyIncomeRecords.length,
-      expenseRecordsCount: monthlyExpenseRecords.length,
-      diariesCount: monthlyDiaries.length,
-    };
-  };
-
-  // 日付クリックハンドラー
-  const handleDateClick = (date: Date) => {
-    // ローカル時間で日付を正しく保存（UTC変換を避ける）
-    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    setSelectedDate(localDate);
-    const records = getRecordsForDate(localDate);
-    if (records.incomeRecords.length > 0 || records.expenseRecords.length > 0 || records.workDiaries.length > 0) {
-      setSelectedRecord(records);
-      // 複数の記録がある場合は、日記を優先表示
-      if (records.workDiaries.length > 0) {
-        setSelectedRecordType("diary");
-      } else if (records.incomeRecords.length > 0) {
-        setSelectedRecordType("income");
-      } else if (records.expenseRecords.length > 0) {
-        setSelectedRecordType("expense");
-      }
-    } else {
-      setSelectedRecord(null);
-      setSelectedRecordType(null);
-    }
-  };
-
-  // 記録クリックハンドラー
-  const handleRecordClick = (type: "income" | "expense" | "diary", date: Date) => {
-    // ローカル時間で日付を正しく保存（UTC変換を避ける）
-    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    setSelectedDate(localDate);
-    const records = getRecordsForDate(localDate);
-    if (type === "income" && records.incomeRecords.length > 0) {
-      setSelectedRecord(records);
-      setSelectedRecordType("income");
-    } else if (type === "expense" && records.expenseRecords.length > 0) {
-      setSelectedRecord(records);
-      setSelectedRecordType("expense");
-    } else if (type === "diary" && records.workDiaries.length > 0) {
-      setSelectedRecord(records);
-      setSelectedRecordType("diary");
-    }
-  };
-
-  // 配列項目を管理する関数
-  const addArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, value: string, setValue: React.Dispatch<React.SetStateAction<string>>) => {
-    if (value.trim()) {
-      setter(prev => {
-        const newArray = [...prev, value.trim()];
-        logger.debug('活動を追加:', newArray);
-        return newArray;
+    try {
+      const headers = createAuthHeaders();
+      const response = await apiFetch(`/api/income-expense-records?userId=${user.id}`, {
+        method: 'GET',
+        headers
       });
-      setValue("");
+
+      const data = await response.json();
+      if (data.success) {
+        setIncomeExpenseRecords(data.records);
+        logger.debug('収入・支出記録を読み込みました:', data.records.length, '件');
+      } else {
+        console.error("Failed to load income/expense records:", data.message);
+      }
+    } catch (error) {
+      console.error("Failed to load income/expense records:", error);
     }
   };
 
-  const removeArrayItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, index: number) => {
-    setter(prev => prev.filter((_, i) => i !== index));
+  // 日記の読み込み
+  const loadWorkDiaries = async () => {
+    if (!user?.id) return;
+
+    try {
+      const headers = createAuthHeaders();
+      const response = await apiFetch(`/api/work-diaries?userId=${user.id}`, {
+        method: 'GET',
+        headers
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setWorkDiaries(data.diaries);
+        logger.debug('日記を読み込みました:', data.diaries.length, '件');
+      } else {
+        console.error("Failed to load work diaries:", data.message);
+      }
+    } catch (error) {
+      console.error("Failed to load work diaries:", error);
+    }
   };
 
-  // 削除確認モーダルのハンドラー
-  const handleDeleteClick = (id: string, name: string, type: string) => {
-    setDeleteTarget({ id, name, type });
+  // 月次メモの読み込み
+  const loadMonthlyMemo = () => {
+    if (!user?.id) return;
+
+    const memoKey = `monthlyMemo_${user.id}_${currentMonth.getFullYear()}_${currentMonth.getMonth() + 1}`;
+    const savedMemo = localStorage.getItem(memoKey);
+    if (savedMemo) {
+      setMonthlyMemo(savedMemo);
+    }
+  };
+
+  // 月次メモの保存
+  const saveMonthlyMemo = () => {
+    if (!user?.id) return;
+
+    const memoKey = `monthlyMemo_${user.id}_${currentMonth.getFullYear()}_${currentMonth.getMonth() + 1}`;
+    localStorage.setItem(memoKey, monthlyMemo);
+    setEditingMonthlyMemo(false);
+  };
+
+  // 月次メモの編集開始
+  const startEditingMonthlyMemo = () => {
+    setEditingMonthlyMemo(true);
+  };
+
+  // 月次メモの編集キャンセル
+  const cancelEditingMonthlyMemo = () => {
+    setEditingMonthlyMemo(false);
+    loadMonthlyMemo();
+  };
+
+  // 金額の正規化（保存用）
+  const normalizeAmountForStorage = (amount: string): number => {
+    const numericAmount = parseFloat(amount.replace(/[^\d.-]/g, ''));
+    return isNaN(numericAmount) ? 0 : numericAmount;
+  };
+
+  // 収入・支出記録の作成
+  const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id) return;
+
+    try {
+      if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
+        alert('すべての必須項目を入力してください');
+        return;
+      }
+
+      const amount = normalizeAmountForStorage(incomeExpenseAmount);
+      const requestBody = {
+        userId: user.id,
+        date: incomeExpenseDate,
+        amount: incomeExpenseType === "expense" ? -Math.abs(amount) : Math.abs(amount),
+        type: incomeExpenseType,
+        notes: incomeExpenseNotes,
+      };
+
+      console.log("Creating income/expense record:", requestBody);
+
+      const headers = createAuthHeaders();
+      const response = await apiFetch('/api/income-expense-records', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody)
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("Income/expense record created successfully:", data.record);
+
+        // 報酬システムの処理
+        try {
+          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward(user.id, {
+            type: incomeExpenseType,
+            amount: Math.abs(amount),
+            notes: incomeExpenseNotes,
+            date: incomeExpenseDate
+          });
+
+          if (rewardResult.rewarded) {
+            console.log(`収入・支出記録報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
+          }
+        } catch (rewardError) {
+          console.error("報酬処理エラー:", rewardError);
+        }
+
+        // フォームをリセット
+        setIncomeExpenseDate("");
+        setIncomeExpenseAmount("");
+        setIncomeExpenseType("income");
+        setIncomeExpenseNotes("");
+        setShowIncomeExpenseForm(false);
+        loadIncomeExpenseRecords();
+      } else {
+        console.error("Failed to create income/expense record:", data.message);
+        alert(`記録の作成に失敗しました: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error creating income/expense record:", error);
+      alert('記録の作成中にエラーが発生しました');
+    }
+  };
+
+  // 収入・支出記録の更新
+  const handleUpdateIncomeExpenseRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id || !editingIncomeExpenseRecord) return;
+
+    try {
+      if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
+        alert('すべての必須項目を入力してください');
+        return;
+      }
+
+      const amount = normalizeAmountForStorage(incomeExpenseAmount);
+      const requestBody = {
+        id: editingIncomeExpenseRecord._id,
+        date: incomeExpenseDate,
+        amount: incomeExpenseType === "expense" ? -Math.abs(amount) : Math.abs(amount),
+        type: incomeExpenseType,
+        notes: incomeExpenseNotes,
+      };
+
+      console.log("Updating income/expense record:", requestBody);
+
+      const headers = createAuthHeaders();
+      const response = await apiFetch('/api/income-expense-records', {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(requestBody)
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("Income/expense record updated successfully:", data.record);
+
+        // 報酬システムの処理
+        try {
+          const rewardResult = await incomeExpenseRewardManager.processIncomeExpenseReward(user.id, {
+            type: incomeExpenseType,
+            amount: Math.abs(amount),
+            notes: incomeExpenseNotes,
+            date: incomeExpenseDate
+          }, editingIncomeExpenseRecord._id);
+
+          if (rewardResult.rewarded) {
+            console.log(`収入・支出記録更新報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
+          }
+        } catch (rewardError) {
+          console.error("報酬処理エラー:", rewardError);
+        }
+
+        // フォームをリセット
+        setIncomeExpenseDate("");
+        setIncomeExpenseAmount("");
+        setIncomeExpenseType("income");
+        setIncomeExpenseNotes("");
+        setEditingIncomeExpenseRecord(null);
+        setShowIncomeExpenseForm(false);
+        await loadIncomeExpenseRecords();
+      } else {
+        console.error("Failed to update income/expense record:", data.message);
+        alert(`記録の更新に失敗しました: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error updating income/expense record:", error);
+      alert('記録の更新中にエラーが発生しました');
+    }
+  };
+
+  // 収入・支出記録の削除
+  const handleDeleteIncomeExpenseRecord = async (id: string) => {
+    if (!user?.id) return;
+
+    try {
+      const headers = createAuthHeaders();
+      const response = await apiFetch(`/api/income-expense-records/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("Income/expense record deleted successfully");
+        await loadIncomeExpenseRecords();
+      } else {
+        console.error("Failed to delete income/expense record:", data.message);
+        alert(`記録の削除に失敗しました: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error deleting income/expense record:", error);
+      alert('記録の削除中にエラーが発生しました');
+    }
+  };
+
+  // 日記の作成
+  const handleCreateDiary = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id) return;
+
+    try {
+      if (!diaryDate || !diaryTitle || !diaryContent) {
+        alert('日付、タイトル、内容は必須項目です');
+        return;
+      }
+
+      const requestBody = {
+        userId: user.id,
+        date: diaryDate,
+        title: diaryTitle,
+        content: diaryContent,
+        mood: parseInt(diaryMood),
+        activities: diaryActivities,
+        notes: diaryNotes,
+        nextGoals: diaryNextGoals,
+        challenges: diaryChallenges,
+        achievements: diaryAchievements,
+        gratitude: diaryGratitude,
+        reflection: diaryReflection,
+        workSummary: diaryWorkSummary,
+        learnings: diaryLearnings,
+        energyLevel: diaryEnergyLevel,
+        stressLevel: diaryStressLevel,
+        workHours: diaryWorkHours,
+        breakTime: diaryBreakTime,
+        productivity: diaryProductivity,
+        tags: diaryTags,
+      };
+
+      console.log("Creating work diary:", requestBody);
+
+      const headers = createAuthHeaders();
+      const response = await apiFetch('/api/work-diaries', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody)
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("Work diary created successfully:", data.diary);
+
+        // 報酬システムの処理
+        try {
+          const rewardResult = await diaryRewardManager.processDiaryReward(user.id, {
+            title: diaryTitle,
+            content: diaryContent,
+            mood: parseInt(diaryMood),
+            workHours: diaryWorkHours,
+            isPrivate: false
+          });
+
+          if (rewardResult.rewarded) {
+            console.log(`日記投稿報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
+          }
+        } catch (rewardError) {
+          console.error("報酬処理エラー:", rewardError);
+        }
+
+        // フォームをリセット
+        resetDiaryForm();
+        setShowDiaryForm(false);
+        loadWorkDiaries();
+      } else {
+        console.error("Failed to create work diary:", data.message);
+        alert(`日記の作成に失敗しました: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error creating work diary:", error);
+      alert('日記の作成中にエラーが発生しました');
+    }
+  };
+
+  // 日記の更新
+  const handleUpdateDiary = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.id || !editingDiary) return;
+
+    try {
+      if (!diaryDate || !diaryTitle || !diaryContent) {
+        alert('日付、タイトル、内容は必須項目です');
+        return;
+      }
+
+      const requestBody = {
+        id: editingDiary._id,
+        date: diaryDate,
+        title: diaryTitle,
+        content: diaryContent,
+        mood: parseInt(diaryMood),
+        activities: diaryActivities,
+        notes: diaryNotes,
+        nextGoals: diaryNextGoals,
+        challenges: diaryChallenges,
+        achievements: diaryAchievements,
+        gratitude: diaryGratitude,
+        reflection: diaryReflection,
+        workSummary: diaryWorkSummary,
+        learnings: diaryLearnings,
+        energyLevel: diaryEnergyLevel,
+        stressLevel: diaryStressLevel,
+        workHours: diaryWorkHours,
+        breakTime: diaryBreakTime,
+        productivity: diaryProductivity,
+        tags: diaryTags,
+      };
+
+      console.log("Updating work diary:", requestBody);
+
+      const headers = createAuthHeaders();
+      const response = await apiFetch('/api/work-diaries', {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(requestBody)
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("Work diary updated successfully:", data.diary);
+        resetDiaryForm();
+        setEditingDiary(null);
+        setShowDiaryForm(false);
+        loadWorkDiaries();
+      } else {
+        console.error("Failed to update work diary:", data.message);
+        alert(`日記の更新に失敗しました: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error updating work diary:", error);
+      alert('日記の更新中にエラーが発生しました');
+    }
+  };
+
+  // 日記の削除
+  const handleDeleteDiary = async (id: string) => {
+    if (!user?.id) return;
+
+    try {
+      const headers = createAuthHeaders();
+      const response = await apiFetch(`/api/work-diaries/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("Work diary deleted successfully");
+        loadWorkDiaries();
+      } else {
+        console.error("Failed to delete work diary:", data.message);
+        alert(`日記の削除に失敗しました: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error deleting work diary:", error);
+      alert('日記の削除中にエラーが発生しました');
+    }
+  };
+
+  // 日記フォームのリセット
+  const resetDiaryForm = () => {
+    setDiaryDate("");
+    setDiaryTitle("");
+    setDiaryContent("");
+    setDiaryMood("3");
+    setDiaryActivities([]);
+    setDiaryNotes("");
+    setDiaryNextGoals([]);
+    setDiaryChallenges([]);
+    setDiaryAchievements([]);
+    setDiaryGratitude("");
+    setDiaryReflection("");
+    setDiaryWorkSummary("");
+    setDiaryLearnings([]);
+    setDiaryEnergyLevel(3);
+    setDiaryStressLevel(3);
+    setDiaryWorkHours(0);
+    setDiaryBreakTime(0);
+    setDiaryProductivity(3);
+    setDiaryTags([]);
+  };
+
+  // 日記の編集
+  const editDiary = (diary: WorkDiary) => {
+    setDiaryDate(diary.date.split("T")[0]);
+    setDiaryTitle(diary.title);
+    setDiaryContent(diary.content);
+    setDiaryMood(diary.mood.toString());
+    setDiaryActivities(diary.activities || []);
+    setDiaryNotes(diary.notes || "");
+    setDiaryNextGoals(diary.nextGoals || []);
+    setDiaryChallenges(diary.challenges || []);
+    setDiaryAchievements(diary.achievements || []);
+    setDiaryGratitude(diary.gratitude || "");
+    setDiaryReflection(diary.reflection || "");
+    setDiaryWorkSummary(diary.workSummary || "");
+    setDiaryLearnings(diary.learnings || []);
+    setDiaryEnergyLevel(diary.energyLevel || 3);
+    setDiaryStressLevel(diary.stressLevel || 3);
+    setDiaryWorkHours(diary.workHours || 0);
+    setDiaryBreakTime(diary.breakTime || 0);
+    setDiaryProductivity(diary.productivity || 3);
+    setDiaryTags(diary.tags || []);
+    setEditingDiary(diary);
+    setShowDiaryForm(true);
+  };
+
+  // 日記フォームを開く
+  const openDiaryForm = () => {
+    resetDiaryForm();
+    setEditingDiary(null);
+    setShowDiaryForm(true);
+  };
+
+  // 削除確認モーダルの表示
+  const showDeleteConfirm = (id: string, type: "income" | "expense" | "diary") => {
+    setDeletingRecordId(id);
+    setDeletingRecordType(type);
     setShowDeleteModal(true);
   };
 
-  const handleDeleteConfirm = () => {
-    if (deleteTarget) {
-      handleDeleteIncomeExpenseRecord(deleteTarget.id);
-    }
-  };
-
-  const handleDeleteCancel = () => {
-    setShowDeleteModal(false);
-    setDeleteTarget(null);
-  };
-
-  // 週次メモの保存・編集関数
-  const saveWeeklyMemo = () => {
-    // TODO: API呼び出しで週次メモを保存
-    logger.debug('週次メモを保存:', weeklyMemo);
-    setEditingWeeklyMemo(false);
-  };
-
-  const startEditingWeeklyMemo = () => {
-    setEditingWeeklyMemo(true);
-  };
-
-  const cancelEditingWeeklyMemo = () => {
-    setEditingWeeklyMemo(false);
-  };
-
-  // 週の範囲を取得する関数
-  const getWeekRange = (weekStart: Date) => {
-    const startOfWeek = new Date(weekStart);
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // 日曜日を週の開始とする
-    
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 6); // 土曜日を週の終了とする
-    
-    return {
-      startOfWeek,
-      endOfWeek
-    };
-  };
-
-  // 収入・支出記録の編集関数
-  const editIncomeExpenseRecord = (record: any) => {
-    setEditingIncomeExpenseRecord(record);
-    setIncomeExpenseAmount(record.amount.toString());
-    setIncomeExpenseDate(record.date);
-    setIncomeExpenseType(record.type);
-    setIncomeExpenseNotes(record.notes || '');
-    setSelectedRecordType(record.type);
-    setShowIncomeExpenseForm(true);
-  };
-
-  // 日記モーダルの状態管理
-  const [showDiaryModal, setShowDiaryModal] = useState(false);
-
-  // 収入・支出モーダルの状態管理
-  const [showIncomeExpenseModal, setShowIncomeExpenseModal] = useState(false);
-
-  // 配列入力用のローカル状態
-  const [diaryActivitiesInput, setDiaryActivitiesInput] = useState('');
-  const [diaryLearningsInput, setDiaryLearningsInput] = useState('');
-  const [diaryTagsInput, setDiaryTagsInput] = useState('');
-
-  // 日記モーダルを開く関数
-  const openDiaryModal = (diary?: any) => {
-    // 配列入力フィールドをリセット
-    setDiaryActivitiesInput('');
-    setDiaryLearningsInput('');
-    setDiaryTagsInput('');
-    
-    if (diary) {
-      logger.debug('編集モードでモーダルを開く:', diary);
-      
-      // 編集モードの場合、既存のデータをフォームに設定
-      // 日付を正しく処理（UTC変換を避けてローカル時間で表示）
-      let dateString = '';
-      if (diary.date) {
-        // 日付文字列が既にYYYY-MM-DD形式の場合はそのまま使用
-        if (diary.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-          dateString = diary.date;
-        } else {
-          // その他の場合はローカル時間で処理
-          const diaryDate = new Date(diary.date);
-          const year = diaryDate.getFullYear();
-          const month = String(diaryDate.getMonth() + 1).padStart(2, '0');
-          const day = String(diaryDate.getDate()).padStart(2, '0');
-          dateString = `${year}-${month}-${day}`;
-        }
-      }
-      setDiaryDate(dateString);
-      setDiaryTitle(diary.title || "");
-      setDiaryContent(diary.content || "");
-      setDiaryMood(diary.mood || "");
-      setDiaryTags(diary.tags || []);
-      // 新しい項目の初期値設定（存在しない場合はデフォルト値を使用）
-      setDiaryActivities(diary.activities || []);
-      setDiaryWorkSummary(diary.workSummary || "");
-      setDiaryAchievements(diary.achievements || []);
-      setDiaryChallenges(diary.challenges || []);
-      setDiaryLearnings(diary.learnings || []);
-      setDiaryNextGoals(diary.nextGoals || []);
-      setDiaryEnergyLevel(diary.energyLevel || 5);
-      setDiaryStressLevel(diary.stressLevel || 5);
-      setDiaryWorkHours(diary.workHours || 0);
-      setDiaryBreakTime(diary.breakTime || 0);
-      setDiaryProductivity(diary.productivity || 5);
-      setDiaryNotes(diary.notes || "");
-      setDiaryGratitude(diary.gratitude || "");
-      setDiaryReflection(diary.reflection || "");
-      
-      // 既存のレコードにactivitiesフィールドが存在しない場合は、空の配列で初期化
-      if (!diary.activities) {
-        logger.debug('既存のレコードにactivitiesフィールドが存在しないため、空の配列で初期化します');
-      }
-      setEditingDiary(diary);
-    } else {
-      // 新規作成の場合、選択された日付または今日の日付を設定
-      const dateToUse = selectedDate || new Date();
-      // UTC変換を避けてローカル時間で日付文字列を作成
-      const year = dateToUse.getFullYear();
-      const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
-      const day = String(dateToUse.getDate()).padStart(2, '0');
-      setDiaryDate(`${year}-${month}-${day}`);
-      setDiaryTitle('');
-      setDiaryContent('');
-      setDiaryMood('');
-      setDiaryActivities([]);
-      setDiaryNotes('');
-      setDiaryNextGoals([]);
-      setDiaryChallenges([]);
-      setDiaryAchievements([]);
-      setDiaryGratitude('');
-      setDiaryReflection('');
-      setDiaryWorkSummary('');
-      setDiaryLearnings([]);
-      setDiaryEnergyLevel(5);
-      setDiaryStressLevel(5);
-      setDiaryWorkHours(0);
-      setDiaryBreakTime(0);
-      setDiaryProductivity(5);
-      setDiaryTags([]);
-      setEditingDiary(null);
-    }
-    setShowDiaryModal(true);
-  };
-
-  // 日記モーダルを閉じる関数
-  const closeDiaryModal = () => {
-    setShowDiaryModal(false);
-    // 編集状態はリセットしない（更新後に新規登録フォームに変わらないようにする）
-    // ただし、明示的に新規作成ボタンを押した場合は編集状態をリセット
-  };
-
-  // WorkRecordsComponent専用の更新処理
-  const handleUpdateDiaryLocal = async (e: React.FormEvent) => {
-    e.preventDefault();
-    logger.debug('ローカル更新処理開始:', { userId: user?.id, editingDiary });
-    if (!user?.id || !editingDiary) {
-      logger.warn('更新処理中止: ユーザーIDまたは編集対象の日記がありません');
-      return;
-    }
+  // 削除の実行
+  const confirmDelete = async () => {
+    if (!deletingRecordId || !deletingRecordType) return;
 
     try {
-      const response = await fetch(
-        `/api/work-records/diary/${editingDiary._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.id,
-            date: diaryDate,
-            title: diaryTitle,
-            content: diaryContent,
-            mood: diaryMood,
-            tags: diaryTags,
-            // 新しい項目
-            activities: diaryActivities,
-            workSummary: diaryWorkSummary,
-            achievements: diaryAchievements,
-            challenges: diaryChallenges,
-            learnings: diaryLearnings,
-            nextGoals: diaryNextGoals,
-            energyLevel: diaryEnergyLevel,
-            stressLevel: diaryStressLevel,
-            workHours: diaryWorkHours,
-            breakTime: diaryBreakTime,
-            productivity: diaryProductivity,
-            notes: diaryNotes,
-            gratitude: diaryGratitude,
-            reflection: diaryReflection,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      logger.debug('更新APIレスポンス:', data);
-      if (data.success) {
-        logger.info('日記を更新しました！');
-        
-        // モーダルを閉じる
-        setShowDiaryModal(false);
-        setEditingDiary(null);
-        
-        // データを再読み込み（複数の方法で確実に更新）
-        try {
-          logger.debug('日記データの再読み込みを開始します...');
-          await loadWorkDiaries();
-          logger.debug('日記データの再読み込みが完了しました');
-          
-          // 更新されたデータを確認
-          logger.debug('現在の日記データ:', workDiaries);
-          
-          // 強制的に再レンダリングを促すため、状態を一時的に変更してから元に戻す
-          const currentDate = selectedDate;
-          if (currentDate) {
-            setSelectedDate(new Date(currentDate.getTime() + 1));
-            setTimeout(() => {
-              setSelectedDate(currentDate);
-              logger.debug('選択日付をリセットして再レンダリングを促しました');
-              
-              // selectedRecordも強制的に再計算
-              const records = getRecordsForDate(currentDate);
-              setSelectedRecord(records);
-              if (records.workDiaries.length > 0) {
-                setSelectedRecordType("diary");
-              }
-              logger.debug('selectedRecordを強制的に再計算しました');
-            }, 100);
-          }
-          
-        } catch (error) {
-          logger.error('日記データの再読み込みに失敗しました:', error);
-        }
-        
-        // 追加の確認として、少し遅延してから再度読み込み
-        setTimeout(async () => {
-          try {
-            logger.debug('遅延読み込みを実行します...');
-            await loadWorkDiaries();
-            logger.debug('遅延読み込みが完了しました');
-          } catch (error) {
-            logger.error('遅延読み込みに失敗しました:', error);
-          }
-        }, 1000);
-        
-        // 最終的な確認として、さらに遅延してから読み込み
-        setTimeout(async () => {
-          try {
-            logger.debug('最終確認読み込みを実行します...');
-            await loadWorkDiaries();
-            logger.debug('最終確認読み込みが完了しました');
-            
-            // それでも更新されない場合は、ページをリロードするオプションを提供
-            logger.info('更新が完了しました。画面が更新されない場合は、ページをリロードしてください。');
-            
-          } catch (error) {
-            logger.error('最終確認読み込みに失敗しました:', error);
-          }
-        }, 2000);
-        
+      if (deletingRecordType === "diary") {
+        await handleDeleteDiary(deletingRecordId);
       } else {
-        logger.error('日記の更新に失敗しました:', data.message);
+        await handleDeleteIncomeExpenseRecord(deletingRecordId);
       }
     } catch (error) {
-      logger.error('日記の更新中にエラーが発生しました:', error);
+      console.error("Error deleting record:", error);
+    } finally {
+      setShowDeleteModal(false);
+      setDeletingRecordId(null);
+      setDeletingRecordType(null);
     }
   };
 
-  // データベースマイグレーション処理（代替方法）
-  const runMigration = async () => {
-    try {
-      logger.info('データベースマイグレーションを開始します...');
-      
-      // 既存の日記データを取得
-      const response = await fetch(`/api/work-records/diary?userId=${user?.id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      const data = await response.json();
-      if (!data.success) {
-        logger.error('日記データの取得に失敗しました:', data.message);
-        return;
-      }
-      
-      const diaries = data.diaries;
-      logger.info(`${diaries.length} 件の日記を取得しました`);
-      
-      let updatedCount = 0;
-      
-      // 各日記を更新（activitiesフィールドが存在しない場合のみ）
-      for (const diary of diaries) {
-        if (!diary.activities) {
-          try {
-            const updateResponse = await fetch(`/api/work-records/diary/${diary._id}`, {
-              method: 'PUT',
-              headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-              },
-              body: JSON.stringify({
-                userId: user?.id,
-                activities: [],
-                workSummary: diary.workSummary || '',
-                achievements: diary.achievements || [],
-                challenges: diary.challenges || [],
-                learnings: diary.learnings || [],
-                nextGoals: diary.nextGoals || [],
-                energyLevel: diary.energyLevel || 5,
-                stressLevel: diary.stressLevel || 5,
-                workHours: diary.workHours || 0,
-                breakTime: diary.breakTime || 0,
-                productivity: diary.productivity || 5,
-                notes: diary.notes || '',
-                gratitude: diary.gratitude || '',
-                reflection: diary.reflection || ''
-              })
-            });
-            
-            const updateData = await updateResponse.json();
-            if (updateData.success) {
-              updatedCount++;
-              logger.debug(`日記 ${diary._id} を更新しました`);
-            }
-          } catch (error) {
-            logger.error(`日記 ${diary._id} の更新に失敗しました:`, error);
-          }
-        }
-      }
-      
-      logger.info(`マイグレーション完了: ${updatedCount}/${diaries.length} レコードを更新しました`);
-      // データを再読み込み
-      await loadWorkDiaries();
-      
-    } catch (error) {
-      logger.error('マイグレーション中にエラーが発生しました:', error);
-    }
+  // 削除のキャンセル
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeletingRecordId(null);
+    setDeletingRecordType(null);
   };
 
-  // 収入・支出モーダルを開く関数
-  const openIncomeExpenseModal = (record?: any) => {
-    if (record) {
-      editIncomeExpenseRecord(record);
+  // 記録の選択
+  const selectRecord = (record: any, type: "income" | "expense" | "diary") => {
+    setSelectedRecord(record);
+    setSelectedRecordType(type);
+    setShowIncomeExpenseForm(false);
+    setShowDiaryForm(false);
+  };
+
+  // 記録の表示
+  const viewRecord = (record: any, type: "income" | "expense" | "diary") => {
+    setSelectedRecord(record);
+    setSelectedRecordType(type);
+    setShowIncomeExpenseForm(false);
+    setShowDiaryForm(false);
+  };
+
+  // 記録の編集
+  const editRecord = (record: any, type: "income" | "expense" | "diary") => {
+    if (type === "diary") {
+      editDiary(record);
     } else {
-      // 新規作成の場合、選択された日付または今日の日付を設定
-      const dateToUse = selectedDate || new Date();
-      // UTC変換を避けてローカル時間で日付文字列を作成
-      const year = dateToUse.getFullYear();
-      const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
-      const day = String(dateToUse.getDate()).padStart(2, '0');
-      setIncomeExpenseDate(`${year}-${month}-${day}`);
-      setIncomeExpenseAmount('');
-      setIncomeExpenseType('income');
-      setIncomeExpenseNotes('');
-      setEditingIncomeExpenseRecord(null);
+      setIncomeExpenseDate(record.date.split("T")[0]);
+      setIncomeExpenseAmount(Math.abs(record.amount).toString());
+      setIncomeExpenseType(record.type === "income" ? "income" : "expense");
+      setIncomeExpenseNotes(record.notes || "");
+      setEditingIncomeExpenseRecord(record);
+      setShowIncomeExpenseForm(true);
     }
-    setShowIncomeExpenseModal(true);
   };
 
-  // 収入・支出モーダルを閉じる関数
-  const closeIncomeExpenseModal = () => {
-    setShowIncomeExpenseModal(false);
-    setEditingIncomeExpenseRecord(null);
+  // 記録の削除
+  const deleteRecord = (id: string, type: "income" | "expense" | "diary") => {
+    showDeleteConfirm(id, type);
   };
 
+  // 月の変更
+  const handleMonthChange = (newMonth: Date) => {
+    setCurrentMonth(newMonth);
+    loadMonthlyMemo();
+  };
 
-  // 初期化時に今日の日付を選択
-  useEffect(() => {
-    if (showWorkRecords && !selectedDate) {
-      const today = new Date();
-      setSelectedDate(today);
-    }
-  }, [showWorkRecords, selectedDate, setSelectedDate]);
+  // 日付の選択
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+    setSelectedRecord(null);
+    setSelectedRecordType(null);
+  };
 
-  // 編集状態を監視
-  useEffect(() => {
-    logger.debug('editingDiary状態が変更されました:', editingDiary);
-  }, [editingDiary]);
+  // 機能の切り替え
+  const handleFeatureSwitch = (feature: string) => {
+    closeOtherFeatures(feature);
+  };
 
-  // workDiariesの変更を監視して強制的に再レンダリングを促す
-  const [forceUpdate, setForceUpdate] = useState(0);
-  useEffect(() => {
-    logger.debug('workDiariesが変更されました。件数:', workDiaries?.length || 0);
-    // 強制的に再レンダリングを促す
-    setForceUpdate(prev => prev + 1);
-  }, [workDiaries]);
-
-  // 統計データの計算
-  const monthlySummary = currentMonth ? getMonthlySummary(currentMonth.getFullYear(), currentMonth.getMonth()) : { totalIncome: 0, totalExpense: 0, netBalance: 0, averageMood: 0, incomeRecordsCount: 0, expenseRecordsCount: 0, diariesCount: 0 };
-  
-  const weekRange = getWeekRange(currentWeekStart);
-  const weeklySummary = getWeeklySummary(weekRange.startOfWeek, weekRange.endOfWeek);
+  if (!showWorkRecords) return null;
 
   return (
     <div className="work-records-section">
       <div className="section-header">
-        <h2>
-          <span className="section-icon">💼</span>
-          おしごと記録
-        </h2>
-        <div className="section-controls">
-          {showWorkRecords ? (
-            <>
-              <button
-                className="btn btn-warning btn-sm"
-                onClick={runMigration}
-                title="既存の日記データに新しいフィールドを追加します"
-                style={{ marginRight: '8px' }}
-              >
-                <i className="bi bi-database-gear"></i>
-                データ移行
-              </button>
-              <button
-                onClick={() => setShowWorkRecords(false)}
-                className="close-section-button"
-                title="セクションを閉じる"
-              >
-                ✕
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => {
-                closeOtherFeatures("work-records");
-                setShowWorkRecords(true);
-                if (incomeExpenseRecords.length === 0) {
-                  loadIncomeExpenseRecordsLocal();
-                }
-                if (workDiaries.length === 0) {
-                  loadWorkDiariesLocal();
-                }
-              }}
-              className="show-section-button"
-              title="セクションを表示"
-            >
-              <i className="bi bi-play-fill"></i>
-            </button>
-          )}
+        <h2>お仕事記録</h2>
+        <p>収入・支出と日記を記録して、お仕事の振り返りをしましょう</p>
+        <div className="dashboard-buttons">
+          <button 
+            className="open-dashboard-button comprehensive"
+            onClick={() => setShowComprehensiveDashboard(true)}
+          >
+            🏠 統合ダッシュボード
+          </button>
         </div>
       </div>
 
+      {/* カレンダー表示 */}
+      <div className="calendar-section">
+        <CalendarComponent
+          currentMonth={currentMonth}
+          onMonthChange={handleMonthChange}
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+          incomeExpenseRecords={incomeExpenseRecords}
+          workDiaries={workDiaries}
+          onRecordSelect={selectRecord}
+          onRecordView={viewRecord}
+          onRecordEdit={editRecord}
+          onRecordDelete={deleteRecord}
+        />
+      </div>
 
-      {/* 日記モーダル */}
-      {showDiaryModal && (
-        <div className="modal-overlay" onClick={closeDiaryModal}>
-          <div className="modal-content diary-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3><i className="bi bi-journal-text"></i>{editingDiary ? '日記を編集' : '新しい日記'}</h3>
-              <button className="modal-close" onClick={closeDiaryModal} aria-label="モーダルを閉じる">
-                <i className="bi bi-x"></i>
+      {/* 月次メモ */}
+      <div className="monthly-memo-section">
+        <h3>月次メモ</h3>
+        {editingMonthlyMemo ? (
+          <div className="memo-editor">
+            <textarea
+              value={monthlyMemo}
+              onChange={(e) => setMonthlyMemo(e.target.value)}
+              placeholder="今月の振り返りや来月の目標を記録してください..."
+              rows={4}
+            />
+            <div className="memo-actions">
+              <button onClick={saveMonthlyMemo} className="save-btn">
+                保存
+              </button>
+              <button onClick={cancelEditingMonthlyMemo} className="cancel-btn">
+                キャンセル
               </button>
             </div>
-            <div className="modal-body">
-              <form onSubmit={(e) => {
-                logger.debug('フォーム送信時の活動データ:', diaryActivities);
-                logger.debug('編集状態:', editingDiary);
-                if (editingDiary) {
-                  logger.debug('更新処理を実行');
-                  handleUpdateDiaryLocal(e);
-                } else {
-                  logger.debug('新規作成処理を実行');
-                  handleCreateDiary(e);
-                }
-              }}>
+          </div>
+        ) : (
+          <div className="memo-display">
+            <p>{monthlyMemo || "月次メモがありません"}</p>
+            <button onClick={startEditingMonthlyMemo} className="edit-btn">
+              編集
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 収入・支出記録フォーム */}
+      {showIncomeExpenseForm && (
+        <div className="form-overlay">
+          <div className="form-container">
+            <h3>{editingIncomeExpenseRecord ? "収入・支出記録を編集" : "収入・支出記録を追加"}</h3>
+            <form onSubmit={editingIncomeExpenseRecord ? handleUpdateIncomeExpenseRecord : handleCreateIncomeExpenseRecord}>
+              <div className="form-group">
+                <label>日付</label>
+                <input
+                  type="date"
+                  value={incomeExpenseDate}
+                  onChange={(e) => setIncomeExpenseDate(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>金額</label>
+                <input
+                  type="number"
+                  value={incomeExpenseAmount}
+                  onChange={(e) => setIncomeExpenseAmount(e.target.value)}
+                  placeholder="金額を入力"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>種類</label>
+                <select
+                  value={incomeExpenseType}
+                  onChange={(e) => setIncomeExpenseType(e.target.value as "income" | "expense")}
+                >
+                  <option value="income">収入</option>
+                  <option value="expense">支出</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>メモ</label>
+                <textarea
+                  value={incomeExpenseNotes}
+                  onChange={(e) => setIncomeExpenseNotes(e.target.value)}
+                  placeholder="メモを入力（任意）"
+                  rows={3}
+                />
+              </div>
+              <div className="form-actions">
+                <button type="submit" className="submit-btn">
+                  {editingIncomeExpenseRecord ? "更新" : "追加"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowIncomeExpenseForm(false);
+                    setEditingIncomeExpenseRecord(null);
+                    setIncomeExpenseDate("");
+                    setIncomeExpenseAmount("");
+                    setIncomeExpenseType("income");
+                    setIncomeExpenseNotes("");
+                  }}
+                  className="cancel-btn"
+                >
+                  キャンセル
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 日記フォーム */}
+      {showDiaryForm && (
+        <div className="form-overlay">
+          <div className="form-container diary-form">
+            <h3>{editingDiary ? "日記を編集" : "日記を追加"}</h3>
+            <form onSubmit={editingDiary ? handleUpdateDiary : handleCreateDiary}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>日付</label>
+                  <input
+                    type="date"
+                    value={diaryDate}
+                    onChange={(e) => setDiaryDate(e.target.value)}
+                    required
+                  />
+                </div>
                 <div className="form-group">
                   <label>タイトル</label>
                   <input
@@ -898,384 +781,73 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     required
                   />
                 </div>
+              </div>
+              <div className="form-group">
+                <label>内容</label>
+                <textarea
+                  value={diaryContent}
+                  onChange={(e) => setDiaryContent(e.target.value)}
+                  placeholder="今日の出来事や感想を記録してください"
+                  rows={4}
+                  required
+                />
+              </div>
+              <div className="form-row">
                 <div className="form-group">
-                  <label>日付</label>
-                  <input
-                    type="date"
-                    value={diaryDate}
-                    onChange={(e) => setDiaryDate(e.target.value)}
-                    required
-                    aria-label="日記の日付"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>気分 (1-5)</label>
+                  <label>気分</label>
                   <select
                     value={diaryMood}
                     onChange={(e) => setDiaryMood(e.target.value)}
-                    aria-label="気分を選択"
                   >
-                    <option value="">選択してください</option>
-                    <option value="1">😞 1 (とても悪い)</option>
-                    <option value="2">😐 2 (悪い)</option>
-                    <option value="3">😑 3 (普通)</option>
-                    <option value="4">😊 4 (良い)</option>
-                    <option value="5">😄 5 (とても良い)</option>
+                    <option value="1">😢 とても悪い</option>
+                    <option value="2">😞 悪い</option>
+                    <option value="3">😐 普通</option>
+                    <option value="4">😊 良い</option>
+                    <option value="5">😄 とても良い</option>
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>内容</label>
-                  <textarea
-                    value={diaryContent}
-                    onChange={(e) => setDiaryContent(e.target.value)}
-                    placeholder="今日の出来事や感想を書いてください"
-                    rows={5}
-                    required
-                  />
-                </div>
-
-                {/* 詳細項目 */}
-                <div className="form-group">
-                  <label>活動</label>
-                  <div className="array-input-group">
-                    <input
-                      type="text"
-                      value={diaryActivitiesInput}
-                      onChange={(e) => setDiaryActivitiesInput(e.target.value)}
-                      placeholder="活動を入力"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addArrayItem(setDiaryActivities, diaryActivitiesInput, setDiaryActivitiesInput);
-                        }
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => addArrayItem(setDiaryActivities, diaryActivitiesInput, setDiaryActivitiesInput)}
-                      className="add-item-button"
-                    >
-                      追加
-                    </button>
-                  </div>
-                  <div className="array-items">
-                    {(diaryActivities || []).map((activity, index) => (
-                      <div key={index} className="array-item">
-                        <span>{activity}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeArrayItem(setDiaryActivities, index)}
-                          className="remove-item-button"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>学習内容</label>
-                  <div className="array-input-group">
-                    <input
-                      type="text"
-                      value={diaryLearningsInput}
-                      onChange={(e) => setDiaryLearningsInput(e.target.value)}
-                      placeholder="学習内容を入力"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addArrayItem(setDiaryLearnings, diaryLearningsInput, setDiaryLearningsInput);
-                        }
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => addArrayItem(setDiaryLearnings, diaryLearningsInput, setDiaryLearningsInput)}
-                      className="add-item-button"
-                    >
-                      追加
-                    </button>
-                  </div>
-                  <div className="array-items">
-                    {(diaryLearnings || []).map((learning, index) => (
-                      <div key={index} className="array-item">
-                        <span>{learning}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeArrayItem(setDiaryLearnings, index)}
-                          className="remove-item-button"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>エネルギー・ストレスレベル</label>
-                  <div className="level-inputs">
-                    <div className="level-input">
-                      <label>エネルギー: {diaryEnergyLevel}</label>
-                      <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        value={diaryEnergyLevel}
-                        onChange={(e) => setDiaryEnergyLevel(parseInt(e.target.value))}
-                        aria-label="エネルギーレベル"
-                      />
-                    </div>
-                    <div className="level-input">
-                      <label>ストレス: {diaryStressLevel}</label>
-                      <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        value={diaryStressLevel}
-                        onChange={(e) => setDiaryStressLevel(parseInt(e.target.value))}
-                        aria-label="ストレスレベル"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>作業時間・休憩時間</label>
-                  <div className="time-inputs">
-                    <div className="time-input">
-                      <label>作業時間 (時間)</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="24"
-                        step="0.5"
-                        value={diaryWorkHours}
-                        onChange={(e) => setDiaryWorkHours(parseFloat(e.target.value) || 0)}
-                        aria-label="作業時間"
-                      />
-                    </div>
-                    <div className="time-input">
-                      <label>休憩時間 (分)</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="480"
-                        step="15"
-                        value={diaryBreakTime}
-                        onChange={(e) => setDiaryBreakTime(parseInt(e.target.value) || 0)}
-                        aria-label="休憩時間"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>生産性</label>
-                  <div className="level-input">
-                    <label>生産性: {diaryProductivity}</label>
-                    <input
-                      type="range"
-                      min="1"
-                      max="10"
-                      value={diaryProductivity}
-                      onChange={(e) => setDiaryProductivity(parseInt(e.target.value))}
-                      aria-label="生産性レベル"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>タグ</label>
-                  <div className="array-input-group">
-                    <input
-                      type="text"
-                      value={diaryTagsInput}
-                      onChange={(e) => setDiaryTagsInput(e.target.value)}
-                      placeholder="タグを入力"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addArrayItem(setDiaryTags, diaryTagsInput, setDiaryTagsInput);
-                        }
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => addArrayItem(setDiaryTags, diaryTagsInput, setDiaryTagsInput)}
-                      className="add-item-button"
-                    >
-                      追加
-                    </button>
-                  </div>
-                  <div className="array-items">
-                    {(diaryTags || []).map((tag, index) => (
-                      <div key={index} className="array-item">
-                        <span>{tag}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeArrayItem(setDiaryTags, index)}
-                          className="remove-item-button"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>メモ</label>
-                  <textarea
-                    value={diaryNotes}
-                    onChange={(e) => setDiaryNotes(e.target.value)}
-                    placeholder="その他のメモや備考"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="form-actions">
-                  <button type="submit" className="save-button">
-                    {editingDiary ? '更新' : '保存'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={closeDiaryModal}
-                    className="cancel-button"
-                  >
-                    キャンセル
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 収入・支出モーダル */}
-      {showIncomeExpenseModal && (
-        <div className="modal-overlay" onClick={closeIncomeExpenseModal}>
-          <div className="modal-content income-expense-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>
-                <i className="bi bi-cash-coin"></i>
-                {editingIncomeExpenseRecord ? '収支記録を編集' : '新しい収支記録'}
-              </h3>
-              <button className="modal-close" onClick={closeIncomeExpenseModal} aria-label="モーダルを閉じる">
-                <i className="bi bi-x"></i>
-              </button>
-            </div>
-            <div className="modal-body">
-              <form onSubmit={(e) => {
-                if (editingIncomeExpenseRecord) {
-                  handleUpdateIncomeExpenseRecord(e);
-                } else {
-                  handleCreateIncomeExpenseRecord(e);
-                }
-              }}>
-                <div className="form-group">
-                  <label>日付</label>
-                  <input
-                    type="date"
-                    value={incomeExpenseDate}
-                    onChange={(e) => setIncomeExpenseDate(e.target.value)}
-                    required
-                    aria-label="収支記録の日付"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>種類</label>
+                  <label>エネルギーレベル</label>
                   <select
-                    value={incomeExpenseType}
-                    onChange={(e) => setIncomeExpenseType(e.target.value as "income" | "expense")}
-                    aria-label="収入または支出を選択"
+                    value={diaryEnergyLevel}
+                    onChange={(e) => setDiaryEnergyLevel(parseInt(e.target.value))}
                   >
-                    <option value="income">💰 収入</option>
-                    <option value="expense">💸 支出</option>
+                    <option value="1">🔋 とても低い</option>
+                    <option value="2">🔋 低い</option>
+                    <option value="3">🔋 普通</option>
+                    <option value="4">🔋 高い</option>
+                    <option value="5">🔋 とても高い</option>
                   </select>
                 </div>
-                <div className="form-group">
-                  <label>金額</label>
-                  <input
-                    type="number"
-                    value={incomeExpenseAmount}
-                    onChange={(e) => setIncomeExpenseAmount(e.target.value)}
-                    placeholder="金額を入力"
-                    required
-                    min="0"
-                    step="1"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>メモ（任意）</label>
-                  <textarea
-                    value={incomeExpenseNotes}
-                    onChange={(e) => setIncomeExpenseNotes(e.target.value)}
-                    placeholder="詳細や備考を入力"
-                    rows={3}
-                  />
-                </div>
-                <div className="form-actions">
-                  <button type="submit" className="save-button">
-                    {editingIncomeExpenseRecord ? '更新' : '保存'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={closeIncomeExpenseModal}
-                    className="cancel-button"
-                  >
-                    キャンセル
-                  </button>
-                </div>
-              </form>
-            </div>
+              </div>
+              <div className="form-actions">
+                <button type="submit" className="submit-btn">
+                  {editingDiary ? "更新" : "追加"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDiaryForm(false);
+                    setEditingDiary(null);
+                    resetDiaryForm();
+                  }}
+                  className="cancel-btn"
+                >
+                  キャンセル
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      )}
-
-      {/* カレンダー（常に拡大表示） - work-records-section直下 */}
-      {showWorkRecords && (
-        <CalendarComponent
-          currentMonth={currentMonth}
-          onMonthChange={handleMonthChange}
-          selectedDate={selectedDate}
-          onDateClick={handleDateClick}
-          getRecordsForDate={getRecordsForDate}
-          isModal={true}
-          onClose={() => setShowCalendarModal(false)}
-          onViewModeChange={setCalendarViewMode}
-          onWeekChange={setCurrentWeekStart}
-          selectedRecord={selectedRecord}
-          selectedRecordType={selectedRecordType}
-          onEditIncomeExpense={openIncomeExpenseModal}
-          onEditDiary={openDiaryModal}
-          onDeleteIncomeExpense={handleDeleteIncomeExpenseRecord}
-          onDeleteDiary={handleDeleteDiary}
-          onAddIncomeExpense={() => openIncomeExpenseModal()}
-          onAddDiary={() => {
-            setEditingDiary(null);
-            openDiaryModal();
-          }}
-          onRefresh={loadIncomeExpenseRecordsLocal}
-          monthlyMemo={monthlyMemo}
-          onMonthlyMemoChange={setMonthlyMemo}
-          editingMonthlyMemo={editingMonthlyMemo}
-          onStartEditingMonthlyMemo={() => setEditingMonthlyMemo(true)}
-          onSaveWeeklyMemo={saveMonthlyMemo}
-          onCancelEditingWeeklyMemo={() => setEditingMonthlyMemo(false)}
-        />
       )}
 
       {/* 削除確認モーダル */}
       <DeleteConfirmModal
         isOpen={showDeleteModal}
-        onClose={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        title="収支記録の削除"
-        message="この収支記録を削除してもよろしいですか？削除した記録は復元できません。"
-        itemName={deleteTarget?.name || ''}
-        itemType={deleteTarget?.type || ''}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="記録を削除"
+        message={`この${deletingRecordType === "diary" ? "日記" : "記録"}を削除しますか？`}
       />
     </div>
   );
