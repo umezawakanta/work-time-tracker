@@ -892,6 +892,11 @@
   backdrop-filter: blur(10px);
 }
 
+.focus-content {
+  position: relative;
+  z-index: 1;
+}
+
 .focus-message {
   font-size: 18px;
   line-height: 1.6;
@@ -1750,6 +1755,48 @@
 
 .complete-button:hover {
   background: #45a049;
+}
+
+.complete-task-button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.complete-task-button:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.complete-action-button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-left: 5px;
+}
+
+.complete-action-button:hover {
+  background: #45a049;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .delete-button {

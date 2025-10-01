@@ -290,6 +290,24 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
     }
   };
 
+  // 今やることのタスクを完了する
+  const handleCompleteCurrentTask = () => {
+    const immediateActions = getImmediateActions();
+    if (immediateActions.length > 0) {
+      const topAction = immediateActions[0];
+      if (topAction.type === 'deadline') {
+        // 計画の完了
+        const plan = plans.find(p => p.title === topAction.title);
+        if (plan) {
+          handleCompletePlan(plan._id);
+        }
+      } else if (topAction.type === 'schedule') {
+        // スケジュールの完了（スケジュールは完了状態にできないので、メッセージを表示）
+        alert('スケジュールは時間が来ると自動的に完了扱いになります。');
+      }
+    }
+  };
+
   const handleCancelPlan = () => {
     setShowPlanForm(false);
     setEditingPlan(null);
@@ -609,8 +627,19 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
                 <h2>🎯 今やること</h2>
                 <span className="focus-time">{getCurrentFocus().time}</span>
               </div>
-              <div className={`focus-message priority-${getCurrentFocus().priority}`}>
-                {getCurrentFocus().message}
+              <div className="focus-content">
+                <div className={`focus-message priority-${getCurrentFocus().priority}`}>
+                  {getCurrentFocus().message}
+                </div>
+                {getImmediateActions().length > 0 && (
+                  <button 
+                    className="complete-task-button"
+                    onClick={handleCompleteCurrentTask}
+                    title="このタスクを完了にする"
+                  >
+                    ✅ 完了
+                  </button>
+                )}
               </div>
             </div>
             
@@ -766,9 +795,35 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
                         <span className="action-title">{action.title}</span>
                         <span className="action-time">{action.time}</span>
                       </div>
-                      <button className="action-button">
-                        {action.action}
-                      </button>
+                      <div className="action-buttons">
+                        <button 
+                          className="action-button"
+                          onClick={() => {
+                            if (action.type === 'deadline') {
+                              const plan = plans.find(p => p.title === action.title);
+                              if (plan) handleCompletePlan(plan._id);
+                            } else if (action.type === 'schedule') {
+                              alert('スケジュールは時間が来ると自動的に完了扱いになります。');
+                            }
+                          }}
+                        >
+                          {action.action}
+                        </button>
+                        <button 
+                          className="complete-action-button"
+                          onClick={() => {
+                            if (action.type === 'deadline') {
+                              const plan = plans.find(p => p.title === action.title);
+                              if (plan) handleCompletePlan(plan._id);
+                            } else if (action.type === 'schedule') {
+                              alert('スケジュールは時間が来ると自動的に完了扱いになります。');
+                            }
+                          }}
+                          title="このタスクを完了にする"
+                        >
+                          ✅
+                        </button>
+                      </div>
                     </div>
                   ))}
                   {getImmediateActions().length === 0 && (
