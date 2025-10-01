@@ -886,12 +886,19 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 {dateRecords.workDiaries.length > 0 && (
                   <div className="date-diary-records">
                     <h4>📝 日記記録</h4>
-                    {dateRecords.workDiaries.map((diary, index) => (
+                    {dateRecords.workDiaries.map((diary, index) => {
+                      console.log('日記データ:', diary);
+                      return (
                       <div key={index} className="date-record-item diary">
                         <div className="diary-content">
                           <div className="diary-title">{diary.title || '日記'}</div>
-                          {diary.content && (
-                            <div className="diary-text">{diary.content}</div>
+                          {(diary.content || diary.description || diary.text || diary.body) && (
+                            <div className="diary-text">
+                              {diary.content || diary.description || diary.text || diary.body}
+                            </div>
+                          )}
+                          {!(diary.content || diary.description || diary.text || diary.body) && (
+                            <div className="diary-text">本文がありません</div>
                           )}
                           <div className="diary-mood">気分: {diary.mood}/10</div>
                           <div className="diary-activities">
@@ -916,7 +923,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                           </button>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
