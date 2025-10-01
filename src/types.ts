@@ -130,6 +130,197 @@ export interface IncomeExpenseRecord {
   type: "income" | "expense";
   amount: number;
   notes: string; // メモ
+  category: string; // カテゴリ
+  subcategory?: string; // サブカテゴリ
+  tags?: string[]; // タグ
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 予算管理の型定義
+export interface Budget {
+  _id: string;
+  userId: string;
+  category: string;
+  subcategory?: string;
+  monthlyLimit: number;
+  currentSpent: number;
+  period: "monthly" | "weekly" | "yearly";
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 財務目標の型定義
+export interface FinancialGoal {
+  _id: string;
+  userId: string;
+  title: string;
+  description: string;
+  targetAmount: number;
+  currentAmount: number;
+  targetDate: string;
+  category: "savings" | "debt_payment" | "investment" | "purchase" | "other";
+  priority: "low" | "medium" | "high";
+  isCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 行動記録の型定義
+export interface ActionRecord {
+  _id: string;
+  userId: string;
+  title: string;
+  description: string;
+  category: "work" | "personal" | "health" | "learning" | "social" | "finance" | "other";
+  subcategory?: string;
+  startTime: string;
+  endTime?: string;
+  duration?: number; // 分単位
+  location?: string;
+  participants?: string[];
+  tags: string[];
+  mood?: number; // 1-5の評価
+  energy?: number; // 1-5の評価
+  productivity?: number; // 1-5の評価
+  notes?: string;
+  isCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 行動パターン分析の型定義
+export interface ActionPattern {
+  _id: string;
+  userId: string;
+  category: string;
+  subcategory?: string;
+  averageDuration: number;
+  frequency: number; // 週間頻度
+  preferredTime: string; // よく行う時間帯
+  moodScore: number; // 平均気分スコア
+  productivityScore: number; // 平均生産性スコア
+  lastPerformed: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 計画・目標の型定義
+export interface Plan {
+  _id: string;
+  userId: string;
+  title: string;
+  description: string;
+  category: "work" | "personal" | "health" | "learning" | "finance" | "other";
+  priority: "low" | "medium" | "high" | "urgent";
+  status: "not_started" | "in_progress" | "completed" | "cancelled" | "on_hold";
+  startDate: string;
+  targetDate: string;
+  completedDate?: string;
+  progress: number; // 0-100の進捗率
+  tags: string[];
+  notes?: string;
+  parentPlanId?: string; // 親計画のID（サブタスク用）
+  subPlans?: string[]; // サブタスクのID配列
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 予定・スケジュールの型定義
+export interface Schedule {
+  _id: string;
+  userId: string;
+  title: string;
+  description?: string;
+  startTime: string;
+  endTime: string;
+  location?: string;
+  participants?: string[];
+  category: "work" | "personal" | "health" | "learning" | "social" | "finance" | "other";
+  priority: "low" | "medium" | "high";
+  isRecurring: boolean;
+  recurrencePattern?: "daily" | "weekly" | "monthly" | "yearly";
+  recurrenceEndDate?: string;
+  reminderMinutes?: number; // 何分前にリマインダーを送るか
+  isCompleted: boolean;
+  completedAt?: string;
+  planId?: string; // 関連する計画のID
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 予算計画の型定義
+export interface BudgetPlan {
+  _id: string;
+  userId: string;
+  title: string;
+  description?: string;
+  category: string;
+  subcategory?: string;
+  targetAmount: number;
+  currentAmount: number;
+  startDate: string;
+  endDate: string;
+  period: "monthly" | "quarterly" | "yearly";
+  isActive: boolean;
+  planId?: string; // 関連する計画のID
+  createdAt: string;
+  updatedAt: string;
+}
+
+// データ分析結果の型定義
+export interface DataAnalysis {
+  _id: string;
+  userId: string;
+  analysisType: "spending_pattern" | "income_trend" | "productivity_analysis" | "mood_correlation" | "goal_progress";
+  title: string;
+  description: string;
+  insights: string[];
+  recommendations: string[];
+  data: any; // 分析データの詳細
+  period: {
+    start: string;
+    end: string;
+  };
+  confidence: number; // 0-100の信頼度
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 改善提案の型定義
+export interface ImprovementSuggestion {
+  _id: string;
+  userId: string;
+  category: "financial" | "productivity" | "health" | "learning" | "social";
+  title: string;
+  description: string;
+  priority: "low" | "medium" | "high";
+  impact: "low" | "medium" | "high";
+  effort: "low" | "medium" | "high";
+  estimatedBenefit: string;
+  actionSteps: string[];
+  isImplemented: boolean;
+  implementedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 予測結果の型定義
+export interface Prediction {
+  _id: string;
+  userId: string;
+  predictionType: "spending" | "income" | "productivity" | "goal_completion";
+  title: string;
+  description: string;
+  currentValue: number;
+  predictedValue: number;
+  confidence: number; // 0-100の信頼度
+  timeframe: string; // 予測期間
+  factors: string[]; // 影響要因
+  recommendations: string[];
   createdAt: string;
   updatedAt: string;
 }

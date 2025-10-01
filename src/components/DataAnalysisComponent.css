@@ -1,0 +1,337 @@
+/* DataAnalysisComponent.css - データ分析コンポーネント専用のスタイル */
+
+.data-analysis-component {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.analysis-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.analysis-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.generate-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+}
+
+.generate-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.close-btn {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: #ff5252;
+  transform: scale(1.1);
+}
+
+.analysis-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+  color: #333;
+  background: #f5f5f5;
+}
+
+.tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: #f8f9ff;
+}
+
+.analysis-content {
+  min-height: 400px;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.analyses-list,
+.suggestions-list,
+.predictions-list {
+  display: grid;
+  gap: 1rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.analysis-item,
+.suggestion-item,
+.prediction-item {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.analysis-item:hover,
+.suggestion-item:hover,
+.prediction-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.suggestion-item.implemented {
+  background: #e8f5e8;
+  border-color: #4CAF50;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.item-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.confidence-badge {
+  background: #4CAF50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.suggestion-badges {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.priority-badge,
+.impact-badge,
+.implemented-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: white;
+}
+
+.implemented-badge {
+  background: #4CAF50;
+}
+
+.item-details {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.item-details p {
+  margin: 0.5rem 0;
+}
+
+.insights,
+.recommendations,
+.action-steps,
+.factors {
+  margin: 1rem 0;
+}
+
+.insights h5,
+.recommendations h5,
+.action-steps h5,
+.factors h5 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.insights ul,
+.recommendations ul,
+.action-steps ol,
+.factors ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.insights li,
+.recommendations li,
+.action-steps li,
+.factors li {
+  margin: 0.25rem 0;
+}
+
+.suggestion-meta {
+  background: #f0f0f0;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+}
+
+.suggestion-meta p {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+}
+
+.implement-btn {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.implement-btn:hover {
+  background: #45a049;
+}
+
+.prediction-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f0f0f0;
+  border-radius: 6px;
+}
+
+.value-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.value-item .label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.value-item .value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.value-item .value.predicted {
+  color: #667eea;
+}
+
+.no-items {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .data-analysis-component {
+    padding: 1rem;
+  }
+  
+  .analysis-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .analysis-controls {
+    justify-content: center;
+  }
+  
+  .analysis-tabs {
+    flex-direction: column;
+  }
+  
+  .tab {
+    text-align: center;
+  }
+  
+  .item-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  
+  .suggestion-badges {
+    justify-content: center;
+  }
+  
+  .prediction-values {
+    grid-template-columns: 1fr;
+  }
+}

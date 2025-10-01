@@ -1,13 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import './WorkRecordsComponent.css';
-import type { IncomeExpenseRecord, WorkDiary, User } from '../types';
+import type { IncomeExpenseRecord, WorkDiary, User, Budget, FinancialGoal } from '../types';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import CalendarComponent from './CalendarComponent';
+import ActionHistoryComponent from './ActionHistoryComponent';
+import FuturePlanningComponent from './FuturePlanningComponent';
+import DataAnalysisComponent from './DataAnalysisComponent';
 import { logger } from '../utils/logger';
 import { apiFetch } from '../utils/apiClient';
 import { createAuthHeaders } from '../utils/authUtils';
 import { incomeExpenseRewardManager } from '../utils/incomeExpenseRewardManager';
 import { diaryRewardManager } from '../utils/diaryRewardManager';
+
+// カテゴリの定数定義
+const INCOME_CATEGORIES = [
+  '給与', 'ボーナス', '副業', '投資', 'その他収入'
+];
+
+const EXPENSE_CATEGORIES = [
+  '食費', '住居費', '光熱費', '交通費', '通信費', '医療費', 
+  '教育費', '娯楽費', '衣類費', 'その他支出'
+];
+
+const SUBCATEGORIES: { [key: string]: string[] } = {
+  '食費': ['外食', '食材', '飲み物', 'お菓子'],
+  '住居費': ['家賃', '管理費', '修繕費', '保険料'],
+  '光熱費': ['電気代', 'ガス代', '水道代', 'インターネット'],
+  '交通費': ['電車', 'バス', 'タクシー', 'ガソリン', '駐車場'],
+  '通信費': ['スマホ', '固定電話', 'インターネット'],
+  '医療費': ['病院', '薬代', '健康診断', '歯科'],
+  '教育費': ['書籍', '講座', '資格', '学校'],
+  '娯楽費': ['映画', 'ゲーム', 'スポーツ', '旅行'],
+  '衣類費': ['服', '靴', 'アクセサリー', 'クリーニング'],
+  'その他支出': ['雑費', '寄付', 'プレゼント', 'その他']
+};
 
 interface WorkRecordsComponentProps {
   showWorkRecords: boolean;
@@ -41,6 +67,33 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   const [incomeExpenseAmount, setIncomeExpenseAmount] = useState("");
   const [incomeExpenseType, setIncomeExpenseType] = useState<"income" | "expense">("income");
   const [incomeExpenseNotes, setIncomeExpenseNotes] = useState("");
+  const [incomeExpenseCategory, setIncomeExpenseCategory] = useState("");
+  const [incomeExpenseSubcategory, setIncomeExpenseSubcategory] = useState("");
+  const [incomeExpenseTags, setIncomeExpenseTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState("");
+
+  // 予算管理の状態
+  const [budgets, setBudgets] = useState<Budget[]>([]);
+  const [showBudgetForm, setShowBudgetForm] = useState(false);
+  const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
+
+  // 財務目標の状態
+  const [financialGoals, setFinancialGoals] = useState<FinancialGoal[]>([]);
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<FinancialGoal | null>(null);
+
+  // 分析・レポートの状態
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [analysisPeriod, setAnalysisPeriod] = useState<"week" | "month" | "year">("month");
+
+  // 行動記録の状態
+  const [showActionHistory, setShowActionHistory] = useState(false);
+
+  // 未来計画の状態
+  const [showFuturePlanning, setShowFuturePlanning] = useState(false);
+
+  // データ分析の状態
+  const [showDataAnalysis, setShowDataAnalysis] = useState(false);
 
   // 日記フォームの状態
   const [diaryDate, setDiaryDate] = useState("");
@@ -180,6 +233,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         amount: incomeExpenseType === "expense" ? -Math.abs(amount) : Math.abs(amount),
         type: incomeExpenseType,
         notes: incomeExpenseNotes,
+        category: incomeExpenseCategory || (incomeExpenseType === "income" ? "給与" : "その他支出"),
+        subcategory: incomeExpenseSubcategory || "",
+        tags: incomeExpenseTags,
       };
 
       console.log("Creating income/expense record:", requestBody);
@@ -216,6 +272,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         setIncomeExpenseAmount("");
         setIncomeExpenseType("income");
         setIncomeExpenseNotes("");
+        setIncomeExpenseCategory("");
+        setIncomeExpenseSubcategory("");
+        setIncomeExpenseTags([]);
+        setNewTag("");
         setShowIncomeExpenseForm(false);
         loadIncomeExpenseRecords();
       } else {
@@ -282,6 +342,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         setIncomeExpenseAmount("");
         setIncomeExpenseType("income");
         setIncomeExpenseNotes("");
+        setIncomeExpenseCategory("");
+        setIncomeExpenseSubcategory("");
+        setIncomeExpenseTags([]);
+        setNewTag("");
         setEditingIncomeExpenseRecord(null);
         setShowIncomeExpenseForm(false);
         await loadIncomeExpenseRecords();
@@ -545,6 +609,30 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     setShowDeleteModal(true);
   };
 
+  // 指定された日付の記録を取得
+  const getRecordsForDate = (date: Date) => {
+    const selectedDateUTC = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
+    const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
+
+    const filteredIncomeExpenseRecords = incomeExpenseRecords.filter(record => 
+      record.date.startsWith(selectedDateUTCStr)
+    );
+
+    const filteredDiaries = workDiaries.filter(diary => 
+      diary.date.startsWith(selectedDateUTCStr)
+    );
+
+    return {
+      incomeRecords: filteredIncomeExpenseRecords.filter(record => record.type === "income"),
+      expenseRecords: filteredIncomeExpenseRecords.filter(record => record.type === "expense"),
+      workDiaries: filteredDiaries,
+    };
+  };
+
   // 削除の実行
   const confirmDelete = async () => {
     if (!deletingRecordId || !deletingRecordType) return;
@@ -596,6 +684,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       setIncomeExpenseAmount(Math.abs(record.amount).toString());
       setIncomeExpenseType(record.type === "income" ? "income" : "expense");
       setIncomeExpenseNotes(record.notes || "");
+      setIncomeExpenseCategory(record.category || "");
+      setIncomeExpenseSubcategory(record.subcategory || "");
+      setIncomeExpenseTags(record.tags || []);
       setEditingIncomeExpenseRecord(record);
       setShowIncomeExpenseForm(true);
     }
@@ -638,6 +729,24 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           >
             🏠 統合ダッシュボード
           </button>
+          <button 
+            className="open-dashboard-button action-history"
+            onClick={() => setShowActionHistory(true)}
+          >
+            📝 行動記録
+          </button>
+          <button 
+            className="open-dashboard-button future-planning"
+            onClick={() => setShowFuturePlanning(true)}
+          >
+            🎯 未来計画
+          </button>
+          <button 
+            className="open-dashboard-button data-analysis"
+            onClick={() => setShowDataAnalysis(true)}
+          >
+            📊 データ分析
+          </button>
         </div>
       </div>
 
@@ -647,7 +756,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           currentMonth={currentMonth}
           onMonthChange={handleMonthChange}
           selectedDate={selectedDate}
-          onDateSelect={handleDateSelect}
+          onDateClick={handleDateSelect}
+          getRecordsForDate={getRecordsForDate}
           incomeExpenseRecords={incomeExpenseRecords}
           workDiaries={workDiaries}
           onRecordSelect={selectRecord}
@@ -716,11 +826,93 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 <label>種類</label>
                 <select
                   value={incomeExpenseType}
-                  onChange={(e) => setIncomeExpenseType(e.target.value as "income" | "expense")}
+                  onChange={(e) => {
+                    setIncomeExpenseType(e.target.value as "income" | "expense");
+                    setIncomeExpenseCategory("");
+                    setIncomeExpenseSubcategory("");
+                  }}
                 >
                   <option value="income">収入</option>
                   <option value="expense">支出</option>
                 </select>
+              </div>
+              <div className="form-group">
+                <label>カテゴリ</label>
+                <select
+                  value={incomeExpenseCategory}
+                  onChange={(e) => {
+                    setIncomeExpenseCategory(e.target.value);
+                    setIncomeExpenseSubcategory("");
+                  }}
+                  required
+                >
+                  <option value="">カテゴリを選択</option>
+                  {(incomeExpenseType === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </div>
+              {incomeExpenseCategory && SUBCATEGORIES[incomeExpenseCategory] && (
+                <div className="form-group">
+                  <label>サブカテゴリ</label>
+                  <select
+                    value={incomeExpenseSubcategory}
+                    onChange={(e) => setIncomeExpenseSubcategory(e.target.value)}
+                  >
+                    <option value="">サブカテゴリを選択（任意）</option>
+                    {SUBCATEGORIES[incomeExpenseCategory].map(subcategory => (
+                      <option key={subcategory} value={subcategory}>{subcategory}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div className="form-group">
+                <label>タグ</label>
+                <div className="tags-input">
+                  <div className="tags-list">
+                    {incomeExpenseTags.map((tag, index) => (
+                      <span key={index} className="tag">
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => setIncomeExpenseTags(incomeExpenseTags.filter((_, i) => i !== index))}
+                          className="tag-remove"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="tag-input">
+                    <input
+                      type="text"
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      placeholder="タグを入力"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (newTag.trim() && !incomeExpenseTags.includes(newTag.trim())) {
+                            setIncomeExpenseTags([...incomeExpenseTags, newTag.trim()]);
+                            setNewTag("");
+                          }
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (newTag.trim() && !incomeExpenseTags.includes(newTag.trim())) {
+                          setIncomeExpenseTags([...incomeExpenseTags, newTag.trim()]);
+                          setNewTag("");
+                        }
+                      }}
+                      className="tag-add-btn"
+                    >
+                      追加
+                    </button>
+                  </div>
+                </div>
               </div>
               <div className="form-group">
                 <label>メモ</label>
@@ -744,6 +936,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     setIncomeExpenseAmount("");
                     setIncomeExpenseType("income");
                     setIncomeExpenseNotes("");
+                    setIncomeExpenseCategory("");
+                    setIncomeExpenseSubcategory("");
+                    setIncomeExpenseTags([]);
+                    setNewTag("");
                   }}
                   className="cancel-btn"
                 >
@@ -840,6 +1036,30 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           </div>
         </div>
       )}
+
+      {/* 行動記録コンポーネント */}
+      <ActionHistoryComponent
+        showActionHistory={showActionHistory}
+        setShowActionHistory={setShowActionHistory}
+        closeOtherFeatures={closeOtherFeatures}
+        user={user}
+      />
+
+      {/* 未来計画コンポーネント */}
+      <FuturePlanningComponent
+        showFuturePlanning={showFuturePlanning}
+        setShowFuturePlanning={setShowFuturePlanning}
+        closeOtherFeatures={closeOtherFeatures}
+        user={user}
+      />
+
+      {/* データ分析コンポーネント */}
+      <DataAnalysisComponent
+        showDataAnalysis={showDataAnalysis}
+        setShowDataAnalysis={setShowDataAnalysis}
+        closeOtherFeatures={closeOtherFeatures}
+        user={user}
+      />
 
       {/* 削除確認モーダル */}
       <DeleteConfirmModal
