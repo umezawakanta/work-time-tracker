@@ -6,6 +6,7 @@ import CalendarComponent from './CalendarComponent';
 import ActionHistoryComponent from './ActionHistoryComponent';
 import FuturePlanningComponent from './FuturePlanningComponent';
 import DataAnalysisComponent from './DataAnalysisComponent';
+import ComprehensiveDashboard from './ComprehensiveDashboard';
 import { logger } from '../utils/logger';
 import { apiFetch } from '../utils/apiClient';
 import { createAuthHeaders } from '../utils/authUtils';
@@ -260,7 +261,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             date: incomeExpenseDate
           });
 
-          if (rewardResult.rewarded) {
+          if (rewardResult.experience > 0 || rewardResult.workCoins > 0) {
             console.log(`収入・支出記録報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
           }
         } catch (rewardError) {
@@ -330,7 +331,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             date: incomeExpenseDate
           }, editingIncomeExpenseRecord._id);
 
-          if (rewardResult.rewarded) {
+          if (rewardResult.experience > 0 || rewardResult.workCoins > 0) {
             console.log(`収入・支出記録更新報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
           }
         } catch (rewardError) {
@@ -438,10 +439,14 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
             content: diaryContent,
             mood: parseInt(diaryMood),
             workHours: diaryWorkHours,
-            isPrivate: false
+            isPrivate: false,
+            activities: [],
+            achievements: [],
+            energyLevel: 5,
+            productivity: 5
           });
 
-          if (rewardResult.rewarded) {
+          if (rewardResult.experience > 0 || rewardResult.workCoins > 0) {
             console.log(`日記投稿報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
           }
         } catch (rewardError) {
@@ -698,7 +703,13 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   };
 
   // 月の変更
-  const handleMonthChange = (newMonth: Date) => {
+  const handleMonthChange = (direction: 'prev' | 'next') => {
+    const newMonth = new Date(currentMonth);
+    if (direction === 'prev') {
+      newMonth.setMonth(newMonth.getMonth() - 1);
+    } else {
+      newMonth.setMonth(newMonth.getMonth() + 1);
+    }
     setCurrentMonth(newMonth);
     loadMonthlyMemo();
   };
@@ -725,7 +736,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         <div className="dashboard-buttons">
           <button 
             className="open-dashboard-button comprehensive"
-            onClick={() => setShowComprehensiveDashboard(true)}
+            onClick={() => {
+              closeOtherFeatures('comprehensive-dashboard');
+              setShowComprehensiveDashboard(true);
+            }}
           >
             🏠 統合ダッシュボード
           </button>
@@ -758,12 +772,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           selectedDate={selectedDate}
           onDateClick={handleDateSelect}
           getRecordsForDate={getRecordsForDate}
-          incomeExpenseRecords={incomeExpenseRecords}
-          workDiaries={workDiaries}
-          onRecordSelect={selectRecord}
-          onRecordView={viewRecord}
-          onRecordEdit={editRecord}
-          onRecordDelete={deleteRecord}
         />
       </div>
 
@@ -831,6 +839,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     setIncomeExpenseCategory("");
                     setIncomeExpenseSubcategory("");
                   }}
+                  title="収入・支出の種類を選択"
+                  aria-label="収入・支出の種類を選択"
                 >
                   <option value="income">収入</option>
                   <option value="expense">支出</option>
@@ -845,6 +855,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     setIncomeExpenseSubcategory("");
                   }}
                   required
+                  title="カテゴリを選択"
+                  aria-label="カテゴリを選択"
                 >
                   <option value="">カテゴリを選択</option>
                   {(incomeExpenseType === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(category => (
@@ -855,10 +867,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
               {incomeExpenseCategory && SUBCATEGORIES[incomeExpenseCategory] && (
                 <div className="form-group">
                   <label>サブカテゴリ</label>
-                  <select
-                    value={incomeExpenseSubcategory}
-                    onChange={(e) => setIncomeExpenseSubcategory(e.target.value)}
-                  >
+                <select
+                  value={incomeExpenseSubcategory}
+                  onChange={(e) => setIncomeExpenseSubcategory(e.target.value)}
+                  title="サブカテゴリを選択"
+                  aria-label="サブカテゴリを選択"
+                >
                     <option value="">サブカテゴリを選択（任意）</option>
                     {SUBCATEGORIES[incomeExpenseCategory].map(subcategory => (
                       <option key={subcategory} value={subcategory}>{subcategory}</option>
@@ -974,6 +988,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                     value={diaryTitle}
                     onChange={(e) => setDiaryTitle(e.target.value)}
                     placeholder="日記のタイトル"
+                    title="日記のタイトルを入力"
                     required
                   />
                 </div>
@@ -994,6 +1009,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   <select
                     value={diaryMood}
                     onChange={(e) => setDiaryMood(e.target.value)}
+                    title="気分を選択"
+                    aria-label="気分を選択"
                   >
                     <option value="1">😢 とても悪い</option>
                     <option value="2">😞 悪い</option>
@@ -1061,6 +1078,14 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         user={user}
       />
 
+      {/* 統合ダッシュボード */}
+      {showComprehensiveDashboard && user && (
+        <ComprehensiveDashboard
+          userId={user.id}
+          onClose={() => setShowComprehensiveDashboard(false)}
+        />
+      )}
+
       {/* 削除確認モーダル */}
       <DeleteConfirmModal
         isOpen={showDeleteModal}
@@ -1068,6 +1093,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         onConfirm={confirmDelete}
         title="記録を削除"
         message={`この${deletingRecordType === "diary" ? "日記" : "記録"}を削除しますか？`}
+        itemName={deletingRecordType === "diary" ? "日記" : "記録"}
+        itemType={deletingRecordType === "diary" ? "diary" : "record"}
       />
     </div>
   );

@@ -342,10 +342,14 @@ export interface WorkDiary {
   learnings: string[]; // 学んだこと
   nextGoals: string[]; // 明日の目標
   energyLevel: number; // エネルギーレベル (1-10)
+  // 追加のプロパティ
+  activities: string[]; // 活動内容
+  productivity: number; // 生産性レベル (1-10)
+  gratitude?: string; // 感謝の気持ち
+  reflection?: string; // 振り返り
   stressLevel: number; // ストレスレベル (1-10)
   workHours: number; // 作業時間
   breakTime: number; // 休憩時間
-  productivity: number; // 生産性 (1-10)
   notes: string; // その他のメモ
   createdAt: string;
   updatedAt: string;
