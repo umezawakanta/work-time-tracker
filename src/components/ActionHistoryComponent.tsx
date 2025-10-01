@@ -267,6 +267,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                   <select
                     value={subcategory}
                     onChange={(e) => setSubcategory(e.target.value)}
+                    title="サブカテゴリを選択"
+                    aria-label="サブカテゴリを選択"
                   >
                     <option value="">選択してください</option>
                     {categories.find(c => c.value === category)?.subcategories.map(sub => (
