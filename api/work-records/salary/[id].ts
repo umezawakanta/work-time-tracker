@@ -6,7 +6,7 @@ dotenv.config();
 // データベース接続
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
+    await mongoose.connect(process.env.MONGODB_URI || '', {
       dbName: 'workTimeTracker'
     });
   } catch (error) {
@@ -27,7 +27,7 @@ const SalaryRecordSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-const SalaryRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', SalaryRecordSchema);
+const SalaryRecord = mongoose.models.SalaryRecord as any || mongoose.model('SalaryRecord', SalaryRecordSchema);
 
 export default async function handler(req, res) {
   // CORS設定
@@ -75,7 +75,7 @@ export default async function handler(req, res) {
       // 給料記録を更新
       const { date, salary, transportation, overtime, bonus, notes } = req.body;
 
-      const updateData = {
+      const updateData: any = {
         updatedAt: new Date()
       };
 

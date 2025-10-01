@@ -6,7 +6,7 @@ dotenv.config();
 // データベース接続
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
+    await mongoose.connect(process.env.MONGODB_URI || '', {
       dbName: 'workTimeTracker'
     });
   } catch (error) {
@@ -42,7 +42,7 @@ const WorkDiarySchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-const WorkDiary = mongoose.models.WorkDiary || mongoose.model('WorkDiary', WorkDiarySchema);
+const WorkDiary = mongoose.models.WorkDiary as any || mongoose.model('WorkDiary', WorkDiarySchema);
 
 export default async function handler(req, res) {
   // CORS設定
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
         notes, gratitude, reflection
       } = req.body;
 
-      const updateData = {
+      const updateData: any = {
         updatedAt: new Date()
       };
 
