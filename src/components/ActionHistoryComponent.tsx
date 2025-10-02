@@ -332,6 +332,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                     max="5"
                     value={energy}
                     onChange={(e) => setEnergy(parseInt(e.target.value))}
+                    title="エネルギーを選択"
+                    aria-label="エネルギーを選択"
                   />
                   <span>{energy}</span>
                 </div>
@@ -343,6 +345,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                     max="5"
                     value={productivity}
                     onChange={(e) => setProductivity(parseInt(e.target.value))}
+                    title="生産性を選択"
+                    aria-label="生産性を選択"
                   />
                   <span>{productivity}</span>
                 </div>
@@ -353,6 +357,9 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
+                  title="メモを入力"
+                  placeholder="メモを入力してください"
+                  aria-label="メモを入力"
                 />
               </div>
               <div className="form-actions">
