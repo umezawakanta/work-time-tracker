@@ -236,7 +236,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
         medium: 2,
         low: 1,
       };
-      return priorityOrder[b.priority] - priorityOrder[a.priority];
+      return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
     });
   };
 
