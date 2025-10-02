@@ -8,6 +8,8 @@ interface MemosComponentProps {
   publicMemos: Memo[];
   showMemos: boolean;
   setShowMemos: (show: boolean) => void;
+  showMemoForm: boolean;
+  setShowMemoForm: (show: boolean) => void;
   customCategories: string[];
   setCustomCategories: (categories: string[]) => void;
   loadMemos: () => void;
@@ -50,6 +52,8 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   publicMemos,
   showMemos,
   setShowMemos,
+  showMemoForm,
+  setShowMemoForm,
   customCategories,
   user,
   setCustomCategories,

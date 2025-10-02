@@ -156,55 +156,22 @@ interface AppProps {
   handleRegister: (e: React.FormEvent) => Promise<void>;
   handleLogout: () => void;
   verifyToken: (token: string) => Promise<void>;
-  // 無駄遣い監視システムのprops
-  showWasteAnalysis: boolean;
+  // Setter functions for opening modals (state managed in AppWithProviders)
   setShowWasteAnalysis: (show: boolean) => void;
-  showWasteRecordForm: boolean;
-  setShowWasteRecordForm: (show: boolean) => void;
-  showWasteGoalForm: boolean;
-  setShowWasteGoalForm: (show: boolean) => void;
-  handleWasteRecordSave: (record: any) => void;
-  handleWasteGoalSave: (goal: any) => void;
-  // 現金残高管理システムのprops
-  showCashBalance: boolean;
-  setShowCashBalance: (show: boolean) => void;
-  showCashBalanceUpdate: boolean;
   setShowCashBalanceUpdate: (show: boolean) => void;
-  showCashTransactionHistory: boolean;
   setShowCashTransactionHistory: (show: boolean) => void;
-  handleCashBalanceUpdate: (balance: any) => void;
-  // 銀行口座管理システムのprops
-  showBankAccount: boolean;
-  setShowBankAccount: (show: boolean) => void;
-  showBankAccountUpdate: boolean;
   setShowBankAccountUpdate: (show: boolean) => void;
-  showBankTransactionHistory: boolean;
   setShowBankTransactionHistory: (show: boolean) => void;
-  selectedBankAccountId: string | null;
-  handleBankAccountUpdate: (accountId: string) => void;
-  handleBankAccountSave: (account: any) => void;
-  handleBankTransactionHistory: (accountId: string) => void;
-  // カードローン管理システムのprops
-  showCardLoan: boolean;
-  setShowCardLoan: (show: boolean) => void;
-  showCardLoanUpdate: boolean;
   setShowCardLoanUpdate: (show: boolean) => void;
-  showCardLoanTransactionHistory: boolean;
   setShowCardLoanTransactionHistory: (show: boolean) => void;
-  selectedCardLoanId: string | null;
-  handleCardLoanUpdate: (loanId: string) => void;
-  handleCardLoanSave: (loan: any) => void;
-  handleCardLoanTransactionHistory: (loanId: string) => void;
-  // PayPayカード管理システムのprops
-  showPayPayCard: boolean;
-  setShowPayPayCard: (show: boolean) => void;
-  showPayPayCardUpdate: boolean;
   setShowPayPayCardUpdate: (show: boolean) => void;
-  showPayPayCardTransactionHistory: boolean;
   setShowPayPayCardTransactionHistory: (show: boolean) => void;
-  selectedPayPayCardId: string | null;
+  // Handler functions for financial widgets
+  handleBankAccountUpdate: (accountId: string) => void;
+  handleBankTransactionHistory: (accountId: string) => void;
+  handleCardLoanUpdate: (loanId: string) => void;
+  handleCardLoanTransactionHistory: (loanId: string) => void;
   handlePayPayCardUpdate: (cardId: string) => void;
-  handlePayPayCardSave: (card: any) => void;
   handlePayPayCardTransactionHistory: (cardId: string) => void;
 }
 
@@ -229,7 +196,22 @@ function App({
   handleLogin,
   handleRegister,
   handleLogout,
-  // 無駄遣い監視システムのprops
+  verifyToken,
+  setShowWasteAnalysis,
+  setShowCashBalanceUpdate,
+  setShowCashTransactionHistory,
+  setShowBankAccountUpdate,
+  setShowBankTransactionHistory,
+  setShowCardLoanUpdate,
+  setShowCardLoanTransactionHistory,
+  setShowPayPayCardUpdate,
+  setShowPayPayCardTransactionHistory,
+  handleBankAccountUpdate,
+  handleBankTransactionHistory,
+  handleCardLoanUpdate,
+  handleCardLoanTransactionHistory,
+  handlePayPayCardUpdate,
+  handlePayPayCardTransactionHistory,
 }: AppProps) {
 
   // 注意: showErrorModalをサブコンポーネント側で定義することはできません
@@ -344,6 +326,11 @@ function App({
   // タイマーセクションの表示状態
   const [showTimers, setShowTimers] = useState(false);
   const [showCookingTimer, setShowCookingTimer] = useState(false);
+  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+  const [isTimeTrackingActive, setIsTimeTrackingActive] = useState(false);
+  const [customTimerName, setCustomTimerName] = useState("");
+  const [customTimerTime, setCustomTimerTime] = useState(0);
+  const [memoPostType, setMemoPostType] = useState<'general' | 'update_request' | 'error_report'>('general');
 
   // 報酬通知の状態
   const [showRewardNotificationModal, setShowRewardNotificationModal] = useState(false);
@@ -462,6 +449,7 @@ function App({
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   // 本棚関連の状態
   const [books, setBooks] = useState<Book[]>([]);
@@ -485,11 +473,13 @@ function App({
   // メモ関連の状態
   const [memos, setMemos] = useState<Memo[]>([]);
   const [showMemos, setShowMemos] = useState(false);
+  const [showMemoForm, setShowMemoForm] = useState(false);
   const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
   const [memoTitle, setMemoTitle] = useState("");
 
   // キャラクター関連の状態
   const [showCharacterHome, setShowCharacterHome] = useState(false);
+  const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
 
   // セクション表示状態（既存の状態変数を使用）
   const [showTimeTracking, setShowTimeTracking] = useState(false);
@@ -507,6 +497,11 @@ function App({
   const [showPublicMemos, setShowPublicMemos] = useState(false);
   const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] =
     useState("all");
+  const [publicMemoCurrentDate, setPublicMemoCurrentDate] = useState(new Date());
+  const [publicMemoSelectedDate, setPublicMemoSelectedDate] = useState<Date | null>(null);
+  const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
+  const [memoSearchTerm, setMemoSearchTerm] = useState("");
+  const [editingReply, setEditingReply] = useState<string | null>(null);
 
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
@@ -516,6 +511,7 @@ function App({
   const [showFontSettings, setShowFontSettings] = useState(false);
   const [showLanguageFontSettings, setShowLanguageFontSettings] =
     useState(false);
+  const [showGenreManager, setShowGenreManager] = useState(false);
 
   // テーマ設定関連の状態
   const [selectedTheme, setSelectedTheme] = useState("default");
@@ -532,6 +528,11 @@ function App({
 
   // お仕事記録の状態
   const [showWorkRecords, setShowWorkRecords] = useState(true);
+  const [showRecordDetail, setShowRecordDetail] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<any>(null);
+  const [selectedRecordType, setSelectedRecordType] = useState<"income" | "expense" | "diary">("income");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [editingMonthlyMemo, setEditingMonthlyMemo] = useState(false);
 
   // 音アプリの状態
   const [showSoundApp, setShowSoundApp] = useState(false);
@@ -6442,6 +6443,8 @@ User Agent: ${userAgent}
                     publicMemos={publicMemos}
                     showMemos={showMemos}
                     setShowMemos={setShowMemos}
+                    showMemoForm={showMemoForm}
+                    setShowMemoForm={setShowMemoForm}
                     customCategories={customCategories}
                     setCustomCategories={setCustomCategories}
                     loadMemos={loadMemos}
@@ -7125,6 +7128,39 @@ const AppWithProviders = () => {
     setCharacterInteractionResult(null);
   };
 
+  // 認証関連の関数
+  const verifyToken = async (token: string) => {
+    try {
+      const userResponse = await fetch("/api/auth/verify", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+
+        if (userData.success && userData.user) {
+          setUser(userData.user);
+          setIsLoggedIn(true);
+        } else {
+          localStorage.removeItem("access_token");
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      } else {
+        localStorage.removeItem("access_token");
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("Token verification failed:", error);
+      localStorage.removeItem("access_token");
+      setIsLoggedIn(false);
+      setUser(null);
+    }
+  };
+
   // 無駄遣い監視システムの状態
   const [showWasteAnalysis, setShowWasteAnalysis] = useState(false);
   const [showWasteRecordForm, setShowWasteRecordForm] = useState(false);
@@ -7402,55 +7438,20 @@ const AppWithProviders = () => {
               user={user}
               isLoggedIn={isLoggedIn}
               isCheckingAuth={false}
-              // 無駄遣い監視システムのprops
-              showWasteAnalysis={showWasteAnalysis}
               setShowWasteAnalysis={setShowWasteAnalysis}
-              showWasteRecordForm={showWasteRecordForm}
-              setShowWasteRecordForm={setShowWasteRecordForm}
-              showWasteGoalForm={showWasteGoalForm}
-              setShowWasteGoalForm={setShowWasteGoalForm}
-              handleWasteRecordSave={handleWasteRecordSave}
-              handleWasteGoalSave={handleWasteGoalSave}
-              // 現金残高管理システムのprops
-              showCashBalance={showCashBalance}
-              setShowCashBalance={setShowCashBalance}
-              showCashBalanceUpdate={showCashBalanceUpdate}
               setShowCashBalanceUpdate={setShowCashBalanceUpdate}
-              showCashTransactionHistory={showCashTransactionHistory}
               setShowCashTransactionHistory={setShowCashTransactionHistory}
-              handleCashBalanceUpdate={handleCashBalanceUpdate}
-              // 銀行口座管理システムのprops
-              showBankAccount={showBankAccount}
-              setShowBankAccount={setShowBankAccount}
-              showBankAccountUpdate={showBankAccountUpdate}
               setShowBankAccountUpdate={setShowBankAccountUpdate}
-              showBankTransactionHistory={showBankTransactionHistory}
               setShowBankTransactionHistory={setShowBankTransactionHistory}
-              selectedBankAccountId={selectedBankAccountId}
-              handleBankAccountUpdate={handleBankAccountUpdate}
-              handleBankAccountSave={handleBankAccountSave}
-              handleBankTransactionHistory={handleBankTransactionHistory}
-              // カードローン管理システムのprops
-              showCardLoan={showCardLoan}
-              setShowCardLoan={setShowCardLoan}
-              showCardLoanUpdate={showCardLoanUpdate}
               setShowCardLoanUpdate={setShowCardLoanUpdate}
-              showCardLoanTransactionHistory={showCardLoanTransactionHistory}
               setShowCardLoanTransactionHistory={setShowCardLoanTransactionHistory}
-              selectedCardLoanId={selectedCardLoanId}
-              handleCardLoanUpdate={handleCardLoanUpdate}
-              handleCardLoanSave={handleCardLoanSave}
-              handleCardLoanTransactionHistory={handleCardLoanTransactionHistory}
-              // PayPayカード管理システムのprops
-              showPayPayCard={showPayPayCard}
-              setShowPayPayCard={setShowPayPayCard}
-              showPayPayCardUpdate={showPayPayCardUpdate}
               setShowPayPayCardUpdate={setShowPayPayCardUpdate}
-              showPayPayCardTransactionHistory={showPayPayCardTransactionHistory}
               setShowPayPayCardTransactionHistory={setShowPayPayCardTransactionHistory}
-              selectedPayPayCardId={selectedPayPayCardId}
+              handleBankAccountUpdate={handleBankAccountUpdate}
+              handleBankTransactionHistory={handleBankTransactionHistory}
+              handleCardLoanUpdate={handleCardLoanUpdate}
+              handleCardLoanTransactionHistory={handleCardLoanTransactionHistory}
               handlePayPayCardUpdate={handlePayPayCardUpdate}
-              handlePayPayCardSave={handlePayPayCardSave}
               handlePayPayCardTransactionHistory={handlePayPayCardTransactionHistory}
               handleLogin={async (e: React.FormEvent) => {
                 e.preventDefault();
@@ -7536,37 +7537,7 @@ const AppWithProviders = () => {
                 setUser(null);
                 setMessage("");
               }}
-              verifyToken={async (token: string) => {
-                try {
-                  const userResponse = await fetch("/api/auth/verify", {
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                    },
-                  });
-
-                  if (userResponse.ok) {
-                    const userData = await userResponse.json();
-
-                    if (userData.success && userData.user) {
-                      setUser(userData.user);
-                      setIsLoggedIn(true);
-                    } else {
-                      localStorage.removeItem("access_token");
-                      setIsLoggedIn(false);
-                      setUser(null);
-                    }
-                  } else {
-                    localStorage.removeItem("access_token");
-                    setIsLoggedIn(false);
-                    setUser(null);
-                  }
-                } catch (error) {
-                  console.error("Token verification failed:", error);
-                  localStorage.removeItem("access_token");
-                  setIsLoggedIn(false);
-                  setUser(null);
-                }
-              }}
+              verifyToken={verifyToken}
             />
           </MoodLogProvider>
         </TimerPresetProvider>
