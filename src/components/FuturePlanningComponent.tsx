@@ -82,15 +82,18 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
       priority,
       startDate,
       endDate,
-      notes: notes || undefined,
+      ...(notes && { notes }),
     };
 
     if (formType === 'plan') {
       const planData = {
         ...baseData,
+        id: Date.now().toString(),
         status: 'not_started' as const,
+        targetDate: endDate,
         progress,
         tags,
+        milestones: [],
       };
       
       if (editingItem) {
@@ -101,6 +104,10 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
     } else if (formType === 'schedule') {
       const scheduleData = {
         ...baseData,
+        id: Date.now().toString(),
+        priority: priority === 'urgent' ? 'high' : priority as 'low' | 'medium' | 'high',
+        status: 'scheduled' as const,
+        date: startDate,
         startTime: new Date(startDate).toISOString(),
         endTime: new Date(endDate).toISOString(),
         isRecurring: false,
@@ -115,6 +122,9 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
     } else if (formType === 'budget') {
       const budgetData = {
         ...baseData,
+        id: Date.now().toString(),
+        status: 'active' as const,
+        amount: parseFloat(endDate) || 0,
         targetAmount: parseFloat(endDate) || 0,
         currentAmount: 0,
         period: 'monthly' as const,

@@ -527,16 +527,18 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
     // 今週締切の計画がある場合
     if (todayTasks.weekDeadlines.length > 0) {
       const nextDeadline = todayTasks.weekDeadlines[0];
-      const targetDate = new Date(nextDeadline.targetDate);
-      const daysLeft = Math.ceil(
-        (targetDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      return {
-        message: `${nextDeadline.title}が${daysLeft}日後に締切です。進捗を確認しましょう。`,
-        type: "deadline",
-        priority: "medium",
-        time: `${daysLeft}日後`,
-      };
+      if (nextDeadline) {
+        const targetDate = new Date(nextDeadline.targetDate);
+        const daysLeft = Math.ceil(
+          (targetDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        );
+        return {
+          message: `${nextDeadline.title}が${daysLeft}日後に締切です。進捗を確認しましょう。`,
+          type: "deadline",
+          priority: "medium",
+          time: `${daysLeft}日後`,
+        };
+      }
     }
 
     // デフォルトの時間帯ベースのメッセージ
