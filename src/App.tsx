@@ -21,7 +21,6 @@ import SoundAppComponent from "./components/SoundAppComponent";
 import DocsViewer from "./components/DocsViewer";
 import NotificationComponent from "./components/NotificationComponent";
 import CharacterSelector from "./components/CharacterSelector";
-import CharacterDisplay from "./components/CharacterDisplay";
 import CharacterNotification from "./components/CharacterNotification";
 import CharacterProgress from "./components/CharacterProgress";
 import CharacterCustomizationComponent from "./components/CharacterCustomization";
@@ -7393,7 +7392,7 @@ User Agent: ${userAgent}
               timestamp: string;
             }) => Promise<void>
           }
-          {...(getErrorInfo(currentError) && { errorInfo: getErrorInfo(currentError) })}
+          {...(getErrorInfo(currentError) ? { errorInfo: getErrorInfo(currentError)! } : {})}
         />
 
         {/* 独立したエラー報告モーダル */}
@@ -7401,7 +7400,7 @@ User Agent: ${userAgent}
           isOpen={showSimpleErrorModal}
           onClose={() => setShowSimpleErrorModal(false)}
           onSubmit={handleSimpleErrorReport}
-          errorInfo={getErrorInfo(currentError)}
+          {...(getErrorInfo(currentError) ? { errorInfo: getErrorInfo(currentError)! } : {})}
         />
 
         {/* 更新要望モーダルはHeaderComponent内で管理 */}
@@ -7439,7 +7438,7 @@ User Agent: ${userAgent}
             timestamp: string;
           }) => Promise<void>
         }
-        errorInfo={getErrorInfo(currentError)}
+        {...(getErrorInfo(currentError) ? { errorInfo: getErrorInfo(currentError)! } : {})}
       />
     </>
   );
