@@ -7393,7 +7393,7 @@ User Agent: ${userAgent}
               timestamp: string;
             }) => Promise<void>
           }
-          errorInfo={getErrorInfo(currentError)}
+          {...(getErrorInfo(currentError) && { errorInfo: getErrorInfo(currentError) })}
         />
 
         {/* 独立したエラー報告モーダル */}
