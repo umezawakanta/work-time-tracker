@@ -785,7 +785,7 @@ function App({
         title: m.title,
         description: m.description,
         completed: m.completed,
-        completedDate: m.completed ? new Date().toISOString() : undefined,
+        ...(m.completed && { completedDate: new Date().toISOString() }),
       })),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
