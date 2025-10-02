@@ -1781,7 +1781,9 @@ ${errorInfo.stack}
 
       // エラーオブジェクトに詳細情報を追加
       const enhancedError = new Error(errorInfo.message);
-      enhancedError.stack = errorInfo.stack;
+      if (errorInfo.stack) {
+        enhancedError.stack = errorInfo.stack;
+      }
       (enhancedError as any).errorInfo = errorInfo;
 
       setCurrentError(enhancedError);
@@ -2073,7 +2075,9 @@ ${errorInfo.stack}
         };
 
         const enhancedError = new Error(errorMessage);
+        if (errorInfo.stack) {
         enhancedError.stack = errorInfo.stack;
+      }
         (enhancedError as any).errorInfo = errorInfo;
 
         setCurrentError(enhancedError);
@@ -3171,7 +3175,9 @@ ${errorInfo.stack}
 
     // 要素を移動
     const [movedFeature] = currentOrder.splice(draggedIndex, 1);
-    currentOrder.splice(targetIndex, 0, movedFeature);
+    if (movedFeature) {
+      currentOrder.splice(targetIndex, 0, movedFeature);
+    }
 
     handleFeatureReorder(currentOrder);
     setDraggedFeature(null);
@@ -3185,11 +3191,12 @@ ${errorInfo.stack}
 
     if (currentIndex > 0) {
       const newOrder = [...currentOrder];
-      [newOrder[currentIndex - 1], newOrder[currentIndex]] = [
-        newOrder[currentIndex],
-        newOrder[currentIndex - 1],
-      ];
-      handleFeatureReorder(newOrder);
+      const temp = newOrder[currentIndex - 1];
+      if (temp !== undefined) {
+        newOrder[currentIndex - 1] = newOrder[currentIndex] || '';
+        newOrder[currentIndex] = temp;
+        handleFeatureReorder(newOrder);
+      }
     }
   };
 
@@ -3200,11 +3207,12 @@ ${errorInfo.stack}
 
     if (currentIndex < currentOrder.length - 1) {
       const newOrder = [...currentOrder];
-      [newOrder[currentIndex], newOrder[currentIndex + 1]] = [
-        newOrder[currentIndex + 1],
-        newOrder[currentIndex],
-      ];
-      handleFeatureReorder(newOrder);
+      const temp = newOrder[currentIndex + 1];
+      if (temp !== undefined) {
+        newOrder[currentIndex + 1] = newOrder[currentIndex] || '';
+        newOrder[currentIndex] = temp;
+        handleFeatureReorder(newOrder);
+      }
     }
   };
 
@@ -3228,7 +3236,9 @@ ${errorInfo.stack}
 
     // 要素を移動
     const [movedFeature] = currentOrder.splice(draggedIndex, 1);
-    currentOrder.splice(targetIndex, 0, movedFeature);
+    if (movedFeature) {
+      currentOrder.splice(targetIndex, 0, movedFeature);
+    }
 
     handleFeatureReorder(currentOrder);
     setDraggedFeature(null);
@@ -3299,7 +3309,7 @@ ${errorInfo.stack}
   // デバッグログの出力条件をチェックするヘルパー関数
   const shouldLogBalanceCalculation = () => {
     // 開発環境かどうかを安全にチェック
-    const isDevelopment = process.env.NODE_ENV === "development";
+    const isDevelopment = process.env['NODE_ENV'] === "development";
     const debugEnabled = isEnvVarTrue("REACT_APP_DEBUG_BALANCE_CALCULATION");
 
     return isDevelopment && debugEnabled;
@@ -4461,7 +4471,7 @@ ${errorInfo.stack}
 
     // タイトルがない場合は内容の一行目をタイトルとして使用
     const finalTitle =
-      memoTitle.trim() || memoContent.split("\n")[0].trim() || "無題";
+      memoTitle.trim() || memoContent.split("\n")[0]?.trim() || "無題";
 
     try {
       const token = localStorage.getItem("access_token");
@@ -4753,8 +4763,10 @@ User Agent: ${userAgent}
       // バッジ通知を表示
       if (unlockedBadges.length > 0) {
         const firstBadge = unlockedBadges[0];
-        setCurrentBadge(firstBadge);
-        setShowBadgeNotification(true);
+        if (firstBadge) {
+          setCurrentBadge(firstBadge);
+          setShowBadgeNotification(true);
+        }
       }
 
       console.log(`報酬付与完了: ${totalXP}XP, ${currencyRewards[0]?.amount || 0}ワークコイン`);
@@ -4802,8 +4814,10 @@ User Agent: ${userAgent}
       // バッジ通知を表示
       if (unlockedBadges.length > 0) {
         const firstBadge = unlockedBadges[0];
-        setCurrentBadge(firstBadge);
-        setShowBadgeNotification(true);
+        if (firstBadge) {
+          setCurrentBadge(firstBadge);
+          setShowBadgeNotification(true);
+        }
       }
 
       console.log(`メモ投稿報酬付与完了: ${totalXP}XP, ${currencyRewards[0]?.amount || 0}ワークコイン`);
@@ -4953,7 +4967,9 @@ User Agent: ${userAgent}
       };
 
       const enhancedError = new Error(errorInfo.message);
-      enhancedError.stack = errorInfo.stack;
+      if (errorInfo.stack) {
+        enhancedError.stack = errorInfo.stack;
+      }
       (enhancedError as any).errorInfo = errorInfo;
 
       setCurrentError(enhancedError);
@@ -5043,7 +5059,9 @@ User Agent: ${userAgent}
       };
 
       const enhancedError = new Error(errorMessage);
-      enhancedError.stack = error.stack;
+      if (error.stack) {
+        enhancedError.stack = error.stack;
+      }
       (enhancedError as any).errorInfo = enhancedErrorInfo;
 
       setCurrentError(enhancedError);
@@ -5054,7 +5072,7 @@ User Agent: ${userAgent}
 
   // エラーハンドリングのテスト用関数（開発時のみ）
   const testErrorHandling = () => {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env['NODE_ENV'] === "development") {
       console.log("エラーハンドリングのテストを実行します...");
 
       // 意図的にエラーを発生させてテスト
@@ -5071,7 +5089,7 @@ User Agent: ${userAgent}
 
   // 特定のエラーパターンをテストする関数
   const testSpecificError = (errorType: string) => {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env['NODE_ENV'] === "development") {
       console.log(`${errorType}エラーのテストを実行します...`);
 
       setTimeout(() => {
@@ -5149,7 +5167,7 @@ User Agent: ${userAgent}
 
     // タイトルがない場合は内容の一行目をタイトルとして使用
     const finalTitle =
-      memoTitle.trim() || memoContent.split("\n")[0].trim() || "無題";
+      memoTitle.trim() || memoContent.split("\n")[0]?.trim() || "無題";
 
     try {
       const token = localStorage.getItem("access_token");
@@ -5463,7 +5481,7 @@ User Agent: ${userAgent}
     // バックグラウンドタイマーを使用する場合
     if (serviceWorker && backgroundTimerActive) {
       const totalTime = getTotalCookingTime(selectedRecipe, selectedEggType);
-      const recipeName = cookingRecipes[selectedRecipe].name;
+      const recipeName = cookingRecipes[selectedRecipe]?.name || "レシピ";
 
       startBackgroundTimer(
         "egg-timer",
@@ -5478,12 +5496,13 @@ User Agent: ${userAgent}
       setEggTimerTime(totalTime);
       setEggTimerOriginalTime(totalTime);
       setEggTimerPhase("heating");
-      setEggTimerPhaseTime(
-        getRecipePhases(selectedRecipe, selectedEggType)[0].duration
-      );
-      setEggTimerPhaseName(
-        getRecipePhases(selectedRecipe, selectedEggType)[0].name
-      );
+      const phases = getRecipePhases(selectedRecipe, selectedEggType);
+      if (phases[0]) {
+        setEggTimerPhaseTime(phases[0].duration);
+      }
+      if (phases[0]) {
+        setEggTimerPhaseName(phases[0].name);
+      }
 
       setMessage(
         `🍳 ${recipeName}タイマーを開始しました（バックグラウンド動作）`
@@ -6377,7 +6396,7 @@ User Agent: ${userAgent}
           type={notificationType}
           characterName={selectedCharacter?.name || ''}
           level={notificationLevel}
-          achievement={notificationAchievement}
+          {...(notificationAchievement && { achievement: notificationAchievement })}
           onClose={() => setShowCharacterNotification(false)}
         />
 
@@ -6478,7 +6497,7 @@ User Agent: ${userAgent}
         
         
         {/* デバッグ用の状態表示 */}
-        {process.env.NODE_ENV === 'development' && (
+        {process.env['NODE_ENV'] === 'development' && (
           <div style={{ position: 'fixed', top: '10px', right: '10px', background: 'black', color: 'white', padding: '10px', zIndex: 99999, fontSize: '12px' }}>
             <div>showBadgeNotification: {showBadgeNotification ? 'true' : 'false'}</div>
             <div>currentBadge: {currentBadge ? currentBadge.name : 'null'}</div>
@@ -6531,12 +6550,14 @@ User Agent: ${userAgent}
         message={message}
         // パーソナライゼーション用のプロパティ
         currentCharacter={selectedCharacter as any}
-        userProgress={selectedCharacter ? {
-          level: selectedCharacter.level || 1,
-          totalExperience: selectedCharacter.totalExperience || 0,
-          badgeCount: selectedCharacter.badges?.length || 0,
-          workHours: 0 // 実際の作業時間データを渡す
-        } : undefined}
+        {...(selectedCharacter && {
+          userProgress: {
+            level: selectedCharacter.level || 1,
+            totalExperience: selectedCharacter.totalExperience || 0,
+            badgeCount: selectedCharacter.badges?.length || 0,
+            workHours: 0 // 実際の作業時間データを渡す
+          }
+        })}
         showPersonalizedLogo={false}
       />
     );
