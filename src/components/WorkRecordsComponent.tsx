@@ -746,9 +746,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     closeOtherFeatures(feature);
   };
 
-  // お仕事記録セクションは常に表示
-  if (!showWorkRecords) return null;
-
   // 統合ダッシュボードが表示されている場合は、お仕事記録セクションを非表示にする
   if (showComprehensiveDashboard) {
     return (
@@ -766,17 +763,30 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       <div className="section-header">
         <div className="header-content">
           <h2>お仕事記録</h2>
-          <button 
-            className="close-section-btn"
-            onClick={() => setShowWorkRecords(false)}
-            title="お仕事記録を閉じる"
-            aria-label="お仕事記録を閉じる"
-          >
-            ×
-          </button>
+          {showWorkRecords ? (
+            <button 
+              className="close-section-btn"
+              onClick={() => setShowWorkRecords(false)}
+              title="お仕事記録を閉じる"
+              aria-label="お仕事記録を閉じる"
+            >
+              ×
+            </button>
+          ) : (
+            <button 
+              className="open-section-btn"
+              onClick={() => setShowWorkRecords(true)}
+              title="お仕事記録を開く"
+              aria-label="お仕事記録を開く"
+            >
+              ▶
+            </button>
+          )}
         </div>
-        <p>収入・支出と日記を記録して、お仕事の振り返りをしましょう</p>
-        <div className="dashboard-buttons">
+        {showWorkRecords && (
+          <>
+            <p>収入・支出と日記を記録して、お仕事の振り返りをしましょう</p>
+            <div className="dashboard-buttons">
           <button 
             className="open-dashboard-button comprehensive"
             onClick={() => {
@@ -804,11 +814,15 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           >
             📊 データ分析
           </button>
-        </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* カレンダー表示 */}
-      <div className="calendar-section">
+      {showWorkRecords && (
+        <>
+          {/* カレンダー表示 */}
+          <div className="calendar-section">
         <CalendarComponent
           currentMonth={currentMonth}
           onMonthChange={handleMonthChange}
@@ -1468,7 +1482,8 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         closeOtherFeatures={closeOtherFeatures}
         user={user}
       />
-
+        </>
+      )}
 
       {/* 削除確認モーダル */}
       <DeleteConfirmModal

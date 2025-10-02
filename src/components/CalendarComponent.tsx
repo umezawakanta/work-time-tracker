@@ -15,9 +15,6 @@ interface CalendarComponentProps {
   onClose?: () => void;
   onViewModeChange?: (mode: 'month' | 'week') => void;
   onWeekChange?: (weekStart: Date) => void;
-  // アクションボタン用のprops
-  onAddIncomeExpense?: () => void;
-  onAddDiary?: () => void;
   // 記録詳細表示用のprops
   selectedRecord?: any;
   selectedRecordType?: "income" | "expense" | "diary" | null;
@@ -60,8 +57,6 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
   onClose,
   onViewModeChange,
   onWeekChange,
-  onAddIncomeExpense,
-  onAddDiary,
   selectedRecord,
   selectedRecordType,
   onEditIncomeExpense,
@@ -580,27 +575,6 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
           </div>
         )}
         
-        {/* アクションボタン */}
-        {selectedDate && (
-          <div className="calendar-action-buttons">
-            <button
-              onClick={onAddIncomeExpense}
-              className="calendar-action-button income-expense-button"
-              title="収支記録を追加"
-            >
-              <i className="bi bi-plus-circle"></i>
-              <span>収支記録</span>
-            </button>
-            <button
-              onClick={onAddDiary}
-              className="calendar-action-button diary-button"
-              title="日記を追加"
-            >
-              <i className="bi bi-journal-plus"></i>
-              <span>日記追加</span>
-            </button>
-          </div>
-        )}
         
         {/* 月次統計表示 */}
         {monthlySummary && (

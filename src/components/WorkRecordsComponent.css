@@ -40,6 +40,31 @@
   outline-offset: 2px;
 }
 
+.open-section-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.open-section-btn:hover {
+  background: #45a049;
+}
+
+.open-section-btn:focus {
+  outline: 2px solid #ff9800;
+  outline-offset: 2px;
+}
+
 /* タグ入力のスタイル */
 .tags-input {
   border: 1px solid #ddd;
