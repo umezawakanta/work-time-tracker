@@ -96,8 +96,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
     category: "仕事",
     priority: "medium",
     status: "not-started",
-    startDate: new Date().toISOString().split("T")[0],
-    targetDate: new Date().toISOString().split("T")[0],
+    startDate: new Date().toISOString().split("T")[0] as string,
+    targetDate: new Date().toISOString().split("T")[0] as string,
     progress: 0,
     milestones: [],
   });
