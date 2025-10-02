@@ -388,6 +388,9 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
+                  title="タイトルを入力"
+                  placeholder="タイトルを入力してください"
+                  aria-label="タイトルを入力"
                 />
               </div>
               <div className="form-group">
