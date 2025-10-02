@@ -215,6 +215,10 @@ async function handleRequest(req, res) {
             adminResponseDate: memo.adminResponseDate ? memo.adminResponseDate.toISOString() : null,
             createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
             updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
+            // いいね情報を追加
+            isLiked: memo.likes?.includes(userInfo.userId) || false,
+            likeCount: memo.likes?.length || 0,
+            likes: memo.likes || [],
             replies: replies.map(reply => ({
               id: reply._id.toString(),
               content: reply.content,
@@ -240,6 +244,10 @@ async function handleRequest(req, res) {
           authorEmail: memo.authorEmail, // メモの作成者メールを追加
           createdAt: memo.createdAt ? memo.createdAt.toISOString() : new Date().toISOString(),
           updatedAt: memo.updatedAt ? memo.updatedAt.toISOString() : new Date().toISOString(),
+          // いいね情報を追加
+          isLiked: memo.likes?.includes(userInfo.userId) || false,
+          likeCount: memo.likes?.length || 0,
+          likes: memo.likes || [],
           replies: []
         }));
       }

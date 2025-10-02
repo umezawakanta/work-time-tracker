@@ -51,7 +51,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   // 公開メモのローディング状態をPublicMemosComponent内で管理
   const [publicMemosLoading, setPublicMemosLoading] = useState(false);
   
-  // いいね状態管理
+  // いいね状態管理（メモ一覧から取得した情報を使用）
   const [memoLikes, setMemoLikes] = useState<{ [memoId: string]: { isLiked: boolean; likeCount: number } }>({});
   
   // フィルタリング状態
@@ -60,176 +60,28 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const [excludeTags, setExcludeTags] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  // 安全ないいね状態の初期化（エラーハンドリング強化版）
-  const initializeLikeStates = async () => {
+  // メモ一覧から取得したいいね情報を初期化（APIリクエスト不要）
+  const initializeLikeStates = () => {
     if (publicMemos.length === 0) {
       console.log('公開メモが空のため、いいね状態の初期化をスキップします');
       return;
     }
     
-    if (isInitializing) {
-      console.log('いいね状態の初期化は既に実行中です');
-      return;
-    }
+    console.log(`メモ一覧からいいね状態を初期化中... (メモ数: ${publicMemos.length})`);
     
-    console.log(`いいね状態を初期化中... (メモ数: ${publicMemos.length})`);
+    const likeStates: { [memoId: string]: { isLiked: boolean; likeCount: number } } = {};
     
-    try {
-      const likeStates: { [memoId: string]: { isLiked: boolean; likeCount: number } } = {};
-      let errorCount = 0;
-      const maxErrors = 5; // 最大エラー数を増加
-      
-      // 認証トークンの確認
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        console.warn('認証トークンが見つからないため、いいね状態の初期化をスキップします');
-        return;
+    publicMemos.forEach(memo => {
+      if (memo.id) {
+        likeStates[memo.id] = {
+          isLiked: memo.isLiked || false,
+          likeCount: memo.likeCount || 0
+        };
       }
-      
-      // より小さなバッチサイズで安全に処理
-      const batchSize = 3;
-      
-      // 最近のメモのみを処理（30日以内）
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
-      const recentMemos = publicMemos.filter(memo => {
-        const memoDate = new Date(memo.createdAt || memo.updatedAt || 0);
-        return memoDate >= thirtyDaysAgo;
-      });
-      
-      console.log(`最近のメモのみを処理: ${recentMemos.length}/${publicMemos.length} 件`);
-      
-      const batches = [];
-      for (let i = 0; i < recentMemos.length; i += batchSize) {
-        batches.push(recentMemos.slice(i, i + batchSize));
-      }
-      
-      for (const batch of batches) {
-        // バッチ間で少し待機（API負荷軽減）
-        if (batches.indexOf(batch) > 0) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        
-        const promises = batch.map(async (memo) => {
-          try {
-            // メモIDが有効でない場合はスキップ
-            if (!memo.id || typeof memo.id !== 'string' || memo.id.length < 10) {
-              return {
-                memoId: memo.id,
-                isLiked: false,
-                likeCount: 0
-              };
-            }
-            
-            // 古いメモID（24文字未満）の場合はスキップ
-            if (memo.id.length < 24) {
-              return {
-                memoId: memo.id,
-                isLiked: false,
-                likeCount: 0
-              };
-            }
-            
-            // console.log(`いいね状態を取得中: ${memo.id}`);
-            
-            // タイムアウト付きのfetch
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
-            
-            let response;
-            try {
-              response = await fetch(`/api/memos/${memo.id}/like`, {
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                },
-                signal: controller.signal
-              });
-            } catch (fetchError) {
-              // fetch自体が失敗した場合（ネットワークエラーなど）
-              clearTimeout(timeoutId);
-              return {
-                memoId: memo.id,
-                isLiked: false,
-                likeCount: 0
-              };
-            }
-            
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) {
-              // 404エラーは無視（メモが存在しない場合）
-              if (response.status === 404) {
-                // 404エラーは静かに無視
-                return {
-                  memoId: memo.id,
-                  isLiked: false,
-                  likeCount: 0
-                };
-              }
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            if (data.success) {
-              // console.log(`いいね状態取得成功: ${memo.id}`, data);
-              return {
-                memoId: memo.id,
-                isLiked: data.isLiked,
-                likeCount: data.likeCount
-              };
-            }
-            return null;
-          } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            
-            // 404エラーやAbortErrorはログを出力しない
-            if (errorMessage.includes('404') || errorMessage.includes('AbortError')) {
-              return {
-                memoId: memo.id,
-                isLiked: false,
-                likeCount: 0
-              };
-            }
-            
-            errorCount++;
-            console.warn(`いいね状態の取得をスキップしました (メモID: ${memo.id}):`, errorMessage);
-            
-            // エラーが多すぎる場合は処理を中断
-            if (errorCount >= maxErrors) {
-              console.error(`エラーが${maxErrors}回発生したため、いいね状態の初期化を中断します`);
-              return null; // エラーを投げずにnullを返す
-            }
-            
-            return {
-              memoId: memo.id,
-              isLiked: false,
-              likeCount: 0
-            };
-          }
-        });
-        
-        try {
-          const results = await Promise.allSettled(promises);
-          results.forEach((result) => {
-            if (result.status === 'fulfilled' && result.value) {
-              likeStates[result.value.memoId] = {
-                isLiked: result.value.isLiked,
-                likeCount: result.value.likeCount
-              };
-            }
-          });
-        } catch (error) {
-          console.error('バッチ処理中にエラーが発生しました:', error);
-        }
-      }
-      
-      // console.log('いいね状態の初期化完了:', likeStates);
-      setMemoLikes(likeStates);
-    } catch (error) {
-      console.error('いいね状態の初期化でエラーが発生しました:', error);
-      // エラーが発生してもアプリケーションを停止させない
-    }
+    });
+    
+    setMemoLikes(likeStates);
+    console.log(`いいね状態の初期化完了: ${Object.keys(likeStates).length} 件`);
   };
   
   // ソート状態
@@ -248,19 +100,15 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   // いいね状態を初期化（初回のみ実行）
-  const [isInitializing, setIsInitializing] = useState(false);
   const hasInitialized = useRef(false);
   
-  // 安全ないいね状態の初期化
+  // メモ一覧からいいね状態を初期化
   useEffect(() => {
-    if (publicMemos.length > 0 && !hasInitialized.current && !isInitializing) {
+    if (publicMemos.length > 0 && !hasInitialized.current) {
       hasInitialized.current = true;
-      setIsInitializing(true);
-      initializeLikeStates().finally(() => {
-        setIsInitializing(false);
-      });
+      initializeLikeStates();
     }
-  }, [publicMemos.length, isInitializing]);
+  }, [publicMemos.length]);
 
   // publicMemosが変更されたら初期化フラグをリセット
   useEffect(() => {
