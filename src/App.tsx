@@ -2380,7 +2380,10 @@ ${errorInfo.stack}
     // 作業開始時のバッジをチェック
     const unlockedBadges = badgeManager.checkWorkStartBadges();
     if (unlockedBadges.length > 0) {
-      handleBadgeUnlocked(unlockedBadges[0]);
+      const firstBadge = unlockedBadges[0];
+      if (firstBadge) {
+        handleBadgeUnlocked(firstBadge);
+      }
     }
   };
 
