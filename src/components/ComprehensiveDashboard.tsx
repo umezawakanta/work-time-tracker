@@ -265,8 +265,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
         | "not_started"
         | "in_progress"
         | "on_hold",
-      startDate: newPlan.startDate || new Date().toISOString().split("T")[0],
-      targetDate: newPlan.targetDate || new Date().toISOString().split("T")[0],
+      startDate: (newPlan.startDate || new Date().toISOString().split("T")[0]) as string,
+      targetDate: (newPlan.targetDate || new Date().toISOString().split("T")[0]) as string,
       progress: newPlan.progress || 0,
       milestones: newPlan.milestones || [],
       tags: [], // Add empty tags array
@@ -299,8 +299,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       category: "仕事",
       priority: "medium",
       status: "not-started",
-      startDate: new Date().toISOString().split("T")[0],
-      targetDate: new Date().toISOString().split("T")[0],
+      startDate: new Date().toISOString().split("T")[0] as string,
+      targetDate: new Date().toISOString().split("T")[0] as string,
       progress: 0,
       milestones: [],
     });
@@ -363,8 +363,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       category: "仕事",
       priority: "medium",
       status: "not-started",
-      startDate: new Date().toISOString().split("T")[0],
-      targetDate: new Date().toISOString().split("T")[0],
+      startDate: new Date().toISOString().split("T")[0] as string,
+      targetDate: new Date().toISOString().split("T")[0] as string,
       progress: 0,
       milestones: [],
     });
@@ -447,8 +447,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       category: "仕事",
       priority: "medium",
       status: "not-started",
-      startDate: new Date().toISOString().split("T")[0],
-      targetDate: new Date().toISOString().split("T")[0],
+      startDate: new Date().toISOString().split("T")[0] as string,
+      targetDate: new Date().toISOString().split("T")[0] as string,
       progress: 0,
       milestones: [],
     });
