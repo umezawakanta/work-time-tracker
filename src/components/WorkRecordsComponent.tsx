@@ -120,6 +120,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   const [monthlyMemo, setMonthlyMemo] = useState("");
   const [editingMonthlyMemo, setEditingMonthlyMemo] = useState(false);
 
+  // 送信状態の管理
+  const [isSubmittingDiary, setIsSubmittingDiary] = useState(false);
+  const [isSubmittingIncomeExpense, setIsSubmittingIncomeExpense] = useState(false);
+
   // 削除確認モーダルの状態
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingRecordId, setDeletingRecordId] = useState<string | null>(null);
@@ -204,7 +208,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 月次メモの読み込み
   const loadMonthlyMemo = () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     const memoKey = `monthlyMemo_${user.id}_${currentMonth.getFullYear()}_${currentMonth.getMonth() + 1}`;
     const savedMemo = localStorage.getItem(memoKey);
@@ -215,7 +221,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 月次メモの保存
   const saveMonthlyMemo = () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     const memoKey = `monthlyMemo_${user.id}_${currentMonth.getFullYear()}_${currentMonth.getMonth() + 1}`;
     localStorage.setItem(memoKey, monthlyMemo);
@@ -242,13 +250,23 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 収入・支出記録の作成
   const handleCreateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
+
+    // 重複送信を防ぐ
+    if (isSubmittingIncomeExpense) {
+      console.log('収入・支出記録の送信中です。重複送信を防ぎます。');
+      return;
+    }
 
     try {
       if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
         alert('すべての必須項目を入力してください');
         return;
       }
+
+      setIsSubmittingIncomeExpense(true);
 
       const amount = normalizeAmountForStorage(incomeExpenseAmount);
       const requestBody = {
@@ -305,19 +323,31 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     } catch (error) {
       console.error("Error creating income/expense record:", error);
       alert('記録の作成中にエラーが発生しました');
+    } finally {
+      setIsSubmittingIncomeExpense(false);
     }
   };
 
   // 収入・支出記録の更新
   const handleUpdateIncomeExpenseRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id || !editingIncomeExpenseRecord) return;
+    if (!user?.id || !editingIncomeExpenseRecord) {
+      return;
+    }
+
+    // 重複送信を防ぐ
+    if (isSubmittingIncomeExpense) {
+      console.log('収入・支出記録の更新中です。重複送信を防ぎます。');
+      return;
+    }
 
     try {
       if (!incomeExpenseDate || !incomeExpenseAmount || !incomeExpenseType) {
         alert('すべての必須項目を入力してください');
         return;
       }
+
+      setIsSubmittingIncomeExpense(true);
 
       const amount = normalizeAmountForStorage(incomeExpenseAmount);
       const requestBody = {
@@ -369,19 +399,23 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
         setEditingIncomeExpenseRecord(null);
         setShowIncomeExpenseForm(false);
         await loadIncomeExpenseRecords();
-      } else {
+        } else {
         console.error("Failed to update income/expense record:", data.message);
         alert(`記録の更新に失敗しました: ${data.message}`);
       }
     } catch (error) {
       console.error("Error updating income/expense record:", error);
       alert('記録の更新中にエラーが発生しました');
+    } finally {
+      setIsSubmittingIncomeExpense(false);
     }
   };
 
   // 収入・支出記録の削除
   const handleDeleteIncomeExpenseRecord = async (id: string) => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     try {
       const headers = createAuthHeaders();
@@ -407,13 +441,23 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   // 日記の作成
   const handleCreateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
+
+    // 重複送信を防ぐ
+    if (isSubmittingDiary) {
+      console.log('日記の送信中です。重複送信を防ぎます。');
+      return;
+    }
 
     try {
       if (!diaryDate || !diaryTitle || !diaryContent) {
         alert('日付、タイトル、内容は必須項目です');
         return;
       }
+
+      setIsSubmittingDiary(true);
 
       const requestBody = {
         userId: user.id,
@@ -483,19 +527,31 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     } catch (error) {
       console.error("Error creating work diary:", error);
       alert('日記の作成中にエラーが発生しました');
+    } finally {
+      setIsSubmittingDiary(false);
     }
   };
 
   // 日記の更新
   const handleUpdateDiary = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id || !editingDiary) return;
+    if (!user?.id || !editingDiary) {
+      return;
+    }
+
+    // 重複送信を防ぐ
+    if (isSubmittingDiary) {
+      console.log('日記の更新中です。重複送信を防ぎます。');
+      return;
+    }
 
     try {
       if (!diaryDate || !diaryTitle || !diaryContent) {
         alert('日付、タイトル、内容は必須項目です');
         return;
       }
+
+      setIsSubmittingDiary(true);
 
       const requestBody = {
         id: editingDiary._id,
@@ -544,12 +600,16 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     } catch (error) {
       console.error("Error updating work diary:", error);
       alert('日記の更新中にエラーが発生しました');
+    } finally {
+      setIsSubmittingDiary(false);
     }
   };
 
   // 日記の削除
   const handleDeleteDiary = async (id: string) => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     try {
       const headers = createAuthHeaders();
@@ -660,7 +720,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 削除の実行
   const confirmDelete = async () => {
-    if (!deletingRecordId || !deletingRecordType) return;
+    if (!deletingRecordId || !deletingRecordType) {
+      return;
+    }
 
     try {
       if (deletingRecordType === "diary") {
@@ -1339,8 +1401,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 />
               </div>
               <div className="form-actions">
-                <button type="submit" className="submit-btn">
-                  {editingIncomeExpenseRecord ? "更新" : "追加"}
+                <button 
+                  type="submit" 
+                  className="submit-btn"
+                  disabled={isSubmittingIncomeExpense}
+                >
+                  {isSubmittingIncomeExpense ? "送信中..." : (editingIncomeExpenseRecord ? "更新" : "追加")}
                 </button>
                 <button
                   type="button"
@@ -1439,8 +1505,12 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                 </div>
               </div>
               <div className="form-actions">
-                <button type="submit" className="submit-btn">
-                  {editingDiary ? "更新" : "追加"}
+                <button 
+                  type="submit" 
+                  className="submit-btn"
+                  disabled={isSubmittingDiary}
+                >
+                  {isSubmittingDiary ? "送信中..." : (editingDiary ? "更新" : "追加")}
                 </button>
                 <button
                   type="button"
