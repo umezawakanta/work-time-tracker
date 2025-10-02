@@ -1486,7 +1486,10 @@ ${errorInfo.stack}
         console.log('Granted existing user badges:', unlockedBadges);
         if (unlockedBadges.length > 0) {
           // 最初のバッジを通知として表示
-          handleBadgeUnlocked(unlockedBadges[0]);
+          const firstBadge = unlockedBadges[0];
+          if (firstBadge) {
+            handleBadgeUnlocked(firstBadge);
+          }
         }
       } else {
         // 通常の登録バッジをチェック
