@@ -11,6 +11,10 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch; /* iOS でのスムーズスクロール */
   touch-action: pan-y; /* 縦スクロールのみ許可 */
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
 }
 
 .dashboard-header {
@@ -26,14 +30,31 @@
 
 /* モバイル対応 */
 @media (max-width: 768px) {
+  .comprehensive-dashboard {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+
   .dashboard-header {
     padding: 10px 15px;
     flex-wrap: wrap;
     gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: white;
   }
   
   .dashboard-header h2 {
-    font-size: 20px;
+    font-size: 18px;
     flex: 1;
     min-width: 0;
   }
@@ -41,6 +62,23 @@
   .header-controls {
     flex-wrap: wrap;
     gap: 10px;
+  }
+  
+  .dashboard-tabs {
+    position: sticky;
+    top: 60px;
+    z-index: 9;
+    background: white;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  
+  .dashboard-content {
+    height: calc(100vh - 120px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px;
   }
   
   /* すべてのボタンにタッチ対応を追加 */
@@ -55,12 +93,6 @@
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     min-height: 44px;
-  }
-  
-  /* スクロール可能な要素の改善 */
-  .dashboard-content {
-    -webkit-overflow-scrolling: touch;
-    overflow-y: auto;
   }
 }
 
@@ -793,6 +825,8 @@
     padding: 12px 15px;
     font-size: 14px;
     min-height: 44px; /* タッチしやすい高さを確保 */
+    white-space: nowrap;
+    display: inline-block;
   }
 
   .dashboard-content {
@@ -1978,7 +2012,46 @@
   
   .current-weekday {
     font-size: 20px;
+  }
+  
+  .current-focus-card {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .focus-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .focus-message {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  
+  .complete-task-button {
+    width: 100%;
+    margin-top: 15px;
     padding: 10px 16px;
+  }
+  
+  .financial-health .health-score {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .score-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .score-value {
+    font-size: 24px;
+  }
+  
+  .score-label {
+    font-size: 14px;
   }
   
   .today-grid {
