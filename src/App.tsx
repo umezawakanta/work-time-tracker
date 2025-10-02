@@ -984,7 +984,6 @@ ${methodInfo ? `- ${methodInfo}` : ""}
 
           setTimeout(() => {
             setShowMemos(true);
-            setShowMemoForm(true);
             setMemoCategory("不具合報告");
             setMemoContent(errorDetails);
           }, 2000);
@@ -1059,7 +1058,6 @@ ${methodInfo ? `- ${methodInfo}` : ""}
         // 2秒後に不具合報告画面に遷移
         setTimeout(() => {
           setShowMemos(true);
-          setShowMemoForm(true);
           setMemoCategory("不具合報告");
           setMemoContent(errorDetails);
         }, 2000);
