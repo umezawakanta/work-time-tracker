@@ -372,7 +372,7 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
       return memo.title;
     }
     // タイトルが空の場合は内容の一行目を返す
-    return memo.content.split("\n")[0].trim() || "無題のメモ";
+    return memo.content?.split("\n")[0].trim() || "無題のメモ";
   };
 
   // 利用可能なジャンル一覧を取得（デフォルト + カスタム）

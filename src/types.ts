@@ -94,6 +94,8 @@ export interface Memo {
   adminResponse?: string;
   adminResponseDate?: string;
   likes?: string[]; // いいねしたユーザーIDの配列
+  isLiked?: boolean; // 現在のユーザーがいいねしているかどうか
+  likeCount?: number; // いいねの総数
   createdAt: string;
   updatedAt: string;
   replies?: Reply[];
