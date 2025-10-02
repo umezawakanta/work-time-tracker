@@ -128,7 +128,6 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   // });
 
   // 内部状態
-  const [showMemoForm, setShowMemoForm] = useState(false);
   const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
   const [showGenreManagement, setShowGenreManagement] = useState(false);
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
