@@ -2365,7 +2365,10 @@ ${errorInfo.stack}
     // 作業完了時のバッジをチェック
     const unlockedBadges = badgeManager.checkWorkCompleteBadges(workMinutes);
     if (unlockedBadges.length > 0) {
-      handleBadgeUnlocked(unlockedBadges[0]);
+      const firstBadge = unlockedBadges[0];
+      if (firstBadge) {
+        handleBadgeUnlocked(firstBadge);
+      }
     }
   };
 
