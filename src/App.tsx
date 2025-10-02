@@ -4122,14 +4122,17 @@ ${errorInfo.stack}
   const handleCreateMemo = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!memoContent || !memoCategory) {
-      setMessage("内容、カテゴリは必須です");
+    if (!memoContent) {
+      setMessage("内容は必須です");
       return;
     }
 
     // タイトルがない場合は内容の一行目をタイトルとして使用
     const finalTitle =
       memoTitle.trim() || memoContent.split("\n")[0]?.trim() || "無題";
+
+    // カテゴリーが選択されていない場合はデフォルトカテゴリーを設定
+    const finalCategory = memoCategory || "その他";
 
     try {
       const token = localStorage.getItem("access_token");
@@ -4147,7 +4150,7 @@ ${errorInfo.stack}
         body: JSON.stringify({
           title: finalTitle,
           content: memoContent,
-          category: memoCategory,
+          category: finalCategory,
           tags,
           isPublic: memoIsPublic,
           isFamilyOnly: memoIsFamilyOnly,
@@ -4825,6 +4828,9 @@ User Agent: ${userAgent}
     const finalTitle =
       memoTitle.trim() || memoContent.split("\n")[0]?.trim() || "無題";
 
+    // カテゴリーが選択されていない場合はデフォルトカテゴリーを設定
+    const finalCategory = memoCategory || "その他";
+
     try {
       const token = localStorage.getItem("access_token");
       const tags = memoTags
@@ -4841,7 +4847,7 @@ User Agent: ${userAgent}
         body: JSON.stringify({
           title: finalTitle,
           content: memoContent,
-          category: memoCategory,
+          category: finalCategory,
           tags,
           isPublic: memoIsPublic,
           isFamilyOnly: memoIsFamilyOnly,

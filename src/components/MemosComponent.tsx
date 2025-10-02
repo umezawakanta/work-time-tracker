@@ -341,7 +341,7 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   const resetForm = () => {
     setMemoTitle("");
     setMemoContent("");
-    setMemoCategory("");
+    setMemoCategory(""); // 空文字列のまま（デフォルトカテゴリーは作成時に設定）
     setMemoIsPublic(false);
     setEditingMemo(null);
     setShowMemoForm(false);
@@ -708,14 +708,13 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
               </div>
 
               <div className="form-group">
-                <label htmlFor="memoCategory">カテゴリ</label>
+                <label htmlFor="memoCategory">カテゴリ（任意）</label>
                 <select
                   id="memoCategory"
                   value={memoCategory}
                   onChange={(e) => setMemoCategory(e.target.value)}
-                  required
                 >
-                  <option value="">カテゴリを選択</option>
+                  <option value="">カテゴリを選択（任意）</option>
                   {getMemoCategories().map((category) => (
                     <option key={category} value={category}>
                       {category}
