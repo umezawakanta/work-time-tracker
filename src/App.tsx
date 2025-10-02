@@ -915,7 +915,7 @@ function App({
         category: goalForm.category,
         priority: goalForm.priority,
         status: goalForm.status,
-        startDate: goalForm.startDate,
+        ...(goalForm.startDate && { startDate: goalForm.startDate }),
         targetDate: goalForm.targetDate,
         progress: goalForm.progress,
         milestones: goalForm.milestones.map((m) => ({
@@ -923,7 +923,7 @@ function App({
           title: m.title,
           description: m.description,
           completed: m.completed,
-          completedDate: m.completed ? new Date().toISOString() : undefined,
+          ...(m.completed && { completedDate: new Date().toISOString() }),
         })),
       });
     } else {
