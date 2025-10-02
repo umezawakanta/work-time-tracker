@@ -13,7 +13,6 @@ interface FuturePlanningComponentProps {
 const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
   showFuturePlanning,
   setShowFuturePlanning,
-  closeOtherFeatures,
   user
 }) => {
   const [activeTab, setActiveTab] = useState<'plans' | 'schedules' | 'budgets'>('plans');

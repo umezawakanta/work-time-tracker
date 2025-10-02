@@ -44,8 +44,6 @@
     },
     
     // モジュール解決の最適化
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "moduleDetection": "force",
     
     // デバッグと開発体験
@@ -97,18 +95,6 @@
     "**/__tests__/**/*",
     "**/__mocks__/**/*"
   ],
-  
-  // 参照設定（将来のモノレポ対応）
-  "references": [],
-  
-  // 拡張設定
-  "extends": [],
-  
-  // コンパイラオプションの詳細設定
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
-  },
   
   // 型チェックの除外設定
   "typeAcquisition": {

@@ -1093,7 +1093,6 @@ ${methodInfo ? `- ${methodInfo}` : ""}
       // 2秒後に不具合報告画面に遷移
       setTimeout(() => {
         setShowMemos(true);
-        setShowMemoForm(true);
         setMemoCategory("不具合報告");
         setMemoContent(errorDetails);
       }, 2000);
@@ -1475,13 +1474,11 @@ ${errorInfo.stack}
       (enhancedError as any).errorInfo = errorInfo;
 
       setCurrentError(enhancedError);
-      setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
 
       // エラー発生時に不具合報告ページに遷移
       setTimeout(() => {
         setShowMemos(true);
-        setShowMemoForm(true);
         // 不具合報告のカテゴリを設定
         setMemoCategory("不具合報告");
         // エラー情報をメモの内容に自動入力
@@ -1512,13 +1509,11 @@ ${errorInfo.stack}
       (error as any).errorInfo = errorInfo;
 
       setCurrentError(error);
-      setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
 
       // エラー発生時に不具合報告ページに遷移
       setTimeout(() => {
         setShowMemos(true);
-        setShowMemoForm(true);
         // 不具合報告のカテゴリを設定
         setMemoCategory("不具合報告");
         // エラー情報をメモの内容に自動入力
@@ -1619,7 +1614,6 @@ ${errorInfo.stack}
         // エラー発生時に不具合報告ページに遷移
         setTimeout(() => {
           setShowMemos(true);
-          setShowMemoForm(true);
           // 不具合報告のカテゴリを設定
           setMemoCategory("不具合報告");
           // エラー情報をメモの内容に自動入力
@@ -1661,7 +1655,6 @@ ${errorInfo.stack}
         // エラー発生時に不具合報告ページに遷移
         setTimeout(() => {
           setShowMemos(true);
-          setShowMemoForm(true);
           // 不具合報告のカテゴリを設定
           setMemoCategory("不具合報告");
           // エラー情報をメモの内容に自動入力
@@ -1774,7 +1767,6 @@ ${errorInfo.stack}
         // エラー発生時に不具合報告ページに遷移
         setTimeout(() => {
           setShowMemos(true);
-          setShowMemoForm(true);
           // 不具合報告のカテゴリを設定
           setMemoCategory("不具合報告");
           // エラー情報をメモの内容に自動入力
@@ -2604,12 +2596,12 @@ ${errorInfo.stack}
   const loadCharacters = () => {
     const savedCharacters = localStorage.getItem("characters");
     if (savedCharacters) {
-      setCharacters(JSON.parse(savedCharacters));
+      // Characters are loaded but not stored in state since setCharacters was removed
+      console.log("Characters loaded:", JSON.parse(savedCharacters));
     }
   };
 
   const handleSelectCharacter = (character: Character) => {
-    setCurrentCharacter(character);
     localStorage.setItem("currentCharacter", JSON.stringify(character));
   };
 
@@ -2738,7 +2730,7 @@ ${errorInfo.stack}
       setShowProjects(false);
     }
     if (activeFeature !== "custom-timer") {
-      setShowCustomTimer(false);
+      // Custom timer state was removed, no action needed
     }
     if (activeFeature !== "preset-timers") {
       setShowPresetTimers(false);
@@ -4646,7 +4638,6 @@ User Agent: ${userAgent}
       (enhancedError as any).errorInfo = errorInfo;
 
       setCurrentError(enhancedError);
-      setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
     }
   };
@@ -4738,7 +4729,6 @@ User Agent: ${userAgent}
       (enhancedError as any).errorInfo = enhancedErrorInfo;
 
       setCurrentError(enhancedError);
-      setErrorModalButtonPosition(undefined); // ボタン位置をリセット
       setShowErrorModal(true);
     }
   };
