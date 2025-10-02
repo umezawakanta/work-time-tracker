@@ -16,7 +16,7 @@ export default defineConfig(({ command, mode }) => {
     
     // 環境変数の定義
     define: {
-      'process.env.REACT_APP_VERSION': JSON.stringify(env.VITE_APP_VERSION || '1.4.0'),
+      'process.env.REACT_APP_VERSION': JSON.stringify(env['VITE_APP_VERSION'] || '1.4.0'),
       'process.env.NODE_ENV': JSON.stringify(mode),
     },
     
@@ -39,7 +39,7 @@ export default defineConfig(({ command, mode }) => {
       cors: true, // CORSを有効化
       proxy: {
         '/api': {
-          target: env.VITE_API_URL || 'https://work-time-tracker-five.vercel.app',
+          target: env['VITE_API_URL'] || 'https://work-time-tracker-five.vercel.app',
           changeOrigin: true,
           secure: true,
           // プロキシエラーハンドリング

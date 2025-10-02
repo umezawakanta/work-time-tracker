@@ -149,10 +149,6 @@ class FuturePlanningManager {
     return true;
   }
 
-  public getSchedules(): Schedule[] {
-    return [...this.schedules];
-  }
-
   public getSchedulesByDate(date: Date): Schedule[] {
     const targetDate = date.toISOString().split('T')[0];
     return this.schedules.filter(schedule => 
