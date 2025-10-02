@@ -37,7 +37,6 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   currentCharacter,
   showThemeSettings,
   showFontSettings,
-  showFeatureSettings,
   handleCharacterHomeToggle,
   handleLogout,
   closeOtherFeatures,
@@ -144,8 +143,9 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
           <i className="bi bi-lightbulb"></i>
           <span>更新要望</span>
         </button>
-        <LogoutButtonComponent onLogout={handleLogout} />
       </div>
+
+      <LogoutButtonComponent onLogout={handleLogout} />
 
       {/* 背景キャラクター（絶対保持） */}
       <HetamaCharacterComponent 

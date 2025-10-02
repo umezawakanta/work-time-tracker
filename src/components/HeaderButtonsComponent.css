@@ -24,6 +24,7 @@
   color: white;
   font-size: 1.2rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin-top: 80px;
 }
 
 .header-buttons button:hover {
@@ -69,6 +70,7 @@
 @media (max-width: 480px) {
   .header-buttons {
     gap: 0.2rem;
+    margin-top: -80px;
   }
   .header-buttons button {
     min-width: 32px;
