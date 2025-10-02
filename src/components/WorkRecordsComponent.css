@@ -4,6 +4,42 @@
   margin-bottom: 2rem;
 }
 
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.close-section-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.close-section-btn:hover {
+  background: #d32f2f;
+}
+
+.close-section-btn:focus {
+  outline: 2px solid #ff9800;
+  outline-offset: 2px;
+}
+
 /* タグ入力のスタイル */
 .tags-input {
   border: 1px solid #ddd;

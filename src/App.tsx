@@ -3092,7 +3092,7 @@ ${errorInfo.stack}
     }
 
     // お仕事記録関連
-    if (activeFeature !== "work-records" && activeFeature !== "comprehensive-dashboard" && activeFeature !== "memos") {
+    if (activeFeature !== "work-records" && activeFeature !== "comprehensive-dashboard" && activeFeature !== "memos" && activeFeature !== "public-memos") {
       setShowWorkRecords(false);
     }
 

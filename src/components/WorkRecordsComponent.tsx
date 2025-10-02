@@ -764,7 +764,17 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   return (
     <div className="work-records-section">
       <div className="section-header">
-        <h2>お仕事記録</h2>
+        <div className="header-content">
+          <h2>お仕事記録</h2>
+          <button 
+            className="close-section-btn"
+            onClick={() => setShowWorkRecords(false)}
+            title="お仕事記録を閉じる"
+            aria-label="お仕事記録を閉じる"
+          >
+            ×
+          </button>
+        </div>
         <p>収入・支出と日記を記録して、お仕事の振り返りをしましょう</p>
         <div className="dashboard-buttons">
           <button 
