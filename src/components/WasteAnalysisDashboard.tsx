@@ -81,7 +81,7 @@ const WasteAnalysisDashboard: React.FC<WasteAnalysisDashboardProps> = ({ userId,
 
   return (
     <div className="waste-analysis-dashboard">
-      <div className="dashboard-header">
+      <div className="comprehensive-dashboard-header">
         <h2>無駄遣い監視ダッシュボード</h2>
         <button className="close-button" onClick={onClose}>×</button>
       </div>

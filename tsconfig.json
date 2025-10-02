@@ -1,19 +1,117 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "esModuleInterop": true,
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    
+    // 型安全性の強化
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    
+    // 未使用コードの検出
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    
+    // パスエイリアス設定
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@utils/*": ["src/utils/*"],
+      "@types/*": ["src/types/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@constants/*": ["src/constants/*"],
+      "@server/*": ["src/server/*"],
+      "@api/*": ["api/*"]
+    },
+    
+    // モジュール解決の最適化
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleDetection": "force",
+    
+    // デバッグと開発体験
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "removeComments": false,
+    
+    // パフォーマンス最適化
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "skipDefaultLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": false,
+    "checkJs": false,
+    
+    // 実験的機能
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    
+    // その他の設定
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "composite": false,
+    "declarationDir": "./types",
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "dist", "api/**/*", "api/**/*.ts", "api/**/*.js"]
+  
+  // ファイル範囲設定
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.json",
+    "vite.config.ts",
+    "vercel.json"
+  ],
+  
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".next",
+    "api/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/__tests__/**/*",
+    "**/__mocks__/**/*"
+  ],
+  
+  // 参照設定（将来のモノレポ対応）
+  "references": [],
+  
+  // 拡張設定
+  "extends": [],
+  
+  // コンパイラオプションの詳細設定
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
+  
+  // 型チェックの除外設定
+  "typeAcquisition": {
+    "enable": true,
+    "include": ["node"],
+    "exclude": []
+  }
 }

@@ -54,7 +54,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   // 不具合報告モーダルの状態をHeaderComponent内で管理
   const [showBugReportModal, setShowBugReportModal] = useState(false);
   return (
-    <header className="dashboard-header">
+    <header className="main-header">
       {/* 左側：キャラクター（絶対保持） */}
       <HeaderLeftComponent 
         isTimeTrackingActive={isTimeTrackingActive}

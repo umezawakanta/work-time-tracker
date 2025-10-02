@@ -2174,8 +2174,8 @@ ${errorInfo.stack}
 
     // より強力なフォント適用 - 特定の要素を明示的に更新
     const specificSelectors = [
-      ".dashboard-header h1",
-      ".dashboard-header",
+      ".main-header h1",
+      ".main-header",
       ".user-info",
       ".time-tracking-section h2",
       ".projects-section h2",
@@ -2691,7 +2691,7 @@ ${errorInfo.stack}
       // さらに強制的にDOM要素のスタイルを更新
       const { body } = document;
       const dashboard = document.querySelector(".dashboard");
-      const header = document.querySelector(".dashboard-header");
+      const header = document.querySelector(".main-header");
       const timeSection = document.querySelector(".time-tracking-section");
 
       if (body) {

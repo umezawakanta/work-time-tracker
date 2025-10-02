@@ -89,6 +89,11 @@ export interface FinancialSummary {
   alerts: FinancialAlert[];
   goals: FinancialGoal[];
   monthlyData: MonthlyFinancialData[];
+  budget: number;
+  totalExpense: number;
+  expenses: number;
+  totalIncome: number;
+  netIncome: number;
 }
 
 // デフォルト設定

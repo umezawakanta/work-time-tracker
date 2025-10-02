@@ -106,7 +106,7 @@ const FinancialOverviewDashboard: React.FC<FinancialOverviewDashboardProps> = ({
   return (
     <div className="financial-overview-dashboard">
       {/* ヘッダー */}
-      <div className="dashboard-header">
+      <div className="comprehensive-dashboard-header">
         <h2>財務統合ダッシュボード</h2>
         <div className="period-selector">
           <label>期間:</label>
