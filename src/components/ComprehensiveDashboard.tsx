@@ -529,7 +529,15 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
       <div className="comprehensive-dashboard">
         <div className="dashboard-header">
           <h2>統合ダッシュボード</h2>
-          <button onClick={onClose} className="close-button">×</button>
+          <button 
+            onClick={onClose} 
+            className="close-button"
+            title="統合ダッシュボードを閉じる"
+            aria-label="統合ダッシュボードを閉じる"
+            type="button"
+          >
+            ×
+          </button>
         </div>
         <div className="loading">データを読み込み中...</div>
       </div>
@@ -541,7 +549,15 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
       <div className="comprehensive-dashboard">
         <div className="dashboard-header">
           <h2>統合ダッシュボード</h2>
-          <button onClick={onClose} className="close-button">×</button>
+          <button 
+            onClick={onClose} 
+            className="close-button"
+            title="統合ダッシュボードを閉じる"
+            aria-label="統合ダッシュボードを閉じる"
+            type="button"
+          >
+            ×
+          </button>
         </div>
         <div className="error">{error}</div>
       </div>
@@ -564,7 +580,15 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
             <option value="month">1ヶ月</option>
             <option value="year">1年</option>
           </select>
-          <button onClick={onClose} className="close-button">×</button>
+          <button 
+            onClick={onClose} 
+            className="close-button"
+            title="統合ダッシュボードを閉じる"
+            aria-label="統合ダッシュボードを閉じる"
+            type="button"
+          >
+            ×
+          </button>
         </div>
       </div>
 
