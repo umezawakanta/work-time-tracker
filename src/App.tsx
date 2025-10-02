@@ -2732,15 +2732,6 @@ ${errorInfo.stack}
     if (activeFeature !== "custom-timer") {
       // Custom timer state was removed, no action needed
     }
-    if (activeFeature !== "preset-timers") {
-      setShowPresetTimers(false);
-    }
-    if (activeFeature !== "timer-stats") {
-      setShowTimerStats(false);
-    }
-    if (activeFeature !== "timer-history") {
-      setShowTimerHistory(false);
-    }
     if (activeFeature !== "cooking-timer") {
       setShowCookingTimer(false);
     }
