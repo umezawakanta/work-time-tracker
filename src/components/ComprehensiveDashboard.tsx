@@ -514,12 +514,14 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
     const todayTasks = getTodayTasks();
     if (todayTasks.schedules.length > 0) {
       const nextSchedule = todayTasks.schedules[0];
-      return {
-        message: `${nextSchedule.startTime}から${nextSchedule.title}があります。`,
-        type: "schedule",
-        priority: nextSchedule.priority,
-        time: nextSchedule.startTime,
-      };
+      if (nextSchedule) {
+        return {
+          message: `${nextSchedule.startTime}から${nextSchedule.title}があります。`,
+          type: "schedule",
+          priority: nextSchedule.priority,
+          time: nextSchedule.startTime,
+        };
+      }
     }
 
     // 今週締切の計画がある場合
