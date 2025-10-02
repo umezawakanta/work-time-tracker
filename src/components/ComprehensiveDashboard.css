@@ -54,7 +54,6 @@
 }
 
 .comprehensive-dashboard {
-  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -64,7 +63,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: 89vw;
   height: 100vh;
   max-width: 100vw;
   max-height: 100vh;
@@ -221,7 +220,7 @@
 /* PCでの表示最適化 */
 @media (min-width: 769px) {
   .comprehensive-dashboard {
-    max-width: 100vw;
+    max-width: 83vw;
     max-height: 100vh;
     overflow: hidden;
   }
