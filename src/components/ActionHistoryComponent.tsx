@@ -319,6 +319,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                     max="5"
                     value={mood}
                     onChange={(e) => setMood(parseInt(e.target.value))}
+                    title="気分を選択"
+                    aria-label="気分を選択"
                   />
                   <span>{mood}</span>
                 </div>
