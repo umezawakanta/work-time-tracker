@@ -343,6 +343,7 @@ function App({
 
   // タイマーセクションの表示状態
   const [showTimers, setShowTimers] = useState(false);
+  const [showCookingTimer, setShowCookingTimer] = useState(false);
 
   // 報酬通知の状態
   const [showRewardNotificationModal, setShowRewardNotificationModal] = useState(false);
