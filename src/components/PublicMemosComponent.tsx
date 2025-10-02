@@ -101,18 +101,23 @@ const PublicMemosComponent: React.FC<PublicMemosComponentProps> = ({
 
   // いいね状態を初期化（初回のみ実行）
   const hasInitialized = useRef(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   
   // メモ一覧からいいね状態を初期化
   useEffect(() => {
     if (publicMemos.length > 0 && !hasInitialized.current) {
       hasInitialized.current = true;
       initializeLikeStates();
+      setIsInitializing(false);
+    } else if (publicMemos.length === 0) {
+      setIsInitializing(false);
     }
   }, [publicMemos.length]);
 
   // publicMemosが変更されたら初期化フラグをリセット
   useEffect(() => {
     hasInitialized.current = false;
+    setIsInitializing(true);
   }, [publicMemos]);
 
   // 公開メモの読み込み関数をPublicMemosComponent内で定義
