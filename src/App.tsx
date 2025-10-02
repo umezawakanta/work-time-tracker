@@ -3092,11 +3092,8 @@ ${errorInfo.stack}
     }
 
     // お仕事記録関連
-    if (activeFeature !== "work-records" && activeFeature !== "comprehensive-dashboard") {
-      // メモ機能の場合はおしごと記録を閉じない
-      if (activeFeature !== "memos") {
-        setShowWorkRecords(false);
-      }
+    if (activeFeature !== "work-records" && activeFeature !== "comprehensive-dashboard" && activeFeature !== "memos") {
+      setShowWorkRecords(false);
     }
 
     // その他の機能

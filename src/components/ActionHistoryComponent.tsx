@@ -295,6 +295,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                     type="datetime-local"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
+                    title="終了時間を選択"
+                    placeholder="終了時間を選択"
                   />
                 </div>
               </div>
@@ -304,6 +306,8 @@ const ActionHistoryComponent: React.FC<ActionHistoryComponentProps> = ({
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
+                  title="場所を入力"
+                  placeholder="場所を入力"
                 />
               </div>
               <div className="form-row">
