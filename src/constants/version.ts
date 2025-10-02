@@ -1,5 +1,5 @@
 // アプリケーションのバージョン情報
-export const APP_VERSION = "1.4.4";
+export const APP_VERSION = "1.4.5";
 
 // 更新履歴の型定義
 export interface ChangelogEntry {
@@ -11,6 +11,22 @@ export interface ChangelogEntry {
 
 // 更新履歴
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.4.5",
+    date: "2025-10-02",
+    changes: [
+      "お仕事記録機能のUI/UX改善",
+      "ヘッダー部分の常時表示機能を追加（他の機能と同様の動作）",
+      "開く/閉じるボタンの実装（▶/×）",
+      "重複ボタンの削除（カレンダー内の収支記録・日記追加ボタンを削除）",
+      "アクセシビリティの向上（フォーム要素にtitle/aria-label属性を追加）",
+      "ボタン重複問題の解決",
+      "カレンダーコンポーネント内の重複ボタンを削除",
+      "収入・支出記録ボタンと日記記録ボタンの統一",
+      "ユーザーインターフェースの一貫性向上"
+    ],
+    type: "improvement"
+  },
   {
     version: "1.4.4",
     date: "2025-10-01",
