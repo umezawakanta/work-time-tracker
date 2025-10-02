@@ -193,14 +193,15 @@ const DocsViewer: React.FC<DocsViewerProps> = ({
       
       // HTMLエンティティを安全にデコード（二重エスケープを防ぐ）
       if (content.includes('&')) {
-        // 一度だけデコードする
+        // より安全な方法でHTMLエンティティをデコード
+        // 一度にすべてのエンティティを置換して二重エスケープを防ぐ
         content = content
-          .replace(/&gt;/g, '>')
-          .replace(/&lt;/g, '<')
-          .replace(/&amp;/g, '&')
+          .replace(/&nbsp;/g, ' ')
           .replace(/&quot;/g, '"')
           .replace(/&#x27;/g, "'")
-          .replace(/&nbsp;/g, ' ');
+          .replace(/&gt;/g, '>')
+          .replace(/&lt;/g, '<')
+          .replace(/&amp;/g, '&');
       }
       
       console.log(`📝 図 ${i} の内容:`, content.substring(0, 100) + '...');
