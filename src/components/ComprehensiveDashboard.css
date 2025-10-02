@@ -9,16 +9,59 @@
   background: #f5f5f5;
   z-index: 1000;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* iOS でのスムーズスクロール */
+  touch-action: pan-y; /* 縦スクロールのみ許可 */
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 15px 20px;
   background: white;
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-height: 60px; /* タッチしやすい高さを確保 */
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 10px 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .dashboard-header h2 {
+    font-size: 20px;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .header-controls {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  /* すべてのボタンにタッチ対応を追加 */
+  button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px;
+  }
+  
+  /* フォーム要素のタッチ対応 */
+  input, select, textarea {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px;
+  }
+  
+  /* スクロール可能な要素の改善 */
+  .dashboard-content {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
 }
 
 .dashboard-header h2 {
@@ -53,6 +96,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: manipulation; /* ダブルタップズームを防ぐ */
+  -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .close-button {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
 }
 
 .close-button:hover {
@@ -75,6 +129,12 @@
   color: #666;
   border-bottom: 3px solid transparent;
   transition: all 0.3s ease;
+  touch-action: manipulation; /* ダブルタップズームを防ぐ */
+  -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
+  min-height: 48px; /* タッチしやすい高さを確保 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tab:hover {
@@ -730,8 +790,9 @@
   }
 
   .tab {
-    padding: 10px 15px;
+    padding: 12px 15px;
     font-size: 14px;
+    min-height: 44px; /* タッチしやすい高さを確保 */
   }
 
   .dashboard-content {
@@ -1751,6 +1812,9 @@
   cursor: pointer;
   transition: background 0.3s ease;
   margin-right: 5px;
+  touch-action: manipulation; /* ダブルタップズームを防ぐ */
+  -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
+  min-height: 32px; /* タッチしやすい高さを確保 */
 }
 
 .complete-button:hover {
@@ -1769,6 +1833,9 @@
   transition: all 0.3s ease;
   margin-top: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  touch-action: manipulation; /* ダブルタップズームを防ぐ */
+  -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
+  min-height: 44px; /* タッチしやすい高さを確保 */
 }
 
 .complete-task-button:hover {
