@@ -1497,7 +1497,10 @@ ${errorInfo.stack}
         console.log('Checked registration badges:', unlockedBadges);
         if (unlockedBadges.length > 0) {
           // 最初のバッジを通知として表示
-          handleBadgeUnlocked(unlockedBadges[0]);
+          const firstBadge = unlockedBadges[0];
+          if (firstBadge) {
+            handleBadgeUnlocked(firstBadge);
+          }
         }
       }
     }
