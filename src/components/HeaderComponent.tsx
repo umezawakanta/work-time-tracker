@@ -150,22 +150,26 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
       {/* 背景キャラクター（絶対保持） */}
       <HetamaCharacterComponent 
         currentCharacter={currentCharacter}
-        userActivity={user?.id ? {
-          totalExperience: currentCharacter?.totalExperience || 0,
-          badgeCount: currentCharacter?.badges?.length || 0,
-          workHours: 0, // 実際の作業時間データを渡す
-          level: currentCharacter?.level || 1
-        } : undefined}
+        {...(user?.id && {
+          userActivity: {
+            totalExperience: currentCharacter?.totalExperience || 0,
+            badgeCount: currentCharacter?.badges?.length || 0,
+            workHours: 0, // 実際の作業時間データを渡す
+            level: currentCharacter?.level || 1
+          }
+        })}
         showActivityReaction={true}
       />
       <DogCharacterComponent 
         currentCharacter={currentCharacter}
-        workActivity={user?.id ? {
-          totalWorkHours: 0, // 実際の作業時間データを渡す
-          consecutiveDays: 0, // 実際の連続日数データを渡す
-          projectCount: 0, // 実際のプロジェクト数データを渡す
-          memoCount: 0 // 実際のメモ数データを渡す
-        } : undefined}
+        {...(user?.id && {
+          workActivity: {
+            totalWorkHours: 0, // 実際の作業時間データを渡す
+            consecutiveDays: 0, // 実際の連続日数データを渡す
+            projectCount: 0, // 実際のプロジェクト数データを渡す
+            memoCount: 0 // 実際のメモ数データを渡す
+          }
+        })}
         showWorkReaction={true}
       />
 

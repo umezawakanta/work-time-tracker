@@ -343,9 +343,9 @@ export default ${file.name.replace('.tsx', '').replace('.ts', '')};`;
             <i className={`bi ${getFileIcon(node)}`}></i>
             <span className="file-name">{node.name}</span>
             {node.type === 'file' && fileStats[node.path] && (
-              <span className={`file-stats ${fileStats[node.path].lines > 1000 ? 'needs-improvement' : ''}`}>
-                {fileStats[node.path].lines}行
-                {fileStats[node.path].lines > 1000 && (
+              <span className={`file-stats ${(fileStats[node.path]?.lines || 0) > 1000 ? 'needs-improvement' : ''}`}>
+                {fileStats[node.path]?.lines || 0}行
+                {(fileStats[node.path]?.lines || 0) > 1000 && (
                   <i className="bi bi-exclamation-triangle" title="1000行を超えています。要改善"></i>
                 )}
               </span>
@@ -425,18 +425,18 @@ export default ${file.name.replace('.tsx', '').replace('.ts', '')};`;
                   </div>
                   {fileStats[selectedFile.path] && (
                     <div className="file-stats-info">
-                      <span className={`stat-item ${fileStats[selectedFile.path].lines > 1000 ? 'needs-improvement' : ''}`}>
+                      <span className={`stat-item ${(fileStats[selectedFile.path]?.lines || 0) > 1000 ? 'needs-improvement' : ''}`}>
                         <i className="bi bi-list-ol"></i>
-                        {fileStats[selectedFile.path].lines}行
-                        {fileStats[selectedFile.path].lines > 1000 && (
+                        {fileStats[selectedFile.path]?.lines || 0}行
+                        {(fileStats[selectedFile.path]?.lines || 0) > 1000 && (
                           <i className="bi bi-exclamation-triangle" title="1000行を超えています。要改善"></i>
                         )}
                       </span>
                       <span className="stat-item">
                         <i className="bi bi-type"></i>
-                        {fileStats[selectedFile.path].characters.toLocaleString()}文字
+                        {(fileStats[selectedFile.path]?.characters || 0).toLocaleString()}文字
                       </span>
-                      {fileStats[selectedFile.path].lines > 1000 && (
+                      {(fileStats[selectedFile.path]?.lines || 0) > 1000 && (
                         <span className="improvement-warning">
                           <i className="bi bi-lightbulb"></i>
                           このファイルは1000行を超えています。リファクタリングを検討してください。

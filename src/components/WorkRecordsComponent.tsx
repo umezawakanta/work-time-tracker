@@ -657,10 +657,10 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
   // 日記の編集
   const editDiary = (diary: WorkDiary) => {
-    setDiaryDate(new Date(diary.date).toISOString().split('T')[0]);
-    setDiaryTitle(diary.title);
-    setDiaryContent(diary.content);
-    setDiaryMood(diary.mood);
+    setDiaryDate(diary.date ? new Date(diary.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+    setDiaryTitle(diary.title || '');
+    setDiaryContent(diary.content || '');
+    setDiaryMood(diary.mood || '3');
     setDiaryActivities(diary.activities || []);
     setDiaryNotes(diary.notes || "");
     setDiaryNextGoals(diary.nextGoals || []);
@@ -704,11 +704,11 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     const selectedDateUTCStr = selectedDateUTC.toISOString().split("T")[0];
 
     const filteredIncomeExpenseRecords = incomeExpenseRecords.filter(record => 
-      record.date.startsWith(selectedDateUTCStr)
+      record.date?.startsWith(selectedDateUTCStr)
     );
 
     const filteredDiaries = workDiaries.filter(diary => 
-      diary.date.startsWith(selectedDateUTCStr)
+      diary.date?.startsWith(selectedDateUTCStr)
     );
 
     return {
@@ -767,7 +767,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     if (type === "diary") {
       editDiary(record);
     } else {
-      setIncomeExpenseDate(new Date(record.date).toISOString().split('T')[0]);
+      setIncomeExpenseDate(record.date ? new Date(record.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
       setIncomeExpenseAmount(Math.abs(record.amount).toString());
       setIncomeExpenseType(record.type === "income" ? "income" : "expense");
       setIncomeExpenseNotes(record.notes || "");
@@ -1137,7 +1137,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       className="edit-btn"
                       onClick={() => {
                         setEditingIncomeExpenseRecord(record);
-                        setIncomeExpenseDate(new Date(record.date).toISOString().split('T')[0]);
+                        setIncomeExpenseDate(record.date ? new Date(record.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
                         setIncomeExpenseAmount(record.amount.toString());
                         setIncomeExpenseType(record.type);
                         setIncomeExpenseNotes(record.notes || "");
@@ -1229,9 +1229,9 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                       className="edit-btn"
                       onClick={() => {
                         setEditingDiary(diary);
-                        setDiaryDate(new Date(diary.date).toISOString().split('T')[0]);
-                        setDiaryTitle(diary.title);
-                        setDiaryContent(diary.content);
+                        setDiaryDate(diary.date ? new Date(diary.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+                        setDiaryTitle(diary.title || '');
+                        setDiaryContent(diary.content || '');
                         setDiaryActivities(diary.activities || []);
                         setDiaryProductivity(diary.productivity);
                         setDiaryGratitude(diary.gratitude || "");
@@ -1335,7 +1335,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
                   aria-label="サブカテゴリを選択"
                 >
                     <option value="">サブカテゴリを選択（任意）</option>
-                    {SUBCATEGORIES[incomeExpenseCategory].map(subcategory => (
+                    {SUBCATEGORIES[incomeExpenseCategory]?.map(subcategory => (
                       <option key={subcategory} value={subcategory}>{subcategory}</option>
                     ))}
                   </select>

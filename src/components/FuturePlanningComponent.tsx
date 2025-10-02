@@ -425,6 +425,8 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
                     value={priority}
                     onChange={(e) => setPriority(e.target.value as any)}
                     required
+                    title="優先度を選択"
+                    aria-label="優先度を選択"
                   >
                     <option value="low">低</option>
                     <option value="medium">中</option>
@@ -441,6 +443,8 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                     required
+                    title="開始日を選択"
+                    aria-label="開始日を選択"
                   />
                 </div>
                 <div className="form-group">
@@ -450,6 +454,9 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     required
+                    title={formType === 'budget' ? '目標金額を入力' : '終了日を選択'}
+                    placeholder={formType === 'budget' ? '目標金額を入力してください' : ''}
+                    aria-label={formType === 'budget' ? '目標金額を入力' : '終了日を選択'}
                   />
                 </div>
               </div>
@@ -462,6 +469,8 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
                     max="100"
                     value={progress}
                     onChange={(e) => setProgress(parseInt(e.target.value))}
+                    title="進捗率を選択"
+                    aria-label="進捗率を選択"
                   />
                   <span>{progress}%</span>
                 </div>
@@ -472,6 +481,9 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
+                  title="メモを入力"
+                  placeholder="メモを入力してください"
+                  aria-label="メモを入力"
                 />
               </div>
               <div className="form-actions">

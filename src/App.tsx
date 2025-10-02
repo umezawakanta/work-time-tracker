@@ -60,10 +60,7 @@ import { FinancialOverviewManager } from "./utils/financialOverviewManager";
 // import { AssetLiabilityManager } from "./utils/assetLiabilityManager"; // 独立したコンポーネント
 // import { ActionHistoryManager } from "./utils/actionHistoryManager"; // 独立したコンポーネント
 // import { FuturePlanningManager } from "./utils/futurePlanningManager"; // 独立したコンポーネント
-import TwitterShare from "./components/TwitterShare";
-import SimpleShareModal from "./components/SimpleShareModal";
-import BadgeGallery from "./components/BadgeGallery";
-import { AuthProvider, useAuthContext } from "./components/AuthContextProvider";
+import { AuthProvider } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
   getErrorInfo,
@@ -78,9 +75,7 @@ import type { ApiErrorInfo } from "./utils/apiErrorHandler";
 // Static import for apiFetch - used frequently throughout the application
 import { apiFetch } from "./utils/apiClient";
 import { Character as CharacterType, UserCharacterSettings, CharacterAchievement, CharacterCustomization } from "./types/character";
-import { Badge, BadgeShareData } from "./types/badge";
-import { diaryRewardManager } from "./utils/diaryRewardManager";
-import { incomeExpenseRewardManager } from "./utils/incomeExpenseRewardManager";
+import { Badge } from "./types/badge";
 import { badgeManager } from "./utils/badgeManager";
 import { BADGES } from "./constants/badges";
 import { characterManager } from "./utils/characterManager";
@@ -89,7 +84,6 @@ import {
   buildApiUrl,
   createUserIdParam,
   createValidatedUserIdParam,
-  createIdParam,
 } from "./utils/urlUtils";
 import EggTimerComponent from "./components/EggTimerComponent";
 import {
@@ -133,8 +127,6 @@ import type {
   Book,
   Memo,
   Character,
-  IncomeExpenseRecord,
-  WorkDiary,
   UserSettings,
   Feature,
   Habit,
@@ -237,57 +229,7 @@ function App({
   handleLogin,
   handleRegister,
   handleLogout,
-  verifyToken,
   // 無駄遣い監視システムのprops
-  showWasteAnalysis,
-  setShowWasteAnalysis,
-  showWasteRecordForm,
-  setShowWasteRecordForm,
-  showWasteGoalForm,
-  setShowWasteGoalForm,
-  handleWasteRecordSave,
-  handleWasteGoalSave,
-  // 現金残高管理システムのprops
-  showCashBalance,
-  setShowCashBalance,
-  showCashBalanceUpdate,
-  setShowCashBalanceUpdate,
-  showCashTransactionHistory,
-  setShowCashTransactionHistory,
-  handleCashBalanceUpdate,
-  // 銀行口座管理システムのprops
-  showBankAccount,
-  setShowBankAccount,
-  showBankAccountUpdate,
-  setShowBankAccountUpdate,
-  showBankTransactionHistory,
-  setShowBankTransactionHistory,
-  selectedBankAccountId,
-  handleBankAccountUpdate,
-  handleBankAccountSave,
-  handleBankTransactionHistory,
-  // カードローン管理システムのprops
-  showCardLoan,
-  setShowCardLoan,
-  showCardLoanUpdate,
-  setShowCardLoanUpdate,
-  showCardLoanTransactionHistory,
-  setShowCardLoanTransactionHistory,
-  selectedCardLoanId,
-  handleCardLoanUpdate,
-  handleCardLoanSave,
-  handleCardLoanTransactionHistory,
-  // PayPayカード管理システムのprops
-  showPayPayCard,
-  setShowPayPayCard,
-  showPayPayCardUpdate,
-  setShowPayPayCardUpdate,
-  showPayPayCardTransactionHistory,
-  setShowPayPayCardTransactionHistory,
-  selectedPayPayCardId,
-  handlePayPayCardUpdate,
-  handlePayPayCardSave,
-  handlePayPayCardTransactionHistory
 }: AppProps) {
 
   // 注意: showErrorModalをサブコンポーネント側で定義することはできません
@@ -367,14 +309,6 @@ function App({
   // 2. エラー状態とUI位置情報を複数のコンポーネント間で共有する仕組みを構築
   // 3. エラー報告イベントリスナーをエラーContext内で管理
   // 4. 各コンポーネントでエラー状態を個別に管理する場合は、状態の同期を保つ仕組みが必要
-  const [errorModalButtonPosition, setErrorModalButtonPosition] = useState<
-    { x: number; y: number } | undefined
-  >(undefined);
-
-
-  const [description, setDescription] = useState("");
-  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
-  const [currentProject, setCurrentProject] = useState<string>("");
 
   // ゆでたまごタイマーの状態（EggTimerComponentで管理）
   const [eggTimerActive, setEggTimerActive] = useState(false);
@@ -398,12 +332,10 @@ function App({
   // カスタムタイマーの状態
   const [customTimerActive, setCustomTimerActive] = useState(false);
   const [customTimerPaused, setCustomTimerPaused] = useState(false);
-  const [customTimerTime, setCustomTimerTime] = useState(0); // 残り時間（秒）
   const [customTimerInterval, setCustomTimerInterval] =
     useState<NodeJS.Timeout | null>(null);
   const [customTimerMinutes, setCustomTimerMinutes] = useState(5);
   const [customTimerSeconds, setCustomTimerSeconds] = useState(0);
-  const [customTimerName, setCustomTimerName] = useState("");
   const [customTimerSound, setCustomTimerSound] = useState<
     "bell" | "chime" | "beep" | "alarm"
   >("bell");
@@ -467,7 +399,6 @@ function App({
   const [isMannerMode, setIsMannerMode] = useState(false);
 
   // 時間記録の進行状態
-  const [isTimeTrackingActive, setIsTimeTrackingActive] = useState(false);
 
   // キャラクター関連の状態
   const [characterSettings, setCharacterSettings] = useState<UserCharacterSettings>(characterManager.getSettings());
@@ -506,13 +437,11 @@ function App({
   const [currentBadge, setCurrentBadge] = useState<Badge | null>(null);
 
   // ジャンル管理の状態
-  const [showGenreManagement, setShowGenreManagement] = useState(false);
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
   const [editingGenreName, setEditingGenreName] = useState("");
 
   // 月収支メモの状態
   const [monthlyMemo, setMonthlyMemo] = useState("");
-  const [editingMonthlyMemo, setEditingMonthlyMemo] = useState(false);
 
   // プロジェクト関連の状態
   const [projects, setProjects] = useState<Project[]>([]);
@@ -532,8 +461,6 @@ function App({
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
-  const [adminUsersLoading, setAdminUsersLoading] = useState(false);
-  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   // 本棚関連の状態
   const [books, setBooks] = useState<Book[]>([]);
@@ -557,46 +484,28 @@ function App({
   // メモ関連の状態
   const [memos, setMemos] = useState<Memo[]>([]);
   const [showMemos, setShowMemos] = useState(false);
-  const [showMemoForm, setShowMemoForm] = useState(false);
   const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
   const [memoTitle, setMemoTitle] = useState("");
 
   // キャラクター関連の状態
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [currentCharacter, setCurrentCharacter] = useState<Character | null>(
-    null
-  );
   const [showCharacterHome, setShowCharacterHome] = useState(false);
 
   // セクション表示状態（既存の状態変数を使用）
   const [showTimeTracking, setShowTimeTracking] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
-  const [showCustomTimer, setShowCustomTimer] = useState(false);
-  const [showCookingTimer, setShowCookingTimer] = useState(false);
-  const [showPresetTimers, setShowPresetTimers] = useState(false);
-  const [showTimerStats, setShowTimerStats] = useState(false);
-  const [showTimerHistory, setShowTimerHistory] = useState(false);
   const [memoContent, setMemoContent] = useState("");
   const [memoCategory, setMemoCategory] = useState("");
   const [memoTags, setMemoTags] = useState("");
   const [memoIsPublic, setMemoIsPublic] = useState(false);
   const [memoIsFamilyOnly, setMemoIsFamilyOnly] = useState(false);
   const [memoIsAdminOnly, setMemoIsAdminOnly] = useState(false);
-  const [memoPostType, setMemoPostType] = useState('general');
-  const [memoSearchTerm, setMemoSearchTerm] = useState("");
   const [selectedMemoCategory, setSelectedMemoCategory] = useState("all");
 
   // 公開メモ関連の状態
   const [publicMemos, setPublicMemos] = useState<Memo[]>([]);
   const [showPublicMemos, setShowPublicMemos] = useState(false);
-  const [publicMemoSearchTerm, setPublicMemoSearchTerm] = useState("");
   const [selectedPublicMemoCategory, setSelectedPublicMemoCategory] =
     useState("all");
-  const [publicMemoCurrentDate, setPublicMemoCurrentDate] = useState(
-    new Date()
-  );
-  const [publicMemoSelectedDate, setPublicMemoSelectedDate] =
-    useState<Date | null>(null);
 
   // フォント設定関連の状態
   const [selectedFont, setSelectedFont] = useState("system");
@@ -613,13 +522,11 @@ function App({
 
   // カスタムカテゴリ管理の状態
   const [customCategories, setCustomCategories] = useState<string[]>([]);
-  const [showGenreManager, setShowGenreManager] = useState(false);
   const [newGenreName, setNewGenreName] = useState("");
 
   // 返信機能の状態
   const [replyingToMemo, setReplyingToMemo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
-  const [editingReply, setEditingReply] = useState<string | null>(null);
   const [editReplyContent, setEditReplyContent] = useState("");
 
   // お仕事記録の状態
@@ -638,10 +545,6 @@ function App({
 
 
   // 配列項目の一時入力状態
-  const [newAchievement, setNewAchievement] = useState("");
-  const [newChallenge, setNewChallenge] = useState("");
-  const [newLearning, setNewLearning] = useState("");
-  const [newNextGoal, setNewNextGoal] = useState("");
 
   // 機能設定の状態
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
@@ -661,9 +564,6 @@ function App({
   // カレンダーの状態
   // const [showCalendar, setShowCalendar] = useState(false); // WorkRecordsComponentで管理
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [showRecordDetail, setShowRecordDetail] = useState(false);
 
   // じぶん図鑑関連の状態
   const [showSelfAnalysis, setShowSelfAnalysis] = useState(false);
@@ -687,29 +587,14 @@ function App({
   });
 
   // 習慣トラッカー関連の状態
-  const [newHabit, setNewHabit] = useState("");
   const [habitStreak, setHabitStreak] = useState<{ [key: string]: number }>({});
   const [habitHistory, setHabitHistory] = useState<{ [key: string]: string[] }>(
     {}
   );
 
   // 感情ログ関連の状態（MoodLogManagerで管理）
-  const [showMoodForm, setShowMoodForm] = useState(false);
-  const [editingMoodLog, setEditingMoodLog] = useState<string | null>(null);
-  const [moodForm, setMoodForm] = useState({
-    date: new Date().toISOString().split("T")[0],
-    mood: 5,
-    energy: 5,
-    stress: 5,
-    notes: "",
-    activities: [] as string[],
-    weather: "sunny",
-    sleep: 8,
-  });
-  const [newActivity, setNewActivity] = useState("");
 
   // 目標管理関連の状態
-  const [showGoalForm, setShowGoalForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const [goalForm, setGoalForm] = useState({
     title: "",
@@ -744,21 +629,6 @@ function App({
   // const editMoodLog = () => { ... }; // 削除
   // const saveMoodLog = () => { ... }; // 削除
 
-  const getMoodEmoji = (mood: number) => {
-    if (mood <= 2) {
-      return "bi-emoji-frown";
-    }
-    if (mood <= 4) {
-      return "bi-emoji-expressionless";
-    }
-    if (mood <= 6) {
-      return "bi-emoji-neutral";
-    }
-    if (mood <= 8) {
-      return "bi-emoji-smile";
-    }
-    return "bi-emoji-laughing";
-  };
 
   // getAverageMood関数はMoodLogManagerで管理
 
@@ -804,32 +674,7 @@ function App({
     );
   };
 
-  const deleteGoal = (goalId: string) => {
-    setGoals((prev) => prev.filter((goal) => goal.id !== goalId));
-  };
 
-  const addLearningRecord = (record: Omit<LearningRecord, "id">) => {
-    const newRecord = {
-      ...record,
-      id: Date.now().toString(),
-    };
-    setLearningRecords([...learningRecords, newRecord]);
-  };
-
-  const updateLearningRecord = (
-    recordId: string,
-    updates: Partial<LearningRecord>
-  ) => {
-    setLearningRecords(
-      learningRecords.map((r) => (r.id === recordId ? { ...r, ...updates } : r))
-    );
-  };
-
-  const deleteLearningRecord = (recordId: string) => {
-    setLearningRecords(
-      (learningRecords || []).filter((r) => r.id !== recordId)
-    );
-  };
 
   const resetGoalForm = () => {
     setGoalForm({
@@ -844,155 +689,21 @@ function App({
       milestones: [],
     });
     setNewMilestone("");
-    setShowGoalForm(false);
     setEditingGoal(null);
   };
 
-  const addMilestone = () => {
-    if (!newMilestone.trim()) {
-      return;
-    }
 
-    const milestoneId = Date.now().toString();
-    setGoalForm((prev) => ({
-      ...prev,
-      milestones: [
-        ...prev.milestones,
-        {
-          id: milestoneId,
-          title: newMilestone.trim(),
-          description: "",
-          completed: false,
-        },
-      ],
-    }));
-    setNewMilestone("");
-  };
 
-  const removeMilestone = (milestoneId: string) => {
-    setGoalForm((prev) => ({
-      ...prev,
-      milestones: prev.milestones.filter((m) => m.id !== milestoneId),
-    }));
-  };
 
-  const toggleMilestone = (milestoneId: string) => {
-    setGoalForm((prev) => ({
-      ...prev,
-      milestones: prev.milestones.map((m) =>
-        m.id === milestoneId ? { ...m, completed: !m.completed } : m
-      ),
-    }));
-  };
 
-  const editGoal = (goal: Goal) => {
-    setGoalForm({
-      title: goal.title,
-      description: goal.description,
-      category: goal.category,
-      priority: goal.priority,
-      status: goal.status,
-      startDate: goal.startDate,
-      targetDate: goal.targetDate,
-      progress: goal.progress,
-      milestones: goal.milestones.map((m) => ({
-        id: m.id,
-        title: m.title,
-        description: m.description,
-        completed: m.completed,
-      })),
-    });
-    setEditingGoal(goal.id);
-    setShowGoalForm(true);
-  };
 
-  const saveGoal = () => {
-    if (editingGoal) {
-      updateGoal(editingGoal, {
-        title: goalForm.title,
-        description: goalForm.description,
-        category: goalForm.category,
-        priority: goalForm.priority,
-        status: goalForm.status,
-        ...(goalForm.startDate && { startDate: goalForm.startDate }),
-        targetDate: goalForm.targetDate,
-        progress: goalForm.progress,
-        milestones: goalForm.milestones.map((m) => ({
-          id: m.id,
-          title: m.title,
-          description: m.description,
-          completed: m.completed,
-          ...(m.completed && { completedDate: new Date().toISOString() }),
-        })),
-      });
-    } else {
-      addGoal();
-    }
-  };
 
-  const getGoalStatusColor = (status: string) => {
-    switch (status) {
-      case "not-started":
-        return "#666";
-      case "in-progress":
-        return "#ff9800";
-      case "completed":
-        return "#4caf50";
-      case "paused":
-        return "#f44336";
-      default:
-        return "#666";
-    }
-  };
 
-  const getGoalStatusText = (status: string) => {
-    switch (status) {
-      case "not-started":
-        return "未開始";
-      case "in-progress":
-        return "進行中";
-      case "completed":
-        return "完了";
-      case "paused":
-        return "一時停止";
-      default:
-        return "不明";
-    }
-  };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "low":
-        return "#4caf50";
-      case "medium":
-        return "#ff9800";
-      case "high":
-        return "#f44336";
-      default:
-        return "#666";
-    }
-  };
-
-  const getPriorityText = (priority: string) => {
-    switch (priority) {
-      case "low":
-        return "低";
-      case "medium":
-        return "中";
-      case "high":
-        return "高";
-      default:
-        return "不明";
-    }
-  };
 
   const [habits, setHabits] = useState<Habit[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [learningRecords, setLearningRecords] = useState<LearningRecord[]>([]);
-  const [selectedRecord, setSelectedRecord] = useState<any>(null);
-  const [selectedRecordType, setSelectedRecordType] = useState<
-    "income" | "expense" | "diary" | null
-  >(null);
 
   // 機能定義
   const features: Feature[] = [
@@ -1082,26 +793,6 @@ function App({
     },
   ];
 
-  // 機能選択肢の定義
-  const featureOptions = [
-    { value: "", label: "機能を選択してください", disabled: true },
-    { value: "time-tracking", label: "時間管理" },
-    { value: "cooking-timer", label: "料理タイマー" },
-    { value: "projects", label: "プロジェクト" },
-    { value: "reports", label: "レポート" },
-    { value: "admin-panel", label: "管理者パネル" },
-    { value: "bookshelf", label: "本棚" },
-    { value: "memos", label: "メモ" },
-    { value: "public-memos", label: "公開メモ" },
-    { value: "work-records", label: "お仕事記録" },
-    { value: "timers", label: "タイマー" },
-    { value: "self-analysis", label: "じぶん図鑑" },
-    { value: "sound-app", label: "音アプリ" },
-    { value: "docs", label: "設計書" },
-    { value: "waste-analysis", label: "無駄遣い監視" },
-    { value: "general", label: "全般" },
-    { value: "other", label: "その他" },
-  ];
 
   // 機能の表示順序を取得
   const getFeatureOrder = () => {
@@ -2397,9 +2088,6 @@ ${errorInfo.stack}
   };
 
   // キャラクター進捗表示のハンドラー
-  const handleCharacterProgressToggle = () => {
-    setShowCharacterProgress(!showCharacterProgress);
-  };
 
   // アチーブメントクリックハンドラー
   const handleAchievementClick = (achievement: CharacterAchievement) => {
@@ -2408,9 +2096,6 @@ ${errorInfo.stack}
   };
 
   // キャラクターカスタマイズのハンドラー
-  const handleCharacterCustomizationToggle = () => {
-    setShowCharacterCustomization(!showCharacterCustomization);
-  };
 
   // カスタマイズ変更ハンドラー
   const handleCustomizationChange = (customization: CharacterCustomization) => {
@@ -2455,19 +2140,10 @@ ${errorInfo.stack}
   };
 
   // ミニゲーム表示ハンドラー
-  const handleMiniGameToggle = () => {
-    setShowCharacterMiniGame(!showCharacterMiniGame);
-  };
 
   // コレクション表示ハンドラー
-  const handleCollectionToggle = () => {
-    setShowCharacterCollection(!showCharacterCollection);
-  };
 
   // 共有表示ハンドラー
-  const handleShareToggle = () => {
-    setShowCharacterShare(!showCharacterShare);
-  };
 
 
   // バッジ関連のハンドラー
