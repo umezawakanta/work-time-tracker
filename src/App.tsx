@@ -777,7 +777,7 @@ function App({
       category: goalForm.category,
       priority: goalForm.priority,
       status: goalForm.status,
-      ...(goalForm.startDate && { startDate: goalForm.startDate }),
+      startDate: goalForm.startDate || new Date().toISOString(),
       targetDate: goalForm.targetDate,
       progress: goalForm.progress,
       milestones: goalForm.milestones.map((m) => ({
