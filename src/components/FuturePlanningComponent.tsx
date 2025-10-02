@@ -399,6 +399,9 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
+                  title="説明を入力"
+                  placeholder="説明を入力してください"
+                  aria-label="説明を入力"
                 />
               </div>
               <div className="form-row">
@@ -408,6 +411,8 @@ const FuturePlanningComponent: React.FC<FuturePlanningComponentProps> = ({
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     required
+                    title="カテゴリを選択"
+                    aria-label="カテゴリを選択"
                   >
                     {categories.map(cat => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
