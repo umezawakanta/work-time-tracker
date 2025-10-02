@@ -1,7 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './MemosComponent.css';
 import type { Memo, Reply } from '../types';
 import { EXCLUDED_MEMO_CATEGORIES } from '../utils/requestFormatters';
+
+// マークダウン表示用の関数（DocsViewerから移植）
+const renderMarkdown = (content: string) => {
+  // まずMermaid図を抽出して保護
+  const mermaidBlocks: string[] = [];
+  let processedContent = content.replace(/```mermaid\s*\n([\s\S]*?)\n```/g, (_, diagram) => {
+    const index = mermaidBlocks.length;
+    const trimmedDiagram = diagram.trim();
+    mermaidBlocks.push(trimmedDiagram);
+    return `__MERMAID_BLOCK_${index}__`;
+  });
+
+  // その他のMarkdown処理
+  processedContent = processedContent
+    // ヘッダー
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    // コードブロック（Mermaid以外）
+    .replace(/```typescript\s*\n([\s\S]*?)\n```/g, '<pre><code class="language-typescript">$1</code></pre>')
+    .replace(/```javascript\s*\n([\s\S]*?)\n```/g, '<pre><code class="language-javascript">$1</code></pre>')
+    .replace(/```(?!mermaid)([a-zA-Z]*)\s*\n([\s\S]*?)\n```/g, '<pre><code class="language-$1">$2</code></pre>')
+    .replace(/```(?!mermaid)\s*\n([\s\S]*?)\n```/g, '<pre><code>$1</code></pre>')
+    // インラインコード
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // 太字
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // 斜体
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // リスト
+    .replace(/^\- (.*$)/gim, '<li>$1</li>')
+    .replace(/^(\d+)\. (.*$)/gim, '<li>$1. $2</li>')
+    // リンク
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+    // 改行
+    .replace(/\n/g, '<br>');
+
+  // Mermaid図を復元（HTMLエンティティの変換を防ぐ）
+  mermaidBlocks.forEach((diagram, index) => {
+    processedContent = processedContent.replace(
+      `__MERMAID_BLOCK_${index}__`,
+      `<div class="mermaid">${diagram}</div>`
+    );
+  });
+
+  return processedContent;
+};
 
 interface MemosComponentProps {
   memos: Memo[];
@@ -90,6 +137,29 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
   replyingToMemo,
   setReplyingToMemo,
 }) => {
+  // Mermaid図表の初期化
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).mermaid) {
+      (window as any).mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
+        securityLevel: 'loose',
+      });
+    }
+  }, []);
+
+  // メモが更新されたときにMermaid図表を再描画
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).mermaid) {
+      const mermaidElements = document.querySelectorAll('.mermaid');
+      mermaidElements.forEach((element) => {
+        if (!element.getAttribute('data-processed')) {
+          (window as any).mermaid.init(undefined, element);
+        }
+      });
+    }
+  }, [memos]);
+
   // 個別のローディング状態を管理
   const [memosLoading, setMemosLoading] = useState(false);
   
@@ -806,7 +876,10 @@ const MemosComponent: React.FC<MemosComponentProps> = ({
                       </div>
                     </div>
                     <div className="memo-content">
-                      <p>{memo.content}</p>
+                      <div 
+                        className="markdown-content"
+                        dangerouslySetInnerHTML={{ __html: renderMarkdown(memo.content) }}
+                      />
                     </div>
 
                     {/* 返信セクション */}

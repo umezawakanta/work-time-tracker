@@ -1027,7 +1027,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   // CookingTimerSection の関数
   const sendNotification = (title: string, body: string, icon?: string) => {
     if (Notification.permission === "granted") {
-      new Notification(title, { body, icon });
+      new Notification(title, { 
+        body, 
+        ...(icon && { icon }) 
+      });
     }
   };
 
@@ -1434,7 +1437,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             
             // JWT uses URL-safe base64, so we need to handle it properly
             // Replace URL-safe characters
-            payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+            payload = payload?.replace(/-/g, '+').replace(/_/g, '/') || '';
             
             // Add padding if necessary
             const pad = payload.length % 4;
@@ -1495,7 +1498,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
             
             // JWT uses URL-safe base64, so we need to handle it properly
             // Replace URL-safe characters
-            payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+            payload = payload?.replace(/-/g, '+').replace(/_/g, '/') || '';
             
             // Add padding if necessary
             const pad = payload.length % 4;

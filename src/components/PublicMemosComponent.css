@@ -1,5 +1,104 @@
 /* PublicMemosComponent.css - 公開メモコンポーネント専用のスタイル */
 
+/* マークダウン表示用のスタイル */
+.markdown-content {
+  line-height: 1.6;
+  color: var(--text-color, #333);
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  margin: 1.5rem 0 1rem 0;
+  color: var(--text-color, #333);
+  font-weight: 600;
+}
+
+.markdown-content h1 {
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--primary-color, #007bff);
+  padding-bottom: 0.5rem;
+}
+
+.markdown-content h2 {
+  font-size: 1.3rem;
+  border-bottom: 1px solid var(--border-color, #e9ecef);
+  padding-bottom: 0.3rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.1rem;
+}
+
+.markdown-content p {
+  margin: 1rem 0;
+}
+
+.markdown-content code {
+  background: var(--code-background, #f8f9fa);
+  color: var(--code-color, #e83e8c);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content pre {
+  background: var(--code-block-background, #f8f9fa);
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.markdown-content pre code {
+  background: none;
+  color: var(--text-color, #333);
+  padding: 0;
+  border-radius: 0;
+}
+
+.markdown-content strong {
+  font-weight: 600;
+  color: var(--text-color, #333);
+}
+
+.markdown-content em {
+  font-style: italic;
+  color: var(--text-muted, #6c757d);
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.markdown-content li {
+  margin: 0.5rem 0;
+}
+
+.markdown-content a {
+  color: var(--link-color, #007bff);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-bottom 0.2s ease;
+}
+
+.markdown-content a:hover {
+  border-bottom-color: var(--link-color, #007bff);
+}
+
+.markdown-content .mermaid {
+  text-align: center;
+  margin: 1rem 0;
+  background: white;
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
 /* スピンアニメーション */
 .spin {
   animation: spin 1s linear infinite;

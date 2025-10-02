@@ -484,7 +484,7 @@ export interface Schedule {
 export interface BudgetPlan {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   category: string;
   amount: number;
   period: 'daily' | 'weekly' | 'monthly' | 'yearly';

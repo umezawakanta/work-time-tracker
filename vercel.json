@@ -103,7 +103,7 @@
       "schedule": "0 2 * * *"
     }
   ],
-  "regions": ["nrt1"],
+  "regions": ["hnd1"],
   "cleanUrls": true,
   "trailingSlash": false
 }
