@@ -1418,7 +1418,7 @@ ${methodInfo ? `- ${methodInfo}` : ""}
   const getAppVersion = () => {
     try {
       // package.jsonからバージョンを取得
-      return process.env.REACT_APP_VERSION || "1.3.1";
+      return process.env['REACT_APP_VERSION'] || "1.3.1";
     } catch (error) {
       return "不明";
     }
