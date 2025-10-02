@@ -1,4 +1,4 @@
-/* 統合ダッシュボードのスタイル */
+/* 統合ダッシュボードのスタイル - モバイルファースト */
 
 .comprehensive-dashboard {
   position: fixed;
@@ -8,9 +8,9 @@
   bottom: 0;
   background: #f5f5f5;
   z-index: 1000;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* iOS でのスムーズスクロール */
-  touch-action: pan-y; /* 縦スクロールのみ許可 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
   max-width: 100vw;
@@ -21,99 +21,39 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+  padding: 10px 15px;
   background: white;
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  min-height: 60px; /* タッチしやすい高さを確保 */
-}
-
-/* モバイル対応 */
-@media (max-width: 768px) {
-  .comprehensive-dashboard {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100vw;
-    height: 100vh;
-    max-width: 100vw;
-    max-height: 100vh;
-    overflow: hidden;
-  }
-
-  .dashboard-header {
-    padding: 10px 15px;
-    flex-wrap: wrap;
-    gap: 10px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: white;
-  }
-  
-  .dashboard-header h2 {
-    font-size: 18px;
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .header-controls {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .dashboard-tabs {
-    position: sticky;
-    top: 60px;
-    z-index: 9;
-    background: white;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    white-space: nowrap;
-  }
-  
-  .dashboard-content {
-    height: calc(100vh - 120px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 10px;
-  }
-  
-  /* すべてのボタンにタッチ対応を追加 */
-  button {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    min-height: 44px;
-  }
-  
-  /* フォーム要素のタッチ対応 */
-  input, select, textarea {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    min-height: 44px;
-  }
+  min-height: 50px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .dashboard-header h2 {
   margin: 0;
   color: #333;
-  font-size: 24px;
+  font-size: 18px;
+  flex: 1;
+  min-width: 0;
 }
 
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .period-selector {
   padding: 8px 12px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
   background: white;
   font-size: 14px;
+  min-height: 36px;
+  touch-action: manipulation;
 }
 
 .close-button {
@@ -121,24 +61,15 @@
   color: white;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  touch-action: manipulation; /* ダブルタップズームを防ぐ */
-  -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
-}
-
-/* モバイル対応 */
-@media (max-width: 768px) {
-  .close-button {
-    width: 44px;
-    height: 44px;
-    font-size: 22px;
-  }
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .close-button:hover {
@@ -149,52 +80,52 @@
   display: flex;
   background: white;
   border-bottom: 1px solid #e0e0e0;
-  padding: 0 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 9;
+}
+
+.dashboard-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
-  padding: 15px 20px;
+  padding: 12px 16px;
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   color: #666;
   border-bottom: 3px solid transparent;
   transition: all 0.3s ease;
-  touch-action: manipulation; /* ダブルタップズームを防ぐ */
-  -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
-  min-height: 48px; /* タッチしやすい高さを確保 */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.tab:hover {
-  color: #2196F3;
-  background: #f5f5f5;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tab.active {
-  color: #2196F3;
-  border-bottom-color: #2196F3;
+  color: #2196f3;
+  border-bottom-color: #2196f3;
   background: #f5f5f5;
 }
 
+.tab:hover {
+  background: #f0f0f0;
+}
+
 .dashboard-content {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.loading, .error {
-  text-align: center;
-  padding: 50px;
-  font-size: 18px;
-  color: #666;
-}
-
-.error {
-  color: #f44336;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 15px;
+  background: #f5f5f5;
 }
 
 /* 概要タブ */
@@ -204,15 +135,16 @@
 
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 15px;
 }
 
 .overview-card {
   background: white;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
 }
 
 .overview-card h3 {
@@ -221,670 +153,13 @@
   font-size: 18px;
 }
 
-/* 財務健全性スコア */
-.financial-health .health-score {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.score-circle {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.score-text {
-  text-align: center;
-  background: white;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.score-value {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-.score-label {
-  font-size: 12px;
-  color: #666;
-}
-
-/* 純資産 */
-.net-worth-content {
-  text-align: center;
-}
-
-.net-worth-value {
-  font-size: 28px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
-}
-
-.net-worth-breakdown {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-}
-
-.breakdown-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.breakdown-item .label {
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.breakdown-item .value {
-  font-weight: bold;
-  color: #333;
-}
-
-/* 生産性スコア */
-.productivity-content {
-  text-align: center;
-}
-
-.productivity-score {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  margin-bottom: 15px;
-}
-
-.productivity-score .score-value {
-  font-size: 28px;
-  font-weight: bold;
-  color: #333;
-}
-
-.productivity-score .score-label {
-  font-size: 16px;
-  color: #666;
-  margin-left: 5px;
-}
-
-.productivity-stats {
-  font-size: 14px;
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
-
-/* 計画進捗 */
-.plans-content {
-  text-align: center;
-}
-
-.completion-rate {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.rate-value {
-  font-size: 28px;
-  font-weight: bold;
-  color: #333;
-}
-
-.rate-label {
-  font-size: 14px;
-  color: #666;
-}
-
-.plans-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  font-size: 14px;
-}
-
-/* 無駄遣いスコア */
-.waste-content {
-  text-align: center;
-}
-
-.waste-score {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  margin-bottom: 15px;
-}
-
-.waste-score .score-value {
-  font-size: 28px;
-  font-weight: bold;
-  color: #f44336;
-}
-
-.waste-score .score-label {
-  font-size: 16px;
-  color: #666;
-  margin-left: 5px;
-}
-
-.waste-breakdown {
-  display: flex;
-  justify-content: space-around;
-  font-size: 14px;
-}
-
-/* 推奨事項 */
-.recommendations-list {
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.recommendation-item {
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  border-left: 4px solid #ddd;
-}
-
-.recommendation-item.high {
-  border-left-color: #f44336;
-  background: #ffebee;
-}
-
-.recommendation-item.medium {
-  border-left-color: #ff9800;
-  background: #fff3e0;
-}
-
-.recommendation-item.low {
-  border-left-color: #4caf50;
-  background: #e8f5e8;
-}
-
-.recommendation-title {
-  font-weight: bold;
-  color: #333;
-  display: block;
-  margin-bottom: 5px;
-}
-
-.recommendation-description {
-  font-size: 14px;
-  color: #666;
-}
-
-/* 資産・負債タブ */
-.assets-tab, .actions-tab, .plans-tab, .waste-tab, .financial-tab {
-  width: 100%;
-}
-
-.assets-grid, .actions-grid, .plans-grid, .waste-grid, .financial-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.assets-summary, .actions-summary, .plans-summary, .waste-summary, .financial-summary {
-  grid-column: 1 / -1;
-}
-
-.summary-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-top: 15px;
-}
-
-.summary-card {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.summary-card h4 {
-  margin: 0 0 10px 0;
-  color: #666;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.summary-card .amount, .summary-card .count {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-.summary-card.assets .amount {
-  color: #4caf50;
-}
-
-.summary-card.liabilities .amount {
-  color: #f44336;
-}
-
-.summary-card.net-worth .amount {
-  color: #2196f3;
-}
-
-.summary-card.completed .count {
-  color: #4caf50;
-}
-
-.summary-card.in-progress .count {
-  color: #ff9800;
-}
-
-.summary-card.overdue .count {
-  color: #f44336;
-}
-
-/* 内訳チャート */
-.breakdown-chart {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.breakdown-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  gap: 15px;
-}
-
-.breakdown-item .label {
-  min-width: 100px;
-  font-size: 14px;
-  color: #666;
-}
-
-.bar {
-  flex: 1;
-  height: 20px;
-  background: #e0e0e0;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.bar-fill {
-  height: 100%;
-  border-radius: 10px;
-  transition: width 0.3s ease;
-}
-
-.breakdown-item .value {
-  min-width: 80px;
-  text-align: right;
-  font-weight: bold;
-  color: #333;
-}
-
-/* 財務分析 */
-.financial-analysis {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.analysis-metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-top: 15px;
-}
-
-.metric {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px;
-  background: #f5f5f5;
-  border-radius: 8px;
-}
-
-.metric .label {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.metric .value {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.metric .value.positive {
-  color: #4caf50;
-}
-
-.metric .value.negative {
-  color: #f44336;
-}
-
-/* カテゴリチャート */
-.category-chart {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.category-item {
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.category-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.category-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.category-name {
-  font-weight: bold;
-  color: #333;
-}
-
-.category-count {
-  font-size: 14px;
-  color: #666;
-}
-
-.category-bar {
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.category-details {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #666;
-}
-
-/* 洞察・推奨事項 */
-.insights, .recommendations {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.insights-list, .recommendations-list {
-  margin-top: 15px;
-}
-
-.insight-item, .recommendation-item {
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border-left: 4px solid #ddd;
-}
-
-.insight-item.high, .recommendation-item.high {
-  border-left-color: #f44336;
-  background: #ffebee;
-}
-
-.insight-item.medium, .recommendation-item.medium {
-  border-left-color: #ff9800;
-  background: #fff3e0;
-}
-
-.insight-item.low, .recommendation-item.low {
-  border-left-color: #4caf50;
-  background: #e8f5e8;
-}
-
-.insight-item h4, .recommendation-item h4 {
-  margin: 0 0 10px 0;
-  color: #333;
-  font-size: 16px;
-}
-
-.insight-item p, .recommendation-item p {
-  margin: 0 0 10px 0;
-  color: #666;
-  font-size: 14px;
-}
-
-.suggestions {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.suggestions li {
-  margin-bottom: 5px;
-  color: #666;
-  font-size: 14px;
-}
-
-/* 完了率サークル */
-.rate-circle {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin: 0 auto;
-}
-
-.rate-fill {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rate-text {
-  text-align: center;
-  background: white;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rate-value {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-/* 無駄遣いスコアサークル */
-.score-circle {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin: 0 auto;
-}
-
-.score-fill {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.score-text {
-  text-align: center;
-  background: white;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 月別推移チャート */
-.trend-chart {
-  display: flex;
-  align-items: end;
-  gap: 10px;
-  height: 200px;
-  margin-top: 15px;
-}
-
-.month-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-
-.month-label {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 10px;
-}
-
-.month-bars {
-  display: flex;
-  gap: 2px;
-  height: 150px;
-  align-items: end;
-}
-
-.month-bars .bar {
-  width: 20px;
-  border-radius: 2px 2px 0 0;
-}
-
-.month-bars .bar.income {
-  background: #4caf50;
-}
-
-.month-bars .bar.expense {
-  background: #f44336;
-}
-
-/* レスポンシブデザイン */
-@media (max-width: 768px) {
-  .dashboard-header {
-    flex-direction: column;
-    gap: 15px;
-    align-items: stretch;
-  }
-
-  .header-controls {
-    justify-content: space-between;
-  }
-
-  .dashboard-tabs {
-    flex-wrap: wrap;
-    padding: 0 10px;
-  }
-
-  .tab {
-    padding: 12px 15px;
-    font-size: 14px;
-    min-height: 44px; /* タッチしやすい高さを確保 */
-    white-space: nowrap;
-    display: inline-block;
-  }
-
-  .dashboard-content {
-    padding: 10px;
-  }
-
-  .overview-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .summary-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .assets-grid, .actions-grid, .plans-grid, .waste-grid, .financial-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .breakdown-item {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-
-  .breakdown-item .label {
-    min-width: auto;
-  }
-
-  .breakdown-item .value {
-    min-width: auto;
-    text-align: left;
-  }
-
-  .analysis-metrics {
-    grid-template-columns: 1fr;
-  }
-
-  .category-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-
-  .category-details {
-    flex-direction: column;
-    gap: 5px;
-  }
-}
-
-/* 新しいタブのスタイル */
-
 /* 現在日時を表示するカード */
 .current-datetime-card {
   background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   color: white;
   border-radius: 16px;
-  padding: 25px;
-  margin-bottom: 20px;
+  padding: 20px;
+  margin-bottom: 15px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.1);
   position: relative;
   overflow: hidden;
@@ -903,8 +178,9 @@
 
 .datetime-content {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 15px;
+  text-align: center;
   position: relative;
   z-index: 1;
 }
@@ -912,31 +188,25 @@
 .datetime-main {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .current-time {
-  font-size: 48px;
-  font-weight: bold;
-  font-family: 'Courier New', monospace;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  letter-spacing: 2px;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .current-date {
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 16px;
   opacity: 0.9;
+  margin: 0;
 }
 
 .current-weekday {
-  font-size: 24px;
-  font-weight: bold;
-  background: rgba(255,255,255,0.2);
-  padding: 12px 20px;
-  border-radius: 25px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.3);
+  font-size: 18px;
+  opacity: 0.8;
+  margin: 0;
 }
 
 /* 今やることを表示するカード */
@@ -944,8 +214,8 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-radius: 16px;
-  padding: 25px;
-  margin-bottom: 30px;
+  padding: 20px;
+  margin-bottom: 20px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.1);
   position: relative;
   overflow: hidden;
@@ -964,8 +234,9 @@
 
 .focus-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
   margin-bottom: 15px;
   position: relative;
   z-index: 1;
@@ -973,18 +244,17 @@
 
 .focus-header h2 {
   margin: 0;
-  font-size: 24px;
-  font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .focus-time {
   background: rgba(255,255,255,0.2);
-  padding: 6px 12px;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 12px;
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
 }
 
 .focus-content {
@@ -993,1084 +263,220 @@
 }
 
 .focus-message {
-  font-size: 18px;
-  line-height: 1.6;
-  position: relative;
-  z-index: 1;
-  padding: 15px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
-}
-
-.focus-message.priority-high {
-  background: rgba(255, 68, 68, 0.2);
-  border-color: rgba(255, 68, 68, 0.3);
-  animation: pulse 2s infinite;
-}
-
-.focus-message.priority-medium {
-  background: rgba(255, 165, 0, 0.2);
-  border-color: rgba(255, 165, 0, 0.3);
-}
-
-.focus-message.priority-low {
-  background: rgba(76, 175, 80, 0.2);
-  border-color: rgba(76, 175, 80, 0.3);
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
-  }
-}
-
-/* 今日のタブ */
-.today-tab {
-  padding: 20px;
-}
-
-.today-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.today-header h2 {
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.today-header p {
-  color: #666;
   font-size: 16px;
-}
-
-.today-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.today-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.today-card h3 {
-  margin: 0 0 15px 0;
-  color: #333;
-  font-size: 18px;
-}
-
-/* 今すぐやるべきアクション */
-.actions-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.action-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  border-radius: 8px;
-  border-left: 4px solid #ddd;
-}
-
-.action-item.priority-high {
-  border-left-color: #ff4444;
-  background: #fff5f5;
-}
-
-.action-item.priority-medium {
-  border-left-color: #ffa500;
-  background: #fff8e1;
-}
-
-.action-item.priority-low {
-  border-left-color: #4CAF50;
-  background: #f1f8e9;
-}
-
-.action-content {
-  flex: 1;
-}
-
-.action-title {
-  display: block;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.action-time {
-  display: block;
-  font-size: 12px;
-  color: #666;
-}
-
-.action-button {
-  background: #2196F3;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.action-button:hover {
-  background: #1976D2;
-}
-
-.no-actions {
+  line-height: 1.4;
+  margin-bottom: 15px;
   text-align: center;
-  padding: 20px;
-  color: #666;
-}
-
-/* 今日のスケジュール */
-.schedule-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.schedule-item {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  border-left: 4px solid #2196F3;
-}
-
-.schedule-time {
-  font-weight: bold;
-  color: #2196F3;
-  margin-right: 15px;
-  min-width: 60px;
-}
-
-.schedule-content {
-  flex: 1;
-}
-
-.schedule-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.schedule-category {
-  font-size: 12px;
-  color: #666;
-}
-
-.schedule-priority {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: bold;
-}
-
-.schedule-priority.priority-high {
-  background: #ff4444;
-  color: white;
-}
-
-.schedule-priority.priority-medium {
-  background: #ffa500;
-  color: white;
-}
-
-.schedule-priority.priority-low {
-  background: #4CAF50;
-  color: white;
-}
-
-.no-schedule {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
-
-/* 今日締切の計画 */
-.deadlines-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.deadline-item {
-  padding: 12px;
-  border-radius: 8px;
-  background: #fff3e0;
-  border-left: 4px solid #ff9800;
-}
-
-.deadline-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.deadline-progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: #ff9800;
-  transition: width 0.3s ease;
-}
-
-.progress-text {
-  font-size: 12px;
-  color: #666;
-  min-width: 35px;
-}
-
-.no-deadlines {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
-
-/* 今週締切の計画 */
-.week-deadlines-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.week-deadline-item {
-  padding: 12px;
-  border-radius: 8px;
-  background: #f3e5f5;
-  border-left: 4px solid #9c27b0;
-}
-
-.week-deadline-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.week-deadline-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.days-left {
-  font-size: 12px;
-  color: #9c27b0;
-  font-weight: bold;
-}
-
-.week-progress-bar {
-  flex: 1;
-  height: 6px;
-  background: #e0e0e0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.week-progress-fill {
-  height: 100%;
-  background: #9c27b0;
-  transition: width 0.3s ease;
-}
-
-.no-week-deadlines {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
-
-/* 今週のタブ */
-.thisweek-tab {
-  padding: 20px;
-}
-
-.thisweek-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.thisweek-header h2 {
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.thisweek-header p {
-  color: #666;
-  font-size: 16px;
-}
-
-.thisweek-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
-}
-
-.thisweek-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.thisweek-card h3 {
-  margin: 0 0 15px 0;
-  color: #333;
-  font-size: 18px;
-}
-
-.goals-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.goal-item {
-  padding: 15px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  border-left: 4px solid #2196F3;
-}
-
-.goal-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.goal-progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.goal-deadline {
-  font-size: 12px;
-  color: #666;
-}
-
-.weekly-schedule-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.weekly-schedule-item {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  border-left: 4px solid #4CAF50;
-}
-
-.schedule-date {
-  font-weight: bold;
-  color: #4CAF50;
-  margin-right: 15px;
-  min-width: 80px;
-}
-
-/* 今月のタブ */
-.thismonth-tab {
-  padding: 20px;
-}
-
-.thismonth-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.thismonth-header h2 {
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.thismonth-header p {
-  color: #666;
-  font-size: 16px;
-}
-
-.thismonth-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
-}
-
-.thismonth-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.thismonth-card h3 {
-  margin: 0 0 15px 0;
-  color: #333;
-  font-size: 18px;
-}
-
-.monthly-goals-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.monthly-goal-item {
-  padding: 15px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  border-left: 4px solid #ff9800;
-}
-
-.monthly-goal-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.monthly-goal-progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.monthly-goal-deadline {
-  font-size: 12px;
-  color: #666;
-}
-
-.budget-content {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.budget-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.budget-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.budget-label {
-  font-weight: bold;
-  color: #333;
-}
-
-.budget-value {
-  font-weight: bold;
-  color: #2196F3;
-}
-
-.budget-value.over-budget {
-  color: #ff4444;
-}
-
-.budget-progress {
-  margin-top: 10px;
-}
-
-/* 緊急のタブ */
-.urgent-tab {
-  padding: 20px;
-}
-
-.urgent-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.urgent-header h2 {
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.urgent-header p {
-  color: #666;
-  font-size: 16px;
-}
-
-.urgent-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
-}
-
-.urgent-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.urgent-card h3 {
-  margin: 0 0 15px 0;
-  color: #333;
-  font-size: 18px;
-}
-
-.urgent-financial-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.urgent-item {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  border-radius: 8px;
-  background: #fff5f5;
-  border-left: 4px solid #ff4444;
-}
-
-.urgent-icon {
-  font-size: 20px;
-  margin-right: 15px;
-}
-
-.urgent-content {
-  flex: 1;
-}
-
-.urgent-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.urgent-message {
-  font-size: 14px;
-  color: #666;
-}
-
-.urgent-action-button {
-  background: #ff4444;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.urgent-action-button:hover {
-  background: #d32f2f;
-}
-
-.no-urgent-financial {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
-
-.urgent-plans-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.urgent-plan-item {
-  padding: 15px;
-  border-radius: 8px;
-  background: #fff3e0;
-  border-left: 4px solid #ff9800;
-}
-
-.urgent-plan-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.urgent-plan-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.urgent-progress-bar {
-  flex: 1;
-  height: 6px;
-  background: #e0e0e0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.urgent-progress-fill {
-  height: 100%;
-  background: #ff9800;
-  transition: width 0.3s ease;
-}
-
-.no-urgent-plans {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
-
-/* 目標のタブ */
-.goals-tab {
-  padding: 20px;
-}
-
-.goals-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.goals-header h2 {
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.goals-header p {
-  color: #666;
-  font-size: 16px;
-}
-
-.create-plan-button {
-  background: #2196F3;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 15px;
-  transition: background 0.3s ease;
-}
-
-.create-plan-button:hover {
-  background: #1976D2;
-}
-
-/* 計画作成フォーム */
-.plan-form-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.plan-form {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-}
-
-.plan-form h3 {
-  margin: 0 0 20px 0;
-  color: #333;
-  font-size: 24px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-  color: #333;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #2196F3;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 30px;
-}
-
-.cancel-button {
-  background: #f5f5f5;
-  color: #666;
-  border: 2px solid #e0e0e0;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.cancel-button:hover {
-  background: #e0e0e0;
-}
-
-.save-button {
-  background: #4CAF50;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.save-button:hover {
-  background: #45a049;
-}
-
-/* 計画アイテムのスタイル更新 */
-.active-plan-item,
-.pending-plan-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  border-left: 4px solid #2196F3;
-  margin-bottom: 10px;
-}
-
-.pending-plan-item {
-  border-left-color: #ff9800;
-}
-
-.plan-content {
-  flex: 1;
-}
-
-.plan-category {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.plan-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.edit-button {
-  background: #2196F3;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.edit-button:hover {
-  background: #1976D2;
-}
-
-.complete-button {
-  background: #4CAF50;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  margin-right: 5px;
-  touch-action: manipulation; /* ダブルタップズームを防ぐ */
-  -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
-  min-height: 32px; /* タッチしやすい高さを確保 */
-}
-
-.complete-button:hover {
-  background: #45a049;
 }
 
 .complete-task-button {
-  background: #4CAF50;
+  background: rgba(255,255,255,0.2);
   color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  padding: 10px 16px;
   font-size: 14px;
-  font-weight: bold;
   cursor: pointer;
+  width: 100%;
+  backdrop-filter: blur(10px);
   transition: all 0.3s ease;
-  margin-top: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  touch-action: manipulation; /* ダブルタップズームを防ぐ */
-  -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
-  min-height: 44px; /* タッチしやすい高さを確保 */
+  touch-action: manipulation;
 }
 
 .complete-task-button:hover {
-  background: #45a049;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  background: rgba(255,255,255,0.3);
 }
 
-.complete-action-button {
-  background: #4CAF50;
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  margin-left: 5px;
+/* 財務健全性スコア */
+.financial-health .health-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
 }
 
-.complete-action-button:hover {
-  background: #45a049;
-}
-
-.action-buttons {
+.score-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  position: relative;
+  background: #f0f0f0;
 }
 
-.delete-button {
-  background: #f44336;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.delete-button:hover {
-  background: #d32f2f;
-}
-
-.no-plans {
+.score-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 20px;
+  z-index: 1;
+}
+
+.score-value {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: #333;
+}
+
+.score-label {
+  font-size: 12px;
   color: #666;
+  margin: 0;
 }
 
-.goals-grid {
+/* その他のカード */
+.summary-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 15px;
 }
 
-.goals-card {
+.summary-card {
   background: white;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
 }
 
-.goals-card h3 {
-  margin: 0 0 15px 0;
+.summary-card h4 {
+  margin: 0 0 10px 0;
   color: #333;
-  font-size: 18px;
+  font-size: 16px;
 }
 
-.active-plans-list {
+.summary-card p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* ローディングとエラー */
+.loading, .error {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+}
+
+.error {
+  color: #f44336;
+}
+
+/* タブ別のコンテンツ */
+.today-grid, .thisweek-grid, .thismonth-grid, .urgent-grid, .goals-grid {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 15px;
 }
 
-.active-plan-item {
-  padding: 15px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  border-left: 4px solid #2196F3;
-}
-
-.plan-title {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.plan-progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.plan-deadline {
-  font-size: 12px;
-  color: #666;
-}
-
-.completed-plans-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.completed-plan-item {
-  padding: 12px;
-  border-radius: 8px;
-  background: #f1f8e9;
-  border-left: 4px solid #4CAF50;
-}
-
-.plan-completed-date {
-  font-size: 12px;
-  color: #666;
-  margin-top: 5px;
-}
-
-/* レスポンシブデザインの更新 */
-@media (max-width: 768px) {
-  .current-datetime-card {
+/* レスポンシブデザイン - タブレット以上 */
+@media (min-width: 768px) {
+  .dashboard-header {
+    padding: 15px 20px;
+    min-height: 60px;
+  }
+  
+  .dashboard-header h2 {
+    font-size: 24px;
+  }
+  
+  .dashboard-content {
     padding: 20px;
+  }
+  
+  .overview-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .summary-cards {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .current-datetime-card {
+    padding: 25px;
   }
   
   .datetime-content {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+  }
+  
+  .datetime-main {
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
   }
   
   .current-time {
-    font-size: 36px;
+    font-size: 48px;
   }
   
   .current-date {
-    font-size: 18px;
-  }
-  
-  .current-weekday {
     font-size: 20px;
   }
   
-  .current-focus-card {
-    padding: 20px;
-    margin-bottom: 20px;
+  .current-weekday {
+    font-size: 24px;
   }
   
   .focus-header {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
   }
   
   .focus-message {
-    font-size: 16px;
-    line-height: 1.4;
+    text-align: left;
   }
   
   .complete-task-button {
-    width: 100%;
-    margin-top: 15px;
-    padding: 10px 16px;
+    width: auto;
   }
   
   .financial-health .health-score {
-    flex-direction: column;
-    gap: 15px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
   }
   
   .score-circle {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
   }
   
   .score-value {
-    font-size: 24px;
+    font-size: 32px;
   }
   
   .score-label {
     font-size: 14px;
   }
   
-  .today-grid {
-    grid-template-columns: 1fr;
+  .today-grid, .thisweek-grid, .thismonth-grid, .urgent-grid, .goals-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* 大きな画面用 */
+@media (min-width: 1200px) {
+  .overview-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
   
-  .thisweek-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .thismonth-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .urgent-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .goals-grid {
-    grid-template-columns: 1fr;
+  .summary-cards {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

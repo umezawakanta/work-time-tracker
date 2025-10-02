@@ -572,36 +572,42 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({ userId,
         <button 
           className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
+          title="概要を表示"
         >
           🏠 概要
         </button>
         <button 
           className={`tab ${activeTab === 'today' ? 'active' : ''}`}
           onClick={() => setActiveTab('today')}
+          title="今日の情報を表示"
         >
           📅 今日
         </button>
         <button 
           className={`tab ${activeTab === 'thisweek' ? 'active' : ''}`}
           onClick={() => setActiveTab('thisweek')}
+          title="今週の情報を表示"
         >
           📊 今週
         </button>
         <button 
           className={`tab ${activeTab === 'thismonth' ? 'active' : ''}`}
           onClick={() => setActiveTab('thismonth')}
+          title="今月の情報を表示"
         >
           🗓️ 今月
         </button>
         <button 
           className={`tab ${activeTab === 'urgent' ? 'active' : ''}`}
           onClick={() => setActiveTab('urgent')}
+          title="緊急事項を表示"
         >
           ⚠️ 緊急
         </button>
         <button 
           className={`tab ${activeTab === 'goals' ? 'active' : ''}`}
           onClick={() => setActiveTab('goals')}
+          title="目標を表示"
         >
           🎯 目標
         </button>
