@@ -59,12 +59,9 @@ export default defineConfig(({ command, mode }) => {
     build: {
       outDir: "dist",
       sourcemap: mode === 'development', // 開発時のみソースマップを生成
-      minify: 'terser', // より効率的な圧縮
-      terserOptions: {
-        compress: {
-          drop_console: mode === 'production', // 本番環境でconsole.logを削除
-          drop_debugger: true,
-        },
+      minify: 'esbuild', // esbuildを使用（高速・追加パッケージ不要）
+      esbuild: {
+        drop: mode === 'production' ? ['console', 'debugger'] : [], // 本番環境でconsole.logを削除
       },
       // チャンクサイズの最適化
       rollupOptions: {
