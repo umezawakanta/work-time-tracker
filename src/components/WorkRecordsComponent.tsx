@@ -416,6 +416,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
       }
 
       const requestBody = {
+        userId: user.id,
         date: diaryDate,
         title: diaryTitle,
         content: diaryContent,
@@ -498,6 +499,7 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
 
       const requestBody = {
         id: editingDiary._id,
+        userId: user.id,
         date: diaryDate,
         title: diaryTitle,
         content: diaryContent,

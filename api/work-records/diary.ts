@@ -177,6 +177,10 @@ export default async function handler(req, res) {
         notes, gratitude, reflection
       } = req.body;
 
+      console.log('Received diary creation request:', {
+        userId, date, title, content, mood, energyLevel, stressLevel, productivity
+      });
+
       // セキュリティのため、JWT認証を優先してユーザーIDを取得
       const user = verifyJWT(req);
       let actualUserId = null;
@@ -192,6 +196,7 @@ export default async function handler(req, res) {
       }
 
       if (!actualUserId || !date || !title || !content) {
+        console.error('Missing required fields:', { actualUserId, date, title, content });
         return res.status(400).json({
           success: false,
           message: '必須フィールドが不足しています'
@@ -202,7 +207,7 @@ export default async function handler(req, res) {
       const jstDate = new Date(date);
       const utcDate = new Date(jstDate.getTime() - (9 * 60 * 60 * 1000));
       
-      const diary = new WorkDiary({
+      const diaryData = {
         userId: actualUserId,
         date: utcDate,
         title,
@@ -225,9 +230,19 @@ export default async function handler(req, res) {
         notes: notes || '',
         gratitude: gratitude || '',
         reflection: reflection || ''
-      });
+      };
 
-      await diary.save();
+      console.log('Creating diary with data:', diaryData);
+
+      const diary = new WorkDiary(diaryData);
+
+      try {
+        await diary.save();
+        console.log('Diary saved successfully:', diary._id);
+      } catch (saveError) {
+        console.error('Error saving diary:', saveError);
+        throw saveError;
+      }
 
       res.status(201).json({
         success: true,
