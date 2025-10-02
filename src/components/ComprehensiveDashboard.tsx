@@ -499,12 +499,15 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
     // 緊急の金銭的問題がある場合
     const urgentFinancial = getUrgentFinancialItems();
     if (urgentFinancial.length > 0) {
-      return {
-        message: `${urgentFinancial[0].title}。${urgentFinancial[0].message}`,
-        type: "financial",
-        priority: "high",
-        time: "緊急",
-      };
+      const firstItem = urgentFinancial[0];
+      if (firstItem) {
+        return {
+          message: `${firstItem.title}。${firstItem.message}`,
+          type: "financial",
+          priority: "high",
+          time: "緊急",
+        };
+      }
     }
 
     // 今日のスケジュールがある場合
