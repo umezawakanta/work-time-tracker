@@ -1,20 +1,22 @@
-const bcrypt = require('bcryptjs');
-const { serialize } = require('cookie');
-const { mongoose, jwt, ensureDatabaseConnection: initDB, User: UserModel } = require('../utils/database');
-const { 
+import bcrypt from 'bcryptjs';
+import { serialize } from 'cookie';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { jwt, ensureDatabaseConnection as initDB, User as UserModel } from '../utils/database';
+import { 
   createValidationError, 
   createAuthError, 
   createServerError,
   validateEmail,
   sendErrorResponse 
-} = require('../utils/errorHandler');
+} from '../utils/errorHandler';
 
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 
 // Robust JSON reader for Vercel Node (handles object, string, or raw stream)
-async function readJson(req) {
+async function readJson(req: VercelRequest) {
   try {
     const existingBody = req.body;
     if (existingBody !== undefined) {
@@ -34,7 +36,7 @@ async function readJson(req) {
   }
 }
 
-async function handler(req, res) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
@@ -95,8 +97,8 @@ async function handler(req, res) {
     if (!email || !password) {
       return sendErrorResponse(res, 400, createValidationError(
         'メールアドレスとパスワードが必要です',
-        'email/password',
-        { email: !!email, password: !!password }
+        null,
+        null
       ));
     }
 
@@ -104,16 +106,15 @@ async function handler(req, res) {
     if (!validateEmail(email)) {
       return sendErrorResponse(res, 400, createValidationError(
         '有効なメールアドレスを入力してください',
-        'email',
-        email
+        null,
+        null
       ));
     }
 
     // ユーザーの検索
     const emailLc = (email || '').toLowerCase();
-    const maskedEmail = emailLc.replace(/^[^@]+/, '***');
     
-    const user = await UserModel.findOne({ email: emailLc });
+    const user = await (UserModel as any).findOne({ email: emailLc });
 
     if (!user) {
       return sendErrorResponse(res, 401, createAuthError(
@@ -147,9 +148,9 @@ async function handler(req, res) {
     }
 
     // JWTトークンの生成（管理者クレームを付与）
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    const jwtSecret = process.env['JWT_SECRET'] || 'fallback-secret-for-development';
     const tokenExpiry = rememberMe ? '30d' : '7d';
-    const adminEmails = (process.env.ADMIN_EMAILS || '')
+    const adminEmails = (process.env['ADMIN_EMAILS'] || '')
       .split(',')
       .map((s) => s.trim().toLowerCase())
       .filter(Boolean);
@@ -222,9 +223,9 @@ async function handler(req, res) {
     console.error('❌ Login error:', error);
     return sendErrorResponse(res, 500, createServerError(
       'ログイン処理中にエラーが発生しました',
-      error instanceof Error ? error.message : String(error)
+      null
     ));
   }
 }
 
-module.exports = handler;
+export default handler;

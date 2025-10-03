@@ -1,8 +1,8 @@
-const mongooseInstance = require('mongoose');
-const jsonwebtoken = require('jsonwebtoken');
+import mongoose from 'mongoose';
+import jsonwebtoken from 'jsonwebtoken';
 
 // User schema
-const UserSchemaDef = new mongooseInstance.Schema(
+const UserSchemaDef = new mongoose.Schema(
   {
     email: { type: String, required: true, unique: true, index: true },
     displayName: { type: String, required: true },
@@ -12,7 +12,7 @@ const UserSchemaDef = new mongooseInstance.Schema(
     isAdmin: { type: Boolean, default: false },
     roles: [{ type: String }],
     avatar: { type: String },
-    preferences: { type: mongooseInstance.Schema.Types.Mixed, default: {} },
+    preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
     status: {
       type: String,
       enum: ["active", "inactive", "suspended"],
@@ -38,11 +38,11 @@ UserSchemaDef.set("toJSON", {
   },
 });
 
-const UserModel = mongooseInstance.models.User || mongooseInstance.model("User", UserSchemaDef);
+const UserModel = mongoose.models.User || mongoose.model("User", UserSchemaDef);
 
 // Database connection utility
 const initDatabaseConnection = async () => {
-  const isConnected = mongooseInstance.connection.readyState === 1;
+  const isConnected = mongoose.connection.readyState === 1;
   
   if (isConnected) {
     return;
@@ -61,7 +61,7 @@ const initDatabaseConnection = async () => {
       return;
     }
 
-    await mongooseInstance.connect(MONGODB_URI, {
+    await mongoose.connect(MONGODB_URI, {
       dbName: 'workTimeTracker',
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 15000,
@@ -115,11 +115,11 @@ const handleError = (res, error, message = 'Internal server error') => {
   });
 };
 
-module.exports = {
-  ensureDatabaseConnection: initDatabaseConnection,
-  verifyJWT: verifyJWTToken,
+export {
+  initDatabaseConnection as ensureDatabaseConnection,
+  verifyJWTToken as verifyJWT,
   handleError,
-  mongoose: mongooseInstance,
-  jwt: jsonwebtoken,
-  User: UserModel
+  mongoose,
+  jsonwebtoken as jwt,
+  UserModel as User
 };

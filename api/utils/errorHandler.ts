@@ -1,7 +1,49 @@
 // 共通エラーハンドリング関数
 
+// 型定義
+interface ValidationError {
+  success: false;
+  error: 'VALIDATION_ERROR';
+  message: string;
+  field: string | null;
+  value: any;
+  timestamp: string;
+}
+
+interface AuthError {
+  success: false;
+  error: string;
+  message: string;
+  timestamp: string;
+}
+
+interface PermissionError {
+  success: false;
+  error: 'PERMISSION_ERROR';
+  message: string;
+  requiredRole: string | null;
+  timestamp: string;
+}
+
+interface ResourceError {
+  success: false;
+  error: 'RESOURCE_ERROR';
+  message: string;
+  resourceType: string | null;
+  resourceId: string | null;
+  timestamp: string;
+}
+
+interface ServerError {
+  success: false;
+  error: 'SERVER_ERROR';
+  message: string;
+  originalError: any;
+  timestamp: string;
+}
+
 // バリデーションエラー
-const createValidationError = (message, field = null, value = null) => ({
+const createValidationError = (message: string, field: string | null = null, value: any = null): ValidationError => ({
   success: false,
   error: 'VALIDATION_ERROR',
   message,
@@ -11,7 +53,7 @@ const createValidationError = (message, field = null, value = null) => ({
 });
 
 // 認証エラー
-const createAuthError = (message, code = 'AUTH_ERROR') => ({
+const createAuthError = (message: string, code: string = 'AUTH_ERROR'): AuthError => ({
   success: false,
   error: code,
   message,
@@ -19,7 +61,7 @@ const createAuthError = (message, code = 'AUTH_ERROR') => ({
 });
 
 // 権限エラー
-const createPermissionError = (message, requiredRole = null) => ({
+const createPermissionError = (message: string, requiredRole: string | null = null): PermissionError => ({
   success: false,
   error: 'PERMISSION_ERROR',
   message,
@@ -28,7 +70,7 @@ const createPermissionError = (message, requiredRole = null) => ({
 });
 
 // リソースエラー
-const createResourceError = (message, resourceType = null, resourceId = null) => ({
+const createResourceError = (message: string, resourceType: string | null = null, resourceId: string | null = null): ResourceError => ({
   success: false,
   error: 'RESOURCE_ERROR',
   message,
@@ -38,7 +80,7 @@ const createResourceError = (message, resourceType = null, resourceId = null) =>
 });
 
 // サーバーエラー
-const createServerError = (message, originalError = null) => ({
+const createServerError = (message: string, originalError: any = null): ServerError => ({
   success: false,
   error: 'SERVER_ERROR',
   message,
@@ -47,7 +89,7 @@ const createServerError = (message, originalError = null) => ({
 });
 
 // リクエストボディのバリデーション
-const validateRequestBody = (body, requiredFields) => {
+const validateRequestBody = (body: any, requiredFields: string[]): any[] | null => {
   const errors = [];
   
   for (const field of requiredFields) {
@@ -64,13 +106,13 @@ const validateRequestBody = (body, requiredFields) => {
 };
 
 // メールアドレスのバリデーション
-const validateEmail = (email) => {
+const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
 // パスワードのバリデーション
-const validatePassword = (password) => {
+const validatePassword = (password: string): string[] | null => {
   const errors = [];
   
   if (!password || password.length < 8) {
@@ -85,7 +127,7 @@ const validatePassword = (password) => {
 };
 
 // 表示名のバリデーション
-const validateDisplayName = (displayName) => {
+const validateDisplayName = (displayName: string): string | null => {
   if (!displayName || displayName.trim().length < 2) {
     return 'Display name must be at least 2 characters long';
   }
@@ -96,7 +138,7 @@ const validateDisplayName = (displayName) => {
 };
 
 // 機密情報をサニタイズする関数
-const sanitizeErrorData = (errorData) => {
+const sanitizeErrorData = (errorData: any): any => {
   const sensitiveFields = [
     'password', 'token', 'apiKey', 'secret', 'creditCard', 'email', 
     'hashedPassword', 'passwordHash', 'accessToken', 'refreshToken',
@@ -128,7 +170,7 @@ const sanitizeErrorData = (errorData) => {
 };
 
 // 安全なデバッグログ関数（開発環境でのみ使用）
-const safeDebugLog = (message, data = null) => {
+const safeDebugLog = (message: string, data: any = null): void => {
   if (process.env.NODE_ENV === 'development' && process.env.DEBUG_LOGGING === 'true') {
     if (data) {
       // Debug logging removed for production
@@ -139,7 +181,7 @@ const safeDebugLog = (message, data = null) => {
 };
 
 // エラーレスポンスを送信
-const sendErrorResponse = (res, statusCode, errorData) => {
+const sendErrorResponse = (res: any, statusCode: number, errorData: any): any => {
   // バリデーションエラーの場合は機密情報をログに出力しない
   if (errorData?.error === 'VALIDATION_ERROR') {
     console.error(`API Error [${statusCode}]: VALIDATION_ERROR (${errorData.field || 'unknown field'})`);
@@ -157,7 +199,7 @@ const sendErrorResponse = (res, statusCode, errorData) => {
   return res.status(statusCode).json(errorData);
 };
 
-module.exports = {
+export {
   createValidationError,
   createAuthError,
   createPermissionError,
