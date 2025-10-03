@@ -52,7 +52,7 @@ const initDatabaseConnection = async () => {
   console.warn('[database] Database not connected, attempting to connect...');
   
   try {
-    const { MONGODB_URI } = process.env;
+    const MONGODB_URI = process.env['MONGODB_URI'];
     
     if (!MONGODB_URI) {
       throw new Error('MONGODB_URI environment variable is not set');
@@ -80,7 +80,7 @@ const initDatabaseConnection = async () => {
 };
 
 // JWT verification utility
-const verifyJWTToken = async (req) => {
+const verifyJWTToken = async (req: VercelRequest): Promise<any> => {
   // リクエストオブジェクトとヘッダーの存在チェック
   if (!req || !req.headers) {
     console.log('Request or headers object is undefined');
@@ -95,7 +95,7 @@ const verifyJWTToken = async (req) => {
   const token = authHeader.substring(7);
   
   try {
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    const jwtSecret = process.env['JWT_SECRET'] || 'fallback-secret-for-development';
     return jsonwebtoken.verify(token, jwtSecret);
   } catch (error) {
     console.error('JWT verification failed:', error);
@@ -104,7 +104,7 @@ const verifyJWTToken = async (req) => {
 };
 
 // Error handler utility
-const handleError = (res, error, message = 'Internal server error') => {
+const handleError = (res: VercelResponse, error: any, message = 'Internal server error') => {
   console.error('API Error:', error);
   const statusCode = error.statusCode || 500;
   const errorMessage = error.message || message;
@@ -112,7 +112,7 @@ const handleError = (res, error, message = 'Internal server error') => {
   res.status(statusCode).json({
     success: false,
     message: errorMessage,
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    ...(process.env['NODE_ENV'] === 'development' && { stack: error.stack })
   });
 };
 
