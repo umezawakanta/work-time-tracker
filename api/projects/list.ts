@@ -1,16 +1,15 @@
-// VercelRequest, VercelResponse types are not needed in CommonJS
 import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import { ensureDatabaseConnection, verifyJWT, handleError } from '../utils/database.js';
-import { ProjectSchema } from '../utils/schemas';
+import { ProjectSchema } from '../utils/schemas.js';
 // Type definitions are now in comments for reference
 
 dotenv.config();
 
 
 
-const Project = mongoose.models.Project || mongoose.model("Project", ProjectSchema);
+const Project = (mongoose.models['Project'] as any) || mongoose.model("Project", ProjectSchema);
 
 // List projects response interface
 interface ListProjectsResponse {
@@ -29,7 +28,7 @@ interface ListProjectsResponse {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
 
   const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
@@ -60,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!userInfo) {
       return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }
-    const userId = userInfo.userId;
+    const { userId } = userInfo;
 
     // プロジェクト一覧を取得
     const projects = await Project.find({ 
@@ -73,7 +72,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const response: ListProjectsResponse = {
       success: true,
       message: 'プロジェクト一覧を取得しました',
-      projects: projects.map(project => ({
+      projects: projects.map((project: any) => ({
         id: project.id,
         name: project.name,
         description: project.description,

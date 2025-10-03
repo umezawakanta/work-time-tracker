@@ -1,16 +1,15 @@
-// VercelRequest, VercelResponse types are not needed in CommonJS
 import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import { ensureDatabaseConnection, verifyJWT, handleError } from '../utils/database.js';
-import { TimeEntrySchema } from '../utils/schemas';
+import { TimeEntrySchema } from '../utils/schemas.js';
 // Type definitions are now in comments for reference
 
 dotenv.config();
 
 
 
-const TimeEntry = mongoose.models.TimeEntry || mongoose.model("TimeEntry", TimeEntrySchema);
+const TimeEntry = (mongoose.models['TimeEntry'] as any) || mongoose.model("TimeEntry", TimeEntrySchema);
 
 // Summary report response interface
 interface SummaryReportResponse {
@@ -35,7 +34,7 @@ interface SummaryReportResponse {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
 
   const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
@@ -104,15 +103,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // 統計計算
-    const totalTime = allEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
+    const totalTime = allEntries.reduce((sum: number, entry: any) => sum + (entry.duration || 0), 0);
     const totalEntries = allEntries.length;
     const averageSessionTime = totalEntries > 0 ? Math.round(totalTime / totalEntries) : 0;
-    const todayTime = todayEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
-    const thisWeekTime = weekEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
-    const thisMonthTime = monthEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
+    const todayTime = todayEntries.reduce((sum: number, entry: any) => sum + (entry.duration || 0), 0);
+    const thisWeekTime = weekEntries.reduce((sum: number, entry: any) => sum + (entry.duration || 0), 0);
+    const thisMonthTime = monthEntries.reduce((sum: number, entry: any) => sum + (entry.duration || 0), 0);
 
     // プロジェクト別集計
-    const projectBreakdown = allEntries.reduce((acc, entry) => {
+    const projectBreakdown = allEntries.reduce((acc: Record<string, any>, entry: any) => {
       const projectId = entry.projectId || 'no-project';
       const projectName = projectId === 'no-project' ? 'プロジェクト未設定' : `プロジェクト ${projectId}`;
       
@@ -131,7 +130,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return acc;
     }, {} as Record<string, any>);
 
-    const projectBreakdownArray = Object.values(projectBreakdown);
+    const projectBreakdownArray = Object.values(projectBreakdown) as Array<{
+      projectId: string;
+      projectName: string;
+      totalTime: number;
+      entryCount: number;
+    }>;
 
 
     // レスポンスの構築
