@@ -4287,6 +4287,14 @@ User Agent: ${userAgent}
         setMessage("エラー報告を送信しました。ありがとうございます。");
         setShowSimpleErrorModal(false);
       } else {
+        // レスポンスが有効なJSONかチェック
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const textResponse = await response.text();
+          console.error("サーバーがJSON以外のレスポンスを返しました:", textResponse);
+          throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+        }
+        
         const errorData = await response.json();
         throw new Error(errorData.message || "エラー報告の送信に失敗しました");
       }
@@ -4590,6 +4598,14 @@ User Agent: ${userAgent}
 
       // 401エラーのチェック
       handle401Error(response);
+
+      // レスポンスが有効なJSONかチェック
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const textResponse = await response.text();
+        console.error("サーバーがJSON以外のレスポンスを返しました:", textResponse);
+        throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+      }
 
       const data = await response.json();
 
