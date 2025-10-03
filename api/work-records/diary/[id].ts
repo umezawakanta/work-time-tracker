@@ -7,7 +7,7 @@ dotenv.config();
 // データベース接続
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || '', {
+    await mongoose.connect(process.env['MONGODB_URI'] || '', {
       dbName: 'workTimeTracker'
     });
   } catch (error) {
@@ -47,7 +47,7 @@ const WorkDiary = mongoose.models.WorkDiary as any || mongoose.model('WorkDiary'
 
 export default async function handler(req, res) {
   // CORS設定
-  res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
+  res.setHeader('Access-Control-Allow-Origin', process.env['NODE_ENV'] === 'production' 
     ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
     : '*'
   );
@@ -172,7 +172,7 @@ export default async function handler(req, res) {
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env['NODE_ENV'] === 'development' ? error.message : undefined
     });
   }
 }

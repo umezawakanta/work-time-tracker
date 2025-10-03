@@ -7,7 +7,7 @@ dotenv.config();
 // データベース接続
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || '', {
+    await mongoose.connect(process.env['MONGODB_URI'] || '', {
       dbName: 'workTimeTracker'
     });
   } catch (error) {
@@ -28,12 +28,12 @@ const SalaryRecordSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-const SalaryRecord = mongoose.models.SalaryRecord as any || mongoose.model('SalaryRecord', SalaryRecordSchema);
+const SalaryRecord = mongoose.models['SalaryRecord'] as any || mongoose.model('SalaryRecord', SalaryRecordSchema);
 
-export default async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
-  res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
-    ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
+  res.setHeader('Access-Control-Allow-Origin', process.env['NODE_ENV'] === 'production' 
+    ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin || '') ? (req.headers.origin || 'https://work-time-tracker-five.vercel.app') : 'https://work-time-tracker-five.vercel.app'
     : '*'
   );
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
@@ -136,7 +136,8 @@ export default async function handler(req, res) {
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env['NODE_ENV'] === 'development' ? (error as Error).message : undefined
     });
+    return;
   }
 }

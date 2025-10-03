@@ -67,12 +67,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const userId = userInfo.userId || userInfo.id;
+    
+    // セキュリティのため、JWT認証を優先してユーザーIDを取得
+    let actualUserId = null;
+    
+    if (userInfo && userId) {
+      // JWT認証が成功した場合、JWTのユーザーIDを使用
+      actualUserId = userId;
+      console.log('User ID obtained from JWT token:', actualUserId);
+    } else {
+      // JWT認証が失敗した場合、エラーを返す
+      console.error('JWT authentication failed');
+      return handleError(res, { statusCode: 401, message: '認証が必要です' });
+    }
 
     if (req.method === 'GET') {
       // 給与記録一覧取得
       const { startDate, endDate, type, category } = req.query;
       
-      let query: any = { userId };
+      let query: any = { userId: actualUserId };
       
       if (startDate && endDate) {
         query.date = {
@@ -107,7 +120,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const record = new SalaryRecord({
-        userId,
+        userId: actualUserId,
         date: new Date(date),
         amount: Number(amount),
         type,
@@ -133,7 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const record = await SalaryRecord.findOneAndUpdate(
-        { _id: id, userId },
+        { _id: id, userId: actualUserId },
         {
           date: date ? new Date(date) : undefined,
           amount: amount ? Number(amount) : undefined,
@@ -164,7 +177,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return handleError(res, { statusCode: 400, message: 'IDが必要です' });
       }
 
-      const record = await SalaryRecord.findOneAndDelete({ _id: id, userId });
+      const record = await SalaryRecord.findOneAndDelete({ _id: id, userId: actualUserId });
 
       if (!record) {
         return handleError(res, { statusCode: 404, message: '記録が見つかりません' });
