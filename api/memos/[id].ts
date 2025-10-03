@@ -1,9 +1,9 @@
-import { Memo: MemoModel } from '../utils/schemas.js';
+import { Memo as MemoModel } from '../utils/schemas.js';
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { ensureDatabaseConnection: ensureDB, verifyJWT: verifyToken } from '../utils/database';
+import { ensureDatabaseConnection as ensureDB, verifyJWT as verifyToken } from '../utils/database.js';
 
 // CORS設定
-const setCorsHeaders = (res, origin) => {
+const setCorsHeaders = (res: VercelResponse, origin: string | undefined) => {
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
@@ -57,7 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === 'GET') {
       // 特定のメモを取得
-      const memo = await MemoModel.findOne({ _id: id, userId: userInfo.userId });
+      const memo = await (MemoModel as any).findOne({ _id: id, userId: userInfo.userId });
       if (!memo) {
         return res.status(404).json({
           success: false,
@@ -67,7 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'メモの詳細を取得しました',
         memo: {
@@ -92,7 +92,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         updateData.title = updateData.content.split('\n')[0].trim() || '無題';
       }
       
-      const memo = await MemoModel.findOneAndUpdate(
+      const memo = await (MemoModel as any).findOneAndUpdate(
         { _id: id, userId: userInfo.userId },
         { ...updateData, updatedAt: new Date() },
         { new: true, runValidators: true }
@@ -107,7 +107,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'メモを更新しました',
         memo: {
@@ -140,7 +140,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       
       try {
         console.log('Attempting to find and delete memo with query:', { _id: id, userId: userInfo.userId });
-        const memo = await MemoModel.findOneAndDelete({ _id: id, userId: userInfo.userId });
+        const memo = await (MemoModel as any).findOneAndDelete({ _id: id, userId: userInfo.userId });
         console.log('Delete result:', memo ? 'Memo found and deleted' : 'No memo found');
         
         if (!memo) {
@@ -151,21 +151,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
           success: true,
           message: 'メモを削除しました',
         });
       } catch (deleteError) {
         console.error('Error during memo deletion:', deleteError);
         console.error('Delete error details:', {
-          message: deleteError.message,
-          stack: deleteError.stack,
-          name: deleteError.name
+          message: (deleteError as Error).message,
+          stack: (deleteError as Error).stack,
+          name: (deleteError as Error).name
         });
         throw deleteError; // Re-throw to be caught by outer catch block
       }
     } else {
-      res.status(405).json({
+      return res.status(405).json({
         success: false,
         message: 'メソッドが許可されていません',
         error: 'Method not allowed',
@@ -174,35 +174,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (error) {
     console.error('❌ Memo detail API error:', error);
     console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
+      message: (error as Error).message,
+      stack: (error as Error).stack,
       method: req.method,
-      id: req.query.id,
-      name: error.name,
-      code: error.code
+      id: req.query['id'],
+      name: (error as Error).name,
+      code: (error as any).code
     });
     
     // Provide more specific error messages based on error type
     let errorMessage = 'サーバーエラーが発生しました';
-    if (error.name === 'CastError') {
+    if ((error as Error).name === 'CastError') {
       errorMessage = '無効なメモIDです';
-    } else if (error.name === 'ValidationError') {
+    } else if ((error as Error).name === 'ValidationError') {
       errorMessage = 'データの検証に失敗しました';
-    } else if (error.message && error.message.includes('not found')) {
+    } else if ((error as Error).message && (error as Error).message.includes('not found')) {
       errorMessage = 'メモが見つかりません';
     }
     
     res.status(500).json({
       success: false,
       message: errorMessage,
-      error: error.message || 'Internal server error',
-      ...(process.env.NODE_ENV === 'development' && { 
+      error: (error as Error).message || 'Internal server error',
+      ...(process.env['NODE_ENV'] === 'development' && { 
         details: {
-          name: error.name,
-          code: error.code,
-          stack: error.stack
+          name: (error as Error).name,
+          code: (error as any).code,
+          stack: (error as Error).stack
         }
       })
     });
+    return;
   }
-};
+}
