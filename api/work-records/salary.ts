@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { verifyJWT } from '../utils/validation.js';
-import { warn } from '../utils/logger.js';
+import { verifyJWT, handleError } from '../utils/database.js';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 dotenv.config();
@@ -35,12 +34,12 @@ const SalaryRecordSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-const SalaryRecord = mongoose.models.SalaryRecord || mongoose.model('SalaryRecord', SalaryRecordSchema);
+const SalaryRecord = (mongoose.models['SalaryRecord'] as any) || mongoose.model('SalaryRecord', SalaryRecordSchema);
 
 // メインハンドラー
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
-  const origin = req.headers.origin;
+  const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
 
   const isPreview = origin && /^https:\/\/work-time-tracker-five-.*\.vercel\.app$/.test(origin);
@@ -64,10 +63,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 認証
     const userInfo = await verifyJWT(req);
     if (!userInfo) {
-      return res.status(401).json({
-        success: false,
-        message: '認証が必要です'
-      });
+      return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }
 
     const userId = userInfo.userId || userInfo.id;
@@ -107,10 +103,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const { date, amount, type, category, description, tags } = req.body;
 
       if (!date || !amount || !type || !category) {
-        return res.status(400).json({
-          success: false,
-          message: '必須フィールドが不足しています'
-        });
+        return handleError(res, { statusCode: 400, message: '必須フィールドが不足しています' });
       }
 
       const record = new SalaryRecord({
@@ -136,10 +129,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const { id, date, amount, type, category, description, tags } = req.body;
 
       if (!id) {
-        return res.status(400).json({
-          success: false,
-          message: 'IDが必要です'
-        });
+        return handleError(res, { statusCode: 400, message: 'IDが必要です' });
       }
 
       const record = await SalaryRecord.findOneAndUpdate(
@@ -157,10 +147,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
 
       if (!record) {
-        return res.status(404).json({
-          success: false,
-          message: '記録が見つかりません'
-        });
+        return handleError(res, { statusCode: 404, message: '記録が見つかりません' });
       }
 
       res.status(200).json({
@@ -174,19 +161,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const { id } = req.query;
 
       if (!id) {
-        return res.status(400).json({
-          success: false,
-          message: 'IDが必要です'
-        });
+        return handleError(res, { statusCode: 400, message: 'IDが必要です' });
       }
 
       const record = await SalaryRecord.findOneAndDelete({ _id: id, userId });
 
       if (!record) {
-        return res.status(404).json({
-          success: false,
-          message: '記録が見つかりません'
-        });
+        return handleError(res, { statusCode: 404, message: '記録が見つかりません' });
       }
 
       res.status(200).json({
@@ -195,20 +176,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
 
     } else {
-      res.status(405).json({
-        success: false,
-        message: 'メソッドが許可されていません'
-      });
+      return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
     }
 
   } catch (error) {
     console.error('❌ Salary records error:', error);
-    warn('Salary records error', { error: error.message, stack: error.stack });
-    
-    res.status(500).json({
-      success: false,
-      message: '給与記録処理中にエラーが発生しました',
-      error: process.env['NODE_ENV'] === 'development' ? error.message : 'Internal server error'
-    });
+    return handleError(res, error, '給与記録処理中にエラーが発生しました');
   }
 }
