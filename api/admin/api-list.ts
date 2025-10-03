@@ -1,19 +1,42 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-import { ensureDatabaseConnection: dbConnect, verifyJWT: authVerify, handleError: errorHandler } from '../utils/database.js';
-import { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } from '../utils/healthCheckUtils.js';
-import { API_ENDPOINTS, getCheckableEndpoints: getEndpoints } from '../config/api-endpoints.js';
+import { ensureDatabaseConnection, verifyJWT, handleError } from '../utils/database.js';
+// import { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } from '../utils/healthCheckUtils.js';
+import { API_ENDPOINTS, getCheckableEndpoints as getEndpoints } from '../config/api-endpoints.js';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 // 時間関連の定数
-const ONE_HOUR_MS = 60 * 60 * 1000; // 1時間のミリ秒
 const HEALTH_CHECK_TIMEOUT_MS = 5000; // ヘルスチェックのタイムアウト（5秒）
 
+// ヘルスチェック用のヘルパー関数
+const createHealthCheckController = () => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), HEALTH_CHECK_TIMEOUT_MS);
+  return { controller, timeoutId };
+};
+
+const clearHealthTimeout = (timeoutId: NodeJS.Timeout) => {
+  clearTimeout(timeoutId);
+};
+
+const determineHealthStatus = (statusCode: number, responseTime: number) => {
+  if (statusCode >= 200 && statusCode < 300) {
+    if (responseTime < 1000) {
+      return 'healthy';
+    }
+    if (responseTime < 3000) {
+      return 'warning';
+    }
+    return 'warning';
+  }
+  return 'error';
+};
+
 // 実際のAPIエンドポイントのヘルスチェック
-const checkApiHealth = async (endpoint, method) => {
+const checkApiHealth = async (endpoint: string, method: string) => {
   const startTime = Date.now();
   
   // AbortControllerを使用してタイムアウトを設定
-  const { controller, timeoutId } = createController();
+  const { controller, timeoutId } = createHealthCheckController();
   
   try {
     const response = await fetch(endpoint, {
@@ -27,7 +50,7 @@ const checkApiHealth = async (endpoint, method) => {
     clearHealthTimeout(timeoutId);
 
     const responseTime = Date.now() - startTime;
-    const status = healthStatus(response.status, responseTime);
+    const status = determineHealthStatus(response.status, responseTime);
 
     return {
       endpoint,
@@ -54,8 +77,8 @@ const checkApiHealth = async (endpoint, method) => {
 };
 
 // 並列実行制限用のヘルパー関数
-const limitConcurrency = async (tasks, limit = 5) => {
-  const results = [];
+const limitConcurrency = async (tasks: Promise<any>[], limit = 5) => {
+  const results: any[] = [];
   for (let i = 0; i < tasks.length; i += limit) {
     const batch = tasks.slice(i, i + limit);
     const batchResults = await Promise.all(batch);
@@ -162,7 +185,7 @@ const getRealApiMetrics = async () => {
  */
 
 // CORS設定
-const setCorsHeaders = (res, origin) => {
+const setCorsHeaders = (res: VercelResponse, origin: string | undefined) => {
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
@@ -184,22 +207,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method !== 'GET') {
-    return errorHandler(res, { statusCode: 405, message: 'メソッドが許可されていません' });
+    return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
   }
 
   try {
     // データベース接続
-    await dbConnect();
+    await ensureDatabaseConnection();
 
     // JWT認証
-    const userInfo = await authVerify(req);
+    const userInfo = await verifyJWT(req);
     if (!userInfo) {
-      return errorHandler(res, { statusCode: 401, message: '認証が必要です' });
+      return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }
 
     // 管理者権限の確認
     if (userInfo.role !== 'admin' || !userInfo.isAdmin) {
-      return errorHandler(res, { statusCode: 403, message: '管理者権限が必要です' });
+      return handleError(res, { statusCode: 403, message: '管理者権限が必要です' });
     }
 
     // 実際のメトリクスデータを取得
@@ -233,6 +256,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error) {
     console.error('❌ API list error:', error);
-    return errorHandler(res, error, 'API一覧取得中にエラーが発生しました');
+    return handleError(res, error, 'API一覧取得中にエラーが発生しました');
   }
 };

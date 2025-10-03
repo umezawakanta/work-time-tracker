@@ -1,15 +1,35 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-import { ensureDatabaseConnection: dbConnectHealth, verifyJWT: authVerifyHealth, handleError: errorHandlerHealth } from '../utils/database.js';
-import { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } from '../utils/healthCheckUtils.js';
-import { getCheckableEndpoints: getEndpoints } from '../config/api-endpoints.js';
+import { ensureDatabaseConnection, verifyJWT, handleError } from '../utils/database.js';
+// import { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } from '../utils/healthCheckUtils.js';
+import { getCheckableEndpoints as getEndpoints } from '../config/api-endpoints.js';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
+// ヘルスチェック用のヘルパー関数
+const createHealthCheckController = () => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  return { controller, timeoutId };
+};
+
+const clearHealthTimeout = (timeoutId: NodeJS.Timeout) => {
+  clearTimeout(timeoutId);
+};
+
+const determineHealthStatus = (statusCode: number, responseTime: number) => {
+  if (statusCode >= 200 && statusCode < 300) {
+    if (responseTime < 1000) return 'healthy';
+    if (responseTime < 3000) return 'warning';
+    return 'warning';
+  }
+  return 'error';
+};
+
 // 実際のAPIエンドポイントのヘルスチェック
-const performHealthCheck = async (endpoint, method) => {
+const performHealthCheck = async (endpoint: string, method: string) => {
   const startTime = Date.now();
   
   // AbortControllerを使用してタイムアウトを設定
-  const { controller, timeoutId } = createController();
+  const { controller, timeoutId } = createHealthCheckController();
   
   try {
     const response = await fetch(endpoint, {
@@ -24,7 +44,7 @@ const performHealthCheck = async (endpoint, method) => {
     clearHealthTimeout(timeoutId);
 
     const responseTime = Date.now() - startTime;
-    const status = healthStatus(response.status, responseTime);
+    const status = determineHealthStatus(response.status, responseTime);
 
     return {
       endpoint,
@@ -51,7 +71,7 @@ const performHealthCheck = async (endpoint, method) => {
 };
 
 // 並列実行制限用のヘルパー関数
-const limitConcurrencyHealth = async (tasks, limit = 5) => {
+const limitConcurrencyHealth = async (tasks: Promise<any>[], limit = 5) => {
   const results: any[] = [];
   for (let i = 0; i < tasks.length; i += limit) {
     const batch = tasks.slice(i, i + limit);
@@ -115,17 +135,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     // データベース接続
-    await dbConnectHealth();
+    await ensureDatabaseConnection();
 
     // JWT認証
-    const userInfo = await authVerifyHealth(req);
+    const userInfo = await verifyJWT(req);
     if (!userInfo) {
-      return errorHandlerHealth(res, { statusCode: 401, message: '認証が必要です' });
+      return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }
 
     // 管理者権限の確認
     if (userInfo.role !== 'admin' || !userInfo.isAdmin) {
-      return errorHandlerHealth(res, { statusCode: 403, message: '管理者権限が必要です' });
+      return handleError(res, { statusCode: 403, message: '管理者権限が必要です' });
     }
 
     const { endpoints } = req.body;
@@ -163,6 +183,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error) {
     console.error('❌ API health check error:', error);
-    return errorHandlerHealth(res, error, 'ヘルスチェック中にエラーが発生しました');
+    return handleError(res, error, 'ヘルスチェック中にエラーが発生しました');
   }
 };
