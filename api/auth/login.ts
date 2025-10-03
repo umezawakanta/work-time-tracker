@@ -1,14 +1,14 @@
 import bcrypt from 'bcryptjs';
 import { serialize } from 'cookie';
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { jwt, ensureDatabaseConnection as initDB, User as UserModel } from '../utils/database';
+import { jwt, ensureDatabaseConnection as initDB, User as UserModel } from '../utils/database.js';
 import { 
   createValidationError, 
   createAuthError, 
   createServerError,
   validateEmail,
   sendErrorResponse 
-} from '../utils/errorHandler';
+} from '../utils/errorHandler.js';
 
 import dotenv from 'dotenv';
 dotenv.config();

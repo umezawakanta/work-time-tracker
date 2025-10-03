@@ -1,9 +1,8 @@
-// VercelRequest, VercelResponse types are not needed in CommonJS
-const bcryptjs = require('bcryptjs');
-const { mongoose: mongooseLib, jwt: jwtLib, ensureDatabaseConnection, User: UserDB } = require('../utils/database');
-const dotenv = require('dotenv');
-// Type definitions are now in comments for reference
-const { 
+import bcryptjs from 'bcryptjs';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { mongoose as mongooseLib, jwt as jwtLib, ensureDatabaseConnection, User as UserDB } from '../utils/database.js';
+import dotenv from 'dotenv';
+import { 
   createValidationError, 
   createResourceError, 
   createServerError,
@@ -11,7 +10,7 @@ const {
   validatePassword,
   validateDisplayName,
   sendErrorResponse 
-} = require('../utils/errorHandler');
+} from '../utils/errorHandler.js';
 
 dotenv.config();
 
@@ -183,3 +182,5 @@ module.exports = async function handler(req, res) {
     });
   }
 }
+
+export default handler;

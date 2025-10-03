@@ -1,5 +1,5 @@
-const { mongoose, jwt, ensureDatabaseConnection, verifyJWT } = require('../utils/database');
-const dotenv = require('dotenv');
+import { mongoose, jwt, ensureDatabaseConnection, verifyJWT } from '../utils/database.js';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -360,3 +360,5 @@ async function handleRequest(req, res) {
     }
   }
 }
+
+export default handler;
