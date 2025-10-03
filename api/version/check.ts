@@ -1,5 +1,6 @@
-const { mongoose: mongooseInstance } = require('../utils/database');
-const dotenv = require('dotenv');
+import { mongoose: mongooseInstance } from '../utils/database.js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -55,7 +56,7 @@ const ensureDatabaseConnection = async () => {
   }
 };
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

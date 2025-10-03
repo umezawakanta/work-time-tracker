@@ -1,4 +1,5 @@
-const { ensureDatabaseConnection: ensureDBConnection, mongoose: mongooseDB } = require('../utils/database');
+import { ensureDatabaseConnection: ensureDBConnection, mongoose: mongooseDB } from '../utils/database.js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 // Memo schema
 const MemoSchema = new mongooseDB.Schema({
@@ -63,7 +64,7 @@ const ReplySchemaDef = new mongooseDB.Schema(
 
 const ReplyModel = mongooseDB.models.Reply || mongooseDB.model("Reply", ReplySchemaDef);
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];

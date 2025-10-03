@@ -1,5 +1,6 @@
-const { mongoose, ensureDatabaseConnection } = require('../utils/database');
-const dotenv = require('dotenv');
+import { mongoose, ensureDatabaseConnection } from '../utils/database.js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -66,7 +67,7 @@ const setCorsHeaders = (res, origin) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 };
 
-module.exports = async (req, res) => {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   const origin = req.headers.origin;
   setCorsHeaders(res, origin);
 

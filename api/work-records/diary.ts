@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 

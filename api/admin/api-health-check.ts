@@ -1,7 +1,8 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-const { ensureDatabaseConnection: dbConnectHealth, verifyJWT: authVerifyHealth, handleError: errorHandlerHealth } = require('../utils/database');
-const { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } = require('../utils/healthCheckUtils');
-const { getCheckableEndpoints: getEndpoints } = require('../config/api-endpoints.js');
+import { ensureDatabaseConnection: dbConnectHealth, verifyJWT: authVerifyHealth, handleError: errorHandlerHealth } from '../utils/database.js';
+import { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } from '../utils/healthCheckUtils.js';
+import { getCheckableEndpoints: getEndpoints } from '../config/api-endpoints.js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 // 実際のAPIエンドポイントのヘルスチェック
 const performHealthCheck = async (endpoint, method) => {
@@ -85,7 +86,7 @@ const limitConcurrencyHealth = async (tasks, limit = 5) => {
  * @property {string} [error]
  */
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const { origin } = req.headers;
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];

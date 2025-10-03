@@ -1,5 +1,6 @@
-const { ensureDatabaseConnection, mongoose } = require('../utils/database');
-const dotenv = require('dotenv');
+import { ensureDatabaseConnection, mongoose } from '../utils/database.js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -154,7 +155,7 @@ const handleRequest = async (req, res) => {
   }
 };
 
-module.exports = async (req, res) => {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // リクエストとレスポンスオブジェクトの存在チェック
     if (!req || !res) {

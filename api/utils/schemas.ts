@@ -1,4 +1,5 @@
-const { mongoose } = require('./database');
+import { mongoose } from './database.js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 // User Schema
 const UserSchema = new mongoose.Schema({
@@ -246,7 +247,7 @@ console.log('Memo model type:', typeof Memo);
 console.log('MemoSchema type:', typeof MemoSchema);
 console.log('mongoose type:', typeof mongoose);
 
-module.exports = {
+export {
   UserSchema,
   BookSchema,
   WorkRecordSchema,

@@ -1,5 +1,6 @@
-const { Memo: MemoModel } = require('../utils/schemas');
-const { ensureDatabaseConnection: ensureDB, verifyJWT: verifyToken } = require('../utils/database');
+import { Memo: MemoModel } from '../utils/schemas.js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { ensureDatabaseConnection: ensureDB, verifyJWT: verifyToken } from '../utils/database';
 
 // CORS設定
 const setCorsHeaders = (res, origin) => {
@@ -19,7 +20,7 @@ const setCorsHeaders = (res, origin) => {
 console.log('MemoModel imported:', !!MemoModel);
 console.log('MemoModel type:', typeof MemoModel);
 
-module.exports = async (req, res) => {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { origin } = req.headers;
   setCorsHeaders(res, origin);
 

@@ -1,6 +1,7 @@
-const { mongoose: mongooseDB, ensureDatabaseConnection: ensureDBConn, verifyJWT: verifyAuth, handleAPIError: handleAPIError } = require('../utils/database');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+import { mongoose: mongooseDB, ensureDatabaseConnection: ensureDBConn, verifyJWT: verifyAuth, handleAPIError: handleAPIError } from '../utils/database.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 dotenv.config();
 
@@ -45,7 +46,7 @@ const setCorsHeaders = (res, origin) => {
   res.setHeader('Cache-Control', 'no-store');
 };
 
-module.exports = async (req, res) => {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { origin } = req.headers;
   setCorsHeaders(res, origin);
 

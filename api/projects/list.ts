@@ -1,9 +1,9 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-const { ensureDatabaseConnection, verifyJWT, handleError } = require('../utils/database');
-const { ProjectSchema } = require('../utils/schemas');
+import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { ensureDatabaseConnection, verifyJWT, handleError } from '../utils/database.js';
+import { ProjectSchema } from '../utils/schemas';
 // Type definitions are now in comments for reference
 
 dotenv.config();
@@ -27,7 +27,7 @@ interface ListProjectsResponse {
   error?: string;
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];

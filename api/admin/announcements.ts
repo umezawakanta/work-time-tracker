@@ -1,6 +1,7 @@
-const mongooseDB = require('mongoose');
-const jwtLib = require('jsonwebtoken');
-const dotenvLib = require('dotenv');
+import mongooseDB from 'mongoose';
+import jwtLib from 'jsonwebtoken';
+import dotenvLib from 'dotenv';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 dotenvLib.config();
 
@@ -78,7 +79,7 @@ const verifyJWTToken = async (req) => {
   }
 };
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('Admin announcements API called:', req.method, req.url);
   
   // CORS設定

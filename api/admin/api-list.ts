@@ -1,7 +1,8 @@
 // VercelRequest, VercelResponse types are not needed in CommonJS
-const { ensureDatabaseConnection: dbConnect, verifyJWT: authVerify, handleError: errorHandler } = require('../utils/database');
-const { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } = require('../utils/healthCheckUtils');
-const { API_ENDPOINTS, getCheckableEndpoints: getEndpoints } = require('../config/api-endpoints.js');
+import { ensureDatabaseConnection: dbConnect, verifyJWT: authVerify, handleError: errorHandler } from '../utils/database.js';
+import { determineHealthStatus: healthStatus, createHealthCheckController: createController, clearHealthCheckTimeout: clearHealthTimeout } from '../utils/healthCheckUtils.js';
+import { API_ENDPOINTS, getCheckableEndpoints: getEndpoints } from '../config/api-endpoints.js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 // 時間関連の定数
 const ONE_HOUR_MS = 60 * 60 * 1000; // 1時間のミリ秒
@@ -173,7 +174,7 @@ const setCorsHeaders = (res, origin) => {
   res.setHeader('Cache-Control', 'no-store');
 };
 
-module.exports = async (req, res) => {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { origin } = req.headers;
   setCorsHeaders(res, origin);
 

@@ -1,5 +1,6 @@
-const { mongoose: mongooseLib, ensureDatabaseConnection: connectDB } = require('../../utils/database');
-const dotenv = require('dotenv');
+import { mongoose: mongooseLib, ensureDatabaseConnection: connectDB } from '../../utils/database.js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -36,7 +37,7 @@ const Reply = mongooseLib.models.Reply || mongooseLib.model("Reply", ReplySchema
  * @property {string} [error] - Error message if failed
  */
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const origin = req.headers.origin;
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
