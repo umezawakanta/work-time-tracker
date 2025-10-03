@@ -1,8 +1,18 @@
 // APIエンドポイントの設定ファイル
 // このファイルでAPIエンドポイントを一元管理し、自動発見や動的更新に対応
 
+// APIエンドポイントの型定義
+interface ApiEndpoint {
+  path: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  description: string;
+  requiresAuth?: boolean;
+  isCheckable?: boolean;
+  isAdminOnly?: boolean;
+}
+
 // APIエンドポイントの定義
-const API_ENDPOINTS = [
+export const API_ENDPOINTS: ApiEndpoint[] = [
   // 認証関連
   { path: '/api/auth/login', method: 'POST', description: 'ユーザーログイン', requiresAuth: false, isCheckable: false },
   { path: '/api/auth/register', method: 'POST', description: 'ユーザー登録', requiresAuth: false, isCheckable: false },
@@ -78,24 +88,26 @@ const API_ENDPOINTS = [
 ];
 
 // ヘルスチェック対象のエンドポイントを取得
-const getCheckableEndpoints = () => {
+export const getCheckableEndpoints = (): ApiEndpoint[] => {
   return API_ENDPOINTS.filter(endpoint => endpoint.isCheckable);
 };
 
 // 管理者専用エンドポイントを取得
-const getAdminEndpoints = () => {
+export const getAdminEndpoints = (): ApiEndpoint[] => {
   return API_ENDPOINTS.filter(endpoint => endpoint.isAdminOnly);
 };
 
 // 認証が必要なエンドポイントを取得
-const getAuthRequiredEndpoints = () => {
+export const getAuthRequiredEndpoints = (): ApiEndpoint[] => {
   return API_ENDPOINTS.filter(endpoint => endpoint.requiresAuth);
 };
 
-// CommonJS形式でエクスポート
-module.exports = {
-  API_ENDPOINTS,
-  getCheckableEndpoints,
-  getAdminEndpoints,
-  getAuthRequiredEndpoints
+// メソッドでフィルタリング
+export const getEndpointsByMethod = (method: string): ApiEndpoint[] => {
+  return API_ENDPOINTS.filter(endpoint => endpoint.method === method);
+};
+
+// パスでフィルタリング
+export const getEndpointsByPath = (pathPattern: string): ApiEndpoint[] => {
+  return API_ENDPOINTS.filter(endpoint => endpoint.path.includes(pathPattern));
 };
