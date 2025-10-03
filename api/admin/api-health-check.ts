@@ -154,7 +154,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const checkEndpoints = endpoints || getEndpoints();
 
     // 並列実行数を制限してヘルスチェックを実行（最大5個まで同時実行）
-    const healthCheckTasks = checkEndpoints.map(({ path, method }) => 
+    const healthCheckTasks = checkEndpoints.map(({ path, method }: { path: string; method: string }) => 
       performHealthCheck(path, method)
     );
 
