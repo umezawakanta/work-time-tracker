@@ -33,16 +33,16 @@ UserSchemaDef.virtual("id").get(function () {
 // Ensure virtual fields are serialized
 UserSchemaDef.set("toJSON", {
   virtuals: true,
-  transform: function (doc, ret) {
+  transform: function (_doc, ret) {
     const { _id, __v, password, ...cleanRet } = ret;
     return cleanRet;
   },
 });
 
-const UserModel = mongoose.models.User || mongoose.model("User", UserSchemaDef);
+const UserModel = (mongoose.models['User'] as any) || mongoose.model("User", UserSchemaDef);
 
 // Database connection utility
-const initDatabaseConnection = async () => {
+export const ensureDatabaseConnection = async () => {
   const isConnected = mongoose.connection.readyState === 1;
   
   if (isConnected) {
@@ -80,7 +80,7 @@ const initDatabaseConnection = async () => {
 };
 
 // JWT verification utility
-const verifyJWTToken = async (req: VercelRequest): Promise<any> => {
+export const verifyJWT = async (req: VercelRequest): Promise<any> => {
   // リクエストオブジェクトとヘッダーの存在チェック
   if (!req || !req.headers) {
     console.log('Request or headers object is undefined');
@@ -104,7 +104,7 @@ const verifyJWTToken = async (req: VercelRequest): Promise<any> => {
 };
 
 // Error handler utility
-const handleError = (res: VercelResponse, error: any, message = 'Internal server error') => {
+export const handleError = (res: VercelResponse, error: any, message = 'Internal server error') => {
   console.error('API Error:', error);
   const statusCode = error.statusCode || 500;
   const errorMessage = error.message || message;
@@ -116,11 +116,6 @@ const handleError = (res: VercelResponse, error: any, message = 'Internal server
   });
 };
 
-export {
-  initDatabaseConnection as ensureDatabaseConnection,
-  verifyJWTToken as verifyJWT,
-  handleError,
-  mongoose,
-  jsonwebtoken as jwt,
-  UserModel as User
-};
+// Named exports
+export { mongoose, UserModel as User };
+export const jwt = jsonwebtoken;
