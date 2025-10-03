@@ -1239,21 +1239,30 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     timestamp: string;
   }) => {
     try {
-      const response = await fetch("/api/admin/error-reports", {
+      const response = await fetch("/api/error-reports", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify(errorReport),
       });
       
-      if (response.ok) {
+      // レスポンスが有効なJSONかチェック
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const textResponse = await response.text();
+        console.error("サーバーがJSON以外のレスポンスを返しました:", textResponse);
+        throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
         setMessage("エラーレポートを送信しました");
         setShowErrorModal(false);
         setCurrentError(null);
       } else {
-        setMessage("エラーレポートの送信に失敗しました");
+        setMessage(data.message || "エラーレポートの送信に失敗しました");
       }
     } catch (error) {
       console.error("Error reporting failed:", error);
@@ -1269,21 +1278,30 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     timestamp: string;
   }) => {
     try {
-      const response = await fetch("/api/admin/error-reports", {
+      const response = await fetch("/api/error-reports", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify(errorReport),
       });
       
-      if (response.ok) {
+      // レスポンスが有効なJSONかチェック
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const textResponse = await response.text();
+        console.error("サーバーがJSON以外のレスポンスを返しました:", textResponse);
+        throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
         setMessage("エラーレポートを送信しました");
         setShowSimpleErrorModal(false);
         setCurrentError(null);
       } else {
-        setMessage("エラーレポートの送信に失敗しました");
+        setMessage(data.message || "エラーレポートの送信に失敗しました");
       }
     } catch (error) {
       console.error("Error reporting failed:", error);
