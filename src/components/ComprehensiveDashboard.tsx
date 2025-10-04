@@ -2388,12 +2388,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                                 <span className="store-name">{receipt.storeName}</span>
                               </div>
                               <div className="receipt-amount">
-                                {formatCurrency(receipt.amount)}
+                                {formatCurrency(receipt.totalAmount || receipt.amount)}
                               </div>
                             </div>
                             <div className="receipt-details">
                               <div className="receipt-date">
-                                {receipt.date.toLocaleDateString("ja-JP")}
+                                {new Date(receipt.purchaseDate || receipt.date).toLocaleDateString("ja-JP")}
                               </div>
                               <div className="receipt-payment">
                                 支払い: {receipt.paymentMethod === 'cash' ? '現金' : 
@@ -2407,7 +2407,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                             <div className="receipt-items">
                               <h5>購入商品:</h5>
                               <ul>
-                                {receipt.items.map((item: string, index: number) => (
+                                {(receipt.items || []).map((item: string, index: number) => (
                                   <li key={index}>{item}</li>
                                 ))}
                               </ul>
@@ -2825,14 +2825,19 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                       setReceiptRecords(prev => [data.receipts[0], ...prev]);
                       
                       // 無駄遣い記録にも追加
-                      const wasteRecord = {
+                      const wasteRecord: WasteRecord = {
                         id: data.receipts[0].id,
-                        categoryId: data.receipts[0].categoryId,
-                        description: data.receipts[0].description,
-                        type: data.receipts[0].type,
-                        amount: data.receipts[0].amount,
-                        date: new Date(data.receipts[0].date),
-                        isWasteful: data.receipts[0].isWasteful
+                        categoryId: data.receipts[0].categoryId || 'food',
+                        description: data.receipts[0].storeName || data.receipts[0].description,
+                        type: 'money',
+                        amount: data.receipts[0].totalAmount || data.receipts[0].amount,
+                        date: new Date(data.receipts[0].purchaseDate || data.receipts[0].date),
+                        isWasteful: data.receipts[0].isWasteful,
+                        tags: [],
+                        wasteReason: '',
+                        userId: userId,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
                       };
                       setWasteRecords(prev => [wasteRecord, ...prev]);
                       
