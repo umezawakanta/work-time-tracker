@@ -380,18 +380,27 @@ export class BankAccountManager {
 
     if (accounts) {
       try {
-        // 有効なJSONかどうかをチェック
-        if (accounts.startsWith('encrypted:') || !accounts.startsWith('[') && !accounts.startsWith('{')) {
-          console.warn('Invalid bank accounts data in localStorage, clearing...');
-          localStorage.removeItem('bankAccounts');
-          this.bankAccounts = [];
-        } else {
+        // 暗号化されたデータを復号化
+        if (accounts.startsWith('encrypted:')) {
+          const decryptedData = this.decryptData(accounts);
+          this.bankAccounts = decryptedData.map((account: any) => ({
+            ...account,
+            lastUpdated: new Date(account.lastUpdated),
+            createdAt: new Date(account.createdAt),
+            updatedAt: new Date(account.updatedAt)
+          }));
+        } else if (accounts.startsWith('[') || accounts.startsWith('{')) {
+          // 暗号化されていないデータ（後方互換性）
           this.bankAccounts = JSON.parse(accounts).map((account: any) => ({
             ...account,
             lastUpdated: new Date(account.lastUpdated),
             createdAt: new Date(account.createdAt),
             updatedAt: new Date(account.updatedAt)
           }));
+        } else {
+          console.warn('Invalid bank accounts data in localStorage, clearing...');
+          localStorage.removeItem('bankAccounts');
+          this.bankAccounts = [];
         }
       } catch (error) {
         console.error('Error parsing bank accounts from localStorage:', error);
@@ -402,17 +411,25 @@ export class BankAccountManager {
 
     if (transactions) {
       try {
-        if (transactions.startsWith('encrypted:') || !transactions.startsWith('[') && !transactions.startsWith('{')) {
-          console.warn('Invalid bank transactions data in localStorage, clearing...');
-          localStorage.removeItem('bankTransactions');
-          this.bankTransactions = [];
-        } else {
+        if (transactions.startsWith('encrypted:')) {
+          const decryptedData = this.decryptData(transactions);
+          this.bankTransactions = decryptedData.map((transaction: any) => ({
+            ...transaction,
+            transactionDate: new Date(transaction.transactionDate),
+            createdAt: new Date(transaction.createdAt),
+            updatedAt: new Date(transaction.updatedAt)
+          }));
+        } else if (transactions.startsWith('[') || transactions.startsWith('{')) {
           this.bankTransactions = JSON.parse(transactions).map((transaction: any) => ({
             ...transaction,
             transactionDate: new Date(transaction.transactionDate),
             createdAt: new Date(transaction.createdAt),
             updatedAt: new Date(transaction.updatedAt)
           }));
+        } else {
+          console.warn('Invalid bank transactions data in localStorage, clearing...');
+          localStorage.removeItem('bankTransactions');
+          this.bankTransactions = [];
         }
       } catch (error) {
         console.error('Error parsing bank transactions from localStorage:', error);
@@ -423,16 +440,23 @@ export class BankAccountManager {
 
     if (settings) {
       try {
-        if (settings.startsWith('encrypted:') || !settings.startsWith('[') && !settings.startsWith('{')) {
-          console.warn('Invalid bank account settings data in localStorage, clearing...');
-          localStorage.removeItem('bankAccountSettings');
-          this.bankAccountSettings = [];
-        } else {
+        if (settings.startsWith('encrypted:')) {
+          const decryptedData = this.decryptData(settings);
+          this.bankAccountSettings = decryptedData.map((setting: any) => ({
+            ...setting,
+            createdAt: new Date(setting.createdAt),
+            updatedAt: new Date(setting.updatedAt)
+          }));
+        } else if (settings.startsWith('[') || settings.startsWith('{')) {
           this.bankAccountSettings = JSON.parse(settings).map((setting: any) => ({
             ...setting,
             createdAt: new Date(setting.createdAt),
             updatedAt: new Date(setting.updatedAt)
           }));
+        } else {
+          console.warn('Invalid bank account settings data in localStorage, clearing...');
+          localStorage.removeItem('bankAccountSettings');
+          this.bankAccountSettings = [];
         }
       } catch (error) {
         console.error('Error parsing bank account settings from localStorage:', error);
@@ -443,15 +467,21 @@ export class BankAccountManager {
 
     if (alerts) {
       try {
-        if (alerts.startsWith('encrypted:') || !alerts.startsWith('[') && !alerts.startsWith('{')) {
-          console.warn('Invalid bank account alerts data in localStorage, clearing...');
-          localStorage.removeItem('bankAccountAlerts');
-          this.bankAccountAlerts = [];
-        } else {
+        if (alerts.startsWith('encrypted:')) {
+          const decryptedData = this.decryptData(alerts);
+          this.bankAccountAlerts = decryptedData.map((alert: any) => ({
+            ...alert,
+            createdAt: new Date(alert.createdAt)
+          }));
+        } else if (alerts.startsWith('[') || alerts.startsWith('{')) {
           this.bankAccountAlerts = JSON.parse(alerts).map((alert: any) => ({
             ...alert,
             createdAt: new Date(alert.createdAt)
           }));
+        } else {
+          console.warn('Invalid bank account alerts data in localStorage, clearing...');
+          localStorage.removeItem('bankAccountAlerts');
+          this.bankAccountAlerts = [];
         }
       } catch (error) {
         console.error('Error parsing bank account alerts from localStorage:', error);
