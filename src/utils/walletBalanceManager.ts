@@ -252,6 +252,7 @@ export class WalletBalanceManager {
       currentBalance: balance?.amount || 0,
       totalIncome,
       totalExpense,
+      netChange: totalIncome - totalExpense,
       transactionCount: userTransactions.length,
       lastTransactionDate: lastTransaction?.date,
       averageDailyExpense,

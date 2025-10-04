@@ -26,6 +26,7 @@ export interface WalletBalanceSummary {
   currentBalance: number;
   totalIncome: number;
   totalExpense: number;
+  netChange: number;
   transactionCount: number;
   lastTransactionDate?: Date;
   averageDailyExpense: number;

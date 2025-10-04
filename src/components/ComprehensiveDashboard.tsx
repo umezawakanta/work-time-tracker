@@ -2341,7 +2341,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 <h4>💰 財布の残高</h4>
                 <button
                   className="add-balance-button"
-                  onClick={() => setShowWalletBalanceForm(true)}
+                  onClick={() => setShowUpdateWalletBalance(true)}
                 >
                   + 残高を更新
                 </button>
@@ -2358,19 +2358,19 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   <div className="summary-item">
                     <span>今月の収入</span>
                     <span className="positive">
-                      +{formatCurrency(walletBalanceSummary.totalIncome)}
+                      +{formatCurrency(walletBalanceSummary?.totalIncome || 0)}
                     </span>
                   </div>
                   <div className="summary-item">
                     <span>今月の支出</span>
                     <span className="negative">
-                      -{formatCurrency(walletBalanceSummary.totalExpense)}
+                      -{formatCurrency(walletBalanceSummary?.totalExpense || 0)}
                     </span>
                   </div>
                   <div className="summary-item">
                     <span>純変化</span>
-                    <span className={walletBalanceSummary.netChange >= 0 ? 'positive' : 'negative'}>
-                      {walletBalanceSummary.netChange >= 0 ? '+' : ''}{formatCurrency(walletBalanceSummary.netChange)}
+                    <span className={((walletBalanceSummary as any)?.netChange || 0) >= 0 ? 'positive' : 'negative'}>
+                      {((walletBalanceSummary as any)?.netChange || 0) >= 0 ? '+' : ''}{formatCurrency((walletBalanceSummary as any)?.netChange || 0)}
                     </span>
                   </div>
                 </div>
@@ -2385,7 +2385,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 </button>
                 <button
                   className="add-transaction-button"
-                  onClick={() => setShowWalletTransactionForm(true)}
+                  onClick={() => setShowAddWalletTransaction(true)}
                 >
                   + 取引を追加
                 </button>
@@ -2489,19 +2489,19 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   <div className="summary-card">
                     <h5>総資産</h5>
                     <p className="amount positive">
-                      {formatCurrency(financialSummary.totalAssets)}
+                      {formatCurrency(financialSummary?.overview?.totalAssets || 0)}
                     </p>
                   </div>
                   <div className="summary-card">
                     <h5>総負債</h5>
                     <p className="amount negative">
-                      {formatCurrency(financialSummary.totalLiabilities)}
+                      {formatCurrency(financialSummary?.overview?.totalLiabilities || 0)}
                     </p>
                   </div>
                   <div className="summary-card">
                     <h5>純資産</h5>
-                    <p className={`amount ${financialSummary.netWorth >= 0 ? 'positive' : 'negative'}`}>
-                      {formatCurrency(financialSummary.netWorth)}
+                    <p className={`amount ${(financialSummary?.overview?.netWorth || 0) >= 0 ? 'positive' : 'negative'}`}>
+                      {formatCurrency(financialSummary?.overview?.netWorth || 0)}
                     </p>
                   </div>
                 </div>
@@ -2521,8 +2521,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 setShowAddWasteRecord(false);
               }}>
                 <div className="form-group">
-                  <label>カテゴリ</label>
-                  <select required>
+                  <label htmlFor="waste-category">カテゴリ</label>
+                  <select id="waste-category" name="category" required>
                     <option value="">選択してください</option>
                     {WASTE_CATEGORIES.map(category => (
                       <option key={category.id} value={category.id}>
@@ -2532,8 +2532,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>説明</label>
-                  <input type="text" required />
+                  <label htmlFor="waste-description">説明</label>
+                  <input type="text" id="waste-description" name="description" required />
                 </div>
                 <div className="form-group">
                   <label>タイプ</label>
@@ -2544,8 +2544,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>金額/時間/ポイント</label>
-                  <input type="number" required />
+                  <label htmlFor="waste-amount">金額/時間/ポイント</label>
+                  <input type="number" id="waste-amount" name="amount" required />
                 </div>
                 <div className="form-group">
                   <label>
@@ -2616,24 +2616,26 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                }
              }}>
                 <div className="form-group">
-                  <label>残高</label>
+                  <label htmlFor="wallet-amount">残高</label>
                   <input 
                     type="number" 
+                    id="wallet-amount"
                     name="amount" 
                     defaultValue={walletBalance?.amount || 0}
                     required 
                   />
                 </div>
                 <div className="form-group">
-                  <label>メモ</label>
-                  <textarea name="notes" defaultValue={walletBalance?.notes || ''} />
+                  <label htmlFor="wallet-notes">メモ</label>
+                  <textarea id="wallet-notes" name="notes" defaultValue={walletBalance?.notes || ''} />
                 </div>
                 <div className="form-group">
-                  <label>タグ（カンマ区切り）</label>
+                  <label htmlFor="wallet-tags">タグ（カンマ区切り）</label>
                   <input 
                     type="text" 
+                    id="wallet-tags"
                     name="tags" 
-                    defaultValue={walletBalance?.tags?.join(', ') || ''} 
+                    defaultValue={walletBalance?.tags?.join(', ') || ''}
                   />
                 </div>
                 <div className="form-actions">
@@ -2675,8 +2677,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                }
              }}>
                 <div className="form-group">
-                  <label>取引タイプ</label>
-                  <select name="type" required>
+                  <label htmlFor="type">取引タイプ</label>
+                  <select id="type" name="type" required>
                     <option value="income">収入</option>
                     <option value="expense">支出</option>
                   </select>
@@ -2690,8 +2692,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   <input type="text" id="description" name="description" required />
                 </div>
                 <div className="form-group">
-                  <label>カテゴリ</label>
-                  <select name="category" required>
+                  <label htmlFor="category">カテゴリ</label>
+                  <select id="category" name="category" required>
                     <option value="">選択してください</option>
                     {WALLET_CATEGORIES.map(category => (
                       <option key={category.id} value={category.id}>
@@ -2728,6 +2730,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   bankName: formData.get('bankName') as string,
                   accountType: formData.get('accountType') as "普通" | "当座" | "貯蓄" | "定期",
                   accountNumber: formData.get('accountNumber') as string,
+                  accountHolderName: formData.get('accountHolderName') as string,
                   branchName: formData.get('branchName') as string,
                   currentBalance: Number(formData.get('balance')),
                   notes: formData.get('notes') as string
@@ -2752,6 +2755,10 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 <div className="form-group">
                   <label htmlFor="accountNumber">口座番号</label>
                   <input type="text" id="accountNumber" name="accountNumber" required />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="accountHolderName">口座名義人</label>
+                  <input type="text" id="accountHolderName" name="accountHolderName" required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="branchName">支店名</label>
@@ -2788,6 +2795,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   bankName: formData.get('bankName') as string,
                   accountType: formData.get('accountType') as "普通" | "当座" | "貯蓄" | "定期",
                   accountNumber: formData.get('accountNumber') as string,
+                  accountHolderName: formData.get('accountHolderName') as string,
                   branchName: formData.get('branchName') as string,
                   currentBalance: Number(formData.get('balance')),
                   notes: formData.get('notes') as string
@@ -2813,6 +2821,10 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 <div className="form-group">
                   <label htmlFor="update-accountNumber">口座番号</label>
                   <input type="text" id="update-accountNumber" name="accountNumber" defaultValue={editingBankAccount.accountNumber} required />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="update-accountHolderName">口座名義人</label>
+                  <input type="text" id="update-accountHolderName" name="accountHolderName" defaultValue={editingBankAccount.accountHolderName || ''} required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="update-branchName">支店名</label>
