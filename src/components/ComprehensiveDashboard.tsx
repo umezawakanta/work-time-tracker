@@ -113,6 +113,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [wasteGoals, setWasteGoals] = useState<WasteGoal[]>([]);
   const [wasteAlerts, setWasteAlerts] = useState<WasteAlert[]>([]);
   const [receiptRecords, setReceiptRecords] = useState<any[]>([]);
+  const [receipts, setReceipts] = useState<any[]>([]);
   const [showAddWasteRecord, setShowAddWasteRecord] = useState(false);
   const [showAddWasteGoal, setShowAddWasteGoal] = useState(false);
   const [showAddReceipt, setShowAddReceipt] = useState(false);
@@ -696,6 +697,30 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       setWasteRecords(wasteRecordsData);
       setWasteGoals(wasteGoalsData);
       setWasteAlerts(wasteAlertsData);
+
+      // レシートデータをサーバーから取得
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const response = await fetch('/api/receipts', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.receipts) {
+              setReceipts(data.receipts);
+              setReceiptRecords(data.receipts);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('レシートデータの取得エラー:', error);
+      }
 
       // 財布の残高データ
       await walletBalanceManager.loadFromServer(userId);
@@ -2779,39 +2804,56 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   }
 
                   try {
-                    // レシート情報を登録
-                    const receiptData = {
-                      id: Date.now().toString(),
-                      categoryId: 'convenience',
-                      description: `ファミリーマート ${storeName.trim()}`,
-                      type: 'money' as const,
-                      amount: totalAmount,
-                      date: new Date(purchaseDate),
-                      isWasteful: totalAmount > 1000, // 1000円以上は無駄遣いとして判定
-                      items: items,
-                      paymentMethod: paymentMethod,
-                      notes: notes?.trim() || '',
-                      storeName: storeName.trim(),
-                      createdAt: new Date()
-                    };
+                    // サーバーにレシートデータを保存
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                      alert('認証が必要です');
+                      return;
+                    }
 
-                    // レシートデータを保存
-                    setReceiptRecords(prev => [receiptData, ...prev]);
-                    
-                    // 無駄遣い記録にも追加
-                    const wasteRecord = {
-                      id: receiptData.id,
-                      categoryId: receiptData.categoryId,
-                      description: receiptData.description,
-                      type: receiptData.type,
-                      amount: receiptData.amount,
-                      date: receiptData.date,
-                      isWasteful: receiptData.isWasteful
-                    };
-                    setWasteRecords(prev => [wasteRecord, ...prev]);
-                    
-                    setShowAddReceipt(false);
-                    alert('レシートを登録しました');
+                    const response = await fetch('/api/receipts', {
+                      method: 'POST',
+                      headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        storeName: storeName.trim(),
+                        purchaseDate,
+                        totalAmount,
+                        items,
+                        paymentMethod,
+                        notes: notes?.trim() || ''
+                      })
+                    });
+
+                    if (response.ok) {
+                      const data = await response.json();
+                      if (data.success) {
+                        // ローカルステートも更新
+                        setReceipts(prev => [data.receipts[0], ...prev]);
+                        setReceiptRecords(prev => [data.receipts[0], ...prev]);
+                        
+                        // 無駄遣い記録にも追加
+                        const wasteRecord = {
+                          id: data.receipts[0].id,
+                          categoryId: data.receipts[0].categoryId,
+                          description: data.receipts[0].description,
+                          type: data.receipts[0].type,
+                          amount: data.receipts[0].amount,
+                          date: new Date(data.receipts[0].date),
+                          isWasteful: data.receipts[0].isWasteful
+                        };
+                        setWasteRecords(prev => [wasteRecord, ...prev]);
+                        
+                        setShowAddReceipt(false);
+                        alert('レシートを登録しました');
+                      } else {
+                        alert(data.message || 'レシートの登録に失敗しました');
+                      }
+                    } else {
+                      alert('レシートの登録に失敗しました');
+                    }
                   } catch (error) {
                     console.error('レシート登録エラー:', error);
                     alert('レシートの登録に失敗しました');
@@ -3325,14 +3367,15 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
         {/* 金融残高カレンダー */}
         {showWalletCalendar && (
           <>
-            {console.log("Passing bank accounts to calendar:", bankAccounts)}
-            <WalletBalanceCalendar
-              userId={userId}
-              onClose={() => setShowWalletCalendar(false)}
-              initialBalance={walletBalance?.amount || 0}
-              transactions={walletTransactions}
-              bankAccounts={bankAccounts}
-            />
+             {console.log("Passing bank accounts to calendar:", bankAccounts)}
+             <WalletBalanceCalendar
+               userId={userId}
+               onClose={() => setShowWalletCalendar(false)}
+               initialBalance={walletBalance?.amount || 0}
+               transactions={walletTransactions}
+               bankAccounts={bankAccounts}
+               receipts={receipts}
+             />
           </>
         )}
       </div>

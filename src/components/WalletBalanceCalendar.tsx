@@ -13,6 +13,7 @@ interface WalletBalanceCalendarProps {
   initialBalance?: number;
   transactions?: WalletTransaction[];
   bankAccounts?: BankAccount[];
+  receipts?: any[];
 }
 
 const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({ 
@@ -20,7 +21,8 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   onClose, 
   initialBalance = 0, 
   transactions: initialTransactions = [],
-  bankAccounts = []
+  bankAccounts = [],
+  receipts = []
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
@@ -97,11 +99,25 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     });
   };
 
+  const getReceiptsForDate = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    return receipts.filter(receipt => {
+      const receiptDate = new Date(receipt.purchaseDate);
+      return receiptDate.toISOString().split('T')[0] === dateStr;
+    });
+  };
+
   const getDailyBalance = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
     const dayTransactions = transactions.filter(transaction => {
       const transactionDate = new Date(transaction.date);
       return transactionDate.toISOString().split('T')[0] === dateStr;
+    });
+
+    // レシートの支出も含める
+    const dayReceipts = receipts.filter(receipt => {
+      const receiptDate = new Date(receipt.purchaseDate);
+      return receiptDate.toISOString().split('T')[0] === dateStr;
     });
 
     let balance = 0;
@@ -111,6 +127,11 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       } else {
         balance -= transaction.amount;
       }
+    });
+
+    // レシートの支出を追加
+    dayReceipts.forEach(receipt => {
+      balance -= receipt.totalAmount;
     });
 
     return balance;
@@ -123,6 +144,12 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       return transactionDate.toISOString().split('T')[0] <= dateStr;
     });
 
+    // レシートの支出も含める
+    const dayReceipts = receipts.filter(receipt => {
+      const receiptDate = new Date(receipt.purchaseDate);
+      return receiptDate.toISOString().split('T')[0] <= dateStr;
+    });
+
     // 財布の残高を計算
     let walletBalance = initialBalance;
     dayTransactions.forEach(transaction => {
@@ -131,6 +158,11 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       } else {
         walletBalance -= transaction.amount;
       }
+    });
+
+    // レシートの支出を追加
+    dayReceipts.forEach(receipt => {
+      walletBalance -= receipt.totalAmount;
     });
 
     // 銀行口座の残高を追加
@@ -181,21 +213,26 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
       const dayTransactions = getTransactionsForDate(date);
+      const dayReceipts = getReceiptsForDate(date);
       const dailyBalance = getDailyBalance(date);
       const cumulativeBalance = getCumulativeBalance(date);
       const isToday = date.toDateString() === new Date().toDateString();
       const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+      const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0;
 
       days.push(
         <div
           key={day}
-          className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${dayTransactions.length > 0 ? 'has-transactions' : ''}`}
+          className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasActivity ? 'has-transactions' : ''}`}
           onClick={() => handleDateClick(date)}
         >
           <span className="day-number">{day}</span>
-          {dayTransactions.length > 0 && (
+          {hasActivity && (
             <div className="day-transactions">
-              <div className="transaction-count">{dayTransactions.length}件</div>
+              <div className="transaction-count">
+                {dayTransactions.length > 0 && `${dayTransactions.length}件`}
+                {dayReceipts.length > 0 && `🏪${dayReceipts.length}件`}
+              </div>
               <div className={`daily-balance ${dailyBalance >= 0 ? 'positive' : 'negative'}`}>
                 {dailyBalance >= 0 ? '+' : ''}{formatCurrency(dailyBalance)}
               </div>
@@ -273,27 +310,67 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
 
       {selectedDate && (
         <div className="selected-date-info">
-          <h3>{selectedDate.toLocaleDateString('ja-JP')} の取引</h3>
-          {selectedDateTransactions.length > 0 ? (
-            <div className="transactions-list">
-              {selectedDateTransactions.map((transaction) => (
-                <div key={transaction.id} className={`transaction-item ${transaction.type}`}>
-                  <div className="transaction-icon">
-                    {transaction.type === 'income' ? '💰' : '💸'}
+          <h3>{selectedDate.toLocaleDateString('ja-JP')} の取引・レシート</h3>
+          {(() => {
+            const dayTransactions = getTransactionsForDate(selectedDate);
+            const dayReceipts = getReceiptsForDate(selectedDate);
+            const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0;
+
+            if (!hasActivity) {
+              return <p>この日の取引・レシートはありません</p>;
+            }
+
+            return (
+              <div className="activity-list">
+                {/* 取引 */}
+                {dayTransactions.length > 0 && (
+                  <div className="transactions-section">
+                    <h4>💰 取引</h4>
+                    <div className="transactions-list">
+                      {dayTransactions.map((transaction) => (
+                        <div key={transaction.id} className={`transaction-item ${transaction.type}`}>
+                          <div className="transaction-icon">
+                            {transaction.type === 'income' ? '💰' : '💸'}
+                          </div>
+                          <div className="transaction-info">
+                            <div className="transaction-description">{transaction.description}</div>
+                            <div className="transaction-category">{transaction.category}</div>
+                          </div>
+                          <div className={`transaction-amount ${transaction.type}`}>
+                            {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="transaction-info">
-                    <div className="transaction-description">{transaction.description}</div>
-                    <div className="transaction-category">{transaction.category}</div>
+                )}
+
+                {/* レシート */}
+                {dayReceipts.length > 0 && (
+                  <div className="receipts-section">
+                    <h4>🏪 レシート</h4>
+                    <div className="receipts-list">
+                      {dayReceipts.map((receipt) => (
+                        <div key={receipt.id} className="receipt-item">
+                          <div className="receipt-icon">🏪</div>
+                          <div className="receipt-info">
+                            <div className="receipt-store">{receipt.storeName}</div>
+                            <div className="receipt-items">
+                              {receipt.items.slice(0, 2).join(', ')}
+                              {receipt.items.length > 2 && ` 他${receipt.items.length - 2}件`}
+                            </div>
+                          </div>
+                          <div className="receipt-amount">
+                            -{formatCurrency(receipt.totalAmount)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className={`transaction-amount ${transaction.type}`}>
-                    {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p>この日の取引はありません</p>
-          )}
+                )}
+              </div>
+            );
+          })()}
           <button 
             className="add-transaction-button"
             onClick={() => setShowAddTransaction(true)}
