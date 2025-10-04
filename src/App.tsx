@@ -34,10 +34,8 @@ import BadgeNotification from "./components/BadgeNotification";
 import CharacterInteractionOverlay from "./components/CharacterInteractionOverlay";
 import { CharacterInteractionManager } from "./utils/characterInteractionManager";
 import { CharacterStateManager } from "./utils/characterStateManager";
-import WasteAnalysisDashboard from "./components/WasteAnalysisDashboard";
 import WasteRecordForm from "./components/WasteRecordForm";
 import WasteGoalForm from "./components/WasteGoalForm";
-import { WasteAnalysisManager } from "./utils/wasteAnalysisManager";
 import CashBalanceWidget from "./components/CashBalanceWidget";
 import CashBalanceUpdateForm from "./components/CashBalanceUpdateForm";
 import CashTransactionHistory from "./components/CashTransactionHistory";
@@ -155,9 +153,7 @@ interface AppProps {
   handleLogin: (e: React.FormEvent) => Promise<void>;
   handleRegister: (e: React.FormEvent) => Promise<void>;
   handleLogout: () => void;
-  verifyToken: (token: string) => Promise<void>;
   // Setter functions for opening modals (state managed in AppWithProviders)
-  setShowWasteAnalysis: (show: boolean) => void;
   setShowCashBalanceUpdate: (show: boolean) => void;
   setShowCashTransactionHistory: (show: boolean) => void;
   setShowBankAccountUpdate: (show: boolean) => void;
@@ -196,8 +192,6 @@ function App({
   handleLogin,
   handleRegister,
   handleLogout,
-  verifyToken,
-  setShowWasteAnalysis,
   setShowCashBalanceUpdate,
   setShowCashTransactionHistory,
   setShowBankAccountUpdate,
@@ -538,11 +532,6 @@ function App({
   const [showSoundApp, setShowSoundApp] = useState(false);
   const [showDocs, setShowDocs] = useState(false);
 
-  // 無駄遣い監視機能の状態（propsから受け取る）
-  // showWasteAnalysis, setShowWasteAnalysis
-  // showWasteRecordForm, setShowWasteRecordForm  
-  // showWasteGoalForm, setShowWasteGoalForm
-  // handleWasteRecordSave, handleWasteGoalSave
 
 
 
@@ -6632,7 +6621,6 @@ User Agent: ${userAgent}
                       <div className="dashboard-buttons">
                         <button 
                           className="open-dashboard-button"
-                          onClick={() => setShowWasteAnalysis(true)}
                         >
                           📊 無駄遣い分析
                         </button>
@@ -7183,17 +7171,9 @@ const AppWithProviders = () => {
     }
   };
 
-  // 無駄遣い監視システムの状態
-  const [showWasteAnalysis, setShowWasteAnalysis] = useState(false);
   const [showWasteRecordForm, setShowWasteRecordForm] = useState(false);
   const [showWasteGoalForm, setShowWasteGoalForm] = useState(false);
-  const wasteAnalysisManager = WasteAnalysisManager.getInstance();
 
-  // 統合ダッシュボードの状態 - 独立したコンポーネント
-  // const [showComprehensiveDashboard, setShowComprehensiveDashboard] = useState(false);
-  // const assetLiabilityManager = AssetLiabilityManager.getInstance();
-  // const actionHistoryManager = ActionHistoryManager.getInstance();
-  // const futurePlanningManager = FuturePlanningManager.getInstance();
 
   // 現金残高管理システムの状態
   const [showCashBalance, setShowCashBalance] = useState(false);
@@ -7229,13 +7209,11 @@ const AppWithProviders = () => {
   // 無駄遣い記録保存処理
   const handleWasteRecordSave = (record: any) => {
     setShowWasteRecordForm(false);
-    // データの再読み込みはWasteAnalysisDashboard内で実行される
   };
 
   // 無駄遣い目標保存処理
   const handleWasteGoalSave = (goal: any) => {
     setShowWasteGoalForm(false);
-    // データの再読み込みはWasteAnalysisDashboard内で実行される
   };
 
   // 現金残高更新処理
@@ -7460,7 +7438,6 @@ const AppWithProviders = () => {
               user={user}
               isLoggedIn={isLoggedIn}
               isCheckingAuth={false}
-              setShowWasteAnalysis={setShowWasteAnalysis}
               setShowCashBalanceUpdate={setShowCashBalanceUpdate}
               setShowCashTransactionHistory={setShowCashTransactionHistory}
               setShowBankAccountUpdate={setShowBankAccountUpdate}
@@ -7559,7 +7536,6 @@ const AppWithProviders = () => {
                 setUser(null);
                 setMessage("");
               }}
-              verifyToken={verifyToken}
             />
           </MoodLogProvider>
         </TimerPresetProvider>
@@ -7573,15 +7549,7 @@ const AppWithProviders = () => {
         />
       )}
 
-      {/* 統合ダッシュボード - 独立したコンポーネント */}
 
-      {/* 無駄遣い監視ダッシュボード */}
-      {showWasteAnalysis && user && (
-        <WasteAnalysisDashboard
-          userId={user.id}
-          onClose={() => setShowWasteAnalysis(false)}
-        />
-      )}
 
       {/* 無駄遣い記録フォーム */}
       {showWasteRecordForm && user && (
