@@ -30,7 +30,7 @@ const ensureDatabaseConnection = async () => {
   }
   console.warn('[admin/users] Database not connected, attempting to connect...');
   try {
-    const MONGODB_URI = process.env.MONGODB_URI;
+    const MONGODB_URI = process.env['MONGODB_URI'];
     if (!MONGODB_URI) {
       throw new Error("MONGODB_URI environment variable is required but not set.");
     }
@@ -205,7 +205,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(500).json({
       success: false,
       message: 'ユーザー一覧取得中にエラーが発生しました',
-      error: process.env.NODE_ENV === 'development'
+      error: process.env['NODE_ENV'] === 'development'
         ? (error instanceof Error ? error.message : String(error))
         : 'Internal server error',
     } as UsersListResponse);
