@@ -1,4 +1,4 @@
-import { mongoose: mongooseDB, ensureDatabaseConnection: ensureDBConn, verifyJWT: verifyAuth, handleAPIError: handleAPIError } from '../utils/database.js';
+import { mongoose as mongooseDB, ensureDatabaseConnection, verifyJWT as verifyAuth, handleError } from '../utils/database.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { VercelRequest, VercelResponse } from '@vercel/node';
@@ -31,7 +31,7 @@ BookSchema.pre('save', function(next) {
   next();
 });
 
-const Book = mongooseDB.models.Book || mongooseDB.model('Book', BookSchema);
+const Book = mongooseDB.models['Book'] || mongooseDB.model('Book', BookSchema);
 
 // CORS設定
 const setCorsHeaders = (res, origin) => {
@@ -58,12 +58,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     
     // Ensure database connection
-    await ensureDBConn();
+    await ensureDatabaseConnection();
 
     // Verify JWT token
     const userInfo = await verifyAuth(req);
     if (!userInfo) {
-      return handleAPIError(res, { statusCode: 401, message: '認証が必要です' });
+      return handleError(res, { statusCode: 401, message: '認証が必要です' });
     }
 
     const { id } = req.query;
