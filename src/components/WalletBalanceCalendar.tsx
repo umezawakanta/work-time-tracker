@@ -75,7 +75,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   // データを読み込み
   useEffect(() => {
     walletManager.loadFromLocalStorage();
-    bankAccountManager.loadFromLocalStorage();
+    bankAccountManager.loadFromServer(userId);
   }, [userId]);
 
   // 財布の残高を取得

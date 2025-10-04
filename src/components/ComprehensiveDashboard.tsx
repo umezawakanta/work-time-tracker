@@ -685,8 +685,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       setWalletBalanceSummary(walletBalanceSummaryData);
       setWalletBalanceAnalysis(walletBalanceAnalysisData);
 
-      // 銀行口座データ
-      bankAccountManager.loadFromLocalStorage();
+      // 銀行口座データ（サーバーから読み込み）
+      await bankAccountManager.loadFromServer(userId);
       const bankAccountData = bankAccountManager.getBankAccount(userId);
       setBankAccounts(bankAccountData ? [bankAccountData] : []);
 
@@ -2452,9 +2452,9 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                       </button>
                       <button
                         className="delete-button"
-                        onClick={() => {
+                        onClick={async () => {
                           if (confirm('この口座を削除しますか？')) {
-                            bankAccountManager.deleteBankAccount(account.id);
+                            await bankAccountManager.deleteBankAccount(account.id);
                             loadAllData();
                           }
                         }}
@@ -2732,7 +2732,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   currentBalance: Number(formData.get('balance')),
                   notes: formData.get('notes') as string
                 };
-                bankAccountManager.createBankAccount(userId, accountData);
+                await bankAccountManager.createBankAccount(userId, accountData);
                 loadAllData();
                 setShowAddBankAccount(false);
               }}>
@@ -2792,7 +2792,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   currentBalance: Number(formData.get('balance')),
                   notes: formData.get('notes') as string
                 };
-                bankAccountManager.updateBankAccount(editingBankAccount.id, accountData);
+                await bankAccountManager.updateBankAccount(editingBankAccount.id, accountData);
                 loadAllData();
                 setShowBankAccountUpdate(false);
                 setEditingBankAccount(null);

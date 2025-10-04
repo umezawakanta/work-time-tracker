@@ -39,29 +39,45 @@ export class BankAccountManager {
   }
 
   // 銀行口座を作成
-  public createBankAccount(
+  public async createBankAccount(
     userId: string, 
     accountData: Partial<BankAccount>
-  ): BankAccount {
-    const newAccount: BankAccount = {
-      id: this.generateId(),
-      userId,
+  ): Promise<BankAccount | null> {
+    const newAccountData = {
       bankName: accountData.bankName || DEFAULT_BANK_ACCOUNT.bankName,
       branchName: accountData.branchName || DEFAULT_BANK_ACCOUNT.branchName,
       accountType: accountData.accountType || DEFAULT_BANK_ACCOUNT.accountType,
       accountNumber: accountData.accountNumber || '',
       accountHolderName: accountData.accountHolderName || '',
       currentBalance: accountData.currentBalance || 0,
-      lastUpdated: new Date(),
-      notes: accountData.notes || DEFAULT_BANK_ACCOUNT.notes,
-      isActive: accountData.isActive !== undefined ? accountData.isActive : true,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      notes: accountData.notes || DEFAULT_BANK_ACCOUNT.notes
     };
 
-    this.bankAccounts.push(newAccount);
-    this.saveToLocalStorage();
-    return newAccount;
+    // サーバーに保存を試行
+    const success = await this.saveToServer(userId, newAccountData, 'account');
+    
+    if (success) {
+      // サーバーから最新データを取得して返す
+      const accounts = this.bankAccounts.filter(account => 
+        account.userId === userId && account.isActive
+      );
+      return accounts[0] || null;
+    } else {
+      // フォールバック：ローカルストレージに保存
+      const newAccount: BankAccount = {
+        id: this.generateId(),
+        userId,
+        ...newAccountData,
+        lastUpdated: new Date(),
+        isActive: accountData.isActive !== undefined ? accountData.isActive : true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      this.bankAccounts.push(newAccount);
+      this.saveToLocalStorage();
+      return newAccount;
+    }
   }
 
   // 銀行口座を更新
@@ -354,6 +370,100 @@ export class BankAccountManager {
     if (alert) {
       alert.isRead = true;
       this.saveToLocalStorage();
+    }
+  }
+
+  // サーバーからデータを読み込み
+  public async loadFromServer(userId: string): Promise<void> {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.warn('No access token found');
+        return;
+      }
+
+      const response = await fetch('/api/bank-accounts', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          this.bankAccounts = (data.accounts || []).map((account: any) => ({
+            id: account.id,
+            userId: account.userId || userId,
+            bankName: account.bankName,
+            branchName: account.branchName,
+            accountType: account.accountType,
+            accountNumber: account.accountNumber,
+            accountHolderName: account.accountHolderName,
+            currentBalance: account.currentBalance,
+            lastUpdated: new Date(account.lastUpdated),
+            notes: account.notes,
+            isActive: account.isActive,
+            createdAt: new Date(account.createdAt),
+            updatedAt: new Date(account.updatedAt)
+          }));
+
+          this.bankTransactions = (data.transactions || []).map((transaction: any) => ({
+            id: transaction.id,
+            userId: transaction.userId || userId,
+            bankAccountId: transaction.bankAccountId,
+            type: transaction.type,
+            amount: transaction.amount,
+            description: transaction.description,
+            category: transaction.category,
+            counterparty: transaction.counterparty,
+            transactionDate: new Date(transaction.transactionDate),
+            balanceAfter: transaction.balanceAfter,
+            createdAt: new Date(transaction.createdAt || transaction.transactionDate),
+            updatedAt: new Date(transaction.updatedAt || transaction.transactionDate)
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load bank account data from server:', error);
+      // フォールバックとしてローカルストレージから読み込み
+      this.loadFromLocalStorage();
+    }
+  }
+
+  // サーバーにデータを保存
+  public async saveToServer(userId: string, data: any, type: 'account' | 'transaction'): Promise<boolean> {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.warn('No access token found');
+        return false;
+      }
+
+      const url = '/api/bank-accounts';
+      const method = type === 'account' ? 'POST' : 'PUT';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          // サーバーから最新データを再読み込み
+          await this.loadFromServer(userId);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('Failed to save bank account data to server:', error);
+      return false;
     }
   }
 
