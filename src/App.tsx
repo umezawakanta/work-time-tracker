@@ -7455,22 +7455,9 @@ const AppWithProviders = () => {
 
 
 
-      {/* 現金残高更新フォーム */}
-      {showCashBalanceUpdate && user && (
-        <CashBalanceUpdateForm
-          userId={user.id}
-          onSave={handleCashBalanceUpdate}
-          onCancel={() => setShowCashBalanceUpdate(false)}
-        />
-      )}
+      {/* 現金残高更新フォーム - 統合ダッシュボードに移動済み */}
 
-      {/* 現金取引履歴 */}
-      {showCashTransactionHistory && user && (
-        <CashTransactionHistory
-          userId={user.id}
-          onClose={() => setShowCashTransactionHistory(false)}
-        />
-      )}
+      {/* 現金取引履歴 - 統合ダッシュボードに移動済み */}
 
       {/* 銀行口座更新フォーム */}
       {showBankAccountUpdate && user && selectedBankAccountId && (

@@ -7,6 +7,7 @@ import { FuturePlanningManager } from "../utils/futurePlanningManager";
 import { WasteAnalysisManager } from "../utils/wasteAnalysisManager";
 import { FinancialOverviewManager } from "../utils/financialOverviewManager";
 import { WalletBalanceManager } from "../utils/walletBalanceManager";
+import { BankAccountManager } from "../utils/bankAccountManager";
 import WalletBalanceCalendar from "./WalletBalanceCalendar";
 import {
   AssetLiabilitySummary,
@@ -73,7 +74,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   onClose,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    "overview" | "today" | "thisweek" | "thismonth" | "urgent" | "goals" | "assets" | "actions" | "plans" | "waste" | "wallet" | "financial"
+    "overview" | "today" | "thisweek" | "thismonth" | "urgent" | "goals" | "assets" | "actions" | "plans" | "waste" | "wallet" | "financial" | "banking"
   >("overview");
   const [selectedPeriod, setSelectedPeriod] = useState<
     "week" | "month" | "year"
@@ -112,6 +113,10 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [showAddWalletTransaction, setShowAddWalletTransaction] = useState(false);
   const [showUpdateWalletBalance, setShowUpdateWalletBalance] = useState(false);
   const [showWalletCalendar, setShowWalletCalendar] = useState(false);
+  const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+  const [showAddBankAccount, setShowAddBankAccount] = useState(false);
+  const [showBankAccountUpdate, setShowBankAccountUpdate] = useState(false);
+  const [editingBankAccount, setEditingBankAccount] = useState<any>(null);
   const [financialSummary, setFinancialSummary] =
     useState<FinancialSummary | null>(null);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
@@ -136,6 +141,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const wasteAnalysisManager = WasteAnalysisManager.getInstance();
   const financialOverviewManager = FinancialOverviewManager.getInstance();
   const walletBalanceManager = WalletBalanceManager.getInstance();
+  const bankAccountManager = BankAccountManager.getInstance();
 
   useEffect(() => {
     loadAllData();
@@ -679,6 +685,11 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       setWalletBalanceSummary(walletBalanceSummaryData);
       setWalletBalanceAnalysis(walletBalanceAnalysisData);
 
+      // 銀行口座データ
+      bankAccountManager.loadFromLocalStorage();
+      const bankAccountData = bankAccountManager.getBankAccount(userId);
+      setBankAccounts(bankAccountData ? [bankAccountData] : []);
+
       // 財務概要データ
       const financialData =
         financialOverviewManager.getFinancialSummary(userId);
@@ -884,6 +895,13 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           title="財務情報を表示"
         >
           📈 財務
+        </button>
+        <button
+          className={`tab ${activeTab === "banking" ? "active" : ""}`}
+          onClick={() => setActiveTab("banking")}
+          title="銀行口座を表示"
+        >
+          🏦 銀行
         </button>
       </div>
 
@@ -2696,6 +2714,200 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     キャンセル
                   </button>
                   <button type="submit">追加</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* 銀行口座タブ */}
+        {activeTab === "banking" && (
+          <div className="banking-tab">
+            <div className="banking-header">
+              <h3>銀行口座管理</h3>
+              <button
+                className="add-bank-account-button"
+                onClick={() => setShowAddBankAccount(true)}
+              >
+                + 口座を追加
+              </button>
+            </div>
+
+            <div className="bank-accounts-grid">
+              {bankAccounts.map((account) => (
+                <div key={account.id} className="bank-account-card">
+                  <div className="account-header">
+                    <h4>{account.bankName}</h4>
+                    <span className="account-type">{account.accountType}</span>
+                  </div>
+                  <div className="account-balance">
+                    <span className="balance-amount">
+                      {account.balance?.toLocaleString() || 0}円
+                    </span>
+                    <span className="balance-label">残高</span>
+                  </div>
+                  <div className="account-details">
+                    <p>口座番号: {account.accountNumber}</p>
+                    <p>支店名: {account.branchName}</p>
+                  </div>
+                  <div className="account-actions">
+                    <button
+                      className="update-button"
+                      onClick={() => {
+                        setEditingBankAccount(account);
+                        setShowBankAccountUpdate(true);
+                      }}
+                    >
+                      更新
+                    </button>
+                    <button
+                      className="delete-button"
+                      onClick={() => {
+                        if (confirm('この口座を削除しますか？')) {
+                          bankAccountManager.deleteBankAccount(account.id);
+                          loadAllData();
+                        }
+                      }}
+                    >
+                      削除
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {bankAccounts.length === 0 && (
+              <div className="empty-state">
+                <p>銀行口座が登録されていません</p>
+                <button
+                  className="add-first-account-button"
+                  onClick={() => setShowAddBankAccount(true)}
+                >
+                  最初の口座を追加
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 銀行口座追加フォーム */}
+        {showAddBankAccount && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>銀行口座を追加</h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                const accountData = {
+                  bankName: formData.get('bankName') as string,
+                  accountType: formData.get('accountType') as "普通" | "当座" | "貯蓄" | "定期",
+                  accountNumber: formData.get('accountNumber') as string,
+                  branchName: formData.get('branchName') as string,
+                  balance: Number(formData.get('balance')),
+                  notes: formData.get('notes') as string
+                };
+                bankAccountManager.createBankAccount(userId, accountData);
+                loadAllData();
+                setShowAddBankAccount(false);
+              }}>
+                <div className="form-group">
+                  <label>銀行名</label>
+                  <input type="text" name="bankName" required />
+                </div>
+                <div className="form-group">
+                  <label>口座種別</label>
+                  <select name="accountType" required>
+                    <option value="普通">普通預金</option>
+                    <option value="当座">当座預金</option>
+                    <option value="定期">定期預金</option>
+                    <option value="貯蓄">貯蓄預金</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>口座番号</label>
+                  <input type="text" name="accountNumber" required />
+                </div>
+                <div className="form-group">
+                  <label>支店名</label>
+                  <input type="text" name="branchName" required />
+                </div>
+                <div className="form-group">
+                  <label>残高</label>
+                  <input type="number" name="balance" defaultValue={0} />
+                </div>
+                <div className="form-group">
+                  <label>メモ</label>
+                  <textarea name="notes" />
+                </div>
+                <div className="form-actions">
+                  <button type="button" onClick={() => setShowAddBankAccount(false)}>
+                    キャンセル
+                  </button>
+                  <button type="submit">追加</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* 銀行口座更新フォーム */}
+        {showBankAccountUpdate && editingBankAccount && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>銀行口座を更新</h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                const accountData = {
+                  bankName: formData.get('bankName') as string,
+                  accountType: formData.get('accountType') as "普通" | "当座" | "貯蓄" | "定期",
+                  accountNumber: formData.get('accountNumber') as string,
+                  branchName: formData.get('branchName') as string,
+                  balance: Number(formData.get('balance')),
+                  notes: formData.get('notes') as string
+                };
+                bankAccountManager.updateBankAccount(editingBankAccount.id, accountData);
+                loadAllData();
+                setShowBankAccountUpdate(false);
+                setEditingBankAccount(null);
+              }}>
+                <div className="form-group">
+                  <label>銀行名</label>
+                  <input type="text" name="bankName" defaultValue={editingBankAccount.bankName} required />
+                </div>
+                <div className="form-group">
+                  <label>口座種別</label>
+                  <select name="accountType" defaultValue={editingBankAccount.accountType} required>
+                    <option value="普通">普通預金</option>
+                    <option value="当座">当座預金</option>
+                    <option value="定期">定期預金</option>
+                    <option value="貯蓄">貯蓄預金</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>口座番号</label>
+                  <input type="text" name="accountNumber" defaultValue={editingBankAccount.accountNumber} required />
+                </div>
+                <div className="form-group">
+                  <label>支店名</label>
+                  <input type="text" name="branchName" defaultValue={editingBankAccount.branchName} required />
+                </div>
+                <div className="form-group">
+                  <label>残高</label>
+                  <input type="number" name="balance" defaultValue={editingBankAccount.balance || 0} />
+                </div>
+                <div className="form-group">
+                  <label>メモ</label>
+                  <textarea name="notes" defaultValue={editingBankAccount.notes || ''} />
+                </div>
+                <div className="form-actions">
+                  <button type="button" onClick={() => {
+                    setShowBankAccountUpdate(false);
+                    setEditingBankAccount(null);
+                  }}>
+                    キャンセル
+                  </button>
+                  <button type="submit">更新</button>
                 </div>
               </form>
             </div>

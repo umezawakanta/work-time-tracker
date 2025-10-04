@@ -155,7 +155,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // JWTトークンを検証してユーザー情報を取得
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    const jwtSecret = process.env['JWT_SECRET'] || 'fallback-secret-for-development';
     let userInfo: any;
     try {
       const token = authHeader.substring(7);
