@@ -1,0 +1,350 @@
+/* 財布の残高カレンダーのスタイル */
+
+.wallet-balance-calendar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.close-button {
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background: #ff3742;
+}
+
+.calendar-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-navigation h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.calendar-navigation button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.calendar-navigation button:hover {
+  background: #0056b3;
+}
+
+.calendar-grid {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.weekday {
+  padding: 12px;
+  text-align: center;
+  font-weight: bold;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #dee2e6;
+}
+
+.calendar-day {
+  background: white;
+  min-height: 100px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.calendar-day:hover {
+  background: #f8f9fa;
+}
+
+.calendar-day.today {
+  background: #e3f2fd;
+  border: 2px solid #2196f3;
+}
+
+.calendar-day.selected {
+  background: #fff3e0;
+  border: 2px solid #ff9800;
+}
+
+.calendar-day.has-transactions {
+  background: #f3e5f5;
+}
+
+.calendar-day.prev-month,
+.calendar-day.next-month {
+  background: #f8f9fa;
+  color: #adb5bd;
+}
+
+.day-number {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.day-transactions {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.transaction-count {
+  font-size: 0.7rem;
+  color: #6c757d;
+  background: #e9ecef;
+  padding: 2px 4px;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.daily-balance {
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.daily-balance.positive {
+  color: #28a745;
+  background: #d4edda;
+}
+
+.daily-balance.negative {
+  color: #dc3545;
+  background: #f8d7da;
+}
+
+.cumulative-balance {
+  font-size: 0.7rem;
+  color: #495057;
+  text-align: center;
+  margin-top: auto;
+  padding: 2px 4px;
+  background: #e9ecef;
+  border-radius: 3px;
+}
+
+.cumulative-balance.has-balance {
+  background: #d4edda;
+  color: #155724;
+  font-weight: bold;
+}
+
+.selected-date-info {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.selected-date-info h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.transactions-list {
+  margin-bottom: 15px;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background: #f8f9fa;
+}
+
+.transaction-item.income {
+  border-left: 4px solid #28a745;
+}
+
+.transaction-item.expense {
+  border-left: 4px solid #dc3545;
+}
+
+.transaction-icon {
+  font-size: 1.2rem;
+  margin-right: 10px;
+}
+
+.transaction-info {
+  flex: 1;
+}
+
+.transaction-description {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.transaction-category {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.transaction-amount {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.transaction-amount.income {
+  color: #28a745;
+}
+
+.transaction-amount.expense {
+  color: #dc3545;
+}
+
+.add-transaction-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.add-transaction-button:hover {
+  background: #0056b3;
+}
+
+.calendar-legend {
+  display: flex;
+  gap: 20px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+.legend-color.has-transactions {
+  background: #f3e5f5;
+}
+
+.legend-color.today {
+  background: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.legend-color.selected {
+  background: #fff3e0;
+  border-color: #ff9800;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .wallet-balance-calendar {
+    padding: 10px;
+  }
+  
+  .calendar-day {
+    min-height: 80px;
+    padding: 4px;
+  }
+  
+  .day-number {
+    font-size: 0.9rem;
+  }
+  
+  .daily-balance,
+  .cumulative-balance {
+    font-size: 0.7rem;
+  }
+  
+  .calendar-legend {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

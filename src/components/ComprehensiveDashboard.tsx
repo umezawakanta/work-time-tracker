@@ -7,6 +7,7 @@ import { FuturePlanningManager } from "../utils/futurePlanningManager";
 import { WasteAnalysisManager } from "../utils/wasteAnalysisManager";
 import { FinancialOverviewManager } from "../utils/financialOverviewManager";
 import { WalletBalanceManager } from "../utils/walletBalanceManager";
+import WalletBalanceCalendar from "./WalletBalanceCalendar";
 import {
   AssetLiabilitySummary,
   AssetLiabilityAnalysis,
@@ -110,6 +111,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [walletBalanceAnalysis, setWalletBalanceAnalysis] = useState<WalletBalanceAnalysis | null>(null);
   const [showAddWalletTransaction, setShowAddWalletTransaction] = useState(false);
   const [showUpdateWalletBalance, setShowUpdateWalletBalance] = useState(false);
+  const [showWalletCalendar, setShowWalletCalendar] = useState(false);
   const [financialSummary, setFinancialSummary] =
     useState<FinancialSummary | null>(null);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
@@ -861,6 +863,27 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           title="目標を表示"
         >
           🎯 目標
+        </button>
+        <button
+          className={`tab ${activeTab === "waste" ? "active" : ""}`}
+          onClick={() => setActiveTab("waste")}
+          title="無駄遣い監視を表示"
+        >
+          💸 無駄遣い
+        </button>
+        <button
+          className={`tab ${activeTab === "wallet" ? "active" : ""}`}
+          onClick={() => setActiveTab("wallet")}
+          title="財布の残高を表示"
+        >
+          💰 財布
+        </button>
+        <button
+          className={`tab ${activeTab === "financial" ? "active" : ""}`}
+          onClick={() => setActiveTab("financial")}
+          title="財務情報を表示"
+        >
+          📈 財務
         </button>
       </div>
 
@@ -2323,6 +2346,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     >
                       取引を追加
                     </button>
+                    <button 
+                      className="calendar-button"
+                      onClick={() => setShowWalletCalendar(true)}
+                    >
+                      📅 カレンダー表示
+                    </button>
                   </div>
                 </div>
                 {walletBalance?.notes && (
@@ -2661,6 +2690,16 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
               </form>
             </div>
           </div>
+        )}
+
+        {/* 財布の残高カレンダー */}
+        {showWalletCalendar && (
+          <WalletBalanceCalendar
+            userId={userId}
+            onClose={() => setShowWalletCalendar(false)}
+            initialBalance={walletBalance?.amount || 0}
+            transactions={walletTransactions}
+          />
         )}
       </div>
     </div>

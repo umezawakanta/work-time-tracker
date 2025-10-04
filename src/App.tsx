@@ -34,8 +34,6 @@ import BadgeNotification from "./components/BadgeNotification";
 import CharacterInteractionOverlay from "./components/CharacterInteractionOverlay";
 import { CharacterInteractionManager } from "./utils/characterInteractionManager";
 import { CharacterStateManager } from "./utils/characterStateManager";
-import WasteRecordForm from "./components/WasteRecordForm";
-import WasteGoalForm from "./components/WasteGoalForm";
 import CashBalanceWidget from "./components/CashBalanceWidget";
 import CashBalanceUpdateForm from "./components/CashBalanceUpdateForm";
 import CashTransactionHistory from "./components/CashTransactionHistory";
@@ -775,12 +773,6 @@ function App({
       name: "設計書",
       description: "システム設計書とドキュメント",
       component: null, // 設計書ビューアーセクション
-    },
-    {
-      id: "waste-analysis",
-      name: "無駄遣い監視",
-      description: "お金・時間・労力の無駄遣いを監視・改善",
-      component: null, // 無駄遣い監視ダッシュボード
     },
   ];
 
@@ -6612,81 +6604,6 @@ User Agent: ${userAgent}
                     closeOtherFeatures={closeOtherFeatures}
                   />
                 );
-              } else if (feature.id === "waste-analysis") {
-                return (
-                  <div key={feature.id} className="waste-analysis-section">
-                    <div className="section-header">
-                      <h2>無駄遣い監視</h2>
-                      <p>お金・時間・労力の無駄遣いを監視・改善しましょう</p>
-                      <div className="dashboard-buttons">
-                        <button 
-                          className="open-dashboard-button"
-                        >
-                          📊 無駄遣い分析
-                        </button>
-                      </div>
-                    </div>
-                    
-                    {/* 現金残高ウィジェット */}
-                    {user && (
-                      <CashBalanceWidget
-                        userId={user.id}
-                        onUpdateBalance={() => setShowCashBalanceUpdate(true)}
-                        onShowTransactions={() => setShowCashTransactionHistory(true)}
-                        onShowSettings={() => {
-                          // 設定画面の実装（必要に応じて）
-                          alert('設定機能は今後実装予定です');
-                        }}
-                      />
-                    )}
-
-                    {/* 銀行口座ウィジェット */}
-                    {user && (
-                      <BankAccountWidget
-                        userId={user.id}
-                        onUpdateBalance={handleBankAccountUpdate}
-                        onShowTransactions={handleBankTransactionHistory}
-                        onShowSettings={() => {
-                          // 設定画面の実装（必要に応じて）
-                          alert('設定機能は今後実装予定です');
-                        }}
-                      />
-                    )}
-
-                    {/* カードローンウィジェット */}
-                    {user && (
-                      <CardLoanWidget
-                        userId={user.id}
-                        onUpdateBalance={handleCardLoanUpdate}
-                        onShowTransactions={handleCardLoanTransactionHistory}
-                        onShowSettings={() => {
-                          // 設定画面の実装（必要に応じて）
-                          alert('設定機能は今後実装予定です');
-                        }}
-                      />
-                    )}
-
-                    {/* PayPayカードウィジェット */}
-                    {user && (
-                      <PayPayCardWidget
-                        userId={user.id}
-                        onUpdateBalance={handlePayPayCardUpdate}
-                        onShowTransactions={handlePayPayCardTransactionHistory}
-                        onShowSettings={() => {
-                          // 設定画面の実装（必要に応じて）
-                          alert('設定機能は今後実装予定です');
-                        }}
-                      />
-                    )}
-
-                    {/* 財務統合ダッシュボード */}
-                    {user && (
-                      <FinancialOverviewDashboard
-                        userId={user.id}
-                      />
-                    )}
-                  </div>
-                );
               } else {
                 console.log("Unknown feature:", feature.name, feature.id);
                 return null;
@@ -7171,8 +7088,6 @@ const AppWithProviders = () => {
     }
   };
 
-  const [showWasteRecordForm, setShowWasteRecordForm] = useState(false);
-  const [showWasteGoalForm, setShowWasteGoalForm] = useState(false);
 
 
   // 現金残高管理システムの状態
@@ -7206,15 +7121,6 @@ const AppWithProviders = () => {
   const [showFinancialOverview, setShowFinancialOverview] = useState(false);
   const financialOverviewManager = FinancialOverviewManager.getInstance();
 
-  // 無駄遣い記録保存処理
-  const handleWasteRecordSave = (record: any) => {
-    setShowWasteRecordForm(false);
-  };
-
-  // 無駄遣い目標保存処理
-  const handleWasteGoalSave = (goal: any) => {
-    setShowWasteGoalForm(false);
-  };
 
   // 現金残高更新処理
   const handleCashBalanceUpdate = (balance: any) => {
@@ -7551,23 +7457,6 @@ const AppWithProviders = () => {
 
 
 
-      {/* 無駄遣い記録フォーム */}
-      {showWasteRecordForm && user && (
-        <WasteRecordForm
-          userId={user.id}
-          onSave={handleWasteRecordSave}
-          onCancel={() => setShowWasteRecordForm(false)}
-        />
-      )}
-
-      {/* 無駄遣い目標フォーム */}
-      {showWasteGoalForm && user && (
-        <WasteGoalForm
-          userId={user.id}
-          onSave={handleWasteGoalSave}
-          onCancel={() => setShowWasteGoalForm(false)}
-        />
-      )}
 
       {/* 現金残高更新フォーム */}
       {showCashBalanceUpdate && user && (
