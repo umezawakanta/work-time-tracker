@@ -1,6 +1,72 @@
 import mongoose from 'mongoose';
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { ensureDatabaseConnection, verifyJWT, handleError } from '../utils/database.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// データベース接続関数
+const ensureDatabaseConnection = async () => {
+  const isConnected = mongoose.connection.readyState === 1;
+  if (isConnected) {
+    return;
+  }
+  console.warn('[wallet-balance] Database not connected, attempting to connect...');
+  try {
+    const MONGODB_URI = process.env['MONGODB_URI'];
+    if (!MONGODB_URI) {
+      throw new Error("MONGODB_URI environment variable is required but not set.");
+    }
+    
+    if (MONGODB_URI === "memory://") {
+      return;
+    }
+
+    await mongoose.connect(MONGODB_URI, {
+      dbName: 'workTimeTracker',
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false,
+      connectTimeoutMS: 10000,
+      maxIdleTimeMS: 30000,
+    });
+
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('[wallet-balance] Failed to connect to database:', message);
+    throw new Error(`Database connection failed: ${message}`);
+  }
+};
+
+// JWT検証関数
+const verifyJWT = async (req: VercelRequest) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  try {
+    const token = authHeader.substring(7);
+    return jwt.verify(token, process.env['JWT_SECRET'] || 'fallback-secret-for-development') as any;
+  } catch (error) {
+    console.error('JWT verification failed:', error);
+    return null;
+  }
+};
+
+// エラーハンドリング関数
+const handleError = (res: VercelResponse, error: any, message: string = 'エラーが発生しました') => {
+  console.error('API Error:', error);
+  const statusCode = error?.statusCode || 500;
+  const errorMessage = error?.message || message;
+  
+  res.status(statusCode).json({
+    success: false,
+    message: errorMessage,
+    error: process.env['NODE_ENV'] === 'development' ? error?.stack : undefined
+  });
+};
 
 // 財布の残高スキーマ
 const WalletBalanceSchema = new mongoose.Schema({
@@ -102,7 +168,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           currency: 'JPY',
           lastUpdated: new Date().toISOString()
         },
-        transactions: transactions.map(tx => ({
+        transactions: transactions.map((tx: any) => ({
           id: tx._id.toString(),
           type: tx.type,
           amount: tx.amount,
