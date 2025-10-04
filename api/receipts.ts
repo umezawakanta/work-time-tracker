@@ -40,13 +40,15 @@ const ensureDatabaseConnection = async () => {
 // JWT認証
 const verifyJWT = async (req: VercelRequest) => {
   const authHeader = req.headers.authorization;
+  
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return null;
   }
 
   try {
     const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, process.env['JWT_SECRET'] || 'fallback-secret-for-development') as any;
+    const jwtSecret = process.env['JWT_SECRET'] || 'fallback-secret-for-development';
+    const decoded = jwt.verify(token, jwtSecret) as any;
     return decoded;
   } catch (error) {
     console.error('JWT verification failed:', error);
@@ -133,7 +135,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!userInfo) {
       return res.status(401).json({
         success: false,
-        message: '認証が必要です'
+        message: '認証が必要です',
+        error: 'Authentication required'
       });
     }
 

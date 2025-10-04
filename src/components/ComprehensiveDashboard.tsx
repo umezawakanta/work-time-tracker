@@ -8,6 +8,7 @@ import { WasteAnalysisManager } from "../utils/wasteAnalysisManager";
 import { FinancialOverviewManager } from "../utils/financialOverviewManager";
 import { WalletBalanceManager } from "../utils/walletBalanceManager";
 import { BankAccountManager } from "../utils/bankAccountManager";
+import { apiFetch } from "../utils/apiClient";
 import WalletBalanceCalendar from "./WalletBalanceCalendar";
 import {
   AssetLiabilitySummary,
@@ -700,23 +701,19 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
 
       // レシートデータをサーバーから取得
       try {
-        const token = localStorage.getItem('token');
-        if (token) {
-          const response = await fetch('/api/receipts', {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            if (data.success && data.receipts) {
-              setReceipts(data.receipts);
-              setReceiptRecords(data.receipts);
-            }
-          }
+        console.log('レシートデータ取得開始');
+        
+        const response = await apiFetch('/api/receipts', {
+          method: 'GET'
+        });
+        
+        console.log('レシート取得レスポンス:', response.status, response.statusText);
+        
+        const data = await response.json();
+        console.log('レシートデータ:', data);
+        if (data.success && data.receipts) {
+          setReceipts(data.receipts);
+          setReceiptRecords(data.receipts);
         }
       } catch (error) {
         console.error('レシートデータの取得エラー:', error);
@@ -2804,19 +2801,10 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   }
 
                   try {
-                    // サーバーにレシートデータを保存
-                    const token = localStorage.getItem('token');
-                    if (!token) {
-                      alert('認証が必要です');
-                      return;
-                    }
+                    console.log('レシート登録開始:', { storeName, purchaseDate, totalAmount, items, paymentMethod, notes });
 
-                    const response = await fetch('/api/receipts', {
+                    const response = await apiFetch('/api/receipts', {
                       method: 'POST',
-                      headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                      },
                       body: JSON.stringify({
                         storeName: storeName.trim(),
                         purchaseDate,
@@ -2827,32 +2815,31 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                       })
                     });
 
-                    if (response.ok) {
-                      const data = await response.json();
-                      if (data.success) {
-                        // ローカルステートも更新
-                        setReceipts(prev => [data.receipts[0], ...prev]);
-                        setReceiptRecords(prev => [data.receipts[0], ...prev]);
-                        
-                        // 無駄遣い記録にも追加
-                        const wasteRecord = {
-                          id: data.receipts[0].id,
-                          categoryId: data.receipts[0].categoryId,
-                          description: data.receipts[0].description,
-                          type: data.receipts[0].type,
-                          amount: data.receipts[0].amount,
-                          date: new Date(data.receipts[0].date),
-                          isWasteful: data.receipts[0].isWasteful
-                        };
-                        setWasteRecords(prev => [wasteRecord, ...prev]);
-                        
-                        setShowAddReceipt(false);
-                        alert('レシートを登録しました');
-                      } else {
-                        alert(data.message || 'レシートの登録に失敗しました');
-                      }
+                    console.log('レシート登録レスポンス:', response.status, response.statusText);
+
+                    const data = await response.json();
+                    console.log('レシート登録成功:', data);
+                    if (data.success) {
+                      // ローカルステートも更新
+                      setReceipts(prev => [data.receipts[0], ...prev]);
+                      setReceiptRecords(prev => [data.receipts[0], ...prev]);
+                      
+                      // 無駄遣い記録にも追加
+                      const wasteRecord = {
+                        id: data.receipts[0].id,
+                        categoryId: data.receipts[0].categoryId,
+                        description: data.receipts[0].description,
+                        type: data.receipts[0].type,
+                        amount: data.receipts[0].amount,
+                        date: new Date(data.receipts[0].date),
+                        isWasteful: data.receipts[0].isWasteful
+                      };
+                      setWasteRecords(prev => [wasteRecord, ...prev]);
+                      
+                      setShowAddReceipt(false);
+                      alert('レシートを登録しました');
                     } else {
-                      alert('レシートの登録に失敗しました');
+                      alert(data.message || 'レシートの登録に失敗しました');
                     }
                   } catch (error) {
                     console.error('レシート登録エラー:', error);
