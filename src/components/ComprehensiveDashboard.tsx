@@ -82,7 +82,6 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
     | "assets"
     | "actions"
     | "plans"
-    | "waste"
     | "financial"
   >("overview");
   const [selectedPeriod, setSelectedPeriod] = useState<
@@ -115,6 +114,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [wasteAlerts, setWasteAlerts] = useState<WasteAlert[]>([]);
   const [showAddWasteRecord, setShowAddWasteRecord] = useState(false);
   const [showAddWasteGoal, setShowAddWasteGoal] = useState(false);
+  const [showAddReceipt, setShowAddReceipt] = useState(false);
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(
     null
   );
@@ -903,18 +903,11 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           🎯 目標
         </button>
         <button
-          className={`tab ${activeTab === "waste" ? "active" : ""}`}
-          onClick={() => setActiveTab("waste")}
-          title="無駄遣い監視を表示"
-        >
-          💸 無駄遣い
-        </button>
-        <button
           className={`tab ${activeTab === "financial" ? "active" : ""}`}
           onClick={() => setActiveTab("financial")}
-          title="金融情報を表示"
+          title="金融・無駄遣い管理を表示"
         >
-          💳 金融
+          💳 金融・無駄遣い
         </button>
       </div>
 
@@ -2224,12 +2217,18 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           </div>
         )}
 
-        {activeTab === "waste" && wasteAnalysis && (
-          <div className="waste-tab">
-            <div className="waste-grid">
-              <div className="waste-summary">
-                <div className="waste-header">
-                  <h3>無駄遣いサマリー</h3>
+
+        {activeTab === "financial" && (
+          <div className="financial-tab">
+            <div className="financial-header">
+              <h3>金融・無駄遣い管理</h3>
+            </div>
+
+            {/* 無駄遣い分析セクション */}
+            {wasteAnalysis && (
+              <div className="waste-section">
+                <div className="section-header">
+                  <h4>💸 無駄遣い分析</h4>
                   <div className="waste-actions">
                     <button
                       className="add-record-button"
@@ -2243,134 +2242,137 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     >
                       + 目標を追加
                     </button>
+                    <button
+                      className="add-receipt-button"
+                      onClick={() => setShowAddReceipt(true)}
+                    >
+                      + レシート登録
+                    </button>
                   </div>
                 </div>
-                <div className="summary-cards">
-                  <div className="summary-card money">
-                    <h4>お金の無駄</h4>
-                    <div className="amount">
-                      {formatCurrency(wasteAnalysis.totalWaste.money)}
-                    </div>
-                  </div>
-                  <div className="summary-card time">
-                    <h4>時間の無駄</h4>
-                    <div className="amount">
-                      {wasteAnalysis.totalWaste.time}分
-                    </div>
-                  </div>
-                  <div className="summary-card effort">
-                    <h4>労力の無駄</h4>
-                    <div className="amount">
-                      {wasteAnalysis.totalWaste.effort}ポイント
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              <div className="waste-score">
-                <h3>無駄遣いスコア</h3>
-                <div className="score-circle">
-                  <div
-                    className="score-fill"
-                    style={{
-                      background: `conic-gradient(#F44336 0deg ${
-                        wasteAnalysis.wasteScore * 3.6
-                      }deg, #e0e0e0 ${
-                        wasteAnalysis.wasteScore * 3.6
-                      }deg 360deg)`,
-                    }}
-                  >
-                    <div className="score-text">
-                      <span className="score-value">
-                        {wasteAnalysis.wasteScore}
-                      </span>
-                      <span className="score-label">/ 100</span>
+                <div className="waste-grid">
+                  <div className="waste-summary">
+                    <div className="summary-cards">
+                      <div className="summary-card money">
+                        <h4>お金の無駄</h4>
+                        <div className="amount">
+                          {formatCurrency(wasteAnalysis.totalWaste.money)}
+                        </div>
+                      </div>
+                      <div className="summary-card time">
+                        <h4>時間の無駄</h4>
+                        <div className="amount">
+                          {wasteAnalysis.totalWaste.time}分
+                        </div>
+                      </div>
+                      <div className="summary-card effort">
+                        <h4>労力の無駄</h4>
+                        <div className="amount">
+                          {wasteAnalysis.totalWaste.effort}ポイント
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="waste-sources">
-                <h3>無駄遣いの原因</h3>
-                <div className="sources-list">
-                  {wasteAnalysis.topWasteSources.map((source, index) => (
-                    <div key={index} className="source-item">
-                      <span className="source-name">{source.categoryName}</span>
-                      <span className="source-amount">
-                        {formatCurrency(source.totalAmount)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="waste-records">
-                <h3>無駄遣い記録</h3>
-                <div className="records-list">
-                  {wasteRecords.map((record) => {
-                    const category = WASTE_CATEGORIES.find(
-                      (cat) => cat.id === record.categoryId
-                    );
-                    return (
+                  <div className="waste-score">
+                    <h3>無駄遣いスコア</h3>
+                    <div className="score-circle">
                       <div
-                        key={record.id}
-                        className={`record-item ${
-                          record.isWasteful ? "wasteful" : "efficient"
-                        }`}
+                        className="score-fill"
+                        style={{
+                          background: `conic-gradient(#F44336 0deg ${
+                            wasteAnalysis.wasteScore * 3.6
+                          }deg, #e0e0e0 ${
+                            wasteAnalysis.wasteScore * 3.6
+                          }deg 360deg)`,
+                        }}
                       >
-                        <div className="record-icon">{category?.icon}</div>
-                        <div className="record-info">
-                          <h4>{category?.name}</h4>
-                          <p>{record.description}</p>
-                          <div className="record-meta">
-                            <span className="record-date">
-                              {record.date.toLocaleDateString("ja-JP")}
-                            </span>
-                            <span className="record-amount">
-                              {record.type === "money" &&
-                                formatCurrency(record.amount)}
-                              {record.type === "time" && `${record.amount}分`}
-                              {record.type === "effort" && `${record.amount}pt`}
-                            </span>
+                        <div className="score-text">
+                          <span className="score-value">
+                            {wasteAnalysis.wasteScore}
+                          </span>
+                          <span className="score-label">/ 100</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="waste-sources">
+                    <h3>無駄遣いの原因</h3>
+                    <div className="sources-list">
+                      {wasteAnalysis.topWasteSources.map((source, index) => (
+                        <div key={index} className="source-item">
+                          <span className="source-name">{source.categoryName}</span>
+                          <span className="source-amount">
+                            {formatCurrency(source.totalAmount)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="waste-records">
+                    <h3>無駄遣い記録</h3>
+                    <div className="records-list">
+                      {wasteRecords.map((record) => {
+                        const category = WASTE_CATEGORIES.find(
+                          (cat) => cat.id === record.categoryId
+                        );
+                        return (
+                          <div
+                            key={record.id}
+                            className={`record-item ${
+                              record.isWasteful ? "wasteful" : "efficient"
+                            }`}
+                          >
+                            <div className="record-icon">{category?.icon}</div>
+                            <div className="record-info">
+                              <h4>{category?.name}</h4>
+                              <p>{record.description}</p>
+                              <div className="record-meta">
+                                <span className="record-date">
+                                  {record.date.toLocaleDateString("ja-JP")}
+                                </span>
+                                <span className="record-amount">
+                                  {record.type === "money" &&
+                                    formatCurrency(record.amount)}
+                                  {record.type === "time" && `${record.amount}分`}
+                                  {record.type === "effort" && `${record.amount}pt`}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="record-status">
+                              {record.isWasteful ? "無駄" : "効率的"}
+                            </div>
                           </div>
-                        </div>
-                        <div className="record-status">
-                          {record.isWasteful ? "無駄" : "効率的"}
-                        </div>
-                      </div>
-                    );
-                  })}
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="improvement-suggestions">
+                    <h3>改善提案</h3>
+                    <div className="suggestions-list">
+                      {wasteAnalysis.improvementSuggestions.map(
+                        (suggestion, index) => (
+                          <div key={index} className="suggestion-item">
+                            <h4>{suggestion.title}</h4>
+                            <p>{suggestion.description}</p>
+                            <div className="suggestion-impact">
+                              期待効果:{" "}
+                              {formatCurrency(
+                                suggestion.potentialSavings.money || 0
+                              )}
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <div className="improvement-suggestions">
-                <h3>改善提案</h3>
-                <div className="suggestions-list">
-                  {wasteAnalysis.improvementSuggestions.map(
-                    (suggestion, index) => (
-                      <div key={index} className="suggestion-item">
-                        <h4>{suggestion.title}</h4>
-                        <p>{suggestion.description}</p>
-                        <div className="suggestion-impact">
-                          期待効果:{" "}
-                          {formatCurrency(
-                            suggestion.potentialSavings.money || 0
-                          )}
-                        </div>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "financial" && (
-          <div className="financial-tab">
-            <div className="financial-header">
-              <h3>金融管理</h3>
-            </div>
+            )}
 
             {/* 財布の残高セクション */}
             <div className="wallet-section">
@@ -2686,6 +2688,139 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     キャンセル
                   </button>
                   <button type="submit">追加</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ファミリーマートレシート登録フォーム */}
+        {showAddReceipt && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>🏪 ファミリーマートレシート登録</h3>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target as HTMLFormElement);
+                  const storeName = formData.get("storeName") as string;
+                  const purchaseDate = formData.get("purchaseDate") as string;
+                  const totalAmount = Number(formData.get("totalAmount"));
+                  const items = (formData.get("items") as string)?.split('\n').filter(item => item.trim());
+                  const paymentMethod = formData.get("paymentMethod") as string;
+                  const notes = formData.get("notes") as string;
+
+                  // バリデーション
+                  if (!storeName?.trim()) {
+                    alert('店舗名を入力してください');
+                    return;
+                  }
+                  if (!purchaseDate) {
+                    alert('購入日を選択してください');
+                    return;
+                  }
+                  if (!totalAmount || totalAmount <= 0) {
+                    alert('合計金額を正しく入力してください');
+                    return;
+                  }
+                  if (!items || items.length === 0) {
+                    alert('商品を入力してください');
+                    return;
+                  }
+
+                  try {
+                    // レシート情報を無駄遣い記録として登録
+                    const receiptData = {
+                      categoryId: 'convenience',
+                      description: `ファミリーマート ${storeName.trim()}`,
+                      type: 'money' as const,
+                      amount: totalAmount,
+                      date: new Date(purchaseDate),
+                      isWasteful: totalAmount > 1000, // 1000円以上は無駄遣いとして判定
+                      items: items,
+                      paymentMethod: paymentMethod,
+                      notes: notes?.trim() || '',
+                      storeName: storeName.trim()
+                    };
+
+                    // ここでレシートデータを保存する処理を追加
+                    console.log('レシート登録:', receiptData);
+                    
+                    setShowAddReceipt(false);
+                    alert('レシートを登録しました');
+                  } catch (error) {
+                    console.error('レシート登録エラー:', error);
+                    alert('レシートの登録に失敗しました');
+                  }
+                }}
+              >
+                <div className="form-group">
+                  <label htmlFor="receipt-store">店舗名</label>
+                  <input 
+                    type="text" 
+                    id="receipt-store" 
+                    name="storeName" 
+                    placeholder="例: ファミリーマート 新宿店"
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="receipt-date">購入日</label>
+                  <input 
+                    type="date" 
+                    id="receipt-date" 
+                    name="purchaseDate" 
+                    defaultValue={new Date().toISOString().split('T')[0]}
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="receipt-amount">合計金額</label>
+                  <input 
+                    type="number" 
+                    id="receipt-amount" 
+                    name="totalAmount" 
+                    placeholder="例: 850"
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="receipt-items">商品（1行に1つずつ）</label>
+                  <textarea 
+                    id="receipt-items" 
+                    name="items" 
+                    rows={5}
+                    placeholder="例:&#10;おにぎり 梅&#10;コーヒー ホット&#10;チョコレート"
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="receipt-payment">支払い方法</label>
+                  <select id="receipt-payment" name="paymentMethod" required>
+                    <option value="">選択してください</option>
+                    <option value="cash">現金</option>
+                    <option value="card">クレジットカード</option>
+                    <option value="mobile">モバイル決済</option>
+                    <option value="other">その他</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="receipt-notes">メモ</label>
+                  <textarea 
+                    id="receipt-notes" 
+                    name="notes" 
+                    rows={3}
+                    placeholder="特記事項があれば入力してください"
+                  />
+                </div>
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddReceipt(false)}
+                  >
+                    キャンセル
+                  </button>
+                  <button type="submit">登録</button>
                 </div>
               </form>
             </div>
