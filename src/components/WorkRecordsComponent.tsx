@@ -6,7 +6,6 @@ import CalendarComponent from './CalendarComponent';
 import ActionHistoryComponent from './ActionHistoryComponent';
 import FuturePlanningComponent from './FuturePlanningComponent';
 import DataAnalysisComponent from './DataAnalysisComponent';
-import ComprehensiveDashboard from './ComprehensiveDashboard';
 import { logger } from '../utils/logger';
 import { apiFetch } from '../utils/apiClient';
 import { createAuthHeaders } from '../utils/authUtils';
@@ -61,7 +60,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
   const [showIncomeExpenseForm, setShowIncomeExpenseForm] = useState(false);
   const [showDiaryForm, setShowDiaryForm] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [showComprehensiveDashboard, setShowComprehensiveDashboard] = useState(false);
 
   // 収入・支出記録フォームの状態
   const [incomeExpenseDate, setIncomeExpenseDate] = useState("");
@@ -812,17 +810,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
     closeOtherFeatures(feature);
   };
 
-  // 統合ダッシュボードが表示されている場合は、お仕事記録セクションを非表示にする
-  if (showComprehensiveDashboard) {
-    return (
-      <div className="work-records-section">
-        <ComprehensiveDashboard
-          userId={user?.id || ''}
-          onClose={() => setShowComprehensiveDashboard(false)}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="work-records-section">
@@ -853,15 +840,6 @@ const WorkRecordsComponent: React.FC<WorkRecordsComponentProps> = ({
           <>
             <p>収入・支出と日記を記録して、お仕事の振り返りをしましょう</p>
             <div className="dashboard-buttons">
-          <button 
-            className="open-dashboard-button comprehensive"
-            onClick={() => {
-              closeOtherFeatures('comprehensive-dashboard');
-              setShowComprehensiveDashboard(true);
-            }}
-          >
-            🏠 統合ダッシュボード
-          </button>
           <button 
             className="open-dashboard-button action-history"
             onClick={() => setShowActionHistory(true)}

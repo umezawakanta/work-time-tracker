@@ -49,10 +49,7 @@ import PayPayCardTransactionHistory from "./components/PayPayCardTransactionHist
 import { PayPayCardManager } from "./utils/paypayCardManager";
 import FinancialOverviewDashboard from "./components/FinancialOverviewDashboard";
 import { FinancialOverviewManager } from "./utils/financialOverviewManager";
-// import ComprehensiveDashboard from "./components/ComprehensiveDashboard"; // 独立したコンポーネント
-// import { AssetLiabilityManager } from "./utils/assetLiabilityManager"; // 独立したコンポーネント
-// import { ActionHistoryManager } from "./utils/actionHistoryManager"; // 独立したコンポーネント
-// import { FuturePlanningManager } from "./utils/futurePlanningManager"; // 独立したコンポーネント
+import ComprehensiveDashboard from "./components/ComprehensiveDashboard";
 import { AuthProvider } from "./components/AuthContextProvider";
 import {
   ErrorInfo,
@@ -164,6 +161,9 @@ interface AppProps {
   handleCardLoanTransactionHistory: (loanId: string) => void;
   handlePayPayCardUpdate: (cardId: string) => void;
   handlePayPayCardTransactionHistory: (cardId: string) => void;
+  // 統合ダッシュボード関連
+  showComprehensiveDashboard: boolean;
+  setShowComprehensiveDashboard: (show: boolean) => void;
 }
 
 function App({ 
@@ -201,6 +201,8 @@ function App({
   handleCardLoanTransactionHistory,
   handlePayPayCardUpdate,
   handlePayPayCardTransactionHistory,
+  showComprehensiveDashboard,
+  setShowComprehensiveDashboard,
 }: AppProps) {
 
   // 注意: showErrorModalをサブコンポーネント側で定義することはできません
@@ -728,6 +730,12 @@ function App({
       name: "本棚",
       description: "本の管理と記録",
       component: null, // 既存の本棚セクション
+    },
+    {
+      id: "comprehensive-dashboard",
+      name: "統合ダッシュボード",
+      description: "資産、目標、行動の統合管理",
+      component: null, // 独立した統合ダッシュボード
     },
     {
       id: "memos",
@@ -2727,6 +2735,7 @@ ${errorInfo.stack}
       setShowBookshelf(false);
       setShowBookForm(false);
     }
+
 
     // レポート関連
     if (activeFeature !== "reports") {
@@ -6468,6 +6477,22 @@ User Agent: ${userAgent}
                     handleUpdateReadPages={handleUpdateReadPages}
                   />
                 );
+              } else if (feature.id === "comprehensive-dashboard") {
+                return (
+                  <div key={feature.id} className="feature-section">
+                    <button
+                      className="feature-toggle-button"
+                      onClick={() => {
+                        setShowComprehensiveDashboard(!showComprehensiveDashboard);
+                        if (!showComprehensiveDashboard) {
+                          closeOtherFeatures("comprehensive-dashboard");
+                        }
+                      }}
+                    >
+                      {showComprehensiveDashboard ? "📊 統合ダッシュボードを閉じる" : "📊 統合ダッシュボードを開く"}
+                    </button>
+                  </div>
+                );
               } else if (feature.id === "memos") {
                 return (
                   <MemosComponent
@@ -7151,6 +7176,9 @@ const AppWithProviders = () => {
   const [showFinancialOverview, setShowFinancialOverview] = useState(false);
   const financialOverviewManager = FinancialOverviewManager.getInstance();
 
+  // 統合ダッシュボードの状態
+  const [showComprehensiveDashboard, setShowComprehensiveDashboard] = useState(false);
+
 
   // 現金残高更新処理
   const handleCashBalanceUpdate = (balance: any) => {
@@ -7388,6 +7416,8 @@ const AppWithProviders = () => {
               handleCardLoanTransactionHistory={handleCardLoanTransactionHistory}
               handlePayPayCardUpdate={handlePayPayCardUpdate}
               handlePayPayCardTransactionHistory={handlePayPayCardTransactionHistory}
+              showComprehensiveDashboard={showComprehensiveDashboard}
+              setShowComprehensiveDashboard={setShowComprehensiveDashboard}
               handleLogin={async (e: React.FormEvent) => {
                 e.preventDefault();
                 setLoading(true);
@@ -7564,6 +7594,14 @@ const AppWithProviders = () => {
             setShowPayPayCardTransactionHistory(false);
             setSelectedPayPayCardId(null);
           }}
+        />
+      )}
+
+      {/* 統合ダッシュボード */}
+      {showComprehensiveDashboard && user && (
+        <ComprehensiveDashboard
+          userId={user.id}
+          onClose={() => setShowComprehensiveDashboard(false)}
         />
       )}
     </AuthProvider>
