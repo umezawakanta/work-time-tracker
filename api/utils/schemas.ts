@@ -233,13 +233,13 @@ TimeEntrySchema.pre('save', function(next) {
 });
 
 // Create models
-const User = mongoose.models.User || mongoose.model('User', UserSchema);
-const Book = mongoose.models.Book || mongoose.model('Book', BookSchema);
-const WorkRecord = mongoose.models.WorkRecord || mongoose.model('WorkRecord', WorkRecordSchema);
-const Memo = mongoose.models.Memo || mongoose.model('Memo', MemoSchema);
-const UserSettings = mongoose.models.UserSettings || mongoose.model('UserSettings', UserSettingsSchema);
-const Project = mongoose.models.Project || mongoose.model('Project', ProjectSchema);
-const TimeEntry = mongoose.models.TimeEntry || mongoose.model('TimeEntry', TimeEntrySchema);
+const User = mongoose.models['User'] || mongoose.model('User', UserSchema);
+const Book = mongoose.models['Book'] || mongoose.model('Book', BookSchema);
+const WorkRecord = mongoose.models['WorkRecord'] || mongoose.model('WorkRecord', WorkRecordSchema);
+const Memo = mongoose.models['Memo'] || mongoose.model('Memo', MemoSchema);
+const UserSettings = mongoose.models['UserSettings'] || mongoose.model('UserSettings', UserSettingsSchema);
+const Project = mongoose.models['Project'] || mongoose.model('Project', ProjectSchema);
+const TimeEntry = mongoose.models['TimeEntry'] || mongoose.model('TimeEntry', TimeEntrySchema);
 
 // Debug logging
 console.log('Memo model created:', !!Memo);
