@@ -93,7 +93,7 @@ UserSchema.set("toJSON", {
   },
 });
 
-const User = mongoose.models['User'] || mongoose.model("User", UserSchema);
+const User = (mongoose.models['User'] as any) || mongoose.model("User", UserSchema);
 
 /**
  * Users list response object structure:
