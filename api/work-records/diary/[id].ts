@@ -45,7 +45,7 @@ const WorkDiarySchema = new mongoose.Schema({
 
 const WorkDiary = (mongoose.models['WorkDiary'] as any) || mongoose.model('WorkDiary', WorkDiarySchema);
 
-export default async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env['NODE_ENV'] === 'production' 
     ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
