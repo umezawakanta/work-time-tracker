@@ -54,9 +54,17 @@ export class WalletBalanceManager {
             tags: data.balance.tags || []
           }] : [];
           
-          this.transactions = data.transactions.map((transaction: any) => ({
-            ...transaction,
-            date: new Date(transaction.date)
+          this.transactions = (data.transactions || []).map((transaction: any) => ({
+            id: transaction.id,
+            walletId: 'default',
+            userId,
+            type: transaction.type,
+            amount: transaction.amount,
+            description: transaction.description,
+            category: transaction.category,
+            tags: transaction.tags || [],
+            date: new Date(transaction.date),
+            createdAt: new Date(transaction.date)
           }));
         }
       }
@@ -89,6 +97,42 @@ export class WalletBalanceManager {
       console.error('Failed to load wallet data from localStorage:', error);
       this.balances = [];
       this.transactions = [];
+    }
+  }
+
+  // サーバーにデータを保存
+  public async saveToServer(userId: string, data: any, type: 'balance' | 'transaction'): Promise<boolean> {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.warn('No access token found');
+        return false;
+      }
+
+      const url = '/api/wallet-balance';
+      const method = type === 'balance' ? 'POST' : 'PUT';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          // サーバーから最新データを再読み込み
+          await this.loadFromServer(userId);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('Failed to save wallet data to server:', error);
+      return false;
     }
   }
 

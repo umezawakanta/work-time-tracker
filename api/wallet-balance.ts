@@ -31,6 +31,29 @@ const WalletTransactionSchema = new mongoose.Schema({
 const WalletBalance = (mongoose.models['WalletBalance'] as any) || mongoose.model('WalletBalance', WalletBalanceSchema);
 const WalletTransaction = (mongoose.models['WalletTransaction'] as any) || mongoose.model('WalletTransaction', WalletTransactionSchema);
 
+// レスポンス型定義
+interface WalletBalanceResponse {
+  success: boolean;
+  message: string;
+  balance?: {
+    amount: number;
+    currency: string;
+    notes?: string;
+    tags?: string[];
+    lastUpdated: string;
+  };
+  transactions?: Array<{
+    id: string;
+    type: string;
+    amount: number;
+    description: string;
+    category: string;
+    tags?: string[];
+    date: string;
+  }>;
+  error?: string;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   const { origin } = req.headers;
@@ -65,11 +88,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const balance = await WalletBalance.findOne({ userId });
       const transactions = await WalletTransaction.find({ userId }).sort({ date: -1 }).limit(50);
 
-      res.status(200).json({
+      const response: WalletBalanceResponse = {
         success: true,
-        balance: balance || { amount: 0, currency: 'JPY' },
-        transactions: transactions || []
-      });
+        message: '財布の残高データを取得しました',
+        balance: balance ? {
+          amount: balance.amount,
+          currency: balance.currency,
+          notes: balance.notes,
+          tags: balance.tags,
+          lastUpdated: balance.lastUpdated.toISOString()
+        } : {
+          amount: 0,
+          currency: 'JPY',
+          lastUpdated: new Date().toISOString()
+        },
+        transactions: transactions.map(tx => ({
+          id: tx._id.toString(),
+          type: tx.type,
+          amount: tx.amount,
+          description: tx.description,
+          category: tx.category,
+          tags: tx.tags,
+          date: tx.date.toISOString()
+        }))
+      };
+
+      res.status(200).json(response);
 
     } else if (req.method === 'POST') {
       // 残高を更新
@@ -86,11 +130,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         { upsert: true, new: true }
       );
 
-      res.status(200).json({
+      const response: WalletBalanceResponse = {
         success: true,
         message: '残高が更新されました',
-        balance
-      });
+        balance: {
+          amount: balance.amount,
+          currency: balance.currency,
+          notes: balance.notes,
+          tags: balance.tags,
+          lastUpdated: balance.lastUpdated.toISOString()
+        }
+      };
+
+      res.status(200).json(response);
 
     } else if (req.method === 'PUT') {
       // 取引を追加
@@ -115,7 +167,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ? currentBalance.amount + (type === 'income' ? Number(amount) : -Number(amount))
         : (type === 'income' ? Number(amount) : -Number(amount));
 
-      await WalletBalance.findOneAndUpdate(
+      const updatedBalance = await WalletBalance.findOneAndUpdate(
         { userId },
         { 
           amount: newAmount,
@@ -124,11 +176,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         { upsert: true, new: true }
       );
 
-      res.status(200).json({
+      const response: WalletBalanceResponse = {
         success: true,
         message: '取引が追加されました',
-        transaction
-      });
+        balance: {
+          amount: updatedBalance.amount,
+          currency: updatedBalance.currency,
+          notes: updatedBalance.notes,
+          tags: updatedBalance.tags,
+          lastUpdated: updatedBalance.lastUpdated.toISOString()
+        }
+      };
+
+      res.status(200).json(response);
 
     } else {
       return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });

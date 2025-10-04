@@ -2589,17 +2589,19 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           <div className="modal-overlay">
             <div className="modal-content">
               <h3>財布の残高を更新</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target as HTMLFormElement);
-                const amount = Number(formData.get('amount'));
-                const notes = formData.get('notes') as string;
-                const tags = (formData.get('tags') as string)?.split(',').map(tag => tag.trim()).filter(tag => tag);
-                
-                walletBalanceManager.setWalletBalance(userId, amount, notes, tags);
-                loadAllData();
-                setShowUpdateWalletBalance(false);
-              }}>
+             <form onSubmit={async (e) => {
+               e.preventDefault();
+               const formData = new FormData(e.target as HTMLFormElement);
+               const amount = Number(formData.get('amount'));
+               const notes = formData.get('notes') as string;
+               const tags = (formData.get('tags') as string)?.split(',').map(tag => tag.trim()).filter(tag => tag);
+
+               const success = await walletBalanceManager.saveToServer(userId, { amount, notes, tags }, 'balance');
+               if (success) {
+                 loadAllData();
+                 setShowUpdateWalletBalance(false);
+               }
+             }}>
                 <div className="form-group">
                   <label>残高</label>
                   <input 
@@ -2637,20 +2639,28 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           <div className="modal-overlay">
             <div className="modal-content">
               <h3>取引を追加</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target as HTMLFormElement);
-                const type = formData.get('type') as 'income' | 'expense';
-                const amount = Number(formData.get('amount'));
-                const description = formData.get('description') as string;
-                const category = formData.get('category') as string;
-                const tags = (formData.get('tags') as string)?.split(',').map(tag => tag.trim()).filter(tag => tag);
-                
-                const walletId = walletBalance?.id || `wallet_${Date.now()}`;
-                walletBalanceManager.addTransaction(userId, walletId, type, amount, description, category, tags);
-                loadAllData();
-                setShowAddWalletTransaction(false);
-              }}>
+             <form onSubmit={async (e) => {
+               e.preventDefault();
+               const formData = new FormData(e.target as HTMLFormElement);
+               const type = formData.get('type') as 'income' | 'expense';
+               const amount = Number(formData.get('amount'));
+               const description = formData.get('description') as string;
+               const category = formData.get('category') as string;
+               const tags = (formData.get('tags') as string)?.split(',').map(tag => tag.trim()).filter(tag => tag);
+
+               const success = await walletBalanceManager.saveToServer(userId, { 
+                 type, 
+                 amount, 
+                 description, 
+                 category, 
+                 tags, 
+                 date: new Date().toISOString() 
+               }, 'transaction');
+               if (success) {
+                 loadAllData();
+                 setShowAddWalletTransaction(false);
+               }
+             }}>
                 <div className="form-group">
                   <label>取引タイプ</label>
                   <select name="type" required>
