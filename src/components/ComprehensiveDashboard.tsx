@@ -112,6 +112,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [wasteRecords, setWasteRecords] = useState<WasteRecord[]>([]);
   const [wasteGoals, setWasteGoals] = useState<WasteGoal[]>([]);
   const [wasteAlerts, setWasteAlerts] = useState<WasteAlert[]>([]);
+  const [receiptRecords, setReceiptRecords] = useState<any[]>([]);
   const [showAddWasteRecord, setShowAddWasteRecord] = useState(false);
   const [showAddWasteGoal, setShowAddWasteGoal] = useState(false);
   const [showAddReceipt, setShowAddReceipt] = useState(false);
@@ -2351,6 +2352,55 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     </div>
                   </div>
 
+                  <div className="receipt-records">
+                    <h3>🏪 レシート記録</h3>
+                    <div className="receipts-list">
+                      {receiptRecords.length === 0 ? (
+                        <p className="no-records">レシートが登録されていません</p>
+                      ) : (
+                        receiptRecords.map((receipt) => (
+                          <div key={receipt.id} className="receipt-item">
+                            <div className="receipt-header">
+                              <div className="receipt-store">
+                                <span className="store-icon">🏪</span>
+                                <span className="store-name">{receipt.storeName}</span>
+                              </div>
+                              <div className="receipt-amount">
+                                {formatCurrency(receipt.amount)}
+                              </div>
+                            </div>
+                            <div className="receipt-details">
+                              <div className="receipt-date">
+                                {receipt.date.toLocaleDateString("ja-JP")}
+                              </div>
+                              <div className="receipt-payment">
+                                支払い: {receipt.paymentMethod === 'cash' ? '現金' : 
+                                        receipt.paymentMethod === 'card' ? 'クレジットカード' :
+                                        receipt.paymentMethod === 'mobile' ? 'モバイル決済' : 'その他'}
+                              </div>
+                              <div className={`receipt-status ${receipt.isWasteful ? 'wasteful' : 'efficient'}`}>
+                                {receipt.isWasteful ? '無駄遣い' : '効率的'}
+                              </div>
+                            </div>
+                            <div className="receipt-items">
+                              <h5>購入商品:</h5>
+                              <ul>
+                                {receipt.items.map((item: string, index: number) => (
+                                  <li key={index}>{item}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            {receipt.notes && (
+                              <div className="receipt-notes">
+                                <strong>メモ:</strong> {receipt.notes}
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
                   <div className="improvement-suggestions">
                     <h3>改善提案</h3>
                     <div className="suggestions-list">
@@ -2729,8 +2779,9 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   }
 
                   try {
-                    // レシート情報を無駄遣い記録として登録
+                    // レシート情報を登録
                     const receiptData = {
+                      id: Date.now().toString(),
                       categoryId: 'convenience',
                       description: `ファミリーマート ${storeName.trim()}`,
                       type: 'money' as const,
@@ -2740,11 +2791,24 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                       items: items,
                       paymentMethod: paymentMethod,
                       notes: notes?.trim() || '',
-                      storeName: storeName.trim()
+                      storeName: storeName.trim(),
+                      createdAt: new Date()
                     };
 
-                    // ここでレシートデータを保存する処理を追加
-                    console.log('レシート登録:', receiptData);
+                    // レシートデータを保存
+                    setReceiptRecords(prev => [receiptData, ...prev]);
+                    
+                    // 無駄遣い記録にも追加
+                    const wasteRecord = {
+                      id: receiptData.id,
+                      categoryId: receiptData.categoryId,
+                      description: receiptData.description,
+                      type: receiptData.type,
+                      amount: receiptData.amount,
+                      date: receiptData.date,
+                      isWasteful: receiptData.isWasteful
+                    };
+                    setWasteRecords(prev => [wasteRecord, ...prev]);
                     
                     setShowAddReceipt(false);
                     alert('レシートを登録しました');
