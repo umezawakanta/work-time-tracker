@@ -213,6 +213,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         notes 
       } = req.body;
 
+      // 必須フィールドのバリデーション
+      if (!bankName || !branchName || !accountType || !accountNumber || !accountHolderName) {
+        return handleError(res, { 
+          statusCode: 400, 
+          message: '銀行名、支店名、口座種別、口座番号、口座名義人は必須です' 
+        });
+      }
+
       const account = new BankAccount({
         userId,
         bankName,
