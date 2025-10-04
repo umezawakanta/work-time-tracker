@@ -123,16 +123,20 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       return transactionDate.toISOString().split('T')[0] <= dateStr;
     });
 
-    let balance = initialBalance;
+    // 財布の残高を計算
+    let walletBalance = initialBalance;
     dayTransactions.forEach(transaction => {
       if (transaction.type === 'income') {
-        balance += transaction.amount;
+        walletBalance += transaction.amount;
       } else {
-        balance -= transaction.amount;
+        walletBalance -= transaction.amount;
       }
     });
 
-    return balance;
+    // 銀行口座の残高を追加
+    const bankBalance = getTotalBankBalance();
+    
+    return walletBalance + bankBalance;
   };
 
   const formatCurrency = (amount: number): string => {
