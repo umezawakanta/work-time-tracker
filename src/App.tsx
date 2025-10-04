@@ -34,8 +34,6 @@ import BadgeNotification from "./components/BadgeNotification";
 import CharacterInteractionOverlay from "./components/CharacterInteractionOverlay";
 import { CharacterInteractionManager } from "./utils/characterInteractionManager";
 import { CharacterStateManager } from "./utils/characterStateManager";
-import CashBalanceUpdateForm from "./components/CashBalanceUpdateForm";
-import CashTransactionHistory from "./components/CashTransactionHistory";
 import { CashBalanceManager } from "./utils/cashBalanceManager";
 import BankAccountWidget from "./components/BankAccountWidget";
 import BankAccountUpdateForm from "./components/BankAccountUpdateForm";

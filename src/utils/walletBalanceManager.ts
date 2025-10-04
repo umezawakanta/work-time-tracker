@@ -25,7 +25,49 @@ export class WalletBalanceManager {
     return WalletBalanceManager.instance;
   }
 
-  // ローカルストレージからデータを読み込み
+  // サーバーからデータを読み込み
+  public async loadFromServer(userId: string): Promise<void> {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        console.warn('No access token found');
+        return;
+      }
+
+      const response = await fetch('/api/wallet-balance', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          this.balances = data.balance ? [{
+            id: 'default',
+            userId,
+            amount: data.balance.amount,
+            currency: data.balance.currency || 'JPY',
+            lastUpdated: new Date(data.balance.lastUpdated || Date.now()),
+            notes: data.balance.notes,
+            tags: data.balance.tags || []
+          }] : [];
+          
+          this.transactions = data.transactions.map((transaction: any) => ({
+            ...transaction,
+            date: new Date(transaction.date)
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load wallet data from server:', error);
+      this.balances = [];
+      this.transactions = [];
+    }
+  }
+
+  // ローカルストレージからデータを読み込み（フォールバック）
   public loadFromLocalStorage(): void {
     try {
       const balancesData = localStorage.getItem('walletBalances');

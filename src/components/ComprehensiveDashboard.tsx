@@ -669,7 +669,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       setWasteAlerts(wasteAlertsData);
 
       // 財布の残高データ
-      walletBalanceManager.loadFromLocalStorage();
+      await walletBalanceManager.loadFromServer(userId);
       const walletBalanceData = walletBalanceManager.getWalletBalance(userId);
       const walletTransactionsData = walletBalanceManager.getTransactions(userId, 50);
       const walletBalanceSummaryData = walletBalanceManager.getWalletBalanceSummary(userId);
