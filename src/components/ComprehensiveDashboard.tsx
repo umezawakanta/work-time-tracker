@@ -9,6 +9,7 @@ import { FinancialOverviewManager } from "../utils/financialOverviewManager";
 import { WalletBalanceManager } from "../utils/walletBalanceManager";
 import { BankAccountManager } from "../utils/bankAccountManager";
 import { GuitarPracticeManager } from "../utils/guitarPracticeManager";
+import { ATMTransactionManager } from "../utils/atmTransactionManager";
 import { apiFetch } from "../utils/apiClient";
 import WalletBalanceCalendar from "./WalletBalanceCalendar";
 import {
@@ -64,6 +65,7 @@ import {
 } from "../types/walletBalance";
 import { FinancialSummary } from "../types/financialOverview";
 import { GuitarPracticeRecord, GuitarPracticeSummary, GuitarPracticeAnalysis, GUITAR_TECHNIQUES } from "../types/guitarPractice";
+import { ATMTransaction, ATMTransactionSummary, ATMTransactionAnalysis, ATM_TRANSACTION_TYPES } from "../types/atmTransaction";
 import "./ComprehensiveDashboard.css";
 
 interface ComprehensiveDashboardProps {
@@ -127,6 +129,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [guitarPracticeSummary, setGuitarPracticeSummary] = useState<GuitarPracticeSummary | null>(null);
   const [guitarPracticeAnalysis, setGuitarPracticeAnalysis] = useState<GuitarPracticeAnalysis | null>(null);
   const [showAddGuitarPractice, setShowAddGuitarPractice] = useState(false);
+  
+  // ATM取引関連の状態
+  const [atmTransactions, setAtmTransactions] = useState<ATMTransaction[]>([]);
+  const [atmTransactionSummary, setAtmTransactionSummary] = useState<ATMTransactionSummary | null>(null);
+  const [atmTransactionAnalysis, setAtmTransactionAnalysis] = useState<ATMTransactionAnalysis | null>(null);
+  const [showAddATMTransaction, setShowAddATMTransaction] = useState(false);
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(
     null
   );
@@ -171,6 +179,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const walletBalanceManager = WalletBalanceManager.getInstance();
   const bankAccountManager = BankAccountManager.getInstance();
   const guitarPracticeManager = GuitarPracticeManager.getInstance();
+  const atmTransactionManager = ATMTransactionManager.getInstance();
 
   useEffect(() => {
     loadAllData();
@@ -764,6 +773,16 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       setGuitarPracticeRecords(practiceRecords);
       setGuitarPracticeSummary(practiceSummary);
       setGuitarPracticeAnalysis(practiceAnalysis);
+
+      // ATM取引データ
+      await atmTransactionManager.loadFromServer(userId);
+      const transactions = atmTransactionManager.getTransactions(userId);
+      const transactionSummary = atmTransactionManager.getTransactionSummary(userId);
+      const transactionAnalysis = atmTransactionManager.getTransactionAnalysis(userId);
+      
+      setAtmTransactions(transactions);
+      setAtmTransactionSummary(transactionSummary);
+      setAtmTransactionAnalysis(transactionAnalysis);
     } catch (err) {
       console.error("データの読み込みエラー:", err);
       setError("データの読み込みに失敗しました");
@@ -2643,6 +2662,206 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
               )}
             </div>
 
+            {/* ATM取引セクション */}
+            <div className="atm-transactions-section">
+              <div className="section-header">
+                <h4>🏧 ATM取引記録</h4>
+                <button
+                  className="add-atm-transaction-button"
+                  onClick={() => setShowAddATMTransaction(true)}
+                >
+                  + 取引を記録
+                </button>
+              </div>
+
+              {/* ATM取引サマリー */}
+              {atmTransactionSummary && (
+                <div className="atm-summary">
+                  <div className="summary-cards">
+                    <div className="summary-card">
+                      <h5>総入金額</h5>
+                      <div className="amount positive">
+                        {formatCurrency(atmTransactionSummary.totalDeposits)}
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>総出金額</h5>
+                      <div className="amount negative">
+                        {formatCurrency(atmTransactionSummary.totalWithdrawals)}
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>総手数料</h5>
+                      <div className="amount negative">
+                        {formatCurrency(atmTransactionSummary.totalFees)}
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>純額</h5>
+                      <div className={`amount ${atmTransactionSummary.netAmount >= 0 ? 'positive' : 'negative'}`}>
+                        {formatCurrency(atmTransactionSummary.netAmount)}
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>取引回数</h5>
+                      <div className="amount">
+                        {atmTransactionSummary.transactionCount}回
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>平均取引額</h5>
+                      <div className="amount">
+                        {formatCurrency(atmTransactionSummary.averageTransactionAmount)}
+                      </div>
+                    </div>
+                  </div>
+                  {atmTransactionSummary.lastTransactionDate && (
+                    <div className="last-transaction">
+                      最後の取引: {new Date(atmTransactionSummary.lastTransactionDate).toLocaleDateString('ja-JP')}
+                    </div>
+                  )}
+                  {atmTransactionSummary.mostUsedATM && (
+                    <div className="most-used-atm">
+                      最も利用したATM: {atmTransactionSummary.mostUsedATM}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ATM取引リスト */}
+              <div className="atm-transactions-list">
+                <h5>📋 取引履歴</h5>
+                {atmTransactions.length === 0 ? (
+                  <p className="no-transactions">ATM取引が記録されていません</p>
+                ) : (
+                  <div className="transactions-list">
+                    {atmTransactions.map((transaction) => (
+                      <div key={transaction.id} className="atm-transaction-item">
+                        <div className="transaction-header">
+                          <div className="transaction-date">
+                            {new Date(transaction.transactionDate).toLocaleDateString('ja-JP')}
+                          </div>
+                          <div className={`transaction-amount ${transaction.transactionType === 'deposit' || transaction.transactionType === 'transfer_in' || transaction.transactionType === 'interest' ? 'positive' : 'negative'}`}>
+                            {transaction.transactionType === 'deposit' || transaction.transactionType === 'transfer_in' || transaction.transactionType === 'interest' ? '+' : '-'}
+                            {formatCurrency(transaction.amount)}
+                          </div>
+                        </div>
+                        <div className="transaction-content">
+                          <div className="transaction-type">
+                            <span className="type-label">種別:</span>
+                            <span className="type-value">
+                              {ATM_TRANSACTION_TYPES.find(t => t.value === transaction.transactionType)?.label || transaction.transactionType}
+                            </span>
+                          </div>
+                          <div className="transaction-location">
+                            <span className="location-label">ATM:</span>
+                            <span className="location-value">{transaction.atmLocation} - {transaction.atmBranch}</span>
+                          </div>
+                          <div className="transaction-balance">
+                            <span className="balance-label">残高:</span>
+                            <span className="balance-value">{formatCurrency(transaction.balance)}</span>
+                          </div>
+                          {transaction.description && (
+                            <div className="transaction-description">
+                              <strong>説明:</strong> {transaction.description}
+                            </div>
+                          )}
+                          {transaction.referenceNumber && (
+                            <div className="transaction-reference">
+                              <strong>取引番号:</strong> {transaction.referenceNumber}
+                            </div>
+                          )}
+                          {transaction.fees > 0 && (
+                            <div className="transaction-fees">
+                              <strong>手数料:</strong> {formatCurrency(transaction.fees)}
+                            </div>
+                          )}
+                          {transaction.notes && (
+                            <div className="transaction-notes">
+                              <strong>メモ:</strong> {transaction.notes}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* ATM取引分析 */}
+              {atmTransactionAnalysis && (
+                <div className="atm-analysis-section">
+                  <h5>📊 取引分析</h5>
+                  
+                  {/* 利用パターン */}
+                  <div className="usage-pattern">
+                    <h6>利用パターン</h6>
+                    <div className={`pattern-indicator ${atmTransactionAnalysis.spendingPattern}`}>
+                      {atmTransactionAnalysis.spendingPattern === 'conservative' ? '🟢 控えめ' :
+                       atmTransactionAnalysis.spendingPattern === 'moderate' ? '🟡 普通' :
+                       atmTransactionAnalysis.spendingPattern === 'frequent' ? '🟠 頻繁' : '🔴 多頻度'}
+                    </div>
+                  </div>
+
+                  {/* 月別トレンド */}
+                  {atmTransactionAnalysis.monthlyTrend.length > 0 && (
+                    <div className="monthly-trend">
+                      <h6>月別トレンド</h6>
+                      <div className="trend-list">
+                        {atmTransactionAnalysis.monthlyTrend.slice(-6).map((trend, index) => (
+                          <div key={index} className="trend-item">
+                            <div className="trend-month">{trend.month}</div>
+                            <div className="trend-amounts">
+                              <span className="deposits">入金: {formatCurrency(trend.deposits)}</span>
+                              <span className="withdrawals">出金: {formatCurrency(trend.withdrawals)}</span>
+                              <span className="fees">手数料: {formatCurrency(trend.fees)}</span>
+                              <span className={`net-amount ${trend.netAmount >= 0 ? 'positive' : 'negative'}`}>
+                                純額: {formatCurrency(trend.netAmount)}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ATM利用状況 */}
+                  {atmTransactionAnalysis.atmUsage.length > 0 && (
+                    <div className="atm-usage">
+                      <h6>ATM利用状況</h6>
+                      <div className="usage-list">
+                        {atmTransactionAnalysis.atmUsage.slice(0, 5).map((usage, index) => (
+                          <div key={index} className="usage-item">
+                            <div className="usage-location">{usage.location}</div>
+                            <div className="usage-stats">
+                              <span>{usage.transactionCount}回</span>
+                              <span>{formatCurrency(usage.totalAmount)}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 取引種別分布 */}
+                  {atmTransactionAnalysis.transactionTypeDistribution.length > 0 && (
+                    <div className="transaction-type-distribution">
+                      <h6>取引種別分布</h6>
+                      <div className="distribution-list">
+                        {atmTransactionAnalysis.transactionTypeDistribution.map((dist, index) => (
+                          <div key={index} className="distribution-item">
+                            <span className="type-label">{dist.type}</span>
+                            <span className="type-count">{dist.count}回 ({dist.percentage}%)</span>
+                            <span className="type-amount">{formatCurrency(dist.totalAmount)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* 財務概要セクション */}
             {financialSummary && (
               <div className="financial-summary-section">
@@ -3643,6 +3862,171 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowAddGuitarPractice(false)}
+                  >
+                    キャンセル
+                  </button>
+                  <button type="submit">記録</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ATM取引登録フォーム */}
+        {showAddATMTransaction && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>ATM取引を記録</h3>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                
+                const bankAccountId = formData.get('bankAccountId') as string;
+                const transactionDate = formData.get('transactionDate') as string;
+                const transactionType = formData.get('transactionType') as string;
+                const amount = parseFloat(formData.get('amount') as string);
+                const balance = parseFloat(formData.get('balance') as string);
+                const atmLocation = formData.get('atmLocation') as string;
+                const atmBranch = formData.get('atmBranch') as string;
+                const description = formData.get('description') as string;
+                const referenceNumber = formData.get('referenceNumber') as string;
+                const fees = parseFloat(formData.get('fees') as string) || 0;
+                const notes = formData.get('notes') as string;
+
+                const success = await atmTransactionManager.saveToServer(userId, {
+                  bankAccountId,
+                  transactionDate: new Date(transactionDate),
+                  transactionType: transactionType as any,
+                  amount,
+                  balance,
+                  atmLocation,
+                  atmBranch,
+                  description,
+                  referenceNumber,
+                  fees,
+                  notes
+                });
+
+                if (success) {
+                  alert('ATM取引を記録しました！');
+                  setShowAddATMTransaction(false);
+                  await loadAllData(); // データを再読み込み
+                } else {
+                  alert('ATM取引の記録に失敗しました');
+                }
+              }}>
+                <div className="form-group">
+                  <label htmlFor="bankAccountId">銀行口座</label>
+                  <select id="bankAccountId" name="bankAccountId" required>
+                    <option value="">口座を選択してください</option>
+                    {bankAccounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.bankName} - {account.accountNumber}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="transactionDate">取引日</label>
+                  <input
+                    type="datetime-local"
+                    id="transactionDate"
+                    name="transactionDate"
+                    defaultValue={new Date().toISOString().slice(0, 16)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="transactionType">取引種別</label>
+                  <select id="transactionType" name="transactionType" required>
+                    {ATM_TRANSACTION_TYPES.map((type) => (
+                      <option key={type.value} value={type.value}>{type.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="amount">取引金額</label>
+                  <input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    step="0.01"
+                    required
+                    placeholder="0.00"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="balance">取引後残高</label>
+                  <input
+                    type="number"
+                    id="balance"
+                    name="balance"
+                    step="0.01"
+                    required
+                    placeholder="0.00"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="atmLocation">ATM場所</label>
+                  <input
+                    type="text"
+                    id="atmLocation"
+                    name="atmLocation"
+                    required
+                    placeholder="例: 渋谷駅前"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="atmBranch">ATM支店名</label>
+                  <input
+                    type="text"
+                    id="atmBranch"
+                    name="atmBranch"
+                    required
+                    placeholder="例: 渋谷支店"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="description">説明（任意）</label>
+                  <input
+                    type="text"
+                    id="description"
+                    name="description"
+                    placeholder="取引の詳細説明"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="referenceNumber">取引番号（任意）</label>
+                  <input
+                    type="text"
+                    id="referenceNumber"
+                    name="referenceNumber"
+                    placeholder="ATM取引番号"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="fees">手数料（任意）</label>
+                  <input
+                    type="number"
+                    id="fees"
+                    name="fees"
+                    step="0.01"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="notes">メモ（任意）</label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    placeholder="取引に関するメモ"
+                    rows={3}
+                  />
+                </div>
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddATMTransaction(false)}
                   >
                     キャンセル
                   </button>
