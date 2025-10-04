@@ -1,5 +1,4 @@
 import { mongoose as mongooseDB, ensureDatabaseConnection, verifyJWT as verifyAuth, handleError } from '../utils/database.js';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
@@ -68,14 +67,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { id } = req.query;
     if (!id) {
-      return handleAPIError(res, { statusCode: 400, message: '本のIDが必要です' });
+      return handleError(res, { statusCode: 400, message: '本のIDが必要です' });
     }
 
     if (req.method === 'GET') {
       // 特定の本を取得
       const book = await Book.findById(id);
       if (!book) {
-        return handleAPIError(res, { statusCode: 404, message: '本が見つかりません' });
+        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
 
@@ -113,7 +112,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
 
       if (!book) {
-        return handleAPIError(res, { statusCode: 404, message: '本が見つかりません' });
+        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
 
@@ -144,7 +143,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // 本を削除
       const book = await Book.findByIdAndDelete(id);
       if (!book) {
-        return handleAPIError(res, { statusCode: 404, message: '本が見つかりません' });
+        return handleError(res, { statusCode: 404, message: '本が見つかりません' });
       }
 
 
@@ -153,10 +152,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         message: '本を削除しました',
       });
     } else {
-      return handleAPIError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
+      return handleError(res, { statusCode: 405, message: 'メソッドが許可されていません' });
     }
   } catch (error) {
     console.error('❌ Book detail API error:', error);
-    return handleAPIError(res, error, 'サーバーエラーが発生しました');
+    return handleError(res, error, 'サーバーエラーが発生しました');
   }
 };
