@@ -10,6 +10,7 @@ import { WalletBalanceManager } from "../utils/walletBalanceManager";
 import { BankAccountManager } from "../utils/bankAccountManager";
 import { GuitarPracticeManager } from "../utils/guitarPracticeManager";
 import { ATMTransactionManager } from "../utils/atmTransactionManager";
+import { CreditCardManager } from "../utils/creditCardManager";
 import { apiFetch } from "../utils/apiClient";
 import WalletBalanceCalendar from "./WalletBalanceCalendar";
 import {
@@ -66,6 +67,7 @@ import {
 import { FinancialSummary } from "../types/financialOverview";
 import { GuitarPracticeRecord, GuitarPracticeSummary, GuitarPracticeAnalysis, GUITAR_TECHNIQUES } from "../types/guitarPractice";
 import { ATMTransaction, ATMTransactionSummary, ATMTransactionAnalysis, ATM_TRANSACTION_TYPES } from "../types/atmTransaction";
+import { CreditCard, CreditCardSummary, CreditCardAnalysis, CREDIT_CARD_TYPES, CARD_ISSUERS } from "../types/creditCard";
 import "./ComprehensiveDashboard.css";
 
 interface ComprehensiveDashboardProps {
@@ -135,6 +137,14 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [atmTransactionSummary, setAtmTransactionSummary] = useState<ATMTransactionSummary | null>(null);
   const [atmTransactionAnalysis, setAtmTransactionAnalysis] = useState<ATMTransactionAnalysis | null>(null);
   const [showAddATMTransaction, setShowAddATMTransaction] = useState(false);
+  
+  // クレジットカード関連の状態
+  const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
+  const [creditCardSummary, setCreditCardSummary] = useState<CreditCardSummary | null>(null);
+  const [creditCardAnalysis, setCreditCardAnalysis] = useState<CreditCardAnalysis | null>(null);
+  const [showAddCreditCard, setShowAddCreditCard] = useState(false);
+  const [editingCreditCard, setEditingCreditCard] = useState<CreditCard | null>(null);
+  const [showCreditCardUpdate, setShowCreditCardUpdate] = useState(false);
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(
     null
   );
@@ -180,6 +190,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const bankAccountManager = BankAccountManager.getInstance();
   const guitarPracticeManager = GuitarPracticeManager.getInstance();
   const atmTransactionManager = ATMTransactionManager.getInstance();
+  const creditCardManager = CreditCardManager.getInstance();
 
   useEffect(() => {
     loadAllData();
@@ -783,6 +794,16 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       setAtmTransactions(transactions);
       setAtmTransactionSummary(transactionSummary);
       setAtmTransactionAnalysis(transactionAnalysis);
+
+      // クレジットカードデータ
+      await creditCardManager.loadFromServer(userId);
+      const cards = creditCardManager.getCards(userId);
+      const cardSummary = creditCardManager.getCardSummary(userId);
+      const cardAnalysis = creditCardManager.getCardAnalysis(userId);
+      
+      setCreditCards(cards);
+      setCreditCardSummary(cardSummary);
+      setCreditCardAnalysis(cardAnalysis);
     } catch (err) {
       console.error("データの読み込みエラー:", err);
       setError("データの読み込みに失敗しました");
@@ -2862,6 +2883,224 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
               )}
             </div>
 
+            {/* クレジットカードセクション */}
+            <div className="credit-cards-section">
+              <div className="section-header">
+                <h4>💳 クレジットカード</h4>
+                <button
+                  className="add-credit-card-button"
+                  onClick={() => setShowAddCreditCard(true)}
+                >
+                  + カードを追加
+                </button>
+              </div>
+
+              {/* クレジットカードサマリー */}
+              {creditCardSummary && (
+                <div className="credit-card-summary">
+                  <div className="summary-cards">
+                    <div className="summary-card">
+                      <h5>総カード数</h5>
+                      <div className="amount">
+                        {creditCardSummary.totalCards}枚
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>総利用限度額</h5>
+                      <div className="amount">
+                        {formatCurrency(creditCardSummary.totalCreditLimit)}
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>現在の残高</h5>
+                      <div className="amount negative">
+                        {formatCurrency(creditCardSummary.totalCurrentBalance)}
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>利用可能枠</h5>
+                      <div className="amount positive">
+                        {formatCurrency(creditCardSummary.totalAvailableCredit)}
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>利用率</h5>
+                      <div className={`amount ${creditCardSummary.averageUtilizationRate > 30 ? 'negative' : 'positive'}`}>
+                        {creditCardSummary.averageUtilizationRate}%
+                      </div>
+                    </div>
+                    <div className="summary-card">
+                      <h5>総年会費</h5>
+                      <div className="amount negative">
+                        {formatCurrency(creditCardSummary.totalAnnualFees)}
+                      </div>
+                    </div>
+                  </div>
+                  {creditCardSummary.nextPaymentDue && (
+                    <div className="next-payment">
+                      次回支払日: {new Date(creditCardSummary.nextPaymentDue).toLocaleDateString('ja-JP')}
+                    </div>
+                  )}
+                  {creditCardSummary.cardsNearLimit > 0 && (
+                    <div className="cards-near-limit warning">
+                      限度額に近いカード: {creditCardSummary.cardsNearLimit}枚
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* クレジットカードリスト */}
+              <div className="credit-cards-list">
+                <h5>📋 カード一覧</h5>
+                {creditCards.length === 0 ? (
+                  <p className="no-cards">クレジットカードが登録されていません</p>
+                ) : (
+                  <div className="cards-grid">
+                    {creditCards.map((card) => (
+                      <div key={card.id} className={`credit-card-item ${card.isPrimary ? 'primary' : ''}`}>
+                        <div className="card-header">
+                          <div className="card-name">
+                            <h6>{card.cardName}</h6>
+                            {card.isPrimary && <span className="primary-badge">メイン</span>}
+                          </div>
+                          <div className="card-type">
+                            {CREDIT_CARD_TYPES.find(t => t.value === card.cardType)?.label || card.cardType}
+                          </div>
+                        </div>
+                        <div className="card-number">
+                          ****-****-****-{card.lastFourDigits}
+                        </div>
+                        <div className="card-details">
+                          <div className="card-limit">
+                            <span className="label">利用限度額:</span>
+                            <span className="value">{formatCurrency(card.creditLimit)}</span>
+                          </div>
+                          <div className="card-balance">
+                            <span className="label">現在の残高:</span>
+                            <span className="value negative">{formatCurrency(card.currentBalance)}</span>
+                          </div>
+                          <div className="card-available">
+                            <span className="label">利用可能枠:</span>
+                            <span className="value positive">{formatCurrency(card.availableCredit)}</span>
+                          </div>
+                          <div className="card-utilization">
+                            <span className="label">利用率:</span>
+                            <span className={`value ${(card.currentBalance / card.creditLimit * 100) > 30 ? 'negative' : 'positive'}`}>
+                              {Math.round(card.currentBalance / card.creditLimit * 100)}%
+                            </span>
+                          </div>
+                        </div>
+                        <div className="card-info">
+                          <div className="card-issuer">発行会社: {card.issuer}</div>
+                          <div className="card-expiry">有効期限: {CreditCardManager.formatExpiryDate(card.expiryMonth, card.expiryYear)}</div>
+                          <div className="card-due-date">支払日: {new Date(card.paymentDueDate).toLocaleDateString('ja-JP')}</div>
+                          {card.annualFee > 0 && (
+                            <div className="card-annual-fee">年会費: {formatCurrency(card.annualFee)}</div>
+                          )}
+                        </div>
+                        <div className="card-actions">
+                          <button
+                            className="update-button"
+                            onClick={() => {
+                              setEditingCreditCard(card);
+                              setShowCreditCardUpdate(true);
+                            }}
+                          >
+                            更新
+                          </button>
+                          <button
+                            className="delete-button"
+                            onClick={async () => {
+                              if (confirm("このクレジットカードを削除しますか？")) {
+                                await creditCardManager.deleteCard(card.id);
+                                loadAllData();
+                              }
+                            }}
+                          >
+                            削除
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* クレジットカード分析 */}
+              {creditCardAnalysis && (
+                <div className="credit-card-analysis-section">
+                  <h5>📊 カード分析</h5>
+                  
+                  {/* クレジットヘルススコア */}
+                  <div className="credit-health-score">
+                    <h6>クレジットヘルススコア</h6>
+                    <div className={`score-display ${creditCardAnalysis.creditHealthScore >= 80 ? 'excellent' : 
+                                                      creditCardAnalysis.creditHealthScore >= 60 ? 'good' : 
+                                                      creditCardAnalysis.creditHealthScore >= 40 ? 'fair' : 'poor'}`}>
+                      {creditCardAnalysis.creditHealthScore}/100
+                    </div>
+                  </div>
+
+                  {/* 支払い行動 */}
+                  <div className="payment-behavior">
+                    <h6>支払い行動</h6>
+                    <div className={`behavior-indicator ${creditCardAnalysis.paymentBehavior}`}>
+                      {creditCardAnalysis.paymentBehavior === 'excellent' ? '🟢 優秀' :
+                       creditCardAnalysis.paymentBehavior === 'good' ? '🟡 良好' :
+                       creditCardAnalysis.paymentBehavior === 'fair' ? '🟠 普通' : '🔴 要改善'}
+                    </div>
+                  </div>
+
+                  {/* カード種別分布 */}
+                  {creditCardAnalysis.cardTypeDistribution.length > 0 && (
+                    <div className="card-type-distribution">
+                      <h6>カード種別分布</h6>
+                      <div className="distribution-list">
+                        {creditCardAnalysis.cardTypeDistribution.map((dist, index) => (
+                          <div key={index} className="distribution-item">
+                            <span className="type-label">{dist.type}</span>
+                            <span className="type-count">{dist.count}枚 ({dist.percentage}%)</span>
+                            <span className="type-limit">{formatCurrency(dist.totalLimit)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 発行会社分布 */}
+                  {creditCardAnalysis.issuerDistribution.length > 0 && (
+                    <div className="issuer-distribution">
+                      <h6>発行会社分布</h6>
+                      <div className="issuer-list">
+                        {creditCardAnalysis.issuerDistribution.map((issuer, index) => (
+                          <div key={index} className="issuer-item">
+                            <div className="issuer-name">{issuer.issuer}</div>
+                            <div className="issuer-stats">
+                              <span>{issuer.count}枚</span>
+                              <span>{formatCurrency(issuer.totalLimit)}</span>
+                              <span>平均金利: {issuer.averageRate}%</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 推奨事項 */}
+                  {creditCardAnalysis.recommendations.length > 0 && (
+                    <div className="recommendations">
+                      <h6>推奨事項</h6>
+                      <ul className="recommendations-list">
+                        {creditCardAnalysis.recommendations.map((rec, index) => (
+                          <li key={index} className="recommendation-item">{rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* 財務概要セクション */}
             {financialSummary && (
               <div className="financial-summary-section">
@@ -4031,6 +4270,466 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     キャンセル
                   </button>
                   <button type="submit">記録</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* クレジットカード登録フォーム */}
+        {showAddCreditCard && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>クレジットカードを登録</h3>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                
+                const cardName = formData.get('cardName') as string;
+                const cardType = formData.get('cardType') as string;
+                const cardNumber = formData.get('cardNumber') as string;
+                const lastFourDigits = formData.get('lastFourDigits') as string;
+                const expiryMonth = parseInt(formData.get('expiryMonth') as string);
+                const expiryYear = parseInt(formData.get('expiryYear') as string);
+                const cardHolderName = formData.get('cardHolderName') as string;
+                const issuer = formData.get('issuer') as string;
+                const creditLimit = parseFloat(formData.get('creditLimit') as string);
+                const currentBalance = parseFloat(formData.get('currentBalance') as string) || 0;
+                const minimumPayment = parseFloat(formData.get('minimumPayment') as string) || 0;
+                const paymentDueDate = formData.get('paymentDueDate') as string;
+                const interestRate = parseFloat(formData.get('interestRate') as string) || 0;
+                const annualFee = parseFloat(formData.get('annualFee') as string) || 0;
+                const rewardProgram = formData.get('rewardProgram') as string;
+                const isActive = formData.get('isActive') === 'on';
+                const isPrimary = formData.get('isPrimary') === 'on';
+                const notes = formData.get('notes') as string;
+
+                const availableCredit = creditLimit - currentBalance;
+
+                const success = await creditCardManager.saveToServer(userId, {
+                  cardName,
+                  cardType: cardType as any,
+                  cardNumber: CreditCardManager.maskCardNumber(cardNumber),
+                  lastFourDigits,
+                  expiryMonth,
+                  expiryYear,
+                  cardHolderName,
+                  issuer,
+                  creditLimit,
+                  currentBalance,
+                  availableCredit,
+                  minimumPayment,
+                  paymentDueDate: new Date(paymentDueDate),
+                  interestRate,
+                  annualFee,
+                  rewardProgram,
+                  isActive,
+                  isPrimary,
+                  notes
+                });
+
+                if (success) {
+                  alert('クレジットカードを登録しました！');
+                  setShowAddCreditCard(false);
+                  await loadAllData();
+                } else {
+                  alert('クレジットカードの登録に失敗しました');
+                }
+              }}>
+                <div className="form-group">
+                  <label htmlFor="cardName">カード名</label>
+                  <input
+                    type="text"
+                    id="cardName"
+                    name="cardName"
+                    required
+                    placeholder="例: Visa Gold"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="cardType">カード種別</label>
+                  <select id="cardType" name="cardType" required>
+                    {CREDIT_CARD_TYPES.map((type) => (
+                      <option key={type.value} value={type.value}>{type.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="cardNumber">カード番号</label>
+                  <input
+                    type="text"
+                    id="cardNumber"
+                    name="cardNumber"
+                    required
+                    placeholder="1234567890123456"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="lastFourDigits">下4桁</label>
+                  <input
+                    type="text"
+                    id="lastFourDigits"
+                    name="lastFourDigits"
+                    required
+                    maxLength={4}
+                    placeholder="3456"
+                  />
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="expiryMonth">有効期限月</label>
+                    <select id="expiryMonth" name="expiryMonth" required>
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>{i + 1}月</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="expiryYear">有効期限年</label>
+                    <select id="expiryYear" name="expiryYear" required>
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const year = new Date().getFullYear() + i;
+                        return <option key={year} value={year}>{year}年</option>;
+                      })}
+                    </select>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="cardHolderName">カード名義人</label>
+                  <input
+                    type="text"
+                    id="cardHolderName"
+                    name="cardHolderName"
+                    required
+                    placeholder="TARO YAMADA"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="issuer">発行会社</label>
+                  <select id="issuer" name="issuer" required>
+                    {CARD_ISSUERS.map((issuer) => (
+                      <option key={issuer} value={issuer}>{issuer}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="creditLimit">利用限度額</label>
+                  <input
+                    type="number"
+                    id="creditLimit"
+                    name="creditLimit"
+                    step="0.01"
+                    required
+                    placeholder="1000000"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="currentBalance">現在の残高</label>
+                  <input
+                    type="number"
+                    id="currentBalance"
+                    name="currentBalance"
+                    step="0.01"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="minimumPayment">最低支払額</label>
+                  <input
+                    type="number"
+                    id="minimumPayment"
+                    name="minimumPayment"
+                    step="0.01"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="paymentDueDate">支払日</label>
+                  <input
+                    type="date"
+                    id="paymentDueDate"
+                    name="paymentDueDate"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="interestRate">金利（年率）</label>
+                  <input
+                    type="number"
+                    id="interestRate"
+                    name="interestRate"
+                    step="0.01"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="annualFee">年会費</label>
+                  <input
+                    type="number"
+                    id="annualFee"
+                    name="annualFee"
+                    step="0.01"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="rewardProgram">ポイント・マイルプログラム</label>
+                  <input
+                    type="text"
+                    id="rewardProgram"
+                    name="rewardProgram"
+                    placeholder="例: 楽天ポイント"
+                  />
+                </div>
+                <div className="form-group checkbox-group">
+                  <label>
+                    <input type="checkbox" name="isActive" defaultChecked />
+                    アクティブ
+                  </label>
+                </div>
+                <div className="form-group checkbox-group">
+                  <label>
+                    <input type="checkbox" name="isPrimary" />
+                    メインカード
+                  </label>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="notes">メモ（任意）</label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    placeholder="カードに関するメモ"
+                    rows={3}
+                  />
+                </div>
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddCreditCard(false)}
+                  >
+                    キャンセル
+                  </button>
+                  <button type="submit">登録</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* クレジットカード更新フォーム */}
+        {showCreditCardUpdate && editingCreditCard && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>クレジットカードを更新</h3>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                
+                const updates = {
+                  cardName: formData.get('cardName') as string,
+                  cardType: formData.get('cardType') as string,
+                  lastFourDigits: formData.get('lastFourDigits') as string,
+                  expiryMonth: parseInt(formData.get('expiryMonth') as string),
+                  expiryYear: parseInt(formData.get('expiryYear') as string),
+                  cardHolderName: formData.get('cardHolderName') as string,
+                  issuer: formData.get('issuer') as string,
+                  creditLimit: parseFloat(formData.get('creditLimit') as string),
+                  currentBalance: parseFloat(formData.get('currentBalance') as string),
+                  minimumPayment: parseFloat(formData.get('minimumPayment') as string),
+                  paymentDueDate: formData.get('paymentDueDate') as string,
+                  interestRate: parseFloat(formData.get('interestRate') as string),
+                  annualFee: parseFloat(formData.get('annualFee') as string),
+                  rewardProgram: formData.get('rewardProgram') as string,
+                  isActive: formData.get('isActive') === 'on',
+                  isPrimary: formData.get('isPrimary') === 'on',
+                  notes: formData.get('notes') as string
+                };
+
+                const availableCredit = updates.creditLimit - updates.currentBalance;
+                updates.availableCredit = availableCredit;
+
+                const success = await creditCardManager.updateCard(editingCreditCard.id, {
+                  ...updates,
+                  paymentDueDate: new Date(updates.paymentDueDate)
+                });
+
+                if (success) {
+                  alert('クレジットカードを更新しました！');
+                  setShowCreditCardUpdate(false);
+                  setEditingCreditCard(null);
+                  await loadAllData();
+                } else {
+                  alert('クレジットカードの更新に失敗しました');
+                }
+              }}>
+                <div className="form-group">
+                  <label htmlFor="cardName">カード名</label>
+                  <input
+                    type="text"
+                    id="cardName"
+                    name="cardName"
+                    defaultValue={editingCreditCard.cardName}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="cardType">カード種別</label>
+                  <select id="cardType" name="cardType" defaultValue={editingCreditCard.cardType} required>
+                    {CREDIT_CARD_TYPES.map((type) => (
+                      <option key={type.value} value={type.value}>{type.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="lastFourDigits">下4桁</label>
+                  <input
+                    type="text"
+                    id="lastFourDigits"
+                    name="lastFourDigits"
+                    defaultValue={editingCreditCard.lastFourDigits}
+                    required
+                    maxLength={4}
+                  />
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="expiryMonth">有効期限月</label>
+                    <select id="expiryMonth" name="expiryMonth" defaultValue={editingCreditCard.expiryMonth} required>
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>{i + 1}月</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="expiryYear">有効期限年</label>
+                    <select id="expiryYear" name="expiryYear" defaultValue={editingCreditCard.expiryYear} required>
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const year = new Date().getFullYear() + i;
+                        return <option key={year} value={year}>{year}年</option>;
+                      })}
+                    </select>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="cardHolderName">カード名義人</label>
+                  <input
+                    type="text"
+                    id="cardHolderName"
+                    name="cardHolderName"
+                    defaultValue={editingCreditCard.cardHolderName}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="issuer">発行会社</label>
+                  <select id="issuer" name="issuer" defaultValue={editingCreditCard.issuer} required>
+                    {CARD_ISSUERS.map((issuer) => (
+                      <option key={issuer} value={issuer}>{issuer}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="creditLimit">利用限度額</label>
+                  <input
+                    type="number"
+                    id="creditLimit"
+                    name="creditLimit"
+                    step="0.01"
+                    defaultValue={editingCreditCard.creditLimit}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="currentBalance">現在の残高</label>
+                  <input
+                    type="number"
+                    id="currentBalance"
+                    name="currentBalance"
+                    step="0.01"
+                    defaultValue={editingCreditCard.currentBalance}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="minimumPayment">最低支払額</label>
+                  <input
+                    type="number"
+                    id="minimumPayment"
+                    name="minimumPayment"
+                    step="0.01"
+                    defaultValue={editingCreditCard.minimumPayment}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="paymentDueDate">支払日</label>
+                  <input
+                    type="date"
+                    id="paymentDueDate"
+                    name="paymentDueDate"
+                    defaultValue={new Date(editingCreditCard.paymentDueDate).toISOString().split('T')[0]}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="interestRate">金利（年率）</label>
+                  <input
+                    type="number"
+                    id="interestRate"
+                    name="interestRate"
+                    step="0.01"
+                    defaultValue={editingCreditCard.interestRate}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="annualFee">年会費</label>
+                  <input
+                    type="number"
+                    id="annualFee"
+                    name="annualFee"
+                    step="0.01"
+                    defaultValue={editingCreditCard.annualFee}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="rewardProgram">ポイント・マイルプログラム</label>
+                  <input
+                    type="text"
+                    id="rewardProgram"
+                    name="rewardProgram"
+                    defaultValue={editingCreditCard.rewardProgram}
+                  />
+                </div>
+                <div className="form-group checkbox-group">
+                  <label>
+                    <input type="checkbox" name="isActive" defaultChecked={editingCreditCard.isActive} />
+                    アクティブ
+                  </label>
+                </div>
+                <div className="form-group checkbox-group">
+                  <label>
+                    <input type="checkbox" name="isPrimary" defaultChecked={editingCreditCard.isPrimary} />
+                    メインカード
+                  </label>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="notes">メモ（任意）</label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    defaultValue={editingCreditCard.notes || ''}
+                    rows={3}
+                  />
+                </div>
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreditCardUpdate(false);
+                      setEditingCreditCard(null);
+                    }}
+                  >
+                    キャンセル
+                  </button>
+                  <button type="submit">更新</button>
                 </div>
               </form>
             </div>
