@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { WalletBalanceManager } from '../utils/walletBalanceManager';
+import { BankAccountManager } from '../utils/bankAccountManager';
 import { WalletTransaction } from '../types/walletBalance';
+import { BankAccount } from '../types/bankAccount';
 import './WalletBalanceCalendar.css';
 
 interface WalletBalanceCalendarProps {
@@ -10,13 +12,15 @@ interface WalletBalanceCalendarProps {
   onClose: () => void;
   initialBalance?: number;
   transactions?: WalletTransaction[];
+  bankAccounts?: BankAccount[];
 }
 
 const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({ 
   userId, 
   onClose, 
   initialBalance = 0, 
-  transactions: initialTransactions = [] 
+  transactions: initialTransactions = [],
+  bankAccounts = []
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
@@ -25,6 +29,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   const walletManager = WalletBalanceManager.getInstance();
+  const bankAccountManager = BankAccountManager.getInstance();
 
   useEffect(() => {
     if (initialTransactions.length > 0) {
@@ -34,11 +39,24 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     }
   }, [userId, currentDate, initialTransactions]);
 
+  // 銀行口座の総残高を計算
+  const getTotalBankBalance = () => {
+    return bankAccounts.reduce((total, account) => total + (account.currentBalance || 0), 0);
+  };
+
+  // 総残高（財布 + 銀行口座）を計算
+  const getTotalBalance = () => {
+    return (walletBalance?.amount || 0) + getTotalBankBalance();
+  };
+
   const loadTransactions = () => {
     walletManager.loadFromLocalStorage();
     const allTransactions = walletManager.getTransactions(userId);
     setTransactions(allTransactions);
   };
+
+  // 財布の残高を取得
+  const walletBalance = walletManager.getWalletBalance(userId);
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -185,7 +203,21 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   return (
     <div className="wallet-balance-calendar">
       <div className="calendar-header">
-        <h2>財布の残高カレンダー</h2>
+        <h2>金融残高カレンダー</h2>
+        <div className="balance-summary">
+          <div className="balance-item">
+            <span className="label">財布:</span>
+            <span className="amount">{formatCurrency(walletBalance?.amount || 0)}</span>
+          </div>
+          <div className="balance-item">
+            <span className="label">銀行:</span>
+            <span className="amount">{formatCurrency(getTotalBankBalance())}</span>
+          </div>
+          <div className="balance-item total">
+            <span className="label">総残高:</span>
+            <span className="amount">{formatCurrency(getTotalBalance())}</span>
+          </div>
+        </div>
         <button className="close-button" onClick={onClose}>
           ✕
         </button>

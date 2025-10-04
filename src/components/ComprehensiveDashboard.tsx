@@ -74,7 +74,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   onClose,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    "overview" | "today" | "thisweek" | "thismonth" | "urgent" | "goals" | "assets" | "actions" | "plans" | "waste" | "wallet" | "financial" | "banking"
+    "overview" | "today" | "thisweek" | "thismonth" | "urgent" | "goals" | "assets" | "actions" | "plans" | "waste" | "financial"
   >("overview");
   const [selectedPeriod, setSelectedPeriod] = useState<
     "week" | "month" | "year"
@@ -883,25 +883,11 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           💸 無駄遣い
         </button>
         <button
-          className={`tab ${activeTab === "wallet" ? "active" : ""}`}
-          onClick={() => setActiveTab("wallet")}
-          title="財布の残高を表示"
-        >
-          💰 財布
-        </button>
-        <button
           className={`tab ${activeTab === "financial" ? "active" : ""}`}
           onClick={() => setActiveTab("financial")}
-          title="財務情報を表示"
+          title="金融情報を表示"
         >
-          📈 財務
-        </button>
-        <button
-          className={`tab ${activeTab === "banking" ? "active" : ""}`}
-          onClick={() => setActiveTab("banking")}
-          title="銀行口座を表示"
-        >
-          🏦 銀行
+          💳 金融
         </button>
       </div>
 
@@ -2342,176 +2328,185 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           </div>
         )}
 
-        {activeTab === "wallet" && walletBalanceSummary && (
-          <div className="wallet-tab">
-            <div className="wallet-grid">
-              <div className="wallet-balance">
-                <h3>現在の残高</h3>
-                <div className="balance-display">
-                  <div className="balance-amount">
-                    {walletBalance?.amount?.toLocaleString() || 0}円
+
+        {activeTab === "financial" && (
+          <div className="financial-tab">
+            <div className="financial-header">
+              <h3>金融管理</h3>
+            </div>
+
+            {/* 財布の残高セクション */}
+            <div className="wallet-section">
+              <div className="section-header">
+                <h4>💰 財布の残高</h4>
+                <button
+                  className="add-balance-button"
+                  onClick={() => setShowWalletBalanceForm(true)}
+                >
+                  + 残高を更新
+                </button>
+              </div>
+
+              <div className="wallet-balance-display">
+                <div className="current-balance">
+                  <span className="balance-label">現在の残高</span>
+                  <span className="balance-amount">
+                    {formatCurrency(walletBalance?.amount || 0)}
+                  </span>
+                </div>
+                <div className="balance-summary">
+                  <div className="summary-item">
+                    <span>今月の収入</span>
+                    <span className="positive">
+                      +{formatCurrency(walletBalanceSummary.totalIncome)}
+                    </span>
                   </div>
-                  <div className="balance-actions">
-                    <button 
-                      className="update-balance-button"
-                      onClick={() => setShowUpdateWalletBalance(true)}
-                    >
-                      残高を更新
-                    </button>
-                    <button 
-                      className="add-transaction-button"
-                      onClick={() => setShowAddWalletTransaction(true)}
-                    >
-                      取引を追加
-                    </button>
-                    <button 
-                      className="calendar-button"
-                      onClick={() => setShowWalletCalendar(true)}
-                    >
-                      📅 カレンダー表示
-                    </button>
+                  <div className="summary-item">
+                    <span>今月の支出</span>
+                    <span className="negative">
+                      -{formatCurrency(walletBalanceSummary.totalExpense)}
+                    </span>
+                  </div>
+                  <div className="summary-item">
+                    <span>純変化</span>
+                    <span className={walletBalanceSummary.netChange >= 0 ? 'positive' : 'negative'}>
+                      {walletBalanceSummary.netChange >= 0 ? '+' : ''}{formatCurrency(walletBalanceSummary.netChange)}
+                    </span>
                   </div>
                 </div>
-                {walletBalance?.notes && (
-                  <div className="balance-notes">
-                    <p>{walletBalance.notes}</p>
+              </div>
+
+              <div className="wallet-actions">
+                <button
+                  className="calendar-button"
+                  onClick={() => setShowWalletCalendar(true)}
+                >
+                  📅 カレンダー表示
+                </button>
+                <button
+                  className="add-transaction-button"
+                  onClick={() => setShowWalletTransactionForm(true)}
+                >
+                  + 取引を追加
+                </button>
+              </div>
+
+              {/* 最近の取引 */}
+              <div className="recent-transactions">
+                <h5>最近の取引</h5>
+                {walletTransactions.slice(0, 5).map((transaction) => (
+                  <div key={transaction.id} className={`transaction-item ${transaction.type}`}>
+                    <div className="transaction-info">
+                      <span className="description">{transaction.description}</span>
+                      <span className="category">{transaction.category}</span>
+                    </div>
+                    <div className="transaction-amount">
+                      {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                    </div>
                   </div>
+                ))}
+                {walletTransactions.length === 0 && (
+                  <p className="no-transactions">取引履歴がありません</p>
                 )}
               </div>
+            </div>
 
-              <div className="wallet-summary">
-                <h3>今月のサマリー</h3>
-                <div className="summary-cards">
-                  <div className="summary-card income">
-                    <h4>収入</h4>
-                    <div className="amount">
-                      {walletBalanceSummary.totalIncome.toLocaleString()}円
-                    </div>
-                  </div>
-                  <div className="summary-card expense">
-                    <h4>支出</h4>
-                    <div className="amount">
-                      {walletBalanceSummary.totalExpense.toLocaleString()}円
-                    </div>
-                  </div>
-                  <div className="summary-card net">
-                    <h4>純収入</h4>
-                    <div className="amount">
-                      {(walletBalanceSummary.totalIncome - walletBalanceSummary.totalExpense).toLocaleString()}円
-                    </div>
-                  </div>
-                </div>
+            {/* 銀行口座セクション */}
+            <div className="banking-section">
+              <div className="section-header">
+                <h4>🏦 銀行口座</h4>
+                <button
+                  className="add-bank-account-button"
+                  onClick={() => setShowAddBankAccount(true)}
+                >
+                  + 口座を追加
+                </button>
               </div>
 
-              <div className="wallet-transactions">
-                <h3>最近の取引</h3>
-                <div className="transactions-list">
-                  {walletTransactions.slice(0, 10).map((transaction) => {
-                    const category = WALLET_CATEGORIES.find(cat => cat.id === transaction.category);
-                    return (
-                      <div key={transaction.id} className={`transaction-item ${transaction.type}`}>
-                        <div className="transaction-icon">
-                          {category?.icon || '📝'}
-                        </div>
-                        <div className="transaction-info">
-                          <h4>{transaction.description}</h4>
-                          <p>{category?.name || transaction.category}</p>
-                          <div className="transaction-meta">
-                            <span className="transaction-date">
-                              {transaction.date.toLocaleDateString('ja-JP')}
-                            </span>
-                            <span className="transaction-amount">
-                              {transaction.type === 'income' ? '+' : '-'}
-                              {transaction.amount.toLocaleString()}円
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+              <div className="bank-accounts-grid">
+                {bankAccounts.map((account) => (
+                  <div key={account.id} className="bank-account-card">
+                    <div className="account-header">
+                      <h5>{account.bankName}</h5>
+                      <span className="account-type">{account.accountType}</span>
+                    </div>
+                    <div className="account-balance">
+                      <span className="balance-amount">
+                        {account.balance?.toLocaleString() || 0}円
+                      </span>
+                      <span className="balance-label">残高</span>
+                    </div>
+                    <div className="account-details">
+                      <p>口座番号: {account.accountNumber}</p>
+                      <p>支店名: {account.branchName}</p>
+                    </div>
+                    <div className="account-actions">
+                      <button
+                        className="update-button"
+                        onClick={() => {
+                          setEditingBankAccount(account);
+                          setShowBankAccountUpdate(true);
+                        }}
+                      >
+                        更新
+                      </button>
+                      <button
+                        className="delete-button"
+                        onClick={() => {
+                          if (confirm('この口座を削除しますか？')) {
+                            bankAccountManager.deleteBankAccount(account.id);
+                            loadAllData();
+                          }
+                        }}
+                      >
+                        削除
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              {walletBalanceAnalysis && (
-                <div className="wallet-insights">
-                  <h3>インサイト</h3>
-                  <div className="insights-list">
-                    {walletBalanceAnalysis.insights.map((insight, index) => (
-                      <div key={index} className={`insight-item ${insight.type}`}>
-                        <h4>{insight.title}</h4>
-                        <p>{insight.description}</p>
-                        {insight.action && (
-                          <button className="insight-action">
-                            {insight.action}
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+              {bankAccounts.length === 0 && (
+                <div className="empty-state">
+                  <p>銀行口座が登録されていません</p>
+                  <button
+                    className="add-first-account-button"
+                    onClick={() => setShowAddBankAccount(true)}
+                  >
+                    最初の口座を追加
+                  </button>
                 </div>
               )}
             </div>
-          </div>
-        )}
 
-        {activeTab === "financial" && financialSummary && (
-          <div className="financial-tab">
-            <div className="financial-grid">
-              <div className="financial-summary">
-                <h3>財務サマリー</h3>
-                <div className="summary-cards">
-                  <div className="summary-card income">
-                    <h4>総収入</h4>
-                    <div className="amount">
-                      {formatCurrency(financialSummary.totalIncome)}
-                    </div>
+            {/* 財務概要セクション */}
+            {financialSummary && (
+              <div className="financial-summary-section">
+                <div className="section-header">
+                  <h4>📊 財務概要</h4>
+                </div>
+                <div className="financial-summary">
+                  <div className="summary-card">
+                    <h5>総資産</h5>
+                    <p className="amount positive">
+                      {formatCurrency(financialSummary.totalAssets)}
+                    </p>
                   </div>
-                  <div className="summary-card expense">
-                    <h4>総支出</h4>
-                    <div className="amount">
-                      {formatCurrency(financialSummary.totalExpense)}
-                    </div>
+                  <div className="summary-card">
+                    <h5>総負債</h5>
+                    <p className="amount negative">
+                      {formatCurrency(financialSummary.totalLiabilities)}
+                    </p>
                   </div>
-                  <div className="summary-card net">
-                    <h4>純収入</h4>
-                    <div className="amount">
-                      {formatCurrency(financialSummary.netIncome)}
-                    </div>
+                  <div className="summary-card">
+                    <h5>純資産</h5>
+                    <p className={`amount ${financialSummary.netWorth >= 0 ? 'positive' : 'negative'}`}>
+                      {formatCurrency(financialSummary.netWorth)}
+                    </p>
                   </div>
                 </div>
               </div>
-
-              <div className="monthly-trend">
-                <h3>月別推移</h3>
-                <div className="trend-chart">
-                  {financialSummary.monthlyData.map((month, index) => (
-                    <div key={index} className="month-item">
-                      <span className="month-label">{month.month}</span>
-                      <div className="month-bars">
-                        <div
-                          className="bar income"
-                          style={{
-                            height: `${
-                              (month.totalAssets / financialSummary.totalIncome) *
-                              100
-                            }%`,
-                          }}
-                        ></div>
-                        <div
-                          className="bar expense"
-                          style={{
-                            height: `${
-                              (month.totalLiabilities / financialSummary.totalExpense) *
-                              100
-                            }%`,
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -2720,75 +2715,6 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           </div>
         )}
 
-        {/* 銀行口座タブ */}
-        {activeTab === "banking" && (
-          <div className="banking-tab">
-            <div className="banking-header">
-              <h3>銀行口座管理</h3>
-              <button
-                className="add-bank-account-button"
-                onClick={() => setShowAddBankAccount(true)}
-              >
-                + 口座を追加
-              </button>
-            </div>
-
-            <div className="bank-accounts-grid">
-              {bankAccounts.map((account) => (
-                <div key={account.id} className="bank-account-card">
-                  <div className="account-header">
-                    <h4>{account.bankName}</h4>
-                    <span className="account-type">{account.accountType}</span>
-                  </div>
-                  <div className="account-balance">
-                    <span className="balance-amount">
-                      {account.balance?.toLocaleString() || 0}円
-                    </span>
-                    <span className="balance-label">残高</span>
-                  </div>
-                  <div className="account-details">
-                    <p>口座番号: {account.accountNumber}</p>
-                    <p>支店名: {account.branchName}</p>
-                  </div>
-                  <div className="account-actions">
-                    <button
-                      className="update-button"
-                      onClick={() => {
-                        setEditingBankAccount(account);
-                        setShowBankAccountUpdate(true);
-                      }}
-                    >
-                      更新
-                    </button>
-                    <button
-                      className="delete-button"
-                      onClick={() => {
-                        if (confirm('この口座を削除しますか？')) {
-                          bankAccountManager.deleteBankAccount(account.id);
-                          loadAllData();
-                        }
-                      }}
-                    >
-                      削除
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {bankAccounts.length === 0 && (
-              <div className="empty-state">
-                <p>銀行口座が登録されていません</p>
-                <button
-                  className="add-first-account-button"
-                  onClick={() => setShowAddBankAccount(true)}
-                >
-                  最初の口座を追加
-                </button>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* 銀行口座追加フォーム */}
         {showAddBankAccount && (
@@ -2914,13 +2840,14 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           </div>
         )}
 
-        {/* 財布の残高カレンダー */}
+        {/* 金融残高カレンダー */}
         {showWalletCalendar && (
           <WalletBalanceCalendar
             userId={userId}
             onClose={() => setShowWalletCalendar(false)}
             initialBalance={walletBalance?.amount || 0}
             transactions={walletTransactions}
+            bankAccounts={bankAccounts}
           />
         )}
       </div>
