@@ -8,6 +8,91 @@
   border-radius: 8px;
 }
 
+/* 読んだページ数更新UI */
+.progress-controls {
+  margin-top: 8px;
+}
+
+.read-pages-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.read-pages-input {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.read-pages-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.update-pages-button,
+.cancel-pages-button {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.update-pages-button {
+  background: #28a745;
+  color: white;
+}
+
+.update-pages-button:hover:not(:disabled) {
+  background: #218838;
+}
+
+.update-pages-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.cancel-pages-button {
+  background: #6c757d;
+  color: white;
+}
+
+.cancel-pages-button:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.cancel-pages-button:disabled {
+  background: #adb5bd;
+  cursor: not-allowed;
+}
+
+.progress-text-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-pages-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+
+.edit-pages-button:hover {
+  background: #e9ecef;
+}
+
 .bookshelf-section .section-header {
   display: flex;
   justify-content: space-between;

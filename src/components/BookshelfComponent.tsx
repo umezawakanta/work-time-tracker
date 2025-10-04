@@ -42,6 +42,7 @@ interface BookshelfComponentProps {
   handleDeleteBook: (bookId: string, bookTitle: string) => void;
   handleBookCategoryChange: (category: string) => void;
   getReadingProgress: (book: Book) => number;
+  handleUpdateReadPages: (bookId: string, readPages: number) => Promise<void>;
 }
 
 const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
@@ -85,10 +86,13 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
     handleDeleteBook,
     handleBookCategoryChange,
     getReadingProgress,
+    handleUpdateReadPages,
   } = props;
 
   // 本棚のローディング状態をBookshelfComponent内で管理
   const [booksLoading, setBooksLoading] = useState(false);
+  const [updatingReadPages, setUpdatingReadPages] = useState<string | null>(null);
+  const [readPagesInput, setReadPagesInput] = useState<{ [bookId: string]: number }>({});
 
   // 本棚読み込み関数をBookshelfComponent内で定義
   const loadBooksLocal = async () => {
@@ -98,6 +102,39 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
     } finally {
       setBooksLoading(false);
     }
+  };
+
+  // 読んだページ数を更新するハンドラー
+  const handleReadPagesUpdate = async (bookId: string, newReadPages: number) => {
+    if (newReadPages < 0 || newReadPages > books.find(b => b.id === bookId)?.totalPages || 0) {
+      alert('読んだページ数は0以上、総ページ数以下である必要があります');
+      return;
+    }
+
+    setUpdatingReadPages(bookId);
+    try {
+      await handleUpdateReadPages(bookId, newReadPages);
+      setReadPagesInput(prev => ({ ...prev, [bookId]: newReadPages }));
+    } catch (error) {
+      console.error('読んだページ数の更新に失敗しました:', error);
+      alert('読んだページ数の更新に失敗しました');
+    } finally {
+      setUpdatingReadPages(null);
+    }
+  };
+
+  // 読んだページ数入力の開始
+  const startReadPagesEdit = (book: Book) => {
+    setReadPagesInput(prev => ({ ...prev, [book.id]: book.readPages }));
+  };
+
+  // 読んだページ数入力のキャンセル
+  const cancelReadPagesEdit = (bookId: string) => {
+    setReadPagesInput(prev => {
+      const newState = { ...prev };
+      delete newState[bookId];
+      return newState;
+    });
   };
   return (
     <div className="bookshelf-section">
@@ -495,10 +532,52 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
                           data-progress={getReadingProgress(book)}
                         ></div>
                       </div>
-                      <span className="progress-text">
-                        {book.readPages} / {book.totalPages}{" "}
-                        ページ ({getReadingProgress(book)}%)
-                      </span>
+                      <div className="progress-controls">
+                        {readPagesInput[book.id] !== undefined ? (
+                          <div className="read-pages-edit">
+                            <input
+                              type="number"
+                              min="0"
+                              max={book.totalPages}
+                              value={readPagesInput[book.id]}
+                              onChange={(e) => setReadPagesInput(prev => ({
+                                ...prev,
+                                [book.id]: parseInt(e.target.value) || 0
+                              }))}
+                              className="read-pages-input"
+                              disabled={updatingReadPages === book.id}
+                            />
+                            <button
+                              onClick={() => handleReadPagesUpdate(book.id, readPagesInput[book.id])}
+                              className="update-pages-button"
+                              disabled={updatingReadPages === book.id}
+                            >
+                              {updatingReadPages === book.id ? '更新中...' : '更新'}
+                            </button>
+                            <button
+                              onClick={() => cancelReadPagesEdit(book.id)}
+                              className="cancel-pages-button"
+                              disabled={updatingReadPages === book.id}
+                            >
+                              キャンセル
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="progress-text-container">
+                            <span className="progress-text">
+                              {book.readPages} / {book.totalPages}{" "}
+                              ページ ({getReadingProgress(book)}%)
+                            </span>
+                            <button
+                              onClick={() => startReadPagesEdit(book)}
+                              className="edit-pages-button"
+                              title="読んだページ数を編集"
+                            >
+                              ✏️
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="book-actions">

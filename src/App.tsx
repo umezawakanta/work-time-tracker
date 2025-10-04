@@ -4014,6 +4014,38 @@ ${errorInfo.stack}
     return Math.round((book.readPages / book.totalPages) * 100);
   };
 
+  const handleUpdateReadPages = async (bookId: string, readPages: number) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/books/${bookId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ readPages }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // 本のリストを更新
+        setBooks(prev => prev.map(book => 
+          book.id === bookId 
+            ? { ...book, readPages: readPages }
+            : book
+        ));
+        setMessage("読んだページ数を更新しました！");
+      } else {
+        setMessage(`読んだページ数の更新失敗: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage(
+        `エラー: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
+    }
+  };
+
   const handleBookCategoryChange = (category: string) => {
     setSelectedBookCategory(category);
     loadBooks();
@@ -6433,6 +6465,7 @@ User Agent: ${userAgent}
                     handleBookCategoryChange={handleBookCategoryChange}
                     getBookCategories={getBookCategories}
                     getReadingProgress={getReadingProgress}
+                    handleUpdateReadPages={handleUpdateReadPages}
                   />
                 );
               } else if (feature.id === "memos") {
