@@ -31,10 +31,10 @@ BookSchema.pre('save', function(next) {
   next();
 });
 
-const Book = mongooseDB.models['Book'] || mongooseDB.model('Book', BookSchema);
+const Book = (mongooseDB.models['Book'] as any) || mongooseDB.model('Book', BookSchema);
 
 // CORS設定
-const setCorsHeaders = (res, origin) => {
+const setCorsHeaders = (res: VercelResponse, origin: string | undefined) => {
   const allowedOrigins = ['http://localhost:9000', 'https://work-time-tracker-five.vercel.app'];
   const isPreview = origin && /^https:\/\/work-time-tracker-five-[a-z0-9-]+\.vercel\.app$/.test(origin);
   const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isPreview);
