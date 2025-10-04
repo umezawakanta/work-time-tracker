@@ -2432,7 +2432,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     </div>
                     <div className="account-balance">
                       <span className="balance-amount">
-                        {account.balance?.toLocaleString() || 0}円
+                        {(account.currentBalance || account.balance || 0).toLocaleString()}円
                       </span>
                       <span className="balance-label">残高</span>
                     </div>
@@ -2729,7 +2729,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   accountType: formData.get('accountType') as "普通" | "当座" | "貯蓄" | "定期",
                   accountNumber: formData.get('accountNumber') as string,
                   branchName: formData.get('branchName') as string,
-                  balance: Number(formData.get('balance')),
+                  currentBalance: Number(formData.get('balance')),
                   notes: formData.get('notes') as string
                 };
                 bankAccountManager.createBankAccount(userId, accountData);
@@ -2789,7 +2789,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   accountType: formData.get('accountType') as "普通" | "当座" | "貯蓄" | "定期",
                   accountNumber: formData.get('accountNumber') as string,
                   branchName: formData.get('branchName') as string,
-                  balance: Number(formData.get('balance')),
+                  currentBalance: Number(formData.get('balance')),
                   notes: formData.get('notes') as string
                 };
                 bankAccountManager.updateBankAccount(editingBankAccount.id, accountData);
@@ -2820,7 +2820,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 </div>
                 <div className="form-group">
                   <label>残高</label>
-                  <input type="number" name="balance" defaultValue={editingBankAccount.balance || 0} />
+                  <input type="number" name="balance" defaultValue={editingBankAccount.currentBalance || editingBankAccount.balance || 0} />
                 </div>
                 <div className="form-group">
                   <label>メモ</label>

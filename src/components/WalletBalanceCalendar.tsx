@@ -44,11 +44,16 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     const accounts = bankAccountManager.getBankAccount(userId);
     console.log('Bank accounts in calendar:', accounts);
     if (Array.isArray(accounts)) {
-      const total = accounts.reduce((total, account) => total + (account.currentBalance || 0), 0);
+      const total = accounts.reduce((total, account) => {
+        const balance = account.currentBalance || account.balance || 0;
+        console.log('Account balance:', account.bankName, balance);
+        return total + balance;
+      }, 0);
       console.log('Total bank balance (array):', total);
       return total;
     } else if (accounts) {
-      const balance = accounts.currentBalance || 0;
+      const balance = accounts.currentBalance || accounts.balance || 0;
+      console.log('Account balance (single):', accounts.bankName, balance);
       console.log('Total bank balance (single):', balance);
       return balance;
     }
