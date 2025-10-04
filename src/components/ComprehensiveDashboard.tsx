@@ -6,6 +6,7 @@ import { ActionHistoryManager } from "../utils/actionHistoryManager";
 import { FuturePlanningManager } from "../utils/futurePlanningManager";
 import { WasteAnalysisManager } from "../utils/wasteAnalysisManager";
 import { FinancialOverviewManager } from "../utils/financialOverviewManager";
+import { WalletBalanceManager } from "../utils/walletBalanceManager";
 import {
   AssetLiabilitySummary,
   AssetLiabilityAnalysis,
@@ -44,7 +45,20 @@ interface FuturePlan {
   createdAt: string;
   updatedAt: string;
 }
-import { WasteAnalysis } from "../types/wasteAnalysis";
+import { 
+  WasteAnalysis, 
+  WasteRecord, 
+  WasteGoal, 
+  WasteAlert, 
+  WASTE_CATEGORIES 
+} from "../types/wasteAnalysis";
+import {
+  WalletBalance,
+  WalletTransaction,
+  WalletBalanceSummary,
+  WalletBalanceAnalysis,
+  WALLET_CATEGORIES,
+} from "../types/walletBalance";
 import { FinancialSummary } from "../types/financialOverview";
 import "./ComprehensiveDashboard.css";
 
@@ -58,7 +72,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   onClose,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    "overview" | "today" | "thisweek" | "thismonth" | "urgent" | "goals" | "assets" | "actions" | "plans" | "waste" | "financial"
+    "overview" | "today" | "thisweek" | "thismonth" | "urgent" | "goals" | "assets" | "actions" | "plans" | "waste" | "wallet" | "financial"
   >("overview");
   const [selectedPeriod, setSelectedPeriod] = useState<
     "week" | "month" | "year"
@@ -85,6 +99,17 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [wasteAnalysis, setWasteAnalysis] = useState<WasteAnalysis | null>(
     null
   );
+  const [wasteRecords, setWasteRecords] = useState<WasteRecord[]>([]);
+  const [wasteGoals, setWasteGoals] = useState<WasteGoal[]>([]);
+  const [wasteAlerts, setWasteAlerts] = useState<WasteAlert[]>([]);
+  const [showAddWasteRecord, setShowAddWasteRecord] = useState(false);
+  const [showAddWasteGoal, setShowAddWasteGoal] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null);
+  const [walletTransactions, setWalletTransactions] = useState<WalletTransaction[]>([]);
+  const [walletBalanceSummary, setWalletBalanceSummary] = useState<WalletBalanceSummary | null>(null);
+  const [walletBalanceAnalysis, setWalletBalanceAnalysis] = useState<WalletBalanceAnalysis | null>(null);
+  const [showAddWalletTransaction, setShowAddWalletTransaction] = useState(false);
+  const [showUpdateWalletBalance, setShowUpdateWalletBalance] = useState(false);
   const [financialSummary, setFinancialSummary] =
     useState<FinancialSummary | null>(null);
   const [currentDateTime, setCurrentDateTime] = useState<Date>(new Date());
@@ -108,6 +133,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const futurePlanningManager = FuturePlanningManager.getInstance();
   const wasteAnalysisManager = WasteAnalysisManager.getInstance();
   const financialOverviewManager = FinancialOverviewManager.getInstance();
+  const walletBalanceManager = WalletBalanceManager.getInstance();
 
   useEffect(() => {
     loadAllData();
@@ -632,7 +658,24 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
         startDate,
         endDate
       );
+      const wasteRecordsData = wasteAnalysisManager.getWasteRecords(userId);
+      const wasteGoalsData = wasteAnalysisManager.getWasteGoals(userId);
+      const wasteAlertsData = wasteAnalysisManager.getWasteAlerts(userId);
       setWasteAnalysis(wasteData);
+      setWasteRecords(wasteRecordsData);
+      setWasteGoals(wasteGoalsData);
+      setWasteAlerts(wasteAlertsData);
+
+      // 財布の残高データ
+      walletBalanceManager.loadFromLocalStorage();
+      const walletBalanceData = walletBalanceManager.getWalletBalance(userId);
+      const walletTransactionsData = walletBalanceManager.getTransactions(userId, 50);
+      const walletBalanceSummaryData = walletBalanceManager.getWalletBalanceSummary(userId);
+      const walletBalanceAnalysisData = walletBalanceManager.generateWalletBalanceAnalysis(userId);
+      setWalletBalance(walletBalanceData);
+      setWalletTransactions(walletTransactionsData);
+      setWalletBalanceSummary(walletBalanceSummaryData);
+      setWalletBalanceAnalysis(walletBalanceAnalysisData);
 
       // 財務概要データ
       const financialData =
@@ -2131,7 +2174,23 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           <div className="waste-tab">
             <div className="waste-grid">
               <div className="waste-summary">
-                <h3>無駄遣いサマリー</h3>
+                <div className="waste-header">
+                  <h3>無駄遣いサマリー</h3>
+                  <div className="waste-actions">
+                    <button 
+                      className="add-record-button"
+                      onClick={() => setShowAddWasteRecord(true)}
+                    >
+                      + 記録を追加
+                    </button>
+                    <button 
+                      className="add-goal-button"
+                      onClick={() => setShowAddWasteGoal(true)}
+                    >
+                      + 目標を追加
+                    </button>
+                  </div>
+                </div>
                 <div className="summary-cards">
                   <div className="summary-card money">
                     <h4>お金の無駄</h4>
@@ -2191,6 +2250,37 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 </div>
               </div>
 
+              <div className="waste-records">
+                <h3>無駄遣い記録</h3>
+                <div className="records-list">
+                  {wasteRecords.map((record) => {
+                    const category = WASTE_CATEGORIES.find(cat => cat.id === record.categoryId);
+                    return (
+                      <div key={record.id} className={`record-item ${record.isWasteful ? 'wasteful' : 'efficient'}`}>
+                        <div className="record-icon">{category?.icon}</div>
+                        <div className="record-info">
+                          <h4>{category?.name}</h4>
+                          <p>{record.description}</p>
+                          <div className="record-meta">
+                            <span className="record-date">
+                              {record.date.toLocaleDateString('ja-JP')}
+                            </span>
+                            <span className="record-amount">
+                              {record.type === 'money' && formatCurrency(record.amount)}
+                              {record.type === 'time' && `${record.amount}分`}
+                              {record.type === 'effort' && `${record.amount}pt`}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="record-status">
+                          {record.isWasteful ? '無駄' : '効率的'}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="improvement-suggestions">
                 <h3>改善提案</h3>
                 <div className="suggestions-list">
@@ -2207,6 +2297,112 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "wallet" && walletBalanceSummary && (
+          <div className="wallet-tab">
+            <div className="wallet-grid">
+              <div className="wallet-balance">
+                <h3>現在の残高</h3>
+                <div className="balance-display">
+                  <div className="balance-amount">
+                    {walletBalance?.amount?.toLocaleString() || 0}円
+                  </div>
+                  <div className="balance-actions">
+                    <button 
+                      className="update-balance-button"
+                      onClick={() => setShowUpdateWalletBalance(true)}
+                    >
+                      残高を更新
+                    </button>
+                    <button 
+                      className="add-transaction-button"
+                      onClick={() => setShowAddWalletTransaction(true)}
+                    >
+                      取引を追加
+                    </button>
+                  </div>
+                </div>
+                {walletBalance?.notes && (
+                  <div className="balance-notes">
+                    <p>{walletBalance.notes}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="wallet-summary">
+                <h3>今月のサマリー</h3>
+                <div className="summary-cards">
+                  <div className="summary-card income">
+                    <h4>収入</h4>
+                    <div className="amount">
+                      {walletBalanceSummary.totalIncome.toLocaleString()}円
+                    </div>
+                  </div>
+                  <div className="summary-card expense">
+                    <h4>支出</h4>
+                    <div className="amount">
+                      {walletBalanceSummary.totalExpense.toLocaleString()}円
+                    </div>
+                  </div>
+                  <div className="summary-card net">
+                    <h4>純収入</h4>
+                    <div className="amount">
+                      {(walletBalanceSummary.totalIncome - walletBalanceSummary.totalExpense).toLocaleString()}円
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="wallet-transactions">
+                <h3>最近の取引</h3>
+                <div className="transactions-list">
+                  {walletTransactions.slice(0, 10).map((transaction) => {
+                    const category = WALLET_CATEGORIES.find(cat => cat.id === transaction.category);
+                    return (
+                      <div key={transaction.id} className={`transaction-item ${transaction.type}`}>
+                        <div className="transaction-icon">
+                          {category?.icon || '📝'}
+                        </div>
+                        <div className="transaction-info">
+                          <h4>{transaction.description}</h4>
+                          <p>{category?.name || transaction.category}</p>
+                          <div className="transaction-meta">
+                            <span className="transaction-date">
+                              {transaction.date.toLocaleDateString('ja-JP')}
+                            </span>
+                            <span className="transaction-amount">
+                              {transaction.type === 'income' ? '+' : '-'}
+                              {transaction.amount.toLocaleString()}円
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {walletBalanceAnalysis && (
+                <div className="wallet-insights">
+                  <h3>インサイト</h3>
+                  <div className="insights-list">
+                    {walletBalanceAnalysis.insights.map((insight, index) => (
+                      <div key={index} className={`insight-item ${insight.type}`}>
+                        <h4>{insight.title}</h4>
+                        <p>{insight.description}</p>
+                        {insight.action && (
+                          <button className="insight-action">
+                            {insight.action}
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -2268,6 +2464,201 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* 無駄遣い記録追加フォーム */}
+        {showAddWasteRecord && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>無駄遣い記録を追加</h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                // 記録追加処理
+                setShowAddWasteRecord(false);
+              }}>
+                <div className="form-group">
+                  <label>カテゴリ</label>
+                  <select required>
+                    <option value="">選択してください</option>
+                    {WASTE_CATEGORIES.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.icon} {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>説明</label>
+                  <input type="text" required />
+                </div>
+                <div className="form-group">
+                  <label>タイプ</label>
+                  <select required>
+                    <option value="money">お金</option>
+                    <option value="time">時間</option>
+                    <option value="effort">労力</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>金額/時間/ポイント</label>
+                  <input type="number" required />
+                </div>
+                <div className="form-group">
+                  <label>
+                    <input type="checkbox" />
+                    無駄遣いとして記録
+                  </label>
+                </div>
+                <div className="form-actions">
+                  <button type="button" onClick={() => setShowAddWasteRecord(false)}>
+                    キャンセル
+                  </button>
+                  <button type="submit">追加</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* 無駄遣い目標追加フォーム */}
+        {showAddWasteGoal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>無駄遣い目標を追加</h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                // 目標追加処理
+                setShowAddWasteGoal(false);
+              }}>
+                <div className="form-group">
+                  <label>目標名</label>
+                  <input type="text" required />
+                </div>
+                <div className="form-group">
+                  <label>目標値</label>
+                  <input type="number" required />
+                </div>
+                <div className="form-group">
+                  <label>期限</label>
+                  <input type="date" required />
+                </div>
+                <div className="form-actions">
+                  <button type="button" onClick={() => setShowAddWasteGoal(false)}>
+                    キャンセル
+                  </button>
+                  <button type="submit">追加</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* 財布の残高更新フォーム */}
+        {showUpdateWalletBalance && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>財布の残高を更新</h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                const amount = Number(formData.get('amount'));
+                const notes = formData.get('notes') as string;
+                const tags = (formData.get('tags') as string)?.split(',').map(tag => tag.trim()).filter(tag => tag);
+                
+                walletBalanceManager.setWalletBalance(userId, amount, notes, tags);
+                loadAllData();
+                setShowUpdateWalletBalance(false);
+              }}>
+                <div className="form-group">
+                  <label>残高</label>
+                  <input 
+                    type="number" 
+                    name="amount" 
+                    defaultValue={walletBalance?.amount || 0}
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label>メモ</label>
+                  <textarea name="notes" defaultValue={walletBalance?.notes || ''} />
+                </div>
+                <div className="form-group">
+                  <label>タグ（カンマ区切り）</label>
+                  <input 
+                    type="text" 
+                    name="tags" 
+                    defaultValue={walletBalance?.tags?.join(', ') || ''} 
+                  />
+                </div>
+                <div className="form-actions">
+                  <button type="button" onClick={() => setShowUpdateWalletBalance(false)}>
+                    キャンセル
+                  </button>
+                  <button type="submit">更新</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* 財布の取引追加フォーム */}
+        {showAddWalletTransaction && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>取引を追加</h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                const type = formData.get('type') as 'income' | 'expense';
+                const amount = Number(formData.get('amount'));
+                const description = formData.get('description') as string;
+                const category = formData.get('category') as string;
+                const tags = (formData.get('tags') as string)?.split(',').map(tag => tag.trim()).filter(tag => tag);
+                
+                const walletId = walletBalance?.id || `wallet_${Date.now()}`;
+                walletBalanceManager.addTransaction(userId, walletId, type, amount, description, category, tags);
+                loadAllData();
+                setShowAddWalletTransaction(false);
+              }}>
+                <div className="form-group">
+                  <label>取引タイプ</label>
+                  <select name="type" required>
+                    <option value="income">収入</option>
+                    <option value="expense">支出</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>金額</label>
+                  <input type="number" name="amount" required />
+                </div>
+                <div className="form-group">
+                  <label>説明</label>
+                  <input type="text" name="description" required />
+                </div>
+                <div className="form-group">
+                  <label>カテゴリ</label>
+                  <select name="category" required>
+                    <option value="">選択してください</option>
+                    {WALLET_CATEGORIES.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.icon} {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>タグ（カンマ区切り）</label>
+                  <input type="text" name="tags" />
+                </div>
+                <div className="form-actions">
+                  <button type="button" onClick={() => setShowAddWalletTransaction(false)}>
+                    キャンセル
+                  </button>
+                  <button type="submit">追加</button>
+                </div>
+              </form>
             </div>
           </div>
         )}
