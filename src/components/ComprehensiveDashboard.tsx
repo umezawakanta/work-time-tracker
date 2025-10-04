@@ -2842,13 +2842,16 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
 
         {/* 金融残高カレンダー */}
         {showWalletCalendar && (
-          <WalletBalanceCalendar
-            userId={userId}
-            onClose={() => setShowWalletCalendar(false)}
-            initialBalance={walletBalance?.amount || 0}
-            transactions={walletTransactions}
-            bankAccounts={bankAccounts}
-          />
+          <>
+            {console.log('Passing bank accounts to calendar:', bankAccounts)}
+            <WalletBalanceCalendar
+              userId={userId}
+              onClose={() => setShowWalletCalendar(false)}
+              initialBalance={walletBalance?.amount || 0}
+              transactions={walletTransactions}
+              bankAccounts={bankAccounts}
+            />
+          </>
         )}
       </div>
     </div>

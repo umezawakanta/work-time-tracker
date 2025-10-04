@@ -41,7 +41,19 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
 
   // 銀行口座の総残高を計算
   const getTotalBankBalance = () => {
-    return bankAccounts.reduce((total, account) => total + (account.currentBalance || 0), 0);
+    const accounts = bankAccountManager.getBankAccount(userId);
+    console.log('Bank accounts in calendar:', accounts);
+    if (Array.isArray(accounts)) {
+      const total = accounts.reduce((total, account) => total + (account.currentBalance || 0), 0);
+      console.log('Total bank balance (array):', total);
+      return total;
+    } else if (accounts) {
+      const balance = accounts.currentBalance || 0;
+      console.log('Total bank balance (single):', balance);
+      return balance;
+    }
+    console.log('No bank accounts found');
+    return 0;
   };
 
   // 総残高（財布 + 銀行口座）を計算
@@ -54,6 +66,12 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     const allTransactions = walletManager.getTransactions(userId);
     setTransactions(allTransactions);
   };
+
+  // データを読み込み
+  useEffect(() => {
+    walletManager.loadFromLocalStorage();
+    bankAccountManager.loadFromLocalStorage();
+  }, [userId]);
 
   // 財布の残高を取得
   const walletBalance = walletManager.getWalletBalance(userId);
