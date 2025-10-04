@@ -43,7 +43,7 @@ const WorkDiarySchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-const WorkDiary = mongoose.models.WorkDiary as any || mongoose.model('WorkDiary', WorkDiarySchema);
+const WorkDiary = (mongoose.models['WorkDiary'] as any) || mongoose.model('WorkDiary', WorkDiarySchema);
 
 export default async function handler(req, res) {
   // CORS設定
