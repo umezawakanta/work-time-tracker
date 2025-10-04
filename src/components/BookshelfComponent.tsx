@@ -125,6 +125,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
 
   // 読んだページ数入力の開始
   const startReadPagesEdit = (book: Book) => {
+    console.log('startReadPagesEdit called for book:', book.title);
     setReadPagesInput(prev => ({ ...prev, [book.id]: book.readPages }));
   };
 
@@ -533,6 +534,7 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
                         ></div>
                       </div>
                       <div className="progress-controls">
+                        {console.log('Rendering progress controls for book:', book.title, 'readPagesInput:', readPagesInput[book.id])}
                         {readPagesInput[book.id] !== undefined ? (
                           <div className="read-pages-edit">
                             <input

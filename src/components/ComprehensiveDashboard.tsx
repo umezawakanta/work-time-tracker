@@ -8,6 +8,7 @@ import { WasteAnalysisManager } from "../utils/wasteAnalysisManager";
 import { FinancialOverviewManager } from "../utils/financialOverviewManager";
 import { WalletBalanceManager } from "../utils/walletBalanceManager";
 import { BankAccountManager } from "../utils/bankAccountManager";
+import { GuitarPracticeManager } from "../utils/guitarPracticeManager";
 import { apiFetch } from "../utils/apiClient";
 import WalletBalanceCalendar from "./WalletBalanceCalendar";
 import {
@@ -62,6 +63,7 @@ import {
   WALLET_CATEGORIES,
 } from "../types/walletBalance";
 import { FinancialSummary } from "../types/financialOverview";
+import { GuitarPracticeRecord, GuitarPracticeSummary, GuitarPracticeAnalysis, GUITAR_TECHNIQUES } from "../types/guitarPractice";
 import "./ComprehensiveDashboard.css";
 
 interface ComprehensiveDashboardProps {
@@ -84,6 +86,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
     | "actions"
     | "plans"
     | "financial"
+    | "guitar"
   >("overview");
   const [selectedPeriod, setSelectedPeriod] = useState<
     "week" | "month" | "year"
@@ -118,6 +121,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [showAddWasteRecord, setShowAddWasteRecord] = useState(false);
   const [showAddWasteGoal, setShowAddWasteGoal] = useState(false);
   const [showAddReceipt, setShowAddReceipt] = useState(false);
+  
+  // ギター練習関連の状態
+  const [guitarPracticeRecords, setGuitarPracticeRecords] = useState<GuitarPracticeRecord[]>([]);
+  const [guitarPracticeSummary, setGuitarPracticeSummary] = useState<GuitarPracticeSummary | null>(null);
+  const [guitarPracticeAnalysis, setGuitarPracticeAnalysis] = useState<GuitarPracticeAnalysis | null>(null);
+  const [showAddGuitarPractice, setShowAddGuitarPractice] = useState(false);
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(
     null
   );
@@ -161,6 +170,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const financialOverviewManager = FinancialOverviewManager.getInstance();
   const walletBalanceManager = WalletBalanceManager.getInstance();
   const bankAccountManager = BankAccountManager.getInstance();
+  const guitarPracticeManager = GuitarPracticeManager.getInstance();
 
   useEffect(() => {
     loadAllData();
@@ -744,6 +754,16 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       const financialData =
         financialOverviewManager.getFinancialSummary(userId);
       setFinancialSummary(financialData);
+
+      // ギター練習データ
+      await guitarPracticeManager.loadFromServer(userId);
+      const practiceRecords = guitarPracticeManager.getPracticeRecords(userId);
+      const practiceSummary = guitarPracticeManager.getPracticeSummary(userId);
+      const practiceAnalysis = guitarPracticeManager.getPracticeAnalysis(userId);
+      
+      setGuitarPracticeRecords(practiceRecords);
+      setGuitarPracticeSummary(practiceSummary);
+      setGuitarPracticeAnalysis(practiceAnalysis);
     } catch (err) {
       console.error("データの読み込みエラー:", err);
       setError("データの読み込みに失敗しました");
@@ -931,6 +951,13 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           title="金融・無駄遣い管理を表示"
         >
           💳 金融・無駄遣い
+        </button>
+        <button
+          className={`tab ${activeTab === "guitar" ? "active" : ""}`}
+          onClick={() => setActiveTab("guitar")}
+          title="ギター練習記録を表示"
+        >
+          🎸 ギター練習
         </button>
       </div>
 
@@ -3350,6 +3377,276 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     キャンセル
                   </button>
                   <button type="submit">更新</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ギター練習タブ */}
+        {activeTab === "guitar" && (
+          <div className="guitar-practice-tab">
+            <div className="guitar-header">
+              <h3>🎸 ギター練習記録</h3>
+              <button
+                className="add-practice-button"
+                onClick={() => setShowAddGuitarPractice(true)}
+              >
+                + 練習を記録
+              </button>
+            </div>
+
+            {/* 練習サマリー */}
+            {guitarPracticeSummary && (
+              <div className="guitar-summary">
+                <div className="summary-cards">
+                  <div className="summary-card">
+                    <h4>総練習時間</h4>
+                    <div className="amount">{Math.floor(guitarPracticeSummary.totalPracticeTime / 60)}時間{guitarPracticeSummary.totalPracticeTime % 60}分</div>
+                  </div>
+                  <div className="summary-card">
+                    <h4>総セッション数</h4>
+                    <div className="amount">{guitarPracticeSummary.totalSessions}回</div>
+                  </div>
+                  <div className="summary-card">
+                    <h4>平均練習時間</h4>
+                    <div className="amount">{guitarPracticeSummary.averageSessionTime}分</div>
+                  </div>
+                  <div className="summary-card">
+                    <h4>今週の練習時間</h4>
+                    <div className="amount">{guitarPracticeSummary.thisWeekTime}分</div>
+                  </div>
+                  <div className="summary-card">
+                    <h4>今月の練習時間</h4>
+                    <div className="amount">{guitarPracticeSummary.thisMonthTime}分</div>
+                  </div>
+                  <div className="summary-card">
+                    <h4>平均評価</h4>
+                    <div className="amount">⭐ {guitarPracticeSummary.averageRating}</div>
+                  </div>
+                </div>
+                {guitarPracticeSummary.lastPracticeDate && (
+                  <div className="last-practice">
+                    最後の練習: {new Date(guitarPracticeSummary.lastPracticeDate).toLocaleDateString('ja-JP')}
+                  </div>
+                )}
+                {guitarPracticeSummary.mostPracticedTechnique && (
+                  <div className="most-practiced">
+                    最も練習したテクニック: {guitarPracticeSummary.mostPracticedTechnique}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 練習記録リスト */}
+            <div className="guitar-records-section">
+              <h4>📋 練習履歴</h4>
+              {guitarPracticeRecords.length === 0 ? (
+                <p className="no-records">練習記録がありません</p>
+              ) : (
+                <div className="records-list">
+                  {guitarPracticeRecords.map((record) => (
+                    <div key={record.id} className="practice-record-item">
+                      <div className="record-header">
+                        <div className="record-date">
+                          {new Date(record.practiceDate).toLocaleDateString('ja-JP')}
+                        </div>
+                        <div className="record-duration">
+                          {record.duration}分
+                        </div>
+                      </div>
+                      <div className="record-content">
+                        <div className="record-technique">
+                          <span className="technique-label">テクニック:</span>
+                          <span className="technique-value">{record.technique}</span>
+                        </div>
+                        {record.songTitle && (
+                          <div className="record-song">
+                            <span className="song-label">曲:</span>
+                            <span className="song-value">{record.songTitle}</span>
+                          </div>
+                        )}
+                        <div className="record-difficulty">
+                          <span className={`difficulty-badge ${record.difficulty}`}>
+                            {record.difficulty === 'beginner' ? '初級' : 
+                             record.difficulty === 'intermediate' ? '中級' : '上級'}
+                          </span>
+                        </div>
+                        <div className="record-rating">
+                          {'⭐'.repeat(record.rating)}
+                        </div>
+                        {record.notes && (
+                          <div className="record-notes">
+                            <strong>メモ:</strong> {record.notes}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 練習分析 */}
+            {guitarPracticeAnalysis && (
+              <div className="guitar-analysis-section">
+                <h4>📊 練習分析</h4>
+                
+                {/* 改善傾向 */}
+                <div className="improvement-trend">
+                  <h5>改善傾向</h5>
+                  <div className={`trend-indicator ${guitarPracticeAnalysis.improvementTrend}`}>
+                    {guitarPracticeAnalysis.improvementTrend === 'improving' ? '📈 向上中' :
+                     guitarPracticeAnalysis.improvementTrend === 'stable' ? '📊 安定' : '📉 低下'}
+                  </div>
+                </div>
+
+                {/* テクニック別分析 */}
+                {guitarPracticeAnalysis.techniqueBreakdown.length > 0 && (
+                  <div className="technique-breakdown">
+                    <h5>テクニック別の練習時間</h5>
+                    <div className="technique-list">
+                      {guitarPracticeAnalysis.techniqueBreakdown.map((tech, index) => (
+                        <div key={index} className="technique-item">
+                          <div className="technique-name">{tech.technique}</div>
+                          <div className="technique-stats">
+                            <span>{Math.floor(tech.totalTime / 60)}時間{tech.totalTime % 60}分</span>
+                            <span>({tech.sessions}回)</span>
+                            <span>平均評価: ⭐{tech.averageRating.toFixed(1)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 難易度別分布 */}
+                {guitarPracticeAnalysis.difficultyDistribution.length > 0 && (
+                  <div className="difficulty-distribution">
+                    <h5>難易度別分布</h5>
+                    <div className="distribution-list">
+                      {guitarPracticeAnalysis.difficultyDistribution.map((diff, index) => (
+                        <div key={index} className="distribution-item">
+                          <span className="difficulty-label">{diff.difficulty}</span>
+                          <span className="difficulty-count">{diff.count}回 ({diff.percentage}%)</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 練習記録追加フォーム */}
+        {showAddGuitarPractice && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>ギター練習を記録</h3>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                
+                const practiceDate = formData.get('practiceDate') as string;
+                const duration = parseInt(formData.get('duration') as string);
+                const songTitle = formData.get('songTitle') as string;
+                const technique = formData.get('technique') as string;
+                const difficulty = formData.get('difficulty') as string;
+                const notes = formData.get('notes') as string;
+                const rating = parseInt(formData.get('rating') as string);
+
+                const success = await guitarPracticeManager.saveToServer(userId, {
+                  practiceDate: new Date(practiceDate),
+                  duration,
+                  songTitle,
+                  technique,
+                  difficulty: difficulty as 'beginner' | 'intermediate' | 'advanced',
+                  notes,
+                  rating
+                });
+
+                if (success) {
+                  alert('練習記録を追加しました！');
+                  setShowAddGuitarPractice(false);
+                  await loadAllData(); // データを再読み込み
+                } else {
+                  alert('練習記録の追加に失敗しました');
+                }
+              }}>
+                <div className="form-group">
+                  <label htmlFor="practiceDate">練習日</label>
+                  <input
+                    type="date"
+                    id="practiceDate"
+                    name="practiceDate"
+                    defaultValue={new Date().toISOString().split('T')[0]}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="duration">練習時間（分）</label>
+                  <input
+                    type="number"
+                    id="duration"
+                    name="duration"
+                    min="1"
+                    defaultValue={30}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="technique">テクニック</label>
+                  <select id="technique" name="technique" required>
+                    {GUITAR_TECHNIQUES.map((tech) => (
+                      <option key={tech} value={tech}>{tech}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="songTitle">曲名（任意）</label>
+                  <input
+                    type="text"
+                    id="songTitle"
+                    name="songTitle"
+                    placeholder="練習した曲があれば入力"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="difficulty">難易度</label>
+                  <select id="difficulty" name="difficulty" required>
+                    <option value="beginner">初級</option>
+                    <option value="intermediate">中級</option>
+                    <option value="advanced">上級</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="rating">自己評価（1-5）</label>
+                  <select id="rating" name="rating" required>
+                    <option value="1">⭐</option>
+                    <option value="2">⭐⭐</option>
+                    <option value="3">⭐⭐⭐</option>
+                    <option value="4">⭐⭐⭐⭐</option>
+                    <option value="5">⭐⭐⭐⭐⭐</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="notes">メモ（任意）</label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    placeholder="練習内容や気づいたことを記録"
+                    rows={4}
+                  />
+                </div>
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddGuitarPractice(false)}
+                  >
+                    キャンセル
+                  </button>
+                  <button type="submit">記録</button>
                 </div>
               </form>
             </div>

@@ -186,7 +186,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const response: UsersListResponse = {
       success: true,
       message: 'ユーザー一覧を取得しました',
-      users: users.map(user => ({
+      users: users.map((user: any) => ({
         id: user._id.toString(),
         email: user.email,
         displayName: user.displayName,
