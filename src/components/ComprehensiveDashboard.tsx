@@ -2682,12 +2682,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>金額</label>
-                  <input type="number" name="amount" required />
+                  <label htmlFor="amount">金額</label>
+                  <input type="number" id="amount" name="amount" required />
                 </div>
                 <div className="form-group">
-                  <label>説明</label>
-                  <input type="text" name="description" required />
+                  <label htmlFor="description">説明</label>
+                  <input type="text" id="description" name="description" required />
                 </div>
                 <div className="form-group">
                   <label>カテゴリ</label>
@@ -2701,8 +2701,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>タグ（カンマ区切り）</label>
-                  <input type="text" name="tags" />
+                  <label htmlFor="tags">タグ（カンマ区切り）</label>
+                  <input type="text" id="tags" name="tags" />
                 </div>
                 <div className="form-actions">
                   <button type="button" onClick={() => setShowAddWalletTransaction(false)}>
@@ -2721,7 +2721,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           <div className="modal-overlay">
             <div className="modal-content">
               <h3>銀行口座を追加</h3>
-              <form onSubmit={(e) => {
+              <form onSubmit={async (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target as HTMLFormElement);
                 const accountData = {
@@ -2737,12 +2737,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 setShowAddBankAccount(false);
               }}>
                 <div className="form-group">
-                  <label>銀行名</label>
-                  <input type="text" name="bankName" required />
+                  <label htmlFor="bankName">銀行名</label>
+                  <input type="text" id="bankName" name="bankName" required />
                 </div>
                 <div className="form-group">
-                  <label>口座種別</label>
-                  <select name="accountType" required>
+                  <label htmlFor="accountType">口座種別</label>
+                  <select id="accountType" name="accountType" required>
                     <option value="普通">普通預金</option>
                     <option value="当座">当座預金</option>
                     <option value="定期">定期預金</option>
@@ -2750,20 +2750,20 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>口座番号</label>
-                  <input type="text" name="accountNumber" required />
+                  <label htmlFor="accountNumber">口座番号</label>
+                  <input type="text" id="accountNumber" name="accountNumber" required />
                 </div>
                 <div className="form-group">
-                  <label>支店名</label>
-                  <input type="text" name="branchName" required />
+                  <label htmlFor="branchName">支店名</label>
+                  <input type="text" id="branchName" name="branchName" required />
                 </div>
                 <div className="form-group">
-                  <label>残高</label>
-                  <input type="number" name="balance" defaultValue={0} />
+                  <label htmlFor="balance">残高</label>
+                  <input type="number" id="balance" name="balance" defaultValue={0} />
                 </div>
                 <div className="form-group">
-                  <label>メモ</label>
-                  <textarea name="notes" />
+                  <label htmlFor="notes">メモ</label>
+                  <textarea id="notes" name="notes" />
                 </div>
                 <div className="form-actions">
                   <button type="button" onClick={() => setShowAddBankAccount(false)}>
@@ -2781,7 +2781,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           <div className="modal-overlay">
             <div className="modal-content">
               <h3>銀行口座を更新</h3>
-              <form onSubmit={(e) => {
+              <form onSubmit={async (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target as HTMLFormElement);
                 const accountData = {
@@ -2798,12 +2798,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 setEditingBankAccount(null);
               }}>
                 <div className="form-group">
-                  <label>銀行名</label>
-                  <input type="text" name="bankName" defaultValue={editingBankAccount.bankName} required />
+                  <label htmlFor="update-bankName">銀行名</label>
+                  <input type="text" id="update-bankName" name="bankName" defaultValue={editingBankAccount.bankName} required />
                 </div>
                 <div className="form-group">
-                  <label>口座種別</label>
-                  <select name="accountType" defaultValue={editingBankAccount.accountType} required>
+                  <label htmlFor="update-accountType">口座種別</label>
+                  <select id="update-accountType" name="accountType" defaultValue={editingBankAccount.accountType} required>
                     <option value="普通">普通預金</option>
                     <option value="当座">当座預金</option>
                     <option value="定期">定期預金</option>
@@ -2811,20 +2811,20 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>口座番号</label>
-                  <input type="text" name="accountNumber" defaultValue={editingBankAccount.accountNumber} required />
+                  <label htmlFor="update-accountNumber">口座番号</label>
+                  <input type="text" id="update-accountNumber" name="accountNumber" defaultValue={editingBankAccount.accountNumber} required />
                 </div>
                 <div className="form-group">
-                  <label>支店名</label>
-                  <input type="text" name="branchName" defaultValue={editingBankAccount.branchName} required />
+                  <label htmlFor="update-branchName">支店名</label>
+                  <input type="text" id="update-branchName" name="branchName" defaultValue={editingBankAccount.branchName} required />
                 </div>
                 <div className="form-group">
-                  <label>残高</label>
-                  <input type="number" name="balance" defaultValue={editingBankAccount.currentBalance || editingBankAccount.balance || 0} />
+                  <label htmlFor="update-balance">残高</label>
+                  <input type="number" id="update-balance" name="balance" defaultValue={editingBankAccount.currentBalance || editingBankAccount.balance || 0} />
                 </div>
                 <div className="form-group">
-                  <label>メモ</label>
-                  <textarea name="notes" defaultValue={editingBankAccount.notes || ''} />
+                  <label htmlFor="update-notes">メモ</label>
+                  <textarea id="update-notes" name="notes" defaultValue={editingBankAccount.notes || ''} />
                 </div>
                 <div className="form-actions">
                   <button type="button" onClick={() => {
