@@ -241,7 +241,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error) {
     console.error('Work diary API error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
       error: process.env['NODE_ENV'] === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
