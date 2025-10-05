@@ -69,7 +69,10 @@
     "composite": false,
     "declarationDir": "./types",
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": ".",
+    
+    // 型定義
+    "types": ["node"]
   },
   
   // ファイル範囲設定
