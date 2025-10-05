@@ -303,9 +303,13 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     // 前月の日付
     for (let i = firstDay - 1; i >= 0; i--) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), -i);
+      const cumulativeBalance = getCumulativeBalance(date);
       days.push(
         <div key={`prev-${i}`} className="calendar-day prev-month">
           <span className="day-number">{date.getDate()}</span>
+          <div className="daily-balance">
+            {formatCurrency(cumulativeBalance)}
+          </div>
         </div>
       );
     }
@@ -329,29 +333,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
           onClick={() => handleDateClick(date)}
         >
           <span className="day-number">{day}</span>
-          {hasActivity && (
-            <div className="day-transactions">
-              <div className="transaction-count">
-                {dayTransactions.length > 0 && `${dayTransactions.length}件`}
-                {dayReceipts.length > 0 && `🏪${dayReceipts.length}件`}
-                {walletHistory && '💰'}
-              </div>
-              <div className={`daily-balance ${dailyBalance >= 0 ? 'positive' : 'negative'}`}>
-                {dailyBalance >= 0 ? '+' : ''}{formatCurrency(dailyBalance)}
-              </div>
-              {walletHistory && (
-                <div className="wallet-history">
-                  <div className="wallet-amount">
-                    {formatCurrency(walletHistory.amount)}
-                  </div>
-                  <div className={`wallet-change ${walletHistory.change >= 0 ? 'positive' : 'negative'}`}>
-                    {walletHistory.change >= 0 ? '+' : ''}{formatCurrency(walletHistory.change)}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          <div className={`cumulative-balance ${cumulativeBalance !== 0 ? 'has-balance' : ''}`}>
+          <div className="daily-balance">
             {formatCurrency(cumulativeBalance)}
           </div>
         </div>
@@ -363,9 +345,13 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     const remainingCells = totalCells - days.length;
     for (let i = 1; i <= remainingCells; i++) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, i);
+      const cumulativeBalance = getCumulativeBalance(date);
       days.push(
         <div key={`next-${i}`} className="calendar-day next-month">
           <span className="day-number">{date.getDate()}</span>
+          <div className="daily-balance">
+            {formatCurrency(cumulativeBalance)}
+          </div>
         </div>
       );
     }
