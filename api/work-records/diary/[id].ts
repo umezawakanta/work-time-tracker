@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -45,6 +46,59 @@ const WorkDiarySchema = new mongoose.Schema({
 
 const WorkDiary = (mongoose.models['WorkDiary'] as any) || mongoose.model('WorkDiary', WorkDiarySchema);
 
+// JWT認証ヘルパー関数
+interface JWTPayload {
+  id?: string;
+  userId?: string;
+  email: string;
+  role: string;
+  isAdmin?: boolean;
+  iat?: number;
+  exp?: number;
+}
+
+const verifyJWT = (req: VercelRequest): JWTPayload | null => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.substring(7);
+  
+  try {
+    const jwtSecret = process.env['JWT_SECRET'];
+    if (!jwtSecret) {
+      console.error('JWT_SECRET environment variable is not set');
+      return null;
+    }
+    
+    const decoded = jwt.verify(token, jwtSecret) as JWTPayload;
+    
+    // 型安全性のための検証
+    if (!decoded || typeof decoded !== 'object' || (!decoded.id && !decoded.userId)) {
+      console.error('Invalid JWT payload structure');
+      return null;
+    }
+
+    // トークンの有効期限をチェック
+    if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
+      console.error('JWT token has expired');
+      return null;
+    }
+
+    // 必須フィールドの検証
+    if (!decoded.email || !decoded.role) {
+      console.error('JWT payload missing required fields');
+      return null;
+    }
+    
+    return decoded;
+  } catch (error) {
+    console.error('JWT verification failed:', error);
+    return null;
+  }
+};
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env['NODE_ENV'] === 'production' 
@@ -61,6 +115,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   await connectDB();
 
+  // JWT認証
+  const user = verifyJWT(req);
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: '認証が必要です'
+    });
+  }
+
+  const userId = user.id || user.userId;
   const { id } = req.query;
 
   if (!id) {
@@ -79,6 +143,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(404).json({
           success: false,
           message: '日記が見つかりません'
+        });
+      }
+
+      // ユーザー認証：自分の日記のみアクセス可能
+      if (diary.userId !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: 'この日記にアクセスする権限がありません'
         });
       }
 
@@ -127,8 +199,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (gratitude !== undefined) { updateData.gratitude = gratitude; }
       if (reflection !== undefined) { updateData.reflection = reflection; }
 
-      const diary = await WorkDiary.findByIdAndUpdate(
-        id,
+      const diary = await WorkDiary.findOneAndUpdate(
+        { _id: id, userId },
         updateData,
         { new: true }
       );
@@ -148,7 +220,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     } else if (req.method === 'DELETE') {
       // 日記を削除
-      const diary = await WorkDiary.findByIdAndDelete(id);
+      const diary = await WorkDiary.findOneAndDelete({ _id: id, userId });
 
       if (!diary) {
         return res.status(404).json({

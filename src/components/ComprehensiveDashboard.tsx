@@ -2663,22 +2663,28 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
 
               <div className="wallet-actions">
                 <button
-                  className="calendar-button"
+                  className="wallet-action-btn calendar-btn"
                   onClick={() => setShowWalletCalendar(true)}
+                  title="カレンダーで取引履歴を表示"
                 >
-                  📅 カレンダー表示
+                  <span className="btn-icon">📅</span>
+                  <span className="btn-text">カレンダー表示</span>
                 </button>
                 <button
-                  className="add-transaction-button"
+                  className="wallet-action-btn add-btn primary"
                   onClick={() => setShowAddWalletTransaction(true)}
+                  title="新しい取引を追加"
                 >
-                  + 取引を追加
+                  <span className="btn-icon">+</span>
+                  <span className="btn-text">取引を追加</span>
                 </button>
                 <button
-                  className="daily-update-button"
+                  className="wallet-action-btn update-btn"
                   onClick={() => setShowWalletBalanceUpdate(true)}
+                  title="残高を日次更新"
                 >
-                  📝 日次更新
+                  <span className="btn-icon">📝</span>
+                  <span className="btn-text">日次更新</span>
                 </button>
               </div>
 
