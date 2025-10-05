@@ -48,8 +48,7 @@ const verifyJWT = async (req: VercelRequest) => {
   try {
     const token = authHeader.substring(7);
     const jwtSecret = process.env['JWT_SECRET'] || 'fallback-secret-for-development';
-    const decoded = jwt.verify(token, jwtSecret) as any;
-    return decoded;
+    return jwt.verify(token, jwtSecret) as any;
   } catch (error) {
     console.error('JWT verification failed:', error);
     return null;
@@ -149,7 +148,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const response: ReceiptResponse = {
         success: true,
         message: 'レシート一覧を取得しました',
-        receipts: receipts.map(receipt => ({
+        receipts: receipts.map((receipt: any) => ({
           id: receipt._id.toString(),
           storeName: receipt.storeName,
           purchaseDate: receipt.purchaseDate.toISOString(),
