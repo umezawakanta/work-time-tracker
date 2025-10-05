@@ -233,6 +233,11 @@ export class CreditCardManager {
       c.creditLimit > 0 ? sum + (c.currentBalance / c.creditLimit) : sum, 0
     ) / activeCards.length * 100;
 
+    // 限度額に近いカード数（利用率80%以上）
+    const cardsNearLimit = activeCards.filter(c => 
+      c.creditLimit > 0 && (c.currentBalance / c.creditLimit) >= 0.8
+    ).length;
+
     let paymentBehavior: 'excellent' | 'good' | 'fair' | 'poor' = 'excellent';
     if (totalUtilization > 80) {
       paymentBehavior = 'poor';
