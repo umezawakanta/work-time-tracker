@@ -167,7 +167,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === 'GET') {
       // 銀行口座一覧を取得
-      const accounts = await BankAccount.find({ userId, isActive: true }).sort({ createdAt: -1 });
+      const accounts = await BankAccount.find({ userId }).sort({ createdAt: -1 });
       const transactions = await BankTransaction.find({ userId }).sort({ transactionDate: -1 }).limit(50);
 
       const response: BankAccountResponse = {

@@ -38,6 +38,11 @@ export class BankAccountManager {
     ) || null;
   }
 
+  // ユーザーのすべての銀行口座を取得
+  public getBankAccounts(userId: string): BankAccount[] {
+    return this.bankAccounts.filter(account => account.userId === userId);
+  }
+
   // 銀行口座を作成
   public async createBankAccount(
     userId: string, 

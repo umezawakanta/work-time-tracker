@@ -771,8 +771,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
 
       // 銀行口座データ（サーバーから読み込み）
       await bankAccountManager.loadFromServer(userId);
-      const bankAccountData = bankAccountManager.getBankAccount(userId);
-      setBankAccounts(bankAccountData ? [bankAccountData] : []);
+      const bankAccountData = bankAccountManager.getBankAccounts(userId);
+      setBankAccounts(bankAccountData);
 
       // 財務概要データ
       const financialData =
