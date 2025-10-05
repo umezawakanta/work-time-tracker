@@ -48,7 +48,7 @@ const WorkDiary = (mongoose.models['WorkDiary'] as any) || mongoose.model('WorkD
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', process.env['NODE_ENV'] === 'production' 
-    ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin) ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
+    ? /^https:\/\/.*\.vercel\.app$/.test(req.headers.origin || '') ? req.headers.origin : 'https://work-time-tracker-five.vercel.app'
     : '*'
   );
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
