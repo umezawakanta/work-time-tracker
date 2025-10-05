@@ -146,6 +146,17 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
 
   const getCumulativeBalance = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
+    
+    // 指定日の財布残高履歴を取得
+    const walletHistory = getWalletBalanceHistoryForDate(date);
+    
+    if (walletHistory) {
+      // 財布残高履歴がある場合は、その日の残高を使用
+      const bankBalance = getTotalBankBalance();
+      return walletHistory.amount + bankBalance;
+    }
+    
+    // 財布残高履歴がない場合は、取引から計算
     const dayTransactions = transactions.filter(transaction => {
       const transactionDate = new Date(transaction.date);
       return transactionDate.toISOString().split('T')[0] <= dateStr;
