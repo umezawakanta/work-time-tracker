@@ -6481,15 +6481,24 @@ User Agent: ${userAgent}
                 return (
                   <div key={feature.id} className="feature-section">
                     <button
-                      className="feature-toggle-button"
+                      className={`dashboard-toggle-btn ${showComprehensiveDashboard ? 'active' : ''}`}
                       onClick={() => {
                         setShowComprehensiveDashboard(!showComprehensiveDashboard);
                         if (!showComprehensiveDashboard) {
                           closeOtherFeatures("comprehensive-dashboard");
                         }
                       }}
+                      title={showComprehensiveDashboard ? "統合ダッシュボードを閉じる" : "統合ダッシュボードを開く"}
                     >
-                      {showComprehensiveDashboard ? "📊 統合ダッシュボードを閉じる" : "📊 統合ダッシュボードを開く"}
+                      <span className="btn-icon">
+                        {showComprehensiveDashboard ? "📊" : "📈"}
+                      </span>
+                      <span className="btn-text">
+                        {showComprehensiveDashboard ? "ダッシュボードを閉じる" : "統合ダッシュボード"}
+                      </span>
+                      <span className="btn-arrow">
+                        {showComprehensiveDashboard ? "✕" : "▶"}
+                      </span>
                     </button>
                   </div>
                 );
