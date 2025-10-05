@@ -45,7 +45,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     }
   }, [userId, initialTransactions]);
 
-  // 銀行口座の総残高を計算
+  // 銀行口座の総残高を計算（現在の残高）
   const getTotalBankBalance = () => {
     // ComprehensiveDashboardから渡されたbankAccountsを使用
     const accounts = bankAccounts || [];
@@ -61,6 +61,52 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     }
     console.log('No bank accounts found');
     return 0;
+  };
+
+  // 指定日の銀行口座残高を計算
+  const getBankBalanceForDate = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    const accounts = bankAccounts || [];
+    
+    if (accounts.length === 0) {
+      return 0;
+    }
+
+    let totalBankBalance = 0;
+    
+    accounts.forEach(account => {
+      // 各口座の取引履歴を取得
+      const accountTransactions = bankAccountManager.getTransactions(userId, account.id);
+      
+      // 指定日までの取引をフィルタリング
+      const dayTransactions = accountTransactions.filter(transaction => {
+        const transactionDate = new Date(transaction.transactionDate);
+        return transactionDate.toISOString().split('T')[0] <= dateStr;
+      });
+
+      // 現在の残高から未来の取引を差し引いて過去の残高を計算
+      let pastBalance = account.currentBalance || account.balance || 0;
+      
+      // 指定日以降の取引を除外
+      const futureTransactions = accountTransactions.filter(transaction => {
+        const transactionDate = new Date(transaction.transactionDate);
+        return transactionDate.toISOString().split('T')[0] > dateStr;
+      });
+
+      // 未来の取引を差し引いて過去の残高を計算
+      futureTransactions.forEach(transaction => {
+        if (transaction.type === 'deposit' || transaction.type === 'transfer_in') {
+          pastBalance -= transaction.amount;
+        } else if (transaction.type === 'withdrawal' || transaction.type === 'transfer_out') {
+          pastBalance += transaction.amount;
+        }
+      });
+
+      totalBankBalance += pastBalance;
+    });
+
+    console.log(`Bank balance for ${dateStr}: ${totalBankBalance}`);
+    return totalBankBalance;
   };
 
   // 今日の財布残高を取得（履歴から最新の値を取得）
@@ -176,13 +222,13 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     
     if (walletHistory) {
       // 財布残高履歴がある場合は、その日の残高を使用
-      const bankBalance = getTotalBankBalance();
+      const bankBalance = getBankBalanceForDate(date);
       const total = walletHistory.amount + bankBalance;
       console.log(`Cumulative balance for ${dateStr}: wallet=${walletHistory.amount}, bank=${bankBalance}, total=${total}`);
       return total;
     }
     
-    // 財布残高履歴がない場合は、取引から計算
+    // 財布残高履歴がない場合は、指定日までの取引から計算
     const dayTransactions = transactions.filter(transaction => {
       const transactionDate = new Date(transaction.date);
       return transactionDate.toISOString().split('T')[0] <= dateStr;
@@ -194,38 +240,36 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       return receiptDate.toISOString().split('T')[0] <= dateStr;
     });
 
-    // 現在の財布の残高を基準に計算（履歴から最新の値を取得）
-    const currentWalletBalance = getCurrentWalletBalance();
+    // 初期残高（0から開始）
+    let walletBalance = 0;
     
-    // 指定日以降の取引を除外して残高を計算
-    const futureTransactions = transactions.filter(transaction => {
-      const transactionDate = new Date(transaction.date);
-      return transactionDate.toISOString().split('T')[0] > dateStr;
-    });
-
-    const futureReceipts = receipts.filter(receipt => {
-      const receiptDate = new Date(receipt.purchaseDate);
-      return receiptDate.toISOString().split('T')[0] > dateStr;
-    });
-
-    // 未来の取引を差し引いて過去の残高を計算
-    let pastWalletBalance = currentWalletBalance;
-    futureTransactions.forEach(transaction => {
+    // 指定日までの取引を時系列順で処理
+    const allTransactions = [...dayTransactions, ...dayReceipts.map(receipt => ({
+      id: receipt.id,
+      type: 'expense',
+      amount: receipt.totalAmount,
+      description: receipt.storeName,
+      category: 'レシート',
+      date: receipt.purchaseDate
+    }))];
+    
+    // 日付順でソート
+    allTransactions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    // 取引を順番に処理して残高を計算
+    allTransactions.forEach(transaction => {
       if (transaction.type === 'income') {
-        pastWalletBalance -= transaction.amount;
+        walletBalance += transaction.amount;
       } else {
-        pastWalletBalance += transaction.amount;
+        walletBalance -= transaction.amount;
       }
     });
 
-    futureReceipts.forEach(receipt => {
-      pastWalletBalance += receipt.totalAmount;
-    });
-
-    // 銀行口座の残高を追加
-    const bankBalance = getTotalBankBalance();
+    // 銀行口座の残高を追加（指定日の残高を使用）
+    const bankBalance = getBankBalanceForDate(date);
     
-    return pastWalletBalance + bankBalance;
+    console.log(`Cumulative balance for ${dateStr}: wallet=${walletBalance}, bank=${bankBalance}, total=${walletBalance + bankBalance}`);
+    return walletBalance + bankBalance;
   };
 
   const formatCurrency = (amount: number): string => {
