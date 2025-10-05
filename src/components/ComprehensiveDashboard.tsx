@@ -3388,12 +3388,14 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
         {showAddReceipt && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <h3>🏪 ファミリーマートレシート登録</h3>
+              <h3>🏪 コンビニレシート登録</h3>
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
                   const formData = new FormData(e.target as HTMLFormElement);
-                  const storeName = formData.get("storeName") as string;
+                  const selectedStore = formData.get("storeName") as string;
+                  const customStoreName = formData.get("customStoreName") as string;
+                  const storeName = selectedStore === 'other' ? customStoreName : selectedStore;
                   const purchaseDate = formData.get("purchaseDate") as string;
                   const totalAmount = Number(formData.get("totalAmount"));
                   const items = (formData.get("items") as string)?.split('\n').filter(item => item.trim());
@@ -3402,7 +3404,11 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
 
                   // バリデーション
                   if (!storeName?.trim()) {
-                    alert('店舗名を入力してください');
+                    alert('店舗名を選択または入力してください');
+                    return;
+                  }
+                  if (selectedStore === 'other' && !customStoreName?.trim()) {
+                    alert('カスタム店舗名を入力してください');
                     return;
                   }
                   if (!purchaseDate) {
@@ -3472,12 +3478,60 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
               >
                 <div className="form-group">
                   <label htmlFor="receipt-store">店舗名</label>
-                  <input 
-                    type="text" 
+                  <select 
                     id="receipt-store" 
                     name="storeName" 
-                    placeholder="例: ファミリーマート 新宿店"
-                    required 
+                    required
+                    onChange={(e) => {
+                      const customInput = document.getElementById('custom-store') as HTMLInputElement;
+                      const itemsTextarea = document.getElementById('receipt-items') as HTMLTextAreaElement;
+                      
+                      if (e.target.value === 'other') {
+                        if (customInput) customInput.style.display = 'block';
+                        if (itemsTextarea) {
+                          itemsTextarea.placeholder = '商品を1行に1つずつ入力してください';
+                        }
+                      } else {
+                        if (customInput) customInput.style.display = 'none';
+                        
+                        // 店舗に応じて商品例を設定
+                        if (itemsTextarea) {
+                          switch (e.target.value) {
+                            case 'ファミリーマート':
+                              itemsTextarea.placeholder = '例:&#10;おにぎり 梅&#10;コーヒー ホット&#10;チョコレート&#10;サンドイッチ';
+                              break;
+                            case 'まつのや':
+                              itemsTextarea.placeholder = '例:&#10;おにぎり 鮭&#10;味噌汁&#10;サラダ&#10;お茶&#10;おかず';
+                              break;
+                            case 'セブン-イレブン':
+                              itemsTextarea.placeholder = '例:&#10;おにぎり ツナマヨ&#10;コーヒー&#10;パン&#10;お菓子';
+                              break;
+                            case 'ローソン':
+                              itemsTextarea.placeholder = '例:&#10;おにぎり 明太子&#10;スープ&#10;デザート&#10;飲み物';
+                              break;
+                            default:
+                              itemsTextarea.placeholder = '商品を1行に1つずつ入力してください';
+                          }
+                        }
+                      }
+                    }}
+                  >
+                    <option value="">店舗を選択してください</option>
+                    <option value="ファミリーマート">🏪 ファミリーマート</option>
+                    <option value="まつのや">🍙 まつのや</option>
+                    <option value="セブン-イレブン">🟢 セブン-イレブン</option>
+                    <option value="ローソン">🔵 ローソン</option>
+                    <option value="ミニストップ">🟡 ミニストップ</option>
+                    <option value="デイリーヤマザキ">🟠 デイリーヤマザキ</option>
+                    <option value="ポプラ">🟣 ポプラ</option>
+                    <option value="other">その他</option>
+                  </select>
+                  <input 
+                    type="text" 
+                    id="custom-store" 
+                    name="customStoreName" 
+                    placeholder="店舗名を入力してください"
+                    style={{ display: 'none', marginTop: '8px' }}
                   />
                 </div>
                 <div className="form-group">
@@ -3506,7 +3560,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     id="receipt-items" 
                     name="items" 
                     rows={5}
-                    placeholder="例:&#10;おにぎり 梅&#10;コーヒー ホット&#10;チョコレート"
+                    placeholder="店舗を選択すると商品例が表示されます"
                     required 
                   />
                 </div>
