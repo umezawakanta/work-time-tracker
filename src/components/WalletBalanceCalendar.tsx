@@ -63,9 +63,23 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     return 0;
   };
 
+  // 今日の財布残高を取得（履歴から最新の値を取得）
+  const getCurrentWalletBalance = () => {
+    if (walletBalanceHistory && walletBalanceHistory.length > 0) {
+      // 履歴を日付順でソートして最新の値を取得
+      const sortedHistory = [...walletBalanceHistory].sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      console.log('Latest wallet history:', sortedHistory[0]);
+      return sortedHistory[0].amount;
+    }
+    // 履歴がない場合は従来の方法
+    return walletBalance?.amount || 0;
+  };
+
   // 総残高（財布 + 銀行口座）を計算
   const getTotalBalance = () => {
-    return (walletBalance?.amount || 0) + getTotalBankBalance();
+    return getCurrentWalletBalance() + getTotalBankBalance();
   };
 
   const loadTransactions = () => {
@@ -180,8 +194,8 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       return receiptDate.toISOString().split('T')[0] <= dateStr;
     });
 
-    // 現在の財布の残高を基準に計算
-    const currentWalletBalance = walletBalance?.amount || 0;
+    // 現在の財布の残高を基準に計算（履歴から最新の値を取得）
+    const currentWalletBalance = getCurrentWalletBalance();
     
     // 指定日以降の取引を除外して残高を計算
     const futureTransactions = transactions.filter(transaction => {
@@ -326,7 +340,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
         <div className="balance-summary">
           <div className="balance-item">
             <span className="label">財布:</span>
-            <span className="amount">{formatCurrency(walletBalance?.amount || 0)}</span>
+            <span className="amount">{formatCurrency(getCurrentWalletBalance())}</span>
           </div>
           <div className="balance-item">
             <span className="label">銀行:</span>
