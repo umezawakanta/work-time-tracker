@@ -222,10 +222,9 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       const dailyBalance = getDailyBalance(date);
       const cumulativeBalance = getCumulativeBalance(date);
       const walletHistory = getWalletBalanceHistoryForDate(date);
-      const bankAccounts = bankAccountManager.getBankAccounts(userId);
       const isToday = date.toDateString() === new Date().toDateString();
       const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-      const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory || (bankAccounts && bankAccounts.length > 0);
+      const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory;
 
       days.push(
         <div
@@ -240,7 +239,6 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                 {dayTransactions.length > 0 && `${dayTransactions.length}件`}
                 {dayReceipts.length > 0 && `🏪${dayReceipts.length}件`}
                 {walletHistory && '💰'}
-                {bankAccounts && bankAccounts.length > 0 && `🏦${bankAccounts.length}口座`}
               </div>
               <div className={`daily-balance ${dailyBalance >= 0 ? 'positive' : 'negative'}`}>
                 {dailyBalance >= 0 ? '+' : ''}{formatCurrency(dailyBalance)}
@@ -252,13 +250,6 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                   </div>
                   <div className={`wallet-change ${walletHistory.change >= 0 ? 'positive' : 'negative'}`}>
                     {walletHistory.change >= 0 ? '+' : ''}{formatCurrency(walletHistory.change)}
-                  </div>
-                </div>
-              )}
-              {bankAccounts && bankAccounts.length > 0 && (
-                <div className="bank-accounts-summary">
-                  <div className="bank-total-balance">
-                    総残高: {formatCurrency(bankAccounts.reduce((total, account) => total + (account.currentBalance || account.balance || 0), 0))}
                   </div>
                 </div>
               )}
