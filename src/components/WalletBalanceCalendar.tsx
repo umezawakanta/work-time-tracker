@@ -41,11 +41,12 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     } else {
       loadTransactions();
     }
-  }, [userId, currentDate, initialTransactions]);
+  }, [userId, initialTransactions]);
 
   // 銀行口座の総残高を計算
   const getTotalBankBalance = () => {
-    const accounts = bankAccountManager.getBankAccounts(userId);
+    // ComprehensiveDashboardから渡されたbankAccountsを使用
+    const accounts = bankAccounts || [];
     console.log('Bank accounts in calendar:', accounts);
     if (accounts && accounts.length > 0) {
       const total = accounts.reduce((total, account) => {
@@ -74,11 +75,12 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   // データを読み込み
   useEffect(() => {
     walletManager.loadFromLocalStorage();
-    bankAccountManager.loadFromServer(userId);
+    // 銀行口座データは既にComprehensiveDashboardで読み込まれているので、ここでは読み込まない
   }, [userId]);
 
   // 財布の残高を取得
   const walletBalance = walletManager.getWalletBalance(userId);
+  console.log('Wallet balance in calendar:', walletBalance);
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -155,25 +157,38 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       return receiptDate.toISOString().split('T')[0] <= dateStr;
     });
 
-    // 財布の残高を計算
-    let walletBalance = initialBalance;
-    dayTransactions.forEach(transaction => {
+    // 現在の財布の残高を基準に計算
+    const currentWalletBalance = walletBalance?.amount || 0;
+    
+    // 指定日以降の取引を除外して残高を計算
+    const futureTransactions = transactions.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate.toISOString().split('T')[0] > dateStr;
+    });
+
+    const futureReceipts = receipts.filter(receipt => {
+      const receiptDate = new Date(receipt.purchaseDate);
+      return receiptDate.toISOString().split('T')[0] > dateStr;
+    });
+
+    // 未来の取引を差し引いて過去の残高を計算
+    let pastWalletBalance = currentWalletBalance;
+    futureTransactions.forEach(transaction => {
       if (transaction.type === 'income') {
-        walletBalance += transaction.amount;
+        pastWalletBalance -= transaction.amount;
       } else {
-        walletBalance -= transaction.amount;
+        pastWalletBalance += transaction.amount;
       }
     });
 
-    // レシートの支出を追加
-    dayReceipts.forEach(receipt => {
-      walletBalance -= receipt.totalAmount;
+    futureReceipts.forEach(receipt => {
+      pastWalletBalance += receipt.totalAmount;
     });
 
     // 銀行口座の残高を追加
     const bankBalance = getTotalBankBalance();
     
-    return walletBalance + bankBalance;
+    return pastWalletBalance + bankBalance;
   };
 
   const formatCurrency = (amount: number): string => {
