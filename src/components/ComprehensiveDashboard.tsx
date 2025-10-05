@@ -4034,10 +4034,12 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
             <div className="guitar-header">
               <h3>🎸 ギター練習記録</h3>
               <button
-                className="add-practice-button"
+                className="guitar-action-btn add-practice-btn primary"
                 onClick={() => setShowAddGuitarPractice(true)}
+                title="新しいギター練習を記録"
               >
-                + 練習を記録
+                <span className="btn-icon">🎸</span>
+                <span className="btn-text">練習を記録</span>
               </button>
             </div>
 

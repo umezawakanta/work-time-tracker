@@ -154,7 +154,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         diary
       });
@@ -212,7 +212,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: '日記が更新されました',
         diary
@@ -229,7 +229,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: '日記が削除されました'
       });
