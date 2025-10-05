@@ -34,6 +34,8 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
 
   const walletManager = WalletBalanceManager.getInstance();
   const bankAccountManager = BankAccountManager.getInstance();
+  
+  console.log('WalletBalanceHistory prop:', walletBalanceHistory);
 
   useEffect(() => {
     if (initialTransactions.length > 0) {
@@ -139,9 +141,17 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   // 指定日の財布残高履歴を取得
   const getWalletBalanceHistoryForDate = (date: Date) => {
     const dateString = date.toISOString().split('T')[0];
-    return walletBalanceHistory.find(entry => 
-      new Date(entry.date).toISOString().split('T')[0] === dateString
-    );
+    console.log(`Looking for wallet history on ${dateString}`);
+    console.log('Available wallet history:', walletBalanceHistory);
+    
+    const history = walletBalanceHistory.find(entry => {
+      const entryDate = new Date(entry.date).toISOString().split('T')[0];
+      console.log(`Comparing ${dateString} with ${entryDate}`);
+      return entryDate === dateString;
+    });
+    
+    console.log(`Wallet history for ${dateString}:`, history);
+    return history;
   };
 
   const getCumulativeBalance = (date: Date) => {
@@ -153,7 +163,9 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     if (walletHistory) {
       // 財布残高履歴がある場合は、その日の残高を使用
       const bankBalance = getTotalBankBalance();
-      return walletHistory.amount + bankBalance;
+      const total = walletHistory.amount + bankBalance;
+      console.log(`Cumulative balance for ${dateStr}: wallet=${walletHistory.amount}, bank=${bankBalance}, total=${total}`);
+      return total;
     }
     
     // 財布残高履歴がない場合は、取引から計算
