@@ -45,21 +45,16 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
 
   // 銀行口座の総残高を計算
   const getTotalBankBalance = () => {
-    const accounts = bankAccountManager.getBankAccount(userId);
+    const accounts = bankAccountManager.getBankAccounts(userId);
     console.log('Bank accounts in calendar:', accounts);
-    if (Array.isArray(accounts)) {
+    if (accounts && accounts.length > 0) {
       const total = accounts.reduce((total, account) => {
         const balance = account.currentBalance || account.balance || 0;
         console.log('Account balance:', account.bankName, balance);
         return total + balance;
       }, 0);
-      console.log('Total bank balance (array):', total);
+      console.log('Total bank balance:', total);
       return total;
-    } else if (accounts) {
-      const balance = accounts.currentBalance || accounts.balance || 0;
-      console.log('Account balance (single):', accounts.bankName, balance);
-      console.log('Total bank balance (single):', balance);
-      return balance;
     }
     console.log('No bank accounts found');
     return 0;
@@ -227,9 +222,10 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       const dailyBalance = getDailyBalance(date);
       const cumulativeBalance = getCumulativeBalance(date);
       const walletHistory = getWalletBalanceHistoryForDate(date);
+      const bankAccounts = bankAccountManager.getBankAccounts(userId);
       const isToday = date.toDateString() === new Date().toDateString();
       const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-      const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory;
+      const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory || (bankAccounts && bankAccounts.length > 0);
 
       days.push(
         <div
@@ -244,6 +240,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                 {dayTransactions.length > 0 && `${dayTransactions.length}件`}
                 {dayReceipts.length > 0 && `🏪${dayReceipts.length}件`}
                 {walletHistory && '💰'}
+                {bankAccounts && bankAccounts.length > 0 && `🏦${bankAccounts.length}口座`}
               </div>
               <div className={`daily-balance ${dailyBalance >= 0 ? 'positive' : 'negative'}`}>
                 {dailyBalance >= 0 ? '+' : ''}{formatCurrency(dailyBalance)}
@@ -255,6 +252,13 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                   </div>
                   <div className={`wallet-change ${walletHistory.change >= 0 ? 'positive' : 'negative'}`}>
                     {walletHistory.change >= 0 ? '+' : ''}{formatCurrency(walletHistory.change)}
+                  </div>
+                </div>
+              )}
+              {bankAccounts && bankAccounts.length > 0 && (
+                <div className="bank-accounts-summary">
+                  <div className="bank-total-balance">
+                    総残高: {formatCurrency(bankAccounts.reduce((total, account) => total + (account.currentBalance || account.balance || 0), 0))}
                   </div>
                 </div>
               )}
@@ -391,6 +395,37 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                     </div>
                   </div>
                 )}
+
+                {/* 銀行口座残高 */}
+                {(() => {
+                  const accounts = bankAccountManager.getBankAccounts(userId);
+                  if (accounts && accounts.length > 0) {
+                    return (
+                      <div className="bank-accounts-section">
+                        <h4>🏦 銀行口座残高</h4>
+                        <div className="bank-accounts-list">
+                          {accounts.map((account) => (
+                            <div key={account.id} className="bank-account-item">
+                              <div className="bank-account-icon">🏦</div>
+                              <div className="bank-account-info">
+                                <div className="bank-account-name">
+                                  {account.bankName} {account.branchName}
+                                </div>
+                                <div className="bank-account-type">
+                                  {account.accountType} {account.accountNumber}
+                                </div>
+                              </div>
+                              <div className="bank-account-balance">
+                                {formatCurrency(account.currentBalance || account.balance || 0)}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
 
                 {/* 財布残高履歴 */}
                 {walletHistory && (
