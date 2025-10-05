@@ -55,7 +55,8 @@ const WorkDiary = mongoose.models.WorkDiary || mongoose.model('WorkDiary', WorkD
 type JWTRequest = { headers: { authorization?: string } };
 
 interface JWTPayload {
-  id: string;
+  id?: string;
+  userId?: string;
   email: string;
   role: string;
   isAdmin?: boolean;
@@ -87,7 +88,7 @@ const verifyJWT = (req: JWTRequest): JWTPayload | null => {
     const decoded = jwt.verify(token, jwtSecret) as JWTPayload;
     
     // 型安全性のための検証
-    if (!decoded || typeof decoded !== 'object' || !decoded.id) {
+    if (!decoded || typeof decoded !== 'object' || (!decoded.id && !decoded.userId)) {
       console.error('Invalid JWT payload structure');
       return null;
     }
@@ -136,9 +137,9 @@ export default async function handler(req, res) {
       const user = verifyJWT(req);
       let actualUserId = null;
       
-      if (user && user.id) {
+      if (user && (user.id || user.userId)) {
         // JWT認証が成功した場合、JWTのユーザーIDを使用
-        actualUserId = user.id;
+        actualUserId = user.id || user.userId;
         console.log('User ID obtained from JWT token:', actualUserId);
       } else if (userId) {
         // JWT認証が失敗した場合のみ、クエリパラメータをフォールバックとして使用
