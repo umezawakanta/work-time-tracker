@@ -238,6 +238,9 @@ export class CreditCardManager {
       c.creditLimit > 0 && (c.currentBalance / c.creditLimit) >= 0.8
     ).length;
 
+    // 総年会費
+    const totalAnnualFees = activeCards.reduce((sum, c) => sum + c.annualFee, 0);
+
     let paymentBehavior: 'excellent' | 'good' | 'fair' | 'poor' = 'excellent';
     if (totalUtilization > 80) {
       paymentBehavior = 'poor';
