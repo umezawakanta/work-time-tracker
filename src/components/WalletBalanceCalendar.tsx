@@ -14,6 +14,7 @@ interface WalletBalanceCalendarProps {
   transactions?: WalletTransaction[];
   bankAccounts?: BankAccount[];
   receipts?: any[];
+  walletBalanceHistory?: any[];
 }
 
 const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({ 
@@ -22,7 +23,8 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   initialBalance = 0, 
   transactions: initialTransactions = [],
   bankAccounts = [],
-  receipts = []
+  receipts = [],
+  walletBalanceHistory = []
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
@@ -137,6 +139,14 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     return balance;
   };
 
+  // 指定日の財布残高履歴を取得
+  const getWalletBalanceHistoryForDate = (date: Date) => {
+    const dateString = date.toISOString().split('T')[0];
+    return walletBalanceHistory.find(entry => 
+      new Date(entry.date).toISOString().split('T')[0] === dateString
+    );
+  };
+
   const getCumulativeBalance = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
     const dayTransactions = transactions.filter(transaction => {
@@ -216,9 +226,10 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       const dayReceipts = getReceiptsForDate(date);
       const dailyBalance = getDailyBalance(date);
       const cumulativeBalance = getCumulativeBalance(date);
+      const walletHistory = getWalletBalanceHistoryForDate(date);
       const isToday = date.toDateString() === new Date().toDateString();
       const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-      const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0;
+      const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory;
 
       days.push(
         <div
@@ -232,10 +243,21 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
               <div className="transaction-count">
                 {dayTransactions.length > 0 && `${dayTransactions.length}件`}
                 {dayReceipts.length > 0 && `🏪${dayReceipts.length}件`}
+                {walletHistory && '💰'}
               </div>
               <div className={`daily-balance ${dailyBalance >= 0 ? 'positive' : 'negative'}`}>
                 {dailyBalance >= 0 ? '+' : ''}{formatCurrency(dailyBalance)}
               </div>
+              {walletHistory && (
+                <div className="wallet-history">
+                  <div className="wallet-amount">
+                    {formatCurrency(walletHistory.amount)}
+                  </div>
+                  <div className={`wallet-change ${walletHistory.change >= 0 ? 'positive' : 'negative'}`}>
+                    {walletHistory.change >= 0 ? '+' : ''}{formatCurrency(walletHistory.change)}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           <div className={`cumulative-balance ${cumulativeBalance !== 0 ? 'has-balance' : ''}`}>
@@ -310,11 +332,12 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
 
       {selectedDate && (
         <div className="selected-date-info">
-          <h3>{selectedDate.toLocaleDateString('ja-JP')} の取引・レシート</h3>
+          <h3>{selectedDate.toLocaleDateString('ja-JP')} の取引・レシート・財布残高</h3>
           {(() => {
             const dayTransactions = getTransactionsForDate(selectedDate);
             const dayReceipts = getReceiptsForDate(selectedDate);
-            const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0;
+            const walletHistory = getWalletBalanceHistoryForDate(selectedDate);
+            const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory;
 
             if (!hasActivity) {
               return <p>この日の取引・レシートはありません</p>;
@@ -365,6 +388,29 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                           </div>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 財布残高履歴 */}
+                {walletHistory && (
+                  <div className="wallet-history-section">
+                    <h4>💰 財布残高履歴</h4>
+                    <div className="wallet-history-item">
+                      <div className="wallet-history-icon">💰</div>
+                      <div className="wallet-history-info">
+                        <div className="wallet-history-amount">
+                          残高: {formatCurrency(walletHistory.amount)}
+                        </div>
+                        <div className={`wallet-history-change ${walletHistory.change >= 0 ? 'positive' : 'negative'}`}>
+                          前日比: {walletHistory.change >= 0 ? '+' : ''}{formatCurrency(walletHistory.change)}
+                        </div>
+                        {walletHistory.notes && (
+                          <div className="wallet-history-notes">
+                            メモ: {walletHistory.notes}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}

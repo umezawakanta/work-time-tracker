@@ -145,6 +145,10 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [showAddCreditCard, setShowAddCreditCard] = useState(false);
   const [editingCreditCard, setEditingCreditCard] = useState<CreditCard | null>(null);
   const [showCreditCardUpdate, setShowCreditCardUpdate] = useState(false);
+  
+  // 財布残高更新関連の状態
+  const [showWalletBalanceUpdate, setShowWalletBalanceUpdate] = useState(false);
+  const [walletBalanceHistory, setWalletBalanceHistory] = useState<any[]>([]);
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(
     null
   );
@@ -804,6 +808,19 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       setCreditCards(cards);
       setCreditCardSummary(cardSummary);
       setCreditCardAnalysis(cardAnalysis);
+
+      // 財布残高履歴データ
+      try {
+        const historyResponse = await apiFetch(`/api/wallet-balance/history?userId=${userId}`);
+        if (historyResponse.ok) {
+          const historyData = await historyResponse.json();
+          if (historyData.success && historyData.history) {
+            setWalletBalanceHistory(historyData.history);
+          }
+        }
+      } catch (error) {
+        console.error('財布残高履歴の読み込みエラー:', error);
+      }
     } catch (err) {
       console.error("データの読み込みエラー:", err);
       setError("データの読み込みに失敗しました");
@@ -2578,7 +2595,38 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 >
                   + 取引を追加
                 </button>
+                <button
+                  className="daily-update-button"
+                  onClick={() => setShowWalletBalanceUpdate(true)}
+                >
+                  📝 日次更新
+                </button>
               </div>
+
+              {/* 財布残高履歴 */}
+              {walletBalanceHistory.length > 0 && (
+                <div className="wallet-balance-history">
+                  <h5>📈 残高履歴（過去7日間）</h5>
+                  <div className="history-chart">
+                    {walletBalanceHistory.slice(0, 7).map((entry, index) => (
+                      <div key={index} className="history-item">
+                        <div className="history-date">
+                          {new Date(entry.date).toLocaleDateString('ja-JP', { 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })}
+                        </div>
+                        <div className="history-amount">
+                          {formatCurrency(entry.amount)}
+                        </div>
+                        <div className={`history-change ${entry.change >= 0 ? 'positive' : 'negative'}`}>
+                          {entry.change > 0 ? '+' : ''}{formatCurrency(entry.change)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* 最近の取引 */}
               <div className="recent-transactions">
@@ -4747,6 +4795,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                transactions={walletTransactions}
                bankAccounts={bankAccounts}
                receipts={receipts}
+               walletBalanceHistory={walletBalanceHistory}
              />
           </>
         )}
