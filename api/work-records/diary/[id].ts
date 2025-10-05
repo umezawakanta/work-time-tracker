@@ -164,7 +164,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     } else {
       res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+      return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 
   } catch (error) {
