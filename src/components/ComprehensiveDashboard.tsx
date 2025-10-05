@@ -811,12 +811,21 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
 
       // 財布残高履歴データ
       try {
+        console.log('財布残高履歴API呼び出し開始:', `/api/wallet-balance/history?userId=${userId}`);
         const historyResponse = await apiFetch(`/api/wallet-balance/history?userId=${userId}`);
+        console.log('財布残高履歴APIレスポンス:', historyResponse.status, historyResponse.statusText);
+        
         if (historyResponse.ok) {
           const historyData = await historyResponse.json();
+          console.log('財布残高履歴データ:', historyData);
           if (historyData.success && historyData.history) {
+            console.log('財布残高履歴設定:', historyData.history);
             setWalletBalanceHistory(historyData.history);
+          } else {
+            console.log('財布残高履歴データが空または無効');
           }
+        } else {
+          console.log('財布残高履歴API呼び出し失敗:', historyResponse.status);
         }
       } catch (error) {
         console.error('財布残高履歴の読み込みエラー:', error);
@@ -836,6 +845,76 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  // 財布残高日次更新の処理
+  const handleWalletBalanceUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const amount = parseFloat(formData.get('updateAmount') as string);
+    const notes = formData.get('updateNotes') as string || '';
+    const date = new Date().toISOString().split('T')[0];
+    
+    if (isNaN(amount)) {
+      alert('有効な金額を入力してください');
+      return;
+    }
+
+    try {
+      // 前日の履歴を取得して変化額を計算
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      
+      let change = amount; // デフォルトは入力された金額
+      
+      // 前日の履歴がある場合は変化額を計算
+      const historyResponse = await apiFetch(`/api/wallet-balance/history?userId=${userId}&startDate=${yesterdayStr}&endDate=${yesterdayStr}`);
+      if (historyResponse.ok) {
+        const historyData = await historyResponse.json();
+        if (historyData.success && historyData.history && historyData.history.length > 0) {
+          const yesterdayAmount = historyData.history[0].amount;
+          change = amount - yesterdayAmount;
+        }
+      }
+
+      // 財布残高履歴を保存
+      const response = await apiFetch('/api/wallet-balance/history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          date,
+          amount,
+          change,
+          notes,
+          tags: ['daily-update']
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('財布残高履歴保存成功:', data);
+        
+        // データを再読み込み
+        await loadAllData();
+        
+        // モーダルを閉じる
+        setShowWalletBalanceUpdate(false);
+        
+        alert('財布残高を更新しました');
+      } else {
+        const errorData = await response.json();
+        console.error('財布残高履歴保存エラー:', errorData);
+        alert('更新に失敗しました: ' + (errorData.message || '不明なエラー'));
+      }
+    } catch (error) {
+      console.error('財布残高更新エラー:', error);
+      alert('更新中にエラーが発生しました');
+    }
   };
 
   // 日時をフォーマットする関数
@@ -2840,7 +2919,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                               <strong>取引番号:</strong> {transaction.referenceNumber}
                             </div>
                           )}
-                          {transaction.fees > 0 && (
+                          {transaction.fees && transaction.fees > 0 && (
                             <div className="transaction-fees">
                               <strong>手数料:</strong> {formatCurrency(transaction.fees)}
                             </div>
@@ -4575,7 +4654,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 
                 const updates = {
                   cardName: formData.get('cardName') as string,
-                  cardType: formData.get('cardType') as string,
+                  cardType: formData.get('cardType') as "visa" | "mastercard" | "jcb" | "amex" | "diners" | "discover" | "other",
                   lastFourDigits: formData.get('lastFourDigits') as string,
                   expiryMonth: parseInt(formData.get('expiryMonth') as string),
                   expiryYear: parseInt(formData.get('expiryYear') as string),
@@ -4584,7 +4663,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   creditLimit: parseFloat(formData.get('creditLimit') as string),
                   currentBalance: parseFloat(formData.get('currentBalance') as string),
                   minimumPayment: parseFloat(formData.get('minimumPayment') as string),
-                  paymentDueDate: formData.get('paymentDueDate') as string,
+                  paymentDueDate: new Date(formData.get('paymentDueDate') as string),
                   interestRate: parseFloat(formData.get('interestRate') as string),
                   annualFee: parseFloat(formData.get('annualFee') as string),
                   rewardProgram: formData.get('rewardProgram') as string,
@@ -4593,13 +4672,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   notes: formData.get('notes') as string
                 };
 
-                const availableCredit = updates.creditLimit - updates.currentBalance;
-                updates.availableCredit = availableCredit;
-
-                const success = await creditCardManager.updateCard(editingCreditCard.id, {
-                  ...updates,
-                  paymentDueDate: new Date(updates.paymentDueDate)
-                });
+                const success = await creditCardManager.updateCard(editingCreditCard.id, updates);
 
                 if (success) {
                   alert('クレジットカードを更新しました！');
@@ -4798,6 +4871,67 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                walletBalanceHistory={walletBalanceHistory}
              />
           </>
+        )}
+
+        {/* 財布残高日次更新モーダル */}
+        {showWalletBalanceUpdate && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h3>📝 財布残高日次更新</h3>
+                <button
+                  className="close-button"
+                  onClick={() => setShowWalletBalanceUpdate(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="modal-body">
+                <form onSubmit={handleWalletBalanceUpdate}>
+                  <div className="form-group">
+                    <label htmlFor="updateDate">日付</label>
+                    <input
+                      type="date"
+                      id="updateDate"
+                      value={new Date().toISOString().split('T')[0]}
+                      readOnly
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="updateAmount">残高</label>
+                    <input
+                      type="number"
+                      id="updateAmount"
+                      name="updateAmount"
+                      placeholder="現在の財布残高を入力"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="updateNotes">メモ（任意）</label>
+                    <textarea
+                      id="updateNotes"
+                      name="updateNotes"
+                      placeholder="メモを入力（任意）"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="form-actions">
+                    <button
+                      type="button"
+                      className="cancel-button"
+                      onClick={() => setShowWalletBalanceUpdate(false)}
+                    >
+                      キャンセル
+                    </button>
+                    <button type="submit" className="submit-button">
+                      更新
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
