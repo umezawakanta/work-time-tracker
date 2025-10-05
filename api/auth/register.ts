@@ -176,7 +176,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(500).json({
       success: false,
       message: 'アカウント作成中にエラーが発生しました',
-      error: process.env.NODE_ENV === 'development'
+      error: process.env['NODE_ENV'] === 'development'
         ? (error instanceof Error ? error.message : String(error))
         : 'Internal server error',
     });
