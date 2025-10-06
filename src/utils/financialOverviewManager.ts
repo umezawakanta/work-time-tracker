@@ -19,6 +19,7 @@ import { CashBalanceManager } from './cashBalanceManager';
 import { BankAccountManager } from './bankAccountManager';
 import { CardLoanManager } from './cardLoanManager';
 import { PayPayCardManager } from './paypayCardManager';
+import { WalletBalanceManager } from './walletBalanceManager';
 
 export class FinancialOverviewManager {
   private static instance: FinancialOverviewManager;
@@ -30,6 +31,7 @@ export class FinancialOverviewManager {
   private bankAccountManager = BankAccountManager.getInstance();
   private cardLoanManager = CardLoanManager.getInstance();
   private paypayCardManager = PayPayCardManager.getInstance();
+  private walletBalanceManager = WalletBalanceManager.getInstance();
 
   public static getInstance(): FinancialOverviewManager {
     if (!FinancialOverviewManager.instance) {
@@ -39,18 +41,29 @@ export class FinancialOverviewManager {
   }
 
   // 財務概要を取得
-  public getFinancialOverview(userId: string): FinancialOverview {
+  public getFinancialOverview(userId: string, walletBalanceHistory?: any[]): FinancialOverview {
     this.cashBalanceManager.loadFromLocalStorage();
     this.bankAccountManager.loadFromLocalStorage();
     this.cardLoanManager.loadFromLocalStorage();
     this.paypayCardManager.loadFromLocalStorage();
+    this.walletBalanceManager.loadFromLocalStorage();
 
     const cashBalance = this.cashBalanceManager.getCashBalance(userId)?.currentBalance || 0;
+    
+    // 財布残高履歴から最新の値を取得、なければローカルデータから取得
+    let walletBalance = 0;
+    if (walletBalanceHistory && walletBalanceHistory.length > 0) {
+      const latestHistory = walletBalanceHistory.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+      walletBalance = latestHistory.amount || 0;
+    } else {
+      walletBalance = this.walletBalanceManager.getWalletBalance(userId)?.amount || 0;
+    }
+    
     const bankAccountBalance = this.bankAccountManager.getBankAccountSummary(userId).totalBalance;
     const cardLoanDebt = this.cardLoanManager.getCardLoanSummary(userId).totalDebt;
     const paypayCardDebt = this.paypayCardManager.getPayPayCardSummary(userId).totalDebt;
 
-    const totalAssets = cashBalance + bankAccountBalance;
+    const totalAssets = cashBalance + walletBalance + bankAccountBalance;
     const totalLiabilities = cardLoanDebt + paypayCardDebt;
     const netWorth = totalAssets - totalLiabilities;
 
@@ -59,7 +72,7 @@ export class FinancialOverviewManager {
       totalAssets,
       totalLiabilities,
       netWorth,
-      cashBalance,
+      cashBalance: cashBalance + walletBalance, // 現金と財布残高を合算
       bankAccountBalance,
       cardLoanDebt,
       paypayCardDebt,
@@ -378,8 +391,8 @@ export class FinancialOverviewManager {
   }
 
   // 財務サマリーを取得
-  public getFinancialSummary(userId: string): FinancialSummary {
-    const overview = this.getFinancialOverview(userId);
+  public getFinancialSummary(userId: string, walletBalanceHistory?: any[]): FinancialSummary {
+    const overview = this.getFinancialOverview(userId, walletBalanceHistory);
     const trend = this.getFinancialTrend(userId, '6M');
     const categories = this.getFinancialCategories(userId);
     const alerts = this.getAlerts(userId);

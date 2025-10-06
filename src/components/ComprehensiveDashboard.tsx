@@ -779,7 +779,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
 
       // 財務概要データ
       const financialData =
-        financialOverviewManager.getFinancialSummary(userId);
+        financialOverviewManager.getFinancialSummary(userId, walletBalanceHistory);
       setFinancialSummary(financialData);
 
       // ギター練習データ
@@ -3261,9 +3261,13 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     {expandedFinancialItem === 'assets' && (
                       <div className="breakdown-details">
                         <div className="breakdown-item">
-                          <span className="breakdown-label">現金残高</span>
+                          <span className="breakdown-label">財布残高</span>
                           <span className="breakdown-amount positive">
-                            {formatCurrency(financialSummary?.overview?.cashBalance || 0)}
+                            {formatCurrency(
+                              walletBalanceHistory && walletBalanceHistory.length > 0
+                                ? walletBalanceHistory.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0].amount
+                                : walletBalance?.amount || 0
+                            )}
                           </span>
                         </div>
                         <div className="breakdown-item">
@@ -3272,10 +3276,20 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                             {formatCurrency(financialSummary?.overview?.bankAccountBalance || 0)}
                           </span>
                         </div>
+                        {bankAccounts.map((account) => (
+                          <div key={account.id} className="breakdown-item bank-account-detail">
+                            <span className="breakdown-label">
+                              {account.bankName} {account.branchName}
+                            </span>
+                            <span className="breakdown-amount positive">
+                              {formatCurrency(account.currentBalance || account.balance || 0)}
+                            </span>
+                          </div>
+                        ))}
                         <div className="breakdown-item">
                           <span className="breakdown-label">その他資産</span>
                           <span className="breakdown-amount positive">
-                            {formatCurrency((financialSummary?.overview?.totalAssets || 0) - (financialSummary?.overview?.cashBalance || 0) - (financialSummary?.overview?.bankAccountBalance || 0))}
+                            {formatCurrency((financialSummary?.overview?.totalAssets || 0) - (walletBalance?.amount || 0) - (financialSummary?.overview?.bankAccountBalance || 0))}
                           </span>
                         </div>
                       </div>
