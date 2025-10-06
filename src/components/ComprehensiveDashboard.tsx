@@ -126,6 +126,9 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [showAddWasteGoal, setShowAddWasteGoal] = useState(false);
   const [showAddReceipt, setShowAddReceipt] = useState(false);
   
+  // 財務概要アコーディオン状態
+  const [expandedFinancialItem, setExpandedFinancialItem] = useState<string | null>(null);
+  
   // ギター練習関連の状態
   const [guitarPracticeRecords, setGuitarPracticeRecords] = useState<GuitarPracticeRecord[]>([]);
   const [guitarPracticeSummary, setGuitarPracticeSummary] = useState<GuitarPracticeSummary | null>(null);
@@ -3242,24 +3245,88 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   <h4>📊 財務概要</h4>
                 </div>
                 <div className="financial-summary">
-                  <div className="summary-card">
-                    <h5>総資産</h5>
+                  <div 
+                    className={`summary-card clickable ${expandedFinancialItem === 'assets' ? 'expanded' : ''}`}
+                    onClick={() => setExpandedFinancialItem(expandedFinancialItem === 'assets' ? null : 'assets')}
+                  >
+                    <div className="card-header">
+                      <h5>総資産</h5>
+                      <span className="expand-icon">{expandedFinancialItem === 'assets' ? '−' : '+'}</span>
+                    </div>
                     <p className="amount positive">
                       {formatCurrency(
                         financialSummary?.overview?.totalAssets || 0
                       )}
                     </p>
+                    {expandedFinancialItem === 'assets' && (
+                      <div className="breakdown-details">
+                        <div className="breakdown-item">
+                          <span className="breakdown-label">現金残高</span>
+                          <span className="breakdown-amount positive">
+                            {formatCurrency(financialSummary?.overview?.cashBalance || 0)}
+                          </span>
+                        </div>
+                        <div className="breakdown-item">
+                          <span className="breakdown-label">銀行口座残高</span>
+                          <span className="breakdown-amount positive">
+                            {formatCurrency(financialSummary?.overview?.bankAccountBalance || 0)}
+                          </span>
+                        </div>
+                        <div className="breakdown-item">
+                          <span className="breakdown-label">その他資産</span>
+                          <span className="breakdown-amount positive">
+                            {formatCurrency((financialSummary?.overview?.totalAssets || 0) - (financialSummary?.overview?.cashBalance || 0) - (financialSummary?.overview?.bankAccountBalance || 0))}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="summary-card">
-                    <h5>総負債</h5>
+                  
+                  <div 
+                    className={`summary-card clickable ${expandedFinancialItem === 'liabilities' ? 'expanded' : ''}`}
+                    onClick={() => setExpandedFinancialItem(expandedFinancialItem === 'liabilities' ? null : 'liabilities')}
+                  >
+                    <div className="card-header">
+                      <h5>総負債</h5>
+                      <span className="expand-icon">{expandedFinancialItem === 'liabilities' ? '−' : '+'}</span>
+                    </div>
                     <p className="amount negative">
                       {formatCurrency(
                         financialSummary?.overview?.totalLiabilities || 0
                       )}
                     </p>
+                    {expandedFinancialItem === 'liabilities' && (
+                      <div className="breakdown-details">
+                        <div className="breakdown-item">
+                          <span className="breakdown-label">カードローン</span>
+                          <span className="breakdown-amount negative">
+                            {formatCurrency(financialSummary?.overview?.cardLoanDebt || 0)}
+                          </span>
+                        </div>
+                        <div className="breakdown-item">
+                          <span className="breakdown-label">PayPayカード</span>
+                          <span className="breakdown-amount negative">
+                            {formatCurrency(financialSummary?.overview?.paypayCardDebt || 0)}
+                          </span>
+                        </div>
+                        <div className="breakdown-item">
+                          <span className="breakdown-label">その他負債</span>
+                          <span className="breakdown-amount negative">
+                            {formatCurrency((financialSummary?.overview?.totalLiabilities || 0) - (financialSummary?.overview?.cardLoanDebt || 0) - (financialSummary?.overview?.paypayCardDebt || 0))}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="summary-card">
-                    <h5>純資産</h5>
+                  
+                  <div 
+                    className={`summary-card clickable ${expandedFinancialItem === 'networth' ? 'expanded' : ''}`}
+                    onClick={() => setExpandedFinancialItem(expandedFinancialItem === 'networth' ? null : 'networth')}
+                  >
+                    <div className="card-header">
+                      <h5>純資産</h5>
+                      <span className="expand-icon">{expandedFinancialItem === 'networth' ? '−' : '+'}</span>
+                    </div>
                     <p
                       className={`amount ${
                         (financialSummary?.overview?.netWorth || 0) >= 0
@@ -3271,6 +3338,28 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                         financialSummary?.overview?.netWorth || 0
                       )}
                     </p>
+                    {expandedFinancialItem === 'networth' && (
+                      <div className="breakdown-details">
+                        <div className="breakdown-item">
+                          <span className="breakdown-label">総資産</span>
+                          <span className="breakdown-amount positive">
+                            {formatCurrency(financialSummary?.overview?.totalAssets || 0)}
+                          </span>
+                        </div>
+                        <div className="breakdown-item">
+                          <span className="breakdown-label">総負債</span>
+                          <span className="breakdown-amount negative">
+                            {formatCurrency(financialSummary?.overview?.totalLiabilities || 0)}
+                          </span>
+                        </div>
+                        <div className="breakdown-item total">
+                          <span className="breakdown-label">純資産</span>
+                          <span className={`breakdown-amount ${(financialSummary?.overview?.netWorth || 0) >= 0 ? 'positive' : 'negative'}`}>
+                            {formatCurrency(financialSummary?.overview?.netWorth || 0)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

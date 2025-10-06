@@ -1432,6 +1432,201 @@
   }
 }
 
+/* 財務概要アコーディオンのスタイル */
+.financial-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.summary-card.clickable {
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.summary-card.clickable.expanded {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-header h5 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.expand-icon {
+  font-size: 20px;
+  font-weight: bold;
+  color: #667eea;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.summary-card.clickable:hover .expand-icon {
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(1.1);
+}
+
+.summary-card.clickable.expanded .expand-icon {
+  background: rgba(102, 126, 234, 0.3);
+  transform: rotate(180deg);
+}
+
+.breakdown-details {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+    transform: translateY(0);
+  }
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+}
+
+.breakdown-item.total {
+  font-weight: 700;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 2px solid rgba(102, 126, 234, 0.2);
+  border-bottom: none;
+}
+
+.breakdown-label {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.breakdown-item.total .breakdown-label {
+  color: #2c3e50;
+  font-size: 15px;
+}
+
+.breakdown-amount {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', monospace;
+}
+
+.breakdown-amount.positive {
+  color: #10b981;
+}
+
+.breakdown-amount.negative {
+  color: #ef4444;
+}
+
+.breakdown-item.total .breakdown-amount {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .financial-summary {
+    gap: 12px;
+  }
+  
+  .card-header h5 {
+    font-size: 15px;
+  }
+  
+  .expand-icon {
+    font-size: 18px;
+    width: 22px;
+    height: 22px;
+  }
+  
+  .breakdown-details {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+  
+  .breakdown-item {
+    padding: 6px 0;
+  }
+  
+  .breakdown-label {
+    font-size: 13px;
+  }
+  
+  .breakdown-amount {
+    font-size: 13px;
+  }
+  
+  .breakdown-item.total .breakdown-amount {
+    font-size: 15px;
+  }
+}
+
+/* タブレット対応 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .financial-summary {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .summary-card.clickable:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* デスクトップ対応 */
+@media (min-width: 1025px) {
+  .financial-summary {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  
+  .summary-card.clickable:last-child {
+    grid-column: unset;
+  }
+}
+
 /* ギターヘッダーのスタイル調整 */
 .guitar-header {
   display: flex;
