@@ -2746,8 +2746,9 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 <button
                   className="add-bank-account-button"
                   onClick={() => setShowAddBankAccount(true)}
+                  title="新しい銀行口座を追加"
                 >
-                  + 口座を追加
+                  口座を追加
                 </button>
               </div>
 
