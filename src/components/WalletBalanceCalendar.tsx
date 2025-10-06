@@ -20,7 +20,6 @@ interface WalletBalanceCalendarProps {
 const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({ 
   userId, 
   onClose, 
-  initialBalance = 0, 
   transactions: initialTransactions = [],
   bankAccounts = [],
   receipts = [],
@@ -29,7 +28,6 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedDateTransactions, setSelectedDateTransactions] = useState<WalletTransaction[]>([]);
   const [displayMode, setDisplayMode] = useState<'total' | 'breakdown'>('total');
   const [amountFormat, setAmountFormat] = useState<'full' | 'thousands'>('full');
 
@@ -84,8 +82,8 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       
       // 指定日より後の取引を除外して計算
       const futureTransactions = accountTransactions.filter(transaction => {
-        return transaction?.transactionDate && 
-               new Date(transaction!.transactionDate).toISOString().split('T')[0] > dateStr;
+        if (!transaction || !transaction.transactionDate) return false;
+        return new Date(transaction.transactionDate).toISOString().split('T')[0] > (dateStr || '');
       });
 
       // 未来の取引を差し引いて過去の残高を計算
@@ -113,8 +111,11 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       const sortedHistory = [...walletBalanceHistory].sort((a, b) => 
         new Date(b.date).getTime() - new Date(a.date).getTime()
       );
-      console.log('Latest wallet history:', sortedHistory[0]);
-      return sortedHistory[0].amount;
+      const latestHistory = sortedHistory[0];
+      console.log('Latest wallet history:', latestHistory);
+      if (latestHistory) {
+        return latestHistory.amount;
+      }
     }
     // 履歴がない場合は従来の方法
     return walletBalance?.amount || 0;
@@ -136,8 +137,8 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       
       // 指定日以降の取引を見つけて、それらを差し引く
       const futureTransactions = accountTransactions.filter(transaction => {
-        return transaction?.transactionDate && 
-               new Date(transaction!.transactionDate).toISOString().split('T')[0] > dateStr;
+        if (!transaction || !transaction.transactionDate) return false;
+        return new Date(transaction.transactionDate).toISOString().split('T')[0] > (dateStr || '');
       });
 
       // 未来の取引を差し引いて過去の残高を計算
@@ -283,17 +284,23 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     let walletBalance = 0;
     
     // 指定日までの取引を時系列順で処理
-    const allTransactions = [...dayTransactions, ...dayReceipts.map(receipt => ({
-      id: receipt?.id || '',
-      type: 'expense',
-      amount: receipt?.totalAmount || 0,
-      description: receipt?.storeName || '',
-      category: 'レシート',
-      date: receipt?.purchaseDate || ''
-    }))];
+    const allTransactions = [...dayTransactions, ...dayReceipts.map(receipt => {
+      if (!receipt) return null;
+      return {
+        id: receipt.id || '',
+        type: 'expense',
+        amount: receipt.totalAmount || 0,
+        description: receipt.storeName || '',
+        category: 'レシート',
+        date: receipt.purchaseDate || ''
+      };
+    }).filter(Boolean)];
     
     // 日付順でソート
-    allTransactions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    allTransactions.sort((a, b) => {
+      if (!a || !b) return 0;
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
     
     // 取引を順番に処理して残高を計算
     allTransactions.forEach(transaction => {
@@ -327,8 +334,6 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
-    const dayTransactions = getTransactionsForDate(date);
-    setSelectedDateTransactions(dayTransactions);
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
