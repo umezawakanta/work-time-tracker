@@ -13,6 +13,7 @@ import { ATMTransactionManager } from "../utils/atmTransactionManager";
 import { CreditCardManager } from "../utils/creditCardManager";
 import { apiFetch } from "../utils/apiClient";
 import WalletBalanceCalendar from "./WalletBalanceCalendar";
+import { walletBalanceRewardManager } from "../utils/walletBalanceRewardManager";
 import {
   AssetLiabilitySummary,
   AssetLiabilityAnalysis,
@@ -164,7 +165,6 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
     useState<WalletBalanceAnalysis | null>(null);
   const [showAddWalletTransaction, setShowAddWalletTransaction] =
     useState(false);
-  const [showUpdateWalletBalance, setShowUpdateWalletBalance] = useState(false);
   const [showWalletCalendar, setShowWalletCalendar] = useState(false);
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [showAddBankAccount, setShowAddBankAccount] = useState(false);
@@ -901,6 +901,30 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
       if (response.ok) {
         const data = await response.json();
         console.log('財布残高履歴保存成功:', data);
+        
+        // 報酬システムの処理
+        try {
+          const rewardResult = await walletBalanceRewardManager.processWalletBalanceReward(userId, {
+            amount: amount,
+            notes: notes,
+            date: date,
+            change: change
+          }, data.historyId || undefined);
+
+          if (rewardResult.experience > 0 || rewardResult.workCoins > 0) {
+            console.log(`財布残高更新報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
+            
+            // 報酬獲得通知を表示
+            if (rewardResult.badges.length > 0) {
+              const badgeNames = rewardResult.badges.map(b => b.name).join(', ');
+              alert(`🎉 バッジを獲得しました！\n${badgeNames}\n\n経験値: +${rewardResult.experience}XP\nワークコイン: +${rewardResult.workCoins}コイン`);
+            } else {
+              alert(`💰 報酬を獲得しました！\n経験値: +${rewardResult.experience}XP\nワークコイン: +${rewardResult.workCoins}コイン`);
+            }
+          }
+        } catch (rewardError) {
+          console.error("報酬処理エラー:", rewardError);
+        }
         
         // データを再読み込み
         await loadAllData();
@@ -2616,12 +2640,6 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
             <div className="wallet-section">
               <div className="section-header">
                 <h4>💰 財布の残高</h4>
-                <button
-                  className="add-balance-button"
-                  onClick={() => setShowUpdateWalletBalance(true)}
-                >
-                  + 残高を更新
-                </button>
               </div>
 
               <div className="wallet-balance-display">
@@ -3701,73 +3719,6 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
           </div>
         )}
 
-        {/* 財布の残高更新フォーム */}
-        {showUpdateWalletBalance && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <h3>財布の残高を更新</h3>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.target as HTMLFormElement);
-                  const amount = Number(formData.get("amount"));
-                  const notes = formData.get("notes") as string;
-                  const tags = (formData.get("tags") as string)
-                    ?.split(",")
-                    .map((tag) => tag.trim())
-                    .filter((tag) => tag);
-
-                  const success = await walletBalanceManager.saveToServer(
-                    userId,
-                    { amount, notes, tags },
-                    "balance"
-                  );
-                  if (success) {
-                    loadAllData();
-                    setShowUpdateWalletBalance(false);
-                  }
-                }}
-              >
-                <div className="form-group">
-                  <label htmlFor="wallet-amount">残高</label>
-                  <input
-                    type="number"
-                    id="wallet-amount"
-                    name="amount"
-                    defaultValue={walletBalance?.amount || 0}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="wallet-notes">メモ</label>
-                  <textarea
-                    id="wallet-notes"
-                    name="notes"
-                    defaultValue={walletBalance?.notes || ""}
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="wallet-tags">タグ（カンマ区切り）</label>
-                  <input
-                    type="text"
-                    id="wallet-tags"
-                    name="tags"
-                    defaultValue={walletBalance?.tags?.join(", ") || ""}
-                  />
-                </div>
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    onClick={() => setShowUpdateWalletBalance(false)}
-                  >
-                    キャンセル
-                  </button>
-                  <button type="submit">更新</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
 
         {/* 財布の取引追加フォーム */}
         {showAddWalletTransaction && (
