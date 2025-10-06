@@ -152,6 +152,68 @@
   border-color: #0056b3;
 }
 
+/* 月間サマリー */
+.monthly-summary {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.monthly-summary h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+}
+
+.summary-label {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.summary-amount {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+.summary-amount.positive {
+  color: #28a745;
+}
+
+.summary-amount.negative {
+  color: #dc3545;
+}
+
+.summary-amount small {
+  font-size: 0.7rem;
+  color: #666;
+  font-weight: normal;
+  display: block;
+  margin-top: 2px;
+}
+
 .calendar-grid {
   background: white;
   border-radius: 8px;
@@ -184,8 +246,8 @@
 
 .calendar-day {
   background: white;
-  min-height: 100px;
-  padding: 8px;
+  min-height: 120px;
+  padding: 6px;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -261,43 +323,92 @@
 .balance-breakdown {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  font-size: 0.7rem;
+  gap: 1px;
+  font-size: 0.65rem;
+  max-height: 80px;
+  overflow: hidden;
 }
 
 .balance-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2px 4px;
-  border-radius: 3px;
-  background: rgba(0, 123, 255, 0.1);
+  padding: 1px 3px;
+  border-radius: 2px;
+  background: rgba(0, 123, 255, 0.08);
+  min-height: 16px;
 }
 
 .balance-item.wallet {
-  background: rgba(255, 193, 7, 0.2);
+  background: rgba(255, 193, 7, 0.15);
   font-weight: bold;
+  font-size: 0.7rem;
 }
 
 .balance-item.account {
-  background: rgba(40, 167, 69, 0.1);
+  background: rgba(40, 167, 69, 0.08);
+}
+
+.balance-item.more {
+  background: rgba(108, 117, 125, 0.1);
+  font-style: italic;
 }
 
 .balance-label {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   color: #495057;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 60%;
+  max-width: 55%;
+  line-height: 1.2;
 }
 
 .balance-amount {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: bold;
   color: #333;
   white-space: nowrap;
+  line-height: 1.2;
+}
+
+/* 前日比表示 */
+.balance-total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.change-indicator {
+  font-size: 0.6rem;
+  font-weight: bold;
+  padding: 1px 3px;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.change-indicator.positive {
+  color: #28a745;
+  background: rgba(40, 167, 69, 0.1);
+}
+
+.change-indicator.negative {
+  color: #dc3545;
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.calendar-day.significant-change {
+  border-left: 3px solid #ffc107;
+}
+
+.calendar-day.significant-change.today {
+  border-left: 3px solid #ffc107;
+  border-top: 2px solid #2196f3;
+  border-right: 2px solid #2196f3;
+  border-bottom: 2px solid #2196f3;
 }
 
 .cumulative-balance {
@@ -443,7 +554,7 @@
   }
   
   .calendar-day {
-    min-height: 80px;
+    min-height: 100px;
     padding: 4px;
   }
   
@@ -473,6 +584,7 @@
   
   .balance-breakdown {
     font-size: 0.6rem;
+    max-height: 70px;
   }
   
   .balance-label {
@@ -482,5 +594,10 @@
   
   .balance-amount {
     font-size: 0.6rem;
+  }
+  
+  .balance-item {
+    min-height: 14px;
+    padding: 1px 2px;
   }
 }

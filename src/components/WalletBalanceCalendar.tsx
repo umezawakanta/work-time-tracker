@@ -30,8 +30,8 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedDateTransactions, setSelectedDateTransactions] = useState<WalletTransaction[]>([]);
-  const [showAddTransaction, setShowAddTransaction] = useState(false);
   const [displayMode, setDisplayMode] = useState<'total' | 'breakdown'>('total');
+  const [amountFormat, setAmountFormat] = useState<'full' | 'thousands'>('full');
 
   const walletManager = WalletBalanceManager.getInstance();
   const bankAccountManager = BankAccountManager.getInstance();
@@ -53,7 +53,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     console.log('Bank accounts in calendar:', accounts);
     if (accounts && accounts.length > 0) {
       const total = accounts.reduce((total, account) => {
-        const balance = account.currentBalance || account.balance || 0;
+        const balance = account.currentBalance || 0;
         console.log('Account balance:', account.bankName, balance);
         return total + balance;
       }, 0);
@@ -64,7 +64,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     return 0;
   };
 
-  // 指定日の銀行口座残高を計算
+  // 指定日の銀行口座残高を計算（改善版）
   const getBankBalanceForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
     const accounts = bankAccounts || [];
@@ -79,27 +79,23 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       // 各口座の取引履歴を取得
       const accountTransactions = bankAccountManager.getTransactions(userId, account.id);
       
-      // 指定日までの取引をフィルタリング
-      const dayTransactions = accountTransactions.filter(transaction => {
-        const transactionDate = new Date(transaction.transactionDate);
-        return transactionDate.toISOString().split('T')[0] <= dateStr;
-      });
-
-      // 現在の残高から未来の取引を差し引いて過去の残高を計算
-      let pastBalance = account.currentBalance || account.balance || 0;
+      // 現在の残高から開始
+      let pastBalance = account.currentBalance || 0;
       
-      // 指定日以降の取引を除外
+      // 指定日より後の取引を除外して計算
       const futureTransactions = accountTransactions.filter(transaction => {
-        const transactionDate = new Date(transaction.transactionDate);
-        return transactionDate.toISOString().split('T')[0] > dateStr;
+        return transaction?.transactionDate && 
+               new Date(transaction!.transactionDate).toISOString().split('T')[0] > dateStr;
       });
 
       // 未来の取引を差し引いて過去の残高を計算
       futureTransactions.forEach(transaction => {
-        if (transaction.type === 'deposit' || transaction.type === 'transfer_in') {
-          pastBalance -= transaction.amount;
-        } else if (transaction.type === 'withdrawal' || transaction.type === 'transfer_out') {
-          pastBalance += transaction.amount;
+        if (transaction && transaction.type && transaction.amount) {
+          if (transaction.type === 'deposit' || transaction.type === 'transfer_in') {
+            pastBalance -= transaction.amount;
+          } else if (transaction.type === 'withdrawal' || transaction.type === 'transfer_out') {
+            pastBalance += transaction.amount;
+          }
         }
       });
 
@@ -124,18 +120,46 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     return walletBalance?.amount || 0;
   };
 
-  // 指定日の各口座残高を取得
+  // 指定日の各口座残高を取得（改善版）
   const getAccountBalancesForDate = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
     const accounts = bankAccounts || [];
     const walletHistory = getWalletBalanceHistoryForDate(date);
     const walletBalance = walletHistory ? walletHistory.amount : getCurrentWalletBalance();
     
-    const accountBalances = accounts.map(account => ({
-      id: account.id,
-      name: account.bankName,
-      branch: account.branchName,
-      balance: account.currentBalance || account.balance || 0
-    }));
+    const accountBalances = accounts.map(account => {
+      // 各口座の取引履歴を取得
+      const accountTransactions = bankAccountManager.getTransactions(userId, account.id);
+      
+      // 現在の残高から開始
+      let dateBalance = account.currentBalance || 0;
+      
+      // 指定日以降の取引を見つけて、それらを差し引く
+      const futureTransactions = accountTransactions.filter(transaction => {
+        return transaction?.transactionDate && 
+               new Date(transaction!.transactionDate).toISOString().split('T')[0] > dateStr;
+      });
+
+      // 未来の取引を差し引いて過去の残高を計算
+      futureTransactions.forEach(transaction => {
+        if (transaction && transaction.type && transaction.amount) {
+          if (transaction.type === 'deposit' || transaction.type === 'transfer_in') {
+            dateBalance -= transaction.amount;
+          } else if (transaction.type === 'withdrawal' || transaction.type === 'transfer_out') {
+            dateBalance += transaction.amount;
+          }
+        }
+      });
+
+      return {
+        id: account.id,
+        name: account.bankName,
+        branch: account.branchName,
+        balance: dateBalance
+      };
+    });
+
+    const totalBankBalance = accountBalances.reduce((sum, acc) => sum + acc.balance, 0);
 
     return {
       wallet: {
@@ -143,7 +167,25 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
         balance: walletBalance
       },
       accounts: accountBalances,
-      total: walletBalance + accountBalances.reduce((sum, acc) => sum + acc.balance, 0)
+      total: walletBalance + totalBankBalance
+    };
+  };
+
+  // 前日比を計算
+  const getDailyChange = (date: Date) => {
+    const today = getCumulativeBalance(date);
+    const yesterday = new Date(date);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayBalance = getCumulativeBalance(yesterday);
+    
+    const change = today - yesterdayBalance;
+    const changePercent = yesterdayBalance !== 0 ? (change / Math.abs(yesterdayBalance)) * 100 : 0;
+    
+    return {
+      amount: change,
+      percent: changePercent,
+      isPositive: change >= 0,
+      isSignificant: Math.abs(changePercent) > 5 // 5%以上の変化を「重要」とする
     };
   };
 
@@ -192,35 +234,6 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     });
   };
 
-  const getDailyBalance = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
-    const dayTransactions = transactions.filter(transaction => {
-      const transactionDate = new Date(transaction.date);
-      return transactionDate.toISOString().split('T')[0] === dateStr;
-    });
-
-    // レシートの支出も含める
-    const dayReceipts = receipts.filter(receipt => {
-      const receiptDate = new Date(receipt.purchaseDate);
-      return receiptDate.toISOString().split('T')[0] === dateStr;
-    });
-
-    let balance = 0;
-    dayTransactions.forEach(transaction => {
-      if (transaction.type === 'income') {
-        balance += transaction.amount;
-      } else {
-        balance -= transaction.amount;
-      }
-    });
-
-    // レシートの支出を追加
-    dayReceipts.forEach(receipt => {
-      balance -= receipt.totalAmount;
-    });
-
-    return balance;
-  };
 
   // 指定日の財布残高履歴を取得
   const getWalletBalanceHistoryForDate = (date: Date) => {
@@ -254,14 +267,16 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     
     // 財布残高履歴がない場合は、指定日までの取引から計算
     const dayTransactions = transactions.filter(transaction => {
+      if (!transaction || !transaction.date) return false;
       const transactionDate = new Date(transaction.date);
-      return transactionDate.toISOString().split('T')[0] <= dateStr;
+      return transactionDate.toISOString().split('T')[0] <= (dateStr || '');
     });
 
     // レシートの支出も含める
     const dayReceipts = receipts.filter(receipt => {
+      if (!receipt || !receipt.purchaseDate) return false;
       const receiptDate = new Date(receipt.purchaseDate);
-      return receiptDate.toISOString().split('T')[0] <= dateStr;
+      return receiptDate.toISOString().split('T')[0] <= (dateStr || '');
     });
 
     // 初期残高（0から開始）
@@ -269,12 +284,12 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     
     // 指定日までの取引を時系列順で処理
     const allTransactions = [...dayTransactions, ...dayReceipts.map(receipt => ({
-      id: receipt.id,
+      id: receipt?.id || '',
       type: 'expense',
-      amount: receipt.totalAmount,
-      description: receipt.storeName,
+      amount: receipt?.totalAmount || 0,
+      description: receipt?.storeName || '',
       category: 'レシート',
-      date: receipt.purchaseDate
+      date: receipt?.purchaseDate || ''
     }))];
     
     // 日付順でソート
@@ -282,10 +297,12 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     
     // 取引を順番に処理して残高を計算
     allTransactions.forEach(transaction => {
-      if (transaction.type === 'income') {
-        walletBalance += transaction.amount;
-      } else {
-        walletBalance -= transaction.amount;
+      if (transaction && transaction.type && transaction.amount) {
+        if (transaction.type === 'income') {
+          walletBalance += transaction.amount;
+        } else {
+          walletBalance -= transaction.amount;
+        }
       }
     });
 
@@ -296,7 +313,12 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     return walletBalance + bankBalance;
   };
 
-  const formatCurrency = (amount: number): string => {
+  // 金額表示の最適化（千円単位オプション）
+  const formatAmount = (amount: number): string => {
+    if (amountFormat === 'thousands' && Math.abs(amount) >= 1000) {
+      const thousands = Math.round(amount / 1000);
+      return `¥${thousands.toLocaleString()}千`;
+    }
     return new Intl.NumberFormat('ja-JP', {
       style: 'currency',
       currency: 'JPY'
@@ -335,19 +357,25 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
           <span className="day-number">{date.getDate()}</span>
           <div className="daily-balance">
             {displayMode === 'total' ? (
-              formatCurrency(cumulativeBalance)
+              formatAmount(cumulativeBalance)
             ) : (
               <div className="balance-breakdown">
                 <div className="balance-item wallet">
                   <span className="balance-label">💰</span>
-                  <span className="balance-amount">{formatCurrency(accountBalances.wallet.balance)}</span>
+                  <span className="balance-amount">{formatAmount(accountBalances.wallet.balance)}</span>
                 </div>
-                {accountBalances.accounts.map(account => (
+                {accountBalances.accounts.slice(0, 2).map(account => (
                   <div key={account.id} className="balance-item account">
-                    <span className="balance-label">{account.name}</span>
-                    <span className="balance-amount">{formatCurrency(account.balance)}</span>
+                    <span className="balance-label">{account.name.length > 4 ? account.name.substring(0, 4) + '...' : account.name}</span>
+                    <span className="balance-amount">{formatAmount(account.balance)}</span>
                   </div>
                 ))}
+                {accountBalances.accounts.length > 2 && (
+                  <div className="balance-item more">
+                    <span className="balance-label">+{accountBalances.accounts.length - 2}</span>
+                    <span className="balance-amount">...</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -360,10 +388,10 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
       const dayTransactions = getTransactionsForDate(date);
       const dayReceipts = getReceiptsForDate(date);
-      const dailyBalance = getDailyBalance(date);
       const cumulativeBalance = getCumulativeBalance(date);
       const walletHistory = getWalletBalanceHistoryForDate(date);
       const accountBalances = getAccountBalancesForDate(date);
+      const dailyChange = getDailyChange(date);
       const isToday = date.toDateString() === new Date().toDateString();
       const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
       const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory;
@@ -371,25 +399,49 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       days.push(
         <div
           key={day}
-          className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasActivity ? 'has-transactions' : ''}`}
+          className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${hasActivity ? 'has-transactions' : ''} ${dailyChange.isSignificant ? 'significant-change' : ''}`}
           onClick={() => handleDateClick(date)}
         >
           <span className="day-number">{day}</span>
           <div className="daily-balance">
             {displayMode === 'total' ? (
-              formatCurrency(cumulativeBalance)
+              <div className="balance-total">
+                <div className="balance-amount">{formatAmount(cumulativeBalance)}</div>
+                {dailyChange.amount !== 0 && (
+                  <div className={`change-indicator ${dailyChange.isPositive ? 'positive' : 'negative'}`}>
+                    {dailyChange.isPositive ? '↗' : '↘'} {Math.abs(dailyChange.amount) >= 1000 ? 
+                      `${Math.round(dailyChange.amount / 1000)}千` : 
+                      `${Math.abs(dailyChange.amount)}円`
+                    }
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="balance-breakdown">
                 <div className="balance-item wallet">
                   <span className="balance-label">💰</span>
-                  <span className="balance-amount">{formatCurrency(accountBalances.wallet.balance)}</span>
+                  <span className="balance-amount">{formatAmount(accountBalances.wallet.balance)}</span>
                 </div>
-                {accountBalances.accounts.map(account => (
+                {accountBalances.accounts.slice(0, 2).map(account => (
                   <div key={account.id} className="balance-item account">
-                    <span className="balance-label">{account.name}</span>
-                    <span className="balance-amount">{formatCurrency(account.balance)}</span>
+                    <span className="balance-label">{account.name.length > 4 ? account.name.substring(0, 4) + '...' : account.name}</span>
+                    <span className="balance-amount">{formatAmount(account.balance)}</span>
                   </div>
                 ))}
+                {accountBalances.accounts.length > 2 && (
+                  <div className="balance-item more">
+                    <span className="balance-label">+{accountBalances.accounts.length - 2}</span>
+                    <span className="balance-amount">...</span>
+                  </div>
+                )}
+                {dailyChange.amount !== 0 && (
+                  <div className={`change-indicator ${dailyChange.isPositive ? 'positive' : 'negative'}`}>
+                    {dailyChange.isPositive ? '↗' : '↘'} {Math.abs(dailyChange.amount) >= 1000 ? 
+                      `${Math.round(dailyChange.amount / 1000)}千` : 
+                      `${Math.abs(dailyChange.amount)}円`
+                    }
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -410,19 +462,25 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
           <span className="day-number">{date.getDate()}</span>
           <div className="daily-balance">
             {displayMode === 'total' ? (
-              formatCurrency(cumulativeBalance)
+              formatAmount(cumulativeBalance)
             ) : (
               <div className="balance-breakdown">
                 <div className="balance-item wallet">
                   <span className="balance-label">💰</span>
-                  <span className="balance-amount">{formatCurrency(accountBalances.wallet.balance)}</span>
+                  <span className="balance-amount">{formatAmount(accountBalances.wallet.balance)}</span>
                 </div>
-                {accountBalances.accounts.map(account => (
+                {accountBalances.accounts.slice(0, 2).map(account => (
                   <div key={account.id} className="balance-item account">
-                    <span className="balance-label">{account.name}</span>
-                    <span className="balance-amount">{formatCurrency(account.balance)}</span>
+                    <span className="balance-label">{account.name.length > 4 ? account.name.substring(0, 4) + '...' : account.name}</span>
+                    <span className="balance-amount">{formatAmount(account.balance)}</span>
                   </div>
                 ))}
+                {accountBalances.accounts.length > 2 && (
+                  <div className="balance-item more">
+                    <span className="balance-label">+{accountBalances.accounts.length - 2}</span>
+                    <span className="balance-amount">...</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -437,6 +495,54 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     return date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
   };
 
+  // 月間サマリーを計算
+  const getMonthlySummary = () => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    
+    // 月初の残高
+    const firstDayBalances = getAccountBalancesForDate(firstDay);
+    const monthStartBalance = firstDayBalances.total;
+    
+    // 月末の残高
+    const lastDayBalances = getAccountBalancesForDate(lastDay);
+    const monthEndBalance = lastDayBalances.total;
+    
+    // 月間の変化
+    const monthlyChange = monthEndBalance - monthStartBalance;
+    
+    // 最高・最低残高を計算
+    let maxBalance = monthStartBalance;
+    let minBalance = monthStartBalance;
+    let maxBalanceDate = firstDay;
+    let minBalanceDate = firstDay;
+    
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      const date = new Date(year, month, day);
+      const dayBalances = getAccountBalancesForDate(date);
+      if (dayBalances.total > maxBalance) {
+        maxBalance = dayBalances.total;
+        maxBalanceDate = date;
+      }
+      if (dayBalances.total < minBalance) {
+        minBalance = dayBalances.total;
+        minBalanceDate = date;
+      }
+    }
+    
+    return {
+      monthStartBalance,
+      monthEndBalance,
+      monthlyChange,
+      maxBalance,
+      minBalance,
+      maxBalanceDate,
+      minBalanceDate
+    };
+  };
+
   return (
     <div className="wallet-balance-calendar">
       <div className="calendar-header">
@@ -444,15 +550,15 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
         <div className="balance-summary">
           <div className="balance-item">
             <span className="label">財布:</span>
-            <span className="amount">{formatCurrency(getCurrentWalletBalance())}</span>
+            <span className="amount">{formatAmount(getCurrentWalletBalance())}</span>
           </div>
           <div className="balance-item">
             <span className="label">銀行:</span>
-            <span className="amount">{formatCurrency(getTotalBankBalance())}</span>
+            <span className="amount">{formatAmount(getTotalBankBalance())}</span>
           </div>
           <div className="balance-item total">
             <span className="label">総残高:</span>
-            <span className="amount">{formatCurrency(getTotalBalance())}</span>
+            <span className="amount">{formatAmount(getTotalBalance())}</span>
           </div>
         </div>
         <button className="close-button" onClick={onClose}>
@@ -479,7 +585,53 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
         >
           口座別表示
         </button>
+        <button 
+          className={`mode-button ${amountFormat === 'thousands' ? 'active' : ''}`}
+          onClick={() => setAmountFormat(amountFormat === 'thousands' ? 'full' : 'thousands')}
+        >
+          {amountFormat === 'thousands' ? '千円表示' : '通常表示'}
+        </button>
       </div>
+
+      {/* 月間サマリー */}
+      {(() => {
+        const summary = getMonthlySummary();
+        return (
+          <div className="monthly-summary">
+            <h3>📊 {getMonthName(currentDate)}のサマリー</h3>
+            <div className="summary-grid">
+              <div className="summary-item">
+                <span className="summary-label">月初残高</span>
+                <span className="summary-amount">{formatAmount(summary.monthStartBalance)}</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">月末残高</span>
+                <span className="summary-amount">{formatAmount(summary.monthEndBalance)}</span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">月間変化</span>
+                <span className={`summary-amount ${summary.monthlyChange >= 0 ? 'positive' : 'negative'}`}>
+                  {summary.monthlyChange >= 0 ? '+' : ''}{formatAmount(summary.monthlyChange)}
+                </span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">最高残高</span>
+                <span className="summary-amount positive">
+                  {formatAmount(summary.maxBalance)}
+                  <small>（{summary.maxBalanceDate.getDate()}日）</small>
+                </span>
+              </div>
+              <div className="summary-item">
+                <span className="summary-label">最低残高</span>
+                <span className="summary-amount negative">
+                  {formatAmount(summary.minBalance)}
+                  <small>（{summary.minBalanceDate.getDate()}日）</small>
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       <div className="calendar-grid">
         <div className="calendar-weekdays">
@@ -526,7 +678,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                             <div className="transaction-category">{transaction.category}</div>
                           </div>
                           <div className={`transaction-amount ${transaction.type}`}>
-                            {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                            {transaction.type === 'income' ? '+' : '-'}{formatAmount(transaction.amount)}
                           </div>
                         </div>
                       ))}
@@ -550,7 +702,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                             </div>
                           </div>
                           <div className="receipt-amount">
-                            -{formatCurrency(receipt.totalAmount)}
+                            -{formatAmount(receipt.totalAmount)}
                           </div>
                         </div>
                       ))}
@@ -558,27 +710,24 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                   </div>
                 )}
 
-                {/* 銀行口座残高 */}
+                {/* 銀行口座残高（選択日の実際の残高） */}
                 {(() => {
-                  const accounts = bankAccountManager.getBankAccounts(userId);
-                  if (accounts && accounts.length > 0) {
+                  const selectedDateBalances = getAccountBalancesForDate(selectedDate);
+                  if (selectedDateBalances.accounts && selectedDateBalances.accounts.length > 0) {
                     return (
                       <div className="bank-accounts-section">
-                        <h4>🏦 銀行口座残高</h4>
+                        <h4>🏦 銀行口座残高（{selectedDate.toLocaleDateString('ja-JP')}時点）</h4>
                         <div className="bank-accounts-list">
-                          {accounts.map((account) => (
+                          {selectedDateBalances.accounts.map((account) => (
                             <div key={account.id} className="bank-account-item">
                               <div className="bank-account-icon">🏦</div>
                               <div className="bank-account-info">
                                 <div className="bank-account-name">
-                                  {account.bankName} {account.branchName}
-                                </div>
-                                <div className="bank-account-type">
-                                  {account.accountType} {account.accountNumber}
+                                  {account.name} {account.branch}
                                 </div>
                               </div>
                               <div className="bank-account-balance">
-                                {formatCurrency(account.currentBalance || account.balance || 0)}
+                                {formatAmount(account.balance)}
                               </div>
                             </div>
                           ))}
@@ -597,10 +746,10 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
                       <div className="wallet-history-icon">💰</div>
                       <div className="wallet-history-info">
                         <div className="wallet-history-amount">
-                          残高: {formatCurrency(walletHistory.amount)}
+                          残高: {formatAmount(walletHistory.amount)}
                         </div>
                         <div className={`wallet-history-change ${walletHistory.change >= 0 ? 'positive' : 'negative'}`}>
-                          前日比: {walletHistory.change >= 0 ? '+' : ''}{formatCurrency(walletHistory.change)}
+                          前日比: {walletHistory.change >= 0 ? '+' : ''}{formatAmount(walletHistory.change)}
                         </div>
                         {walletHistory.notes && (
                           <div className="wallet-history-notes">
@@ -616,7 +765,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
           })()}
           <button 
             className="add-transaction-button"
-            onClick={() => setShowAddTransaction(true)}
+            onClick={() => {/* 取引追加機能は後で実装 */}}
           >
             + 取引を追加
           </button>
