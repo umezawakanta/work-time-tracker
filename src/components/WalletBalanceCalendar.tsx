@@ -545,245 +545,247 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
 
   return (
     <div className="wallet-balance-calendar">
-      <div className="calendar-header">
-        <h2>金融残高カレンダー</h2>
-        <div className="balance-summary">
-          <div className="balance-item">
-            <span className="label">財布:</span>
-            <span className="amount">{formatAmount(getCurrentWalletBalance())}</span>
-          </div>
-          <div className="balance-item">
-            <span className="label">銀行:</span>
-            <span className="amount">{formatAmount(getTotalBankBalance())}</span>
-          </div>
-          <div className="balance-item total">
-            <span className="label">総残高:</span>
-            <span className="amount">{formatAmount(getTotalBalance())}</span>
-          </div>
-        </div>
-        <button className="close-button" onClick={onClose}>
-          ✕
-        </button>
-      </div>
-
-      <div className="calendar-navigation">
-        <button onClick={() => navigateMonth('prev')}>← 前月</button>
-        <h3>{getMonthName(currentDate)}</h3>
-        <button onClick={() => navigateMonth('next')}>次月 →</button>
-      </div>
-      
-      <div className="display-mode-toggle">
-        <button 
-          className={`mode-button ${displayMode === 'total' ? 'active' : ''}`}
-          onClick={() => setDisplayMode('total')}
-        >
-          合計表示
-        </button>
-        <button 
-          className={`mode-button ${displayMode === 'breakdown' ? 'active' : ''}`}
-          onClick={() => setDisplayMode('breakdown')}
-        >
-          口座別表示
-        </button>
-        <button 
-          className={`mode-button ${amountFormat === 'thousands' ? 'active' : ''}`}
-          onClick={() => setAmountFormat(amountFormat === 'thousands' ? 'full' : 'thousands')}
-        >
-          {amountFormat === 'thousands' ? '千円表示' : '通常表示'}
-        </button>
-      </div>
-
-      {/* 月間サマリー */}
-      {(() => {
-        const summary = getMonthlySummary();
-        return (
-          <div className="monthly-summary">
-            <h3>📊 {getMonthName(currentDate)}のサマリー</h3>
-            <div className="summary-grid">
-              <div className="summary-item">
-                <span className="summary-label">月初残高</span>
-                <span className="summary-amount">{formatAmount(summary.monthStartBalance)}</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">月末残高</span>
-                <span className="summary-amount">{formatAmount(summary.monthEndBalance)}</span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">月間変化</span>
-                <span className={`summary-amount ${summary.monthlyChange >= 0 ? 'positive' : 'negative'}`}>
-                  {summary.monthlyChange >= 0 ? '+' : ''}{formatAmount(summary.monthlyChange)}
-                </span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">最高残高</span>
-                <span className="summary-amount positive">
-                  {formatAmount(summary.maxBalance)}
-                  <small>（{summary.maxBalanceDate.getDate()}日）</small>
-                </span>
-              </div>
-              <div className="summary-item">
-                <span className="summary-label">最低残高</span>
-                <span className="summary-amount negative">
-                  {formatAmount(summary.minBalance)}
-                  <small>（{summary.minBalanceDate.getDate()}日）</small>
-                </span>
-              </div>
+      <div className="calendar-content">
+        <div className="calendar-header">
+          <h2>金融残高カレンダー</h2>
+          <div className="balance-summary">
+            <div className="balance-item">
+              <span className="label">財布:</span>
+              <span className="amount">{formatAmount(getCurrentWalletBalance())}</span>
+            </div>
+            <div className="balance-item">
+              <span className="label">銀行:</span>
+              <span className="amount">{formatAmount(getTotalBankBalance())}</span>
+            </div>
+            <div className="balance-item total">
+              <span className="label">総残高:</span>
+              <span className="amount">{formatAmount(getTotalBalance())}</span>
             </div>
           </div>
-        );
-      })()}
-
-      <div className="calendar-grid">
-        <div className="calendar-weekdays">
-          <div className="weekday">日</div>
-          <div className="weekday">月</div>
-          <div className="weekday">火</div>
-          <div className="weekday">水</div>
-          <div className="weekday">木</div>
-          <div className="weekday">金</div>
-          <div className="weekday">土</div>
-        </div>
-        <div className="calendar-days">
-          {renderCalendar()}
-        </div>
-      </div>
-
-      {selectedDate && (
-        <div className="selected-date-info">
-          <h3>{selectedDate.toLocaleDateString('ja-JP')} の取引・レシート・財布残高</h3>
-          {(() => {
-            const dayTransactions = getTransactionsForDate(selectedDate);
-            const dayReceipts = getReceiptsForDate(selectedDate);
-            const walletHistory = getWalletBalanceHistoryForDate(selectedDate);
-            const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory;
-
-            if (!hasActivity) {
-              return <p>この日の取引・レシートはありません</p>;
-            }
-
-            return (
-              <div className="activity-list">
-                {/* 取引 */}
-                {dayTransactions.length > 0 && (
-                  <div className="transactions-section">
-                    <h4>💰 取引</h4>
-                    <div className="transactions-list">
-                      {dayTransactions.map((transaction) => (
-                        <div key={transaction.id} className={`transaction-item ${transaction.type}`}>
-                          <div className="transaction-icon">
-                            {transaction.type === 'income' ? '💰' : '💸'}
-                          </div>
-                          <div className="transaction-info">
-                            <div className="transaction-description">{transaction.description}</div>
-                            <div className="transaction-category">{transaction.category}</div>
-                          </div>
-                          <div className={`transaction-amount ${transaction.type}`}>
-                            {transaction.type === 'income' ? '+' : '-'}{formatAmount(transaction.amount)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* レシート */}
-                {dayReceipts.length > 0 && (
-                  <div className="receipts-section">
-                    <h4>🏪 レシート</h4>
-                    <div className="receipts-list">
-                      {dayReceipts.map((receipt) => (
-                        <div key={receipt.id} className="receipt-item">
-                          <div className="receipt-icon">🏪</div>
-                          <div className="receipt-info">
-                            <div className="receipt-store">{receipt.storeName}</div>
-                            <div className="receipt-items">
-                              {receipt.items.slice(0, 2).join(', ')}
-                              {receipt.items.length > 2 && ` 他${receipt.items.length - 2}件`}
-                            </div>
-                          </div>
-                          <div className="receipt-amount">
-                            -{formatAmount(receipt.totalAmount)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 銀行口座残高（選択日の実際の残高） */}
-                {(() => {
-                  const selectedDateBalances = getAccountBalancesForDate(selectedDate);
-                  if (selectedDateBalances.accounts && selectedDateBalances.accounts.length > 0) {
-                    return (
-                      <div className="bank-accounts-section">
-                        <h4>🏦 銀行口座残高（{selectedDate.toLocaleDateString('ja-JP')}時点）</h4>
-                        <div className="bank-accounts-list">
-                          {selectedDateBalances.accounts.map((account) => (
-                            <div key={account.id} className="bank-account-item">
-                              <div className="bank-account-icon">🏦</div>
-                              <div className="bank-account-info">
-                                <div className="bank-account-name">
-                                  {account.name} {account.branch}
-                                </div>
-                              </div>
-                              <div className="bank-account-balance">
-                                {formatAmount(account.balance)}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
-
-                {/* 財布残高履歴 */}
-                {walletHistory && (
-                  <div className="wallet-history-section">
-                    <h4>💰 財布残高履歴</h4>
-                    <div className="wallet-history-item">
-                      <div className="wallet-history-icon">💰</div>
-                      <div className="wallet-history-info">
-                        <div className="wallet-history-amount">
-                          残高: {formatAmount(walletHistory.amount)}
-                        </div>
-                        <div className={`wallet-history-change ${walletHistory.change >= 0 ? 'positive' : 'negative'}`}>
-                          前日比: {walletHistory.change >= 0 ? '+' : ''}{formatAmount(walletHistory.change)}
-                        </div>
-                        {walletHistory.notes && (
-                          <div className="wallet-history-notes">
-                            メモ: {walletHistory.notes}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-          <button 
-            className="add-transaction-button"
-            onClick={() => {/* 取引追加機能は後で実装 */}}
-          >
-            + 取引を追加
+          <button className="close-button" onClick={onClose}>
+            ✕
           </button>
         </div>
-      )}
 
-      <div className="calendar-legend">
-        <div className="legend-item">
-          <div className="legend-color has-transactions"></div>
-          <span>取引あり</span>
+        <div className="calendar-navigation">
+          <button onClick={() => navigateMonth('prev')}>← 前月</button>
+          <h3>{getMonthName(currentDate)}</h3>
+          <button onClick={() => navigateMonth('next')}>次月 →</button>
         </div>
-        <div className="legend-item">
-          <div className="legend-color today"></div>
-          <span>今日</span>
+        
+        <div className="display-mode-toggle">
+          <button 
+            className={`mode-button ${displayMode === 'total' ? 'active' : ''}`}
+            onClick={() => setDisplayMode('total')}
+          >
+            合計表示
+          </button>
+          <button 
+            className={`mode-button ${displayMode === 'breakdown' ? 'active' : ''}`}
+            onClick={() => setDisplayMode('breakdown')}
+          >
+            口座別表示
+          </button>
+          <button 
+            className={`mode-button ${amountFormat === 'thousands' ? 'active' : ''}`}
+            onClick={() => setAmountFormat(amountFormat === 'thousands' ? 'full' : 'thousands')}
+          >
+            {amountFormat === 'thousands' ? '千円表示' : '通常表示'}
+          </button>
         </div>
-        <div className="legend-item">
-          <div className="legend-color selected"></div>
-          <span>選択中</span>
+
+        {/* 月間サマリー */}
+        {(() => {
+          const summary = getMonthlySummary();
+          return (
+            <div className="monthly-summary">
+              <h3>📊 {getMonthName(currentDate)}のサマリー</h3>
+              <div className="summary-grid">
+                <div className="summary-item">
+                  <span className="summary-label">月初残高</span>
+                  <span className="summary-amount">{formatAmount(summary.monthStartBalance)}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">月末残高</span>
+                  <span className="summary-amount">{formatAmount(summary.monthEndBalance)}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">月間変化</span>
+                  <span className={`summary-amount ${summary.monthlyChange >= 0 ? 'positive' : 'negative'}`}>
+                    {summary.monthlyChange >= 0 ? '+' : ''}{formatAmount(summary.monthlyChange)}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">最高残高</span>
+                  <span className="summary-amount positive">
+                    {formatAmount(summary.maxBalance)}
+                    <small>（{summary.maxBalanceDate.getDate()}日）</small>
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">最低残高</span>
+                  <span className="summary-amount negative">
+                    {formatAmount(summary.minBalance)}
+                    <small>（{summary.minBalanceDate.getDate()}日）</small>
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        <div className="calendar-grid">
+          <div className="calendar-weekdays">
+            <div className="weekday">日</div>
+            <div className="weekday">月</div>
+            <div className="weekday">火</div>
+            <div className="weekday">水</div>
+            <div className="weekday">木</div>
+            <div className="weekday">金</div>
+            <div className="weekday">土</div>
+          </div>
+          <div className="calendar-days">
+            {renderCalendar()}
+          </div>
+        </div>
+
+        {selectedDate && (
+          <div className="selected-date-info">
+            <h3>{selectedDate.toLocaleDateString('ja-JP')} の取引・レシート・財布残高</h3>
+            {(() => {
+              const dayTransactions = getTransactionsForDate(selectedDate);
+              const dayReceipts = getReceiptsForDate(selectedDate);
+              const walletHistory = getWalletBalanceHistoryForDate(selectedDate);
+              const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory;
+
+              if (!hasActivity) {
+                return <p>この日の取引・レシートはありません</p>;
+              }
+
+              return (
+                <div className="activity-list">
+                  {/* 取引 */}
+                  {dayTransactions.length > 0 && (
+                    <div className="transactions-section">
+                      <h4>💰 取引</h4>
+                      <div className="transactions-list">
+                        {dayTransactions.map((transaction) => (
+                          <div key={transaction.id} className={`transaction-item ${transaction.type}`}>
+                            <div className="transaction-icon">
+                              {transaction.type === 'income' ? '💰' : '💸'}
+                            </div>
+                            <div className="transaction-info">
+                              <div className="transaction-description">{transaction.description}</div>
+                              <div className="transaction-category">{transaction.category}</div>
+                            </div>
+                            <div className={`transaction-amount ${transaction.type}`}>
+                              {transaction.type === 'income' ? '+' : '-'}{formatAmount(transaction.amount)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* レシート */}
+                  {dayReceipts.length > 0 && (
+                    <div className="receipts-section">
+                      <h4>🏪 レシート</h4>
+                      <div className="receipts-list">
+                        {dayReceipts.map((receipt) => (
+                          <div key={receipt.id} className="receipt-item">
+                            <div className="receipt-icon">🏪</div>
+                            <div className="receipt-info">
+                              <div className="receipt-store">{receipt.storeName}</div>
+                              <div className="receipt-items">
+                                {receipt.items.slice(0, 2).join(', ')}
+                                {receipt.items.length > 2 && ` 他${receipt.items.length - 2}件`}
+                              </div>
+                            </div>
+                            <div className="receipt-amount">
+                              -{formatAmount(receipt.totalAmount)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 銀行口座残高（選択日の実際の残高） */}
+                  {(() => {
+                    const selectedDateBalances = getAccountBalancesForDate(selectedDate);
+                    if (selectedDateBalances.accounts && selectedDateBalances.accounts.length > 0) {
+                      return (
+                        <div className="bank-accounts-section">
+                          <h4>🏦 銀行口座残高（{selectedDate.toLocaleDateString('ja-JP')}時点）</h4>
+                          <div className="bank-accounts-list">
+                            {selectedDateBalances.accounts.map((account) => (
+                              <div key={account.id} className="bank-account-item">
+                                <div className="bank-account-icon">🏦</div>
+                                <div className="bank-account-info">
+                                  <div className="bank-account-name">
+                                    {account.name} {account.branch}
+                                  </div>
+                                </div>
+                                <div className="bank-account-balance">
+                                  {formatAmount(account.balance)}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+
+                  {/* 財布残高履歴 */}
+                  {walletHistory && (
+                    <div className="wallet-history-section">
+                      <h4>💰 財布残高履歴</h4>
+                      <div className="wallet-history-item">
+                        <div className="wallet-history-icon">💰</div>
+                        <div className="wallet-history-info">
+                          <div className="wallet-history-amount">
+                            残高: {formatAmount(walletHistory.amount)}
+                          </div>
+                          <div className={`wallet-history-change ${walletHistory.change >= 0 ? 'positive' : 'negative'}`}>
+                            前日比: {walletHistory.change >= 0 ? '+' : ''}{formatAmount(walletHistory.change)}
+                          </div>
+                          {walletHistory.notes && (
+                            <div className="wallet-history-notes">
+                              メモ: {walletHistory.notes}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+            <button 
+              className="add-transaction-button"
+              onClick={() => {/* 取引追加機能は後で実装 */}}
+            >
+              + 取引を追加
+            </button>
+          </div>
+        )}
+
+        <div className="calendar-legend">
+          <div className="legend-item">
+            <div className="legend-color has-transactions"></div>
+            <span>取引あり</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color today"></div>
+            <span>今日</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color selected"></div>
+            <span>選択中</span>
+          </div>
         </div>
       </div>
     </div>
