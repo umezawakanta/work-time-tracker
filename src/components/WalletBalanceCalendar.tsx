@@ -31,6 +31,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedDateTransactions, setSelectedDateTransactions] = useState<WalletTransaction[]>([]);
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [displayMode, setDisplayMode] = useState<'total' | 'breakdown'>('total');
 
   const walletManager = WalletBalanceManager.getInstance();
   const bankAccountManager = BankAccountManager.getInstance();
@@ -121,6 +122,29 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     }
     // 履歴がない場合は従来の方法
     return walletBalance?.amount || 0;
+  };
+
+  // 指定日の各口座残高を取得
+  const getAccountBalancesForDate = (date: Date) => {
+    const accounts = bankAccounts || [];
+    const walletHistory = getWalletBalanceHistoryForDate(date);
+    const walletBalance = walletHistory ? walletHistory.amount : getCurrentWalletBalance();
+    
+    const accountBalances = accounts.map(account => ({
+      id: account.id,
+      name: account.bankName,
+      branch: account.branchName,
+      balance: account.currentBalance || account.balance || 0
+    }));
+
+    return {
+      wallet: {
+        name: '財布',
+        balance: walletBalance
+      },
+      accounts: accountBalances,
+      total: walletBalance + accountBalances.reduce((sum, acc) => sum + acc.balance, 0)
+    };
   };
 
   // 総残高（財布 + 銀行口座）を計算
@@ -304,11 +328,28 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     for (let i = firstDay - 1; i >= 0; i--) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), -i);
       const cumulativeBalance = getCumulativeBalance(date);
+      const accountBalances = getAccountBalancesForDate(date);
+      
       days.push(
         <div key={`prev-${i}`} className="calendar-day prev-month">
           <span className="day-number">{date.getDate()}</span>
           <div className="daily-balance">
-            {formatCurrency(cumulativeBalance)}
+            {displayMode === 'total' ? (
+              formatCurrency(cumulativeBalance)
+            ) : (
+              <div className="balance-breakdown">
+                <div className="balance-item wallet">
+                  <span className="balance-label">💰</span>
+                  <span className="balance-amount">{formatCurrency(accountBalances.wallet.balance)}</span>
+                </div>
+                {accountBalances.accounts.map(account => (
+                  <div key={account.id} className="balance-item account">
+                    <span className="balance-label">{account.name}</span>
+                    <span className="balance-amount">{formatCurrency(account.balance)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       );
@@ -322,6 +363,7 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
       const dailyBalance = getDailyBalance(date);
       const cumulativeBalance = getCumulativeBalance(date);
       const walletHistory = getWalletBalanceHistoryForDate(date);
+      const accountBalances = getAccountBalancesForDate(date);
       const isToday = date.toDateString() === new Date().toDateString();
       const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
       const hasActivity = dayTransactions.length > 0 || dayReceipts.length > 0 || walletHistory;
@@ -334,7 +376,22 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
         >
           <span className="day-number">{day}</span>
           <div className="daily-balance">
-            {formatCurrency(cumulativeBalance)}
+            {displayMode === 'total' ? (
+              formatCurrency(cumulativeBalance)
+            ) : (
+              <div className="balance-breakdown">
+                <div className="balance-item wallet">
+                  <span className="balance-label">💰</span>
+                  <span className="balance-amount">{formatCurrency(accountBalances.wallet.balance)}</span>
+                </div>
+                {accountBalances.accounts.map(account => (
+                  <div key={account.id} className="balance-item account">
+                    <span className="balance-label">{account.name}</span>
+                    <span className="balance-amount">{formatCurrency(account.balance)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       );
@@ -346,11 +403,28 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
     for (let i = 1; i <= remainingCells; i++) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, i);
       const cumulativeBalance = getCumulativeBalance(date);
+      const accountBalances = getAccountBalancesForDate(date);
+      
       days.push(
         <div key={`next-${i}`} className="calendar-day next-month">
           <span className="day-number">{date.getDate()}</span>
           <div className="daily-balance">
-            {formatCurrency(cumulativeBalance)}
+            {displayMode === 'total' ? (
+              formatCurrency(cumulativeBalance)
+            ) : (
+              <div className="balance-breakdown">
+                <div className="balance-item wallet">
+                  <span className="balance-label">💰</span>
+                  <span className="balance-amount">{formatCurrency(accountBalances.wallet.balance)}</span>
+                </div>
+                {accountBalances.accounts.map(account => (
+                  <div key={account.id} className="balance-item account">
+                    <span className="balance-label">{account.name}</span>
+                    <span className="balance-amount">{formatCurrency(account.balance)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       );
@@ -390,6 +464,21 @@ const WalletBalanceCalendar: React.FC<WalletBalanceCalendarProps> = ({
         <button onClick={() => navigateMonth('prev')}>← 前月</button>
         <h3>{getMonthName(currentDate)}</h3>
         <button onClick={() => navigateMonth('next')}>次月 →</button>
+      </div>
+      
+      <div className="display-mode-toggle">
+        <button 
+          className={`mode-button ${displayMode === 'total' ? 'active' : ''}`}
+          onClick={() => setDisplayMode('total')}
+        >
+          合計表示
+        </button>
+        <button 
+          className={`mode-button ${displayMode === 'breakdown' ? 'active' : ''}`}
+          onClick={() => setDisplayMode('breakdown')}
+        >
+          口座別表示
+        </button>
       </div>
 
       <div className="calendar-grid">
