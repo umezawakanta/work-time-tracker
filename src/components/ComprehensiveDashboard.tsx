@@ -911,7 +911,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
             notes: notes,
             date: date,
             change: change
-          }, data.historyId);
+          }, data.historyId || undefined);
 
           if (rewardResult.experience > 0 || rewardResult.workCoins > 0) {
             console.log(`財布残高更新報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
@@ -3411,9 +3411,15 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                           </span>
                         </div>
                         <div className="breakdown-item">
+                          <span className="breakdown-label">クレジットカード</span>
+                          <span className="breakdown-amount negative">
+                            {formatCurrency(financialSummary?.overview?.creditCardDebt || 0)}
+                          </span>
+                        </div>
+                        <div className="breakdown-item">
                           <span className="breakdown-label">その他負債</span>
                           <span className="breakdown-amount negative">
-                            {formatCurrency((financialSummary?.overview?.totalLiabilities || 0) - (financialSummary?.overview?.cardLoanDebt || 0) - (financialSummary?.overview?.paypayCardDebt || 0))}
+                            {formatCurrency((financialSummary?.overview?.totalLiabilities || 0) - (financialSummary?.overview?.cardLoanDebt || 0) - (financialSummary?.overview?.paypayCardDebt || 0) - (financialSummary?.overview?.creditCardDebt || 0))}
                           </span>
                         </div>
                       </div>

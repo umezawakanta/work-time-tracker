@@ -20,6 +20,7 @@ import { BankAccountManager } from './bankAccountManager';
 import { CardLoanManager } from './cardLoanManager';
 import { PayPayCardManager } from './paypayCardManager';
 import { WalletBalanceManager } from './walletBalanceManager';
+import { CreditCardManager } from './creditCardManager';
 
 export class FinancialOverviewManager {
   private static instance: FinancialOverviewManager;
@@ -32,6 +33,7 @@ export class FinancialOverviewManager {
   private cardLoanManager = CardLoanManager.getInstance();
   private paypayCardManager = PayPayCardManager.getInstance();
   private walletBalanceManager = WalletBalanceManager.getInstance();
+  private creditCardManager = CreditCardManager.getInstance();
 
   public static getInstance(): FinancialOverviewManager {
     if (!FinancialOverviewManager.instance) {
@@ -47,6 +49,7 @@ export class FinancialOverviewManager {
     this.cardLoanManager.loadFromLocalStorage();
     this.paypayCardManager.loadFromLocalStorage();
     this.walletBalanceManager.loadFromLocalStorage();
+    this.creditCardManager.loadFromLocalStorage();
 
     const cashBalance = this.cashBalanceManager.getCashBalance(userId)?.currentBalance || 0;
     
@@ -62,9 +65,10 @@ export class FinancialOverviewManager {
     const bankAccountBalance = this.bankAccountManager.getBankAccountSummary(userId).totalBalance;
     const cardLoanDebt = this.cardLoanManager.getCardLoanSummary(userId).totalDebt;
     const paypayCardDebt = this.paypayCardManager.getPayPayCardSummary(userId).totalDebt;
+    const creditCardDebt = this.creditCardManager.getCreditCardSummary(userId).totalDebt;
 
     const totalAssets = cashBalance + walletBalance + bankAccountBalance;
-    const totalLiabilities = cardLoanDebt + paypayCardDebt;
+    const totalLiabilities = cardLoanDebt + paypayCardDebt + creditCardDebt;
     const netWorth = totalAssets - totalLiabilities;
 
     return {
@@ -76,6 +80,7 @@ export class FinancialOverviewManager {
       bankAccountBalance,
       cardLoanDebt,
       paypayCardDebt,
+      creditCardDebt,
       lastUpdated: new Date()
     };
   }
@@ -95,6 +100,7 @@ export class FinancialOverviewManager {
       bankAccountBalance: overview.bankAccountBalance,
       cardLoanDebt: overview.cardLoanDebt,
       paypayCardDebt: overview.paypayCardDebt,
+      creditCardDebt: overview.creditCardDebt,
       date: now
     };
 

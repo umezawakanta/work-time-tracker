@@ -9,6 +9,7 @@ export interface FinancialOverview {
   bankAccountBalance: number; // 銀行口座残高
   cardLoanDebt: number; // カードローン負債
   paypayCardDebt: number; // PayPayカード負債
+  creditCardDebt: number; // クレジットカード負債
   lastUpdated: Date; // 最終更新日時
 }
 
@@ -22,6 +23,7 @@ export interface MonthlyFinancialData {
   bankAccountBalance: number;
   cardLoanDebt: number;
   paypayCardDebt: number;
+  creditCardDebt: number;
   date: Date;
 }
 
