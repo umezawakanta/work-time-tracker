@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CalendarComponentProps, ViewMode } from '../types/calendar.types';
-import { useCalendarDays, useWeekNavigation, isSelected } from '../hooks/useCalendar';
+import { useCalendarDays, useWeekNavigation, useViewMode, isSelected } from '../hooks/useCalendar';
 import CalendarHeader from './calendar/CalendarHeader';
 import CalendarDay from './calendar/CalendarDay';
 import RecordDetails from './calendar/RecordDetails';
@@ -46,7 +46,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
   onRefresh
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>(calendarViewMode);
-  const { currentWeek, resetWeek } = useWeekNavigation(currentMonth, onWeekChange);
+  const { currentWeek, handleWeekChange, resetWeek } = useWeekNavigation(currentMonth, onWeekChange);
   
   const allDays = useCalendarDays(currentMonth);
   
@@ -85,10 +85,10 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
         onMonthChange={onMonthChange}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        {...(onWeekChange && { onWeekChange })}
+        onWeekChange={onWeekChange}
         isModal={isModal}
-        {...(onClose && { onClose })}
-        {...(onRefresh && { onRefresh })}
+        onClose={onClose}
+        onRefresh={onRefresh}
       />
       
       <div className="calendar-grid">
@@ -128,10 +128,10 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
         <RecordDetails
           selectedRecord={selectedRecord}
           selectedRecordType={selectedRecordType}
-          {...(onEditIncomeExpense && { onEditIncomeExpense })}
-          {...(onEditDiary && { onEditDiary })}
-          {...(onDeleteIncomeExpense && { onDeleteIncomeExpense })}
-          {...(onDeleteDiary && { onDeleteDiary })}
+          onEditIncomeExpense={onEditIncomeExpense}
+          onEditDiary={onEditDiary}
+          onDeleteIncomeExpense={onDeleteIncomeExpense}
+          onDeleteDiary={onDeleteDiary}
         />
       )}
       
@@ -145,14 +145,14 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
       )}
       
       <MonthlyMemo
-        memo={currentMemo || ''}
+        memo={currentMemo}
         isExpanded={isMemoExpanded}
         onToggle={onToggleMemo || (() => {})}
         isEditing={isCurrentMemoEditing}
-        {...(onStartEditingCurrentMemo && { onStartEditing: onStartEditingCurrentMemo })}
-        {...(onCancelEditingCurrentMemo && { onCancelEditing: onCancelEditingCurrentMemo })}
-        {...(onSaveCurrentMemo && { onSave: onSaveCurrentMemo })}
-        {...(onCurrentMemoChange && { onChange: onCurrentMemoChange })}
+        onStartEditing={onStartEditingCurrentMemo || (() => {})}
+        onCancelEditing={onCancelEditingCurrentMemo || (() => {})}
+        onSave={onSaveCurrentMemo || (() => {})}
+        onChange={onCurrentMemoChange || (() => {})}
         viewMode={viewMode}
       />
     </div>
