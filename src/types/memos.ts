@@ -49,6 +49,7 @@ export interface GenreManagementProps {
   deletedDefaultCategories: string[];
   setDeletedDefaultCategories: (categories: string[]) => void;
   onSave: () => void;
+  DEFAULT_CATEGORIES?: string[];
 }
 
 export interface MemoItemProps {

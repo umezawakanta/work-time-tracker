@@ -9,7 +9,7 @@ const GenreManagementModal: React.FC<GenreManagementProps> = ({
   deletedDefaultCategories,
   setDeletedDefaultCategories,
   onSave,
-  DEFAULT_CATEGORIES
+  DEFAULT_CATEGORIES = []
 }) => {
   const [newGenre, setNewGenre] = useState('');
   const [editingGenre, setEditingGenre] = useState<string | null>(null);
@@ -90,6 +90,7 @@ const GenreManagementModal: React.FC<GenreManagementProps> = ({
                 onChange={(e) => setNewGenre(e.target.value)}
                 placeholder="新しいジャンル名を入力"
                 onKeyPress={(e) => e.key === 'Enter' && handleAddGenre()}
+                aria-label="新しいジャンル名を入力"
               />
               <button onClick={handleAddGenre} disabled={!newGenre.trim()}>
                 追加
@@ -111,6 +112,7 @@ const GenreManagementModal: React.FC<GenreManagementProps> = ({
                         onChange={(e) => setEditGenreValue(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSaveEditGenre()}
                         autoFocus
+                        aria-label="ジャンル名を編集"
                       />
                       <button onClick={handleSaveEditGenre}>保存</button>
                       <button onClick={handleCancelEditGenre}>キャンセル</button>
@@ -136,7 +138,7 @@ const GenreManagementModal: React.FC<GenreManagementProps> = ({
           <div className="genre-section">
             <h4>デフォルトジャンル</h4>
             <div className="genre-list">
-              {DEFAULT_CATEGORIES.map((genre) => {
+              {(DEFAULT_CATEGORIES || []).map((genre) => {
                 const isDeleted = deletedDefaultCategories.includes(genre);
                 return (
                   <div key={genre} className={`genre-item ${isDeleted ? 'deleted' : ''}`}>

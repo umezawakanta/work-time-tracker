@@ -477,7 +477,7 @@ function App({
   const [showProjects, setShowProjects] = useState(false);
   const [memoContent, setMemoContent] = useState("");
   const [memoCategory, setMemoCategory] = useState("");
-  const [memoTags, setMemoTags] = useState("");
+  const [memoTags, setMemoTags] = useState<string[]>([]);
   const [memoIsPublic, setMemoIsPublic] = useState(false);
   const [memoIsFamilyOnly, setMemoIsFamilyOnly] = useState(false);
   const [memoIsAdminOnly, setMemoIsAdminOnly] = useState(false);
@@ -4155,10 +4155,7 @@ ${errorInfo.stack}
 
     try {
       const token = localStorage.getItem("access_token");
-      const tags = memoTags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0);
+      const tags = memoTags.filter((tag) => tag.trim().length > 0);
 
       const response = await fetch("/api/memos", {
         method: "POST",
@@ -4193,7 +4190,7 @@ ${errorInfo.stack}
         setMemoTitle("");
         setMemoContent("");
         setMemoCategory("");
-        setMemoTags("");
+        setMemoTags([]);
         setMemoIsPublic(false);
         setMemoIsFamilyOnly(false);
         setMemoIsAdminOnly(false);
@@ -4845,7 +4842,7 @@ User Agent: ${userAgent}
     setMemoTitle(memo.title);
     setMemoContent(memo.content);
     setMemoCategory(memo.category);
-    setMemoTags(memo.tags.join(", "));
+    setMemoTags(memo.tags || []);
     setMemoIsPublic(memo.isPublic);
     setMemoIsFamilyOnly(memo.isFamilyOnly || false);
     setMemoIsAdminOnly(memo.isAdminOnly || false);
@@ -4868,10 +4865,7 @@ User Agent: ${userAgent}
 
     try {
       const token = localStorage.getItem("access_token");
-      const tags = memoTags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0);
+      const tags = memoTags.filter((tag) => tag.trim().length > 0);
 
       const response = await fetch(`/api/memos/${editingMemo.id}`, {
         method: "PUT",
@@ -5095,7 +5089,7 @@ User Agent: ${userAgent}
     setMemoTitle(memo.title);
     setMemoContent(memo.content);
     setMemoCategory(memo.category);
-    setMemoTags(memo.tags.join(', '));
+    setMemoTags(memo.tags || []);
     setMemoIsPublic(memo.isPublic);
     setMemoIsFamilyOnly(memo.isFamilyOnly || false);
     setMemoIsAdminOnly(memo.isAdminOnly || false);
@@ -5133,6 +5127,124 @@ User Agent: ${userAgent}
     const memoCategories = new Set(publicMemos.map((memo) => memo.category));
     const allCategories = [...memoCategories, ...getAllGenres()];
     return Array.from(new Set(allCategories)).sort();
+  };
+
+  // メモカテゴリを取得
+  const getMemoCategories = () => {
+    const memoCategories = new Set(memos.map((memo) => memo.category));
+    const allCategories = [...memoCategories, ...getAllGenres()];
+    return Array.from(new Set(allCategories)).sort();
+  };
+
+  // メモのいいね機能
+  const handleLikeMemo = async (memoId: string) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/memos/${memoId}/like`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        await loadMemos();
+      } else {
+        console.error("Failed to like memo");
+      }
+    } catch (error) {
+      console.error("Error liking memo:", error);
+    }
+  };
+
+  const handleUnlikeMemo = async (memoId: string) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/memos/${memoId}/unlike`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        await loadMemos();
+      } else {
+        console.error("Failed to unlike memo");
+      }
+    } catch (error) {
+      console.error("Error unliking memo:", error);
+    }
+  };
+
+  // メモへの返信機能
+  const handleReplyToMemo = async (memoId: string, content: string) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/memos/${memoId}/reply`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content }),
+      });
+
+      if (response.ok) {
+        await loadMemos();
+        setReplyingToMemo(null);
+        setReplyContent("");
+      } else {
+        console.error("Failed to reply to memo");
+      }
+    } catch (error) {
+      console.error("Error replying to memo:", error);
+    }
+  };
+
+  // 返信のいいね機能
+  const handleLikeReply = async (replyId: string) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/memos/reply/${replyId}/like`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        await loadMemos();
+      } else {
+        console.error("Failed to like reply");
+      }
+    } catch (error) {
+      console.error("Error liking reply:", error);
+    }
+  };
+
+  const handleUnlikeReply = async (replyId: string) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`/api/memos/reply/${replyId}/unlike`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        await loadMemos();
+      } else {
+        console.error("Failed to unlike reply");
+      }
+    } catch (error) {
+      console.error("Error unliking reply:", error);
+    }
   };
 
   // 注意: 認証関連の関数はAuthContextProviderで管理される
@@ -6507,20 +6619,11 @@ User Agent: ${userAgent}
                   <MemosComponent
                     key={feature.id}
                     memos={memos}
-                    publicMemos={publicMemos}
                     showMemos={showMemos}
                     setShowMemos={setShowMemos}
+                    closeOtherFeatures={closeOtherFeatures}
                     showMemoForm={showMemoForm}
                     setShowMemoForm={setShowMemoForm}
-                    customCategories={customCategories}
-                    setCustomCategories={setCustomCategories}
-                    loadMemos={loadMemos}
-                    closeOtherFeatures={closeOtherFeatures}
-                    handleDeleteMemo={handleDeleteMemo}
-                    deletingMemoId={deletingMemoId}
-                    user={user}
-                    handleCreateMemo={handleCreateMemo}
-                    handleUpdateMemo={handleUpdateMemo}
                     editingMemo={editingMemo}
                     setEditingMemo={setEditingMemo}
                     memoTitle={memoTitle}
@@ -6537,16 +6640,22 @@ User Agent: ${userAgent}
                     setMemoIsFamilyOnly={setMemoIsFamilyOnly}
                     memoIsAdminOnly={memoIsAdminOnly}
                     setMemoIsAdminOnly={setMemoIsAdminOnly}
-                    handleReplySubmit={handleReplySubmit}
-                    handleReplyCancel={handleReplyCancel}
-                    handleEditReply={handleEditReply}
-                    handleSaveEditReply={handleSaveEditReply}
-                    handleCancelEditReply={handleCancelEditReply}
+                    selectedMemoCategory={selectedMemoCategory}
+                    setSelectedMemoCategory={setSelectedMemoCategory}
+                    getMemoCategories={getMemoCategories}
+                    loading={loading}
+                    loadMemos={loadMemos}
+                    handleCreateMemo={handleCreateMemo}
+                    handleUpdateMemo={handleUpdateMemo}
+                    handleEditMemo={handleEditMemo}
+                    handleDeleteMemo={handleDeleteMemo}
+                    handleMemoCategoryChange={handleMemoCategoryChange}
+                    handleLikeMemo={handleLikeMemo}
+                    handleUnlikeMemo={handleUnlikeMemo}
+                    handleReplyToMemo={handleReplyToMemo}
                     handleDeleteReply={handleDeleteReply}
-                    replyContent={replyContent}
-                    setReplyContent={setReplyContent}
-                    replyingToMemo={replyingToMemo}
-                    setReplyingToMemo={setReplyingToMemo}
+                    handleLikeReply={handleLikeReply}
+                    handleUnlikeReply={handleUnlikeReply}
                   />
                 );
               } else if (feature.id === "public-memos") {
