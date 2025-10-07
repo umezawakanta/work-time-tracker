@@ -159,6 +159,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
   const [walletTransactions, setWalletTransactions] = useState<
     WalletTransaction[]
   >([]);
+  const [showWalletBalanceHistory, setShowWalletBalanceHistory] = useState(false);
+  const [editingWalletHistory, setEditingWalletHistory] = useState<any | null>(null);
   const [walletBalanceSummary, setWalletBalanceSummary] =
     useState<WalletBalanceSummary | null>(null);
   const [walletBalanceAnalysis, setWalletBalanceAnalysis] =
@@ -909,7 +911,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
             notes: notes,
             date: date,
             change: change
-          }, data.historyId || undefined);
+          }, data.historyId);
 
           if (rewardResult.experience > 0 || rewardResult.workCoins > 0) {
             console.log(`財布残高更新報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
@@ -941,6 +943,73 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
     } catch (error) {
       console.error('財布残高更新エラー:', error);
       alert('更新中にエラーが発生しました');
+    }
+  };
+
+  // 財布残高履歴の修正
+  const handleWalletHistoryEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingWalletHistory) return;
+
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const amount = parseFloat(formData.get('editAmount') as string);
+    const notes = formData.get('editNotes') as string || '';
+    const date = formData.get('editDate') as string;
+
+    if (isNaN(amount)) {
+      alert('有効な金額を入力してください');
+      return;
+    }
+
+    try {
+      const response = await apiFetch(`/api/wallet-balance/history/${editingWalletHistory.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount,
+          notes,
+          date,
+        }),
+      });
+
+      if (response.ok) {
+        await loadAllData();
+        setEditingWalletHistory(null);
+        alert('財布残高履歴を修正しました');
+      } else {
+        const errorData = await response.json();
+        console.error('財布残高履歴修正エラー:', errorData);
+        alert('財布残高履歴の修正に失敗しました');
+      }
+    } catch (error) {
+      console.error('財布残高履歴修正エラー:', error);
+      alert('財布残高履歴の修正に失敗しました');
+    }
+  };
+
+  // 財布残高履歴の削除
+  const handleWalletHistoryDelete = async (historyId: string) => {
+    if (!confirm('この履歴を削除しますか？')) return;
+
+    try {
+      const response = await apiFetch(`/api/wallet-balance/history/${historyId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        await loadAllData();
+        alert('財布残高履歴を削除しました');
+      } else {
+        const errorData = await response.json();
+        console.error('財布残高履歴削除エラー:', errorData);
+        alert('財布残高履歴の削除に失敗しました');
+      }
+    } catch (error) {
+      console.error('財布残高履歴削除エラー:', error);
+      alert('財布残高履歴の削除に失敗しました');
     }
   };
 
@@ -5036,6 +5105,13 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   <div className="form-actions">
                     <button
                       type="button"
+                      className="history-button"
+                      onClick={() => setShowWalletBalanceHistory(true)}
+                    >
+                      📊 履歴を見る
+                    </button>
+                    <button
+                      type="button"
                       className="cancel-button"
                       onClick={() => setShowWalletBalanceUpdate(false)}
                     >
@@ -5043,6 +5119,131 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     </button>
                     <button type="submit" className="submit-button">
                       更新
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 財布残高履歴表示モーダル */}
+        {showWalletBalanceHistory && (
+          <div className="modal-overlay">
+            <div className="modal-content large">
+              <div className="modal-header">
+                <h3>📊 財布残高履歴</h3>
+                <button
+                  className="close-button"
+                  onClick={() => setShowWalletBalanceHistory(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="history-list">
+                  {walletBalanceHistory.length === 0 ? (
+                    <p className="no-history">履歴がありません</p>
+                  ) : (
+                    walletBalanceHistory
+                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                      .map((history) => (
+                        <div key={history.id} className="history-item">
+                          <div className="history-info">
+                            <div className="history-date">
+                              {new Date(history.date).toLocaleDateString('ja-JP')}
+                            </div>
+                            <div className="history-amount">
+                              ¥{history.amount.toLocaleString()}
+                            </div>
+                            {history.change !== 0 && (
+                              <div className={`history-change ${history.change > 0 ? 'positive' : 'negative'}`}>
+                                {history.change > 0 ? '+' : ''}¥{history.change.toLocaleString()}
+                              </div>
+                            )}
+                            {history.notes && (
+                              <div className="history-notes">{history.notes}</div>
+                            )}
+                          </div>
+                          <div className="history-actions">
+                            <button
+                              className="edit-button"
+                              onClick={() => setEditingWalletHistory(history)}
+                              title="修正"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              className="delete-button"
+                              onClick={() => handleWalletHistoryDelete(history.id)}
+                              title="削除"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 財布残高履歴修正モーダル */}
+        {editingWalletHistory && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h3>✏️ 財布残高履歴を修正</h3>
+                <button
+                  className="close-button"
+                  onClick={() => setEditingWalletHistory(null)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="modal-body">
+                <form onSubmit={handleWalletHistoryEdit}>
+                  <div className="form-group">
+                    <label htmlFor="editDate">日付</label>
+                    <input
+                      type="date"
+                      id="editDate"
+                      name="editDate"
+                      defaultValue={editingWalletHistory.date}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="editAmount">残高</label>
+                    <input
+                      type="number"
+                      id="editAmount"
+                      name="editAmount"
+                      defaultValue={editingWalletHistory.amount}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="editNotes">メモ（任意）</label>
+                    <textarea
+                      id="editNotes"
+                      name="editNotes"
+                      defaultValue={editingWalletHistory.notes || ''}
+                      rows={3}
+                    />
+                  </div>
+                  <div className="form-actions">
+                    <button
+                      type="button"
+                      className="cancel-button"
+                      onClick={() => setEditingWalletHistory(null)}
+                    >
+                      キャンセル
+                    </button>
+                    <button type="submit" className="submit-button">
+                      修正
                     </button>
                   </div>
                 </form>
