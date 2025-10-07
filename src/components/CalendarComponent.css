@@ -17,124 +17,164 @@
     --cal-warning-light: var(--warning-light, #fff3cd);
     --cal-secondary: var(--secondary-color, #6c757d);
     --cal-secondary-hover: var(--secondary-hover, #5a6268);
-    
-    /* 背景色 */
-    --cal-bg: var(--card-background, #ffffff);
+    --cal-bg: var(--card-background, #fff);
     --cal-bg-section: var(--section-background, #f8f9fa);
     --cal-bg-hover: var(--hover-background, #f8f9fa);
-    
-    /* テキスト色 */
     --cal-text: var(--text-color, #333);
     --cal-text-muted: var(--text-muted, #6c757d);
-    
-    /* ボーダー */
     --cal-border: var(--border-color, #e9ecef);
-    
-    /* シャドウ */
-    --cal-shadow: var(--card-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
-    --cal-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --cal-shadow-large: 0 6px 20px rgba(0, 0, 0, 0.15);
-    
-    /* サイズ */
-    --cal-border-radius: 8px;
-    --cal-border-radius-lg: 12px;
-    --cal-spacing: 1rem;
-    --cal-spacing-sm: 0.5rem;
-    --cal-spacing-lg: 1.5rem;
+    --cal-shadow: 0 2px 8px rgba(0,0,0,.08);
+    --cal-shadow-hover: 0 2px 8px rgba(0,0,0,.1);
+    --cal-shadow-lg: 0 6px 20px rgba(0,0,0,.15);
+    --cal-radius: 8px;
+    --cal-radius-lg: 12px;
+    --cal-space: 1rem;
+    --cal-space-sm: .5rem;
+    --cal-space-lg: 1.5rem;
   }
   
   /* ========================================
-     共通ユーティリティクラス
+     共通ユーティリティ
      ======================================== */
   .cal-card {
     background: var(--cal-bg);
     border: 1px solid var(--cal-border);
-    border-radius: var(--cal-border-radius);
-    padding: 0.75rem;
+    border-radius: var(--cal-radius);
+    padding: .75rem;
   }
   
-  .cal-section {
+  .cal-section,
+  .calendar-monthly-summary,
+  .calendar-monthly-memo,
+  .calendar-record-details {
+    margin-top: var(--cal-space-lg);
+    padding: var(--cal-space-lg);
     background: var(--cal-bg-section);
     border-radius: 10px;
     border: 1px solid var(--cal-border);
-    padding: var(--cal-spacing-lg);
-    margin-top: var(--cal-spacing-lg);
   }
   
-  .cal-header {
+  .cal-header,
+  .summary-header,
+  .memo-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--cal-spacing);
-    padding: 0.75rem;
+    margin-bottom: var(--cal-space);
+    padding: .75rem;
     background: var(--cal-bg);
-    border-radius: var(--cal-border-radius);
+    border-radius: var(--cal-radius);
     border: 1px solid var(--cal-border);
-    transition: all 0.2s ease;
+    transition: all .2s;
     cursor: pointer;
   }
   
-  .cal-header:hover {
+  .cal-header:hover,
+  .summary-header:hover,
+  .memo-header:hover {
     background: var(--cal-bg-hover);
     box-shadow: var(--cal-shadow-hover);
   }
   
   .cal-header h3,
-  .cal-header h4 {
+  .cal-header h4,
+  .summary-header h3,
+  .memo-header h3,
+  .calendar-record-details h3,
+  .calendar-record-details h4 {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--cal-text);
     display: flex;
     align-items: center;
-    gap: var(--cal-spacing-sm);
+    gap: var(--cal-space-sm);
   }
   
-  .cal-toggle-icon {
+  .cal-toggle-icon,
+  .summary-toggle-icon,
+  .memo-toggle-icon {
     font-size: 1rem;
     color: var(--cal-text-muted);
-    transition: transform 0.2s ease;
+    transition: transform .2s;
   }
   
-  /* ボタン共通スタイル */
-  .cal-btn {
-    padding: 0.5rem 1rem;
+  /* ボタン共通 */
+  .cal-btn,
+  .calendar-nav-button,
+  .view-mode-btn,
+  .calendar-record-details .edit-button,
+  .calendar-record-details .delete-button,
+  .memo-display .edit-button,
+  .save-button,
+  .cancel-button {
     border: none;
     border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
+    transition: all .2s;
+    display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: .25rem;
   }
   
-  .cal-btn-primary { background: var(--cal-primary); color: white; }
-  .cal-btn-primary:hover { background: var(--cal-primary-hover); }
-  .cal-btn-success { background: var(--cal-success); color: white; }
-  .cal-btn-success:hover { background: var(--cal-success-hover); }
-  .cal-btn-danger { background: var(--cal-danger); color: white; }
-  .cal-btn-danger:hover { background: var(--cal-danger-hover); }
-  .cal-btn-info { background: var(--cal-info); color: white; }
-  .cal-btn-info:hover { background: var(--cal-info-hover); }
-  .cal-btn-secondary { background: var(--cal-secondary); color: white; }
-  .cal-btn-secondary:hover { background: var(--cal-secondary-hover); }
+  .calendar-record-details .edit-button,
+  .memo-display .edit-button {
+    padding: .25rem .5rem;
+    font-size: .75rem;
+    background: var(--cal-info);
+    color: white;
+  }
   
-  .cal-btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
+  .calendar-record-details .edit-button:hover,
+  .memo-display .edit-button:hover {
+    background: var(--cal-info-hover);
+  }
+  
+  .calendar-record-details .delete-button {
+    padding: .25rem .5rem;
+    font-size: .75rem;
+    background: var(--cal-danger);
+    color: white;
+  }
+  
+  .calendar-record-details .delete-button:hover {
+    background: var(--cal-danger-hover);
+  }
+  
+  .save-button,
+  .cancel-button {
+    padding: .5rem 1rem;
+    font-size: .85rem;
+    font-weight: 500;
+  }
+  
+  .save-button {
+    background: var(--cal-success);
+    color: white;
+  }
+  
+  .save-button:hover {
+    background: var(--cal-success-hover);
+  }
+  
+  .cancel-button {
+    background: var(--cal-secondary);
+    color: white;
+  }
+  
+  .cancel-button:hover {
+    background: var(--cal-secondary-hover);
   }
   
   /* ========================================
-     カレンダーメインコンテナ
+     メインコンテナ
      ======================================== */
   .work-records-calendar {
     background: var(--cal-bg);
-    border-radius: var(--cal-border-radius-lg);
-    padding: var(--cal-spacing);
+    border-radius: var(--cal-radius-lg);
+    padding: var(--cal-space);
     box-shadow: var(--cal-shadow);
-    margin-bottom: var(--cal-spacing);
+    margin-bottom: var(--cal-space);
     overflow-x: auto;
     color: var(--cal-text);
     border: 1px solid var(--cal-border);
@@ -144,12 +184,12 @@
     position: relative;
     background: var(--cal-bg);
     border-radius: 15px;
-    margin: 0 0 2rem 0;
+    margin: 0 0 2rem;
     padding: 2rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    box-shadow: var(--cal-shadow-large);
+    box-shadow: var(--cal-shadow-lg);
     color: var(--cal-text);
     border: 3px solid var(--cal-border);
     min-height: 600px;
@@ -157,53 +197,46 @@
   }
   
   /* ========================================
-     カレンダーヘッダー
+     ヘッダー
      ======================================== */
   .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--cal-spacing-lg);
-    padding-bottom: var(--cal-spacing);
+    margin-bottom: var(--cal-space-lg);
+    padding-bottom: var(--cal-space);
     border-bottom: 3px solid var(--cal-border);
     min-width: 350px;
-    position: relative;
   }
   
   .calendar-title-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--cal-spacing-sm);
+    gap: var(--cal-space-sm);
     flex: 1;
-    justify-content: center;
   }
   
   .calendar-header h3 {
     margin: 0;
     font-size: 1.3rem;
     font-weight: 600;
-    color: var(--cal-text);
     text-align: center;
     white-space: nowrap;
   }
   
   .calendar-nav-buttons {
     display: flex;
-    gap: var(--cal-spacing-sm);
-    align-items: center;
+    gap: var(--cal-space-sm);
   }
   
   .calendar-nav-button {
     background: var(--cal-bg-section);
     color: var(--cal-text);
     border: 1px solid var(--cal-border);
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.7rem;
+    padding: .4rem .8rem;
+    font-size: .7rem;
     font-weight: 500;
-    transition: all 0.2s ease;
     white-space: nowrap;
     min-width: 60px;
   }
@@ -231,8 +264,8 @@
     align-items: center;
     justify-content: center;
     z-index: 1001;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    transition: all .2s;
   }
   
   .calendar-close-button:hover {
@@ -240,7 +273,6 @@
     transform: scale(1.1);
   }
   
-  /* ビューモード切り替え */
   .view-mode-toggle {
     display: flex;
     background: var(--cal-bg-section);
@@ -251,21 +283,18 @@
   
   .view-mode-btn {
     background: transparent;
-    border: none;
-    padding: 0.4rem 0.8rem;
+    padding: .4rem .8rem;
     border-radius: 18px;
-    cursor: pointer;
-    font-size: 0.8rem;
+    font-size: .8rem;
     font-weight: 600;
     color: var(--cal-text-muted);
-    transition: all 0.2s ease;
     min-width: 40px;
   }
   
   .view-mode-btn.active {
     background: var(--cal-primary);
     color: white;
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 2px 4px rgba(0,123,255,.3);
   }
   
   .view-mode-btn:hover:not(.active) {
@@ -274,15 +303,15 @@
   }
   
   /* ========================================
-     カレンダーグリッド
+     グリッド
      ======================================== */
   .calendar-grid {
     background: var(--cal-bg);
-    border-radius: var(--cal-border-radius);
+    border-radius: var(--cal-radius);
     overflow: hidden;
     border: 1px solid var(--cal-border);
     min-width: 350px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
   }
   
   .calendar-weekdays {
@@ -293,22 +322,24 @@
   }
   
   .weekday {
-    padding: 0.5rem 0.25rem;
+    padding: .5rem .25rem;
     text-align: center;
     font-weight: 600;
     color: var(--cal-text-muted);
-    font-size: 0.8rem;
+    font-size: .8rem;
     border-right: 1px solid var(--cal-border);
     min-width: 50px;
   }
   
-  .weekday.sunday {
+  .weekday.sunday,
+  .calendar-day.sunday {
     color: var(--cal-danger);
     background-color: var(--cal-danger-light);
     font-weight: 700;
   }
   
-  .weekday.saturday {
+  .weekday.saturday,
+  .calendar-day.saturday {
     color: var(--cal-info);
     background-color: var(--cal-info-light);
     font-weight: 700;
@@ -326,15 +357,15 @@
   
   .calendar-days.week-view .calendar-day {
     min-height: 120px;
-    padding: var(--cal-spacing-sm);
+    padding: var(--cal-space-sm);
     border: 2px solid transparent;
-    transition: all 0.3s ease;
+    transition: all .3s;
   }
   
   .calendar-days.week-view .calendar-day:hover {
     border-color: var(--cal-primary);
     transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    box-shadow: 0 4px 12px rgba(0,123,255,.15);
   }
   
   .calendar-days.week-view .calendar-day.today {
@@ -348,20 +379,18 @@
   }
   
   /* ========================================
-     カレンダー日付セル
+     日付セル
      ======================================== */
   .calendar-day {
     min-height: 90px;
-    padding: 0.75rem;
+    padding: .75rem;
     border-right: 1px solid var(--cal-border);
     border-bottom: 1px solid var(--cal-border);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all .2s;
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
     min-width: 50px;
     background: var(--cal-bg);
     color: var(--cal-text);
@@ -377,17 +406,8 @@
     background-color: var(--cal-bg-section);
   }
   
-  .calendar-day.sunday {
-    background-color: var(--cal-danger-light);
-    color: var(--cal-danger);
-    font-weight: 600;
-  }
-  
-  .calendar-day.saturday {
-    background-color: var(--cal-info-light);
-    color: var(--cal-info);
-    font-weight: 600;
-  }
+  .calendar-day.sunday { font-weight: 600; }
+  .calendar-day.saturday { font-weight: 600; }
   
   .calendar-day.today {
     background-color: var(--cal-warning-light);
@@ -406,39 +426,39 @@
     border-radius: 50%;
   }
   
-  .calendar-day.today .day-number {
-    color: var(--cal-warning);
+  .calendar-day.today .day-number,
+  .calendar-day.selected .day-number {
     font-size: 1.3rem;
     font-weight: 700;
+  }
+  
+  .calendar-day.today .day-number {
+    color: var(--cal-warning);
   }
   
   .calendar-day.selected {
     background-color: var(--cal-primary);
     color: white;
     border: 2px solid var(--cal-primary-hover);
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0,123,255,.3);
     transform: scale(1.02);
   }
   
   .calendar-day.selected .day-number {
     color: white;
-    font-size: 1.3rem;
-    font-weight: 700;
   }
   
-  /* 日付ヘッダー */
   .day-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    margin-bottom: 0.25rem;
+    margin-bottom: .25rem;
   }
   
   .day-number {
     font-size: 1.3rem;
     font-weight: 600;
-    display: block;
     width: 100%;
     text-align: left;
     line-height: 1.2;
@@ -446,10 +466,10 @@
   }
   
   .today-indicator {
-    font-size: 0.6rem;
+    font-size: .6rem;
     background-color: var(--cal-warning);
     color: var(--cal-text);
-    padding: 0.1rem 0.3rem;
+    padding: .1rem .3rem;
     border-radius: 3px;
     font-weight: 600;
     white-space: nowrap;
@@ -458,12 +478,13 @@
     right: 2px;
   }
   
-  /* 金額表示 */
-  .day-amounts {
+  /* 金額・日記 */
+  .day-amounts,
+  .day-diaries {
     display: flex;
     flex-direction: column;
-    gap: 0.1rem;
-    margin-bottom: 0.2rem;
+    gap: .1rem;
+    margin-bottom: .2rem;
     width: 100%;
   }
   
@@ -471,45 +492,27 @@
   .expense-amount {
     display: flex;
     align-items: center;
-    gap: 0.1rem;
-    font-size: 0.65rem;
+    gap: .1rem;
+    font-size: .65rem;
     line-height: 1.1;
   }
   
-  .amount-label {
-    font-weight: 600;
-  }
-  
-  .amount-value {
-    font-weight: 500;
-  }
+  .amount-label { font-weight: 600; }
+  .amount-value { font-weight: 500; }
   
   .income-amount .amount-label,
-  .income-amount .amount-value {
-    color: var(--cal-success);
-  }
+  .income-amount .amount-value { color: var(--cal-success); }
   
   .expense-amount .amount-label,
-  .expense-amount .amount-value {
-    color: var(--cal-danger);
-  }
-  
-  /* 日記表示 */
-  .day-diaries {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-    margin-bottom: 0.2rem;
-    width: 100%;
-  }
+  .expense-amount .amount-value { color: var(--cal-danger); }
   
   .diary-item {
     display: flex;
     align-items: center;
-    gap: 0.1rem;
-    font-size: 0.6rem;
+    gap: .1rem;
+    font-size: .6rem;
     background-color: var(--cal-info-light);
-    padding: 0.2rem;
+    padding: .2rem;
     border-radius: 3px;
     line-height: 1.1;
     color: var(--cal-info);
@@ -517,58 +520,35 @@
   
   .diary-text {
     flex: 1;
-    overflow: visible;
-    text-overflow: clip;
     white-space: pre-wrap;
     word-wrap: break-word;
     word-break: break-word;
   }
   
-  .diary-icon {
-    font-size: 0.5rem;
-  }
+  .diary-icon { font-size: .5rem; }
   
-  /* アイコン */
   .day-icons {
     display: flex;
-    gap: 0.1rem;
+    gap: .1rem;
     margin-top: auto;
     width: 100%;
     justify-content: flex-end;
   }
   
   .icon {
-    font-size: 0.6rem;
-    opacity: 0.7;
+    font-size: .6rem;
+    opacity: .7;
   }
   
   .income-icon { color: var(--cal-success); }
   .expense-icon { color: var(--cal-danger); }
-  .diary-icon { color: var(--cal-info); }
+  .day-icons .diary-icon { color: var(--cal-info); }
   
   /* ========================================
-     記録詳細表示
+     記録詳細
      ======================================== */
-  .calendar-record-details {
-    margin-top: var(--cal-spacing-lg);
-    padding: var(--cal-spacing-lg);
-    background: var(--cal-bg-section);
-    border-radius: 10px;
-    border: 1px solid var(--cal-border);
-  }
-  
-  .calendar-record-details h3 {
-    margin: 0 0 var(--cal-spacing) 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--cal-text);
-    display: flex;
-    align-items: center;
-    gap: var(--cal-spacing-sm);
-  }
-  
   .calendar-record-details .day-of-week {
-    font-size: 0.9rem;
+    font-size: .9rem;
     color: var(--cal-text-muted);
     font-weight: normal;
   }
@@ -576,22 +556,17 @@
   .calendar-record-details .income-records-detail,
   .calendar-record-details .expense-records-detail,
   .calendar-record-details .diary-records-detail {
-    margin-bottom: var(--cal-spacing);
+    margin-bottom: var(--cal-space);
   }
   
   .calendar-record-details h4 {
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 .75rem;
     font-size: 1rem;
-    font-weight: 600;
-    color: var(--cal-text);
-    display: flex;
-    align-items: center;
-    gap: var(--cal-spacing-sm);
   }
   
   .calendar-record-details .total-amount {
     margin-left: auto;
-    font-size: 0.9rem;
+    font-size: .9rem;
     font-weight: 600;
     color: var(--cal-text-muted);
   }
@@ -599,13 +574,13 @@
   .calendar-record-details .record-item {
     background: var(--cal-bg);
     border: 1px solid var(--cal-border);
-    border-radius: var(--cal-border-radius);
-    padding: 0.75rem;
-    margin-bottom: var(--cal-spacing-sm);
+    border-radius: var(--cal-radius);
+    padding: .75rem;
+    margin-bottom: var(--cal-space-sm);
     display: flex;
-    gap: 0.75rem;
+    gap: .75rem;
     align-items: flex-start;
-    transition: all 0.2s ease;
+    transition: all .2s;
   }
   
   .calendar-record-details .record-item:hover {
@@ -616,29 +591,23 @@
   .calendar-record-details .record-header {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
+    gap: .25rem;
     min-width: 80px;
   }
   
   .calendar-record-details .record-amount {
-    font-size: 0.9rem;
+    font-size: .9rem;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: .25rem;
   }
   
-  .calendar-record-details .record-amount.income {
-    color: var(--cal-success);
-  }
-  
-  .calendar-record-details .record-amount.expense {
-    color: var(--cal-danger);
-  }
+  .calendar-record-details .record-amount.income { color: var(--cal-success); }
+  .calendar-record-details .record-amount.expense { color: var(--cal-danger); }
   
   .calendar-record-details .record-time {
-    font-size: 0.75rem;
+    font-size: .75rem;
     color: var(--cal-text-muted);
   }
   
@@ -648,17 +617,17 @@
   }
   
   .calendar-record-details .record-title {
-    margin: 0 0 0.25rem 0;
-    font-size: 0.9rem;
+    margin: 0 0 .25rem;
+    font-size: .9rem;
     font-weight: 500;
     color: var(--cal-text);
     line-height: 1.4;
   }
   
   .calendar-record-details .diary-content-full {
-    font-size: 0.8rem;
+    font-size: .8rem;
     color: var(--cal-text-muted);
-    margin: 0.25rem 0;
+    margin: .25rem 0;
     line-height: 1.4;
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -667,50 +636,13 @@
   .calendar-record-details .diary-mood {
     display: inline-flex;
     align-items: center;
-    font-size: 0.8rem;
-    margin-top: 0.25rem;
+    font-size: .8rem;
+    margin-top: .25rem;
   }
   
   .calendar-record-details .record-actions {
     display: flex;
-    gap: var(--cal-spacing-sm);
-    align-items: flex-start;
-  }
-  
-  .calendar-record-details .edit-button {
-    padding: 0.25rem 0.5rem;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    background: var(--cal-info);
-    color: white;
-  }
-  
-  .calendar-record-details .edit-button:hover {
-    background: var(--cal-info-hover);
-  }
-  
-  .calendar-record-details .delete-button {
-    padding: 0.25rem 0.5rem;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    background: var(--cal-danger);
-    color: white;
-  }
-  
-  .calendar-record-details .delete-button:hover {
-    background: var(--cal-danger-hover);
+    gap: var(--cal-space-sm);
   }
   
   .calendar-record-details .no-records {
@@ -722,64 +654,61 @@
   .calendar-record-details .no-records-icon {
     font-size: 2rem;
     color: var(--cal-text-muted);
-    margin-bottom: 0.75rem;
+    margin-bottom: .75rem;
   }
   
   .calendar-record-details .no-records h4 {
     color: var(--cal-text);
     font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: var(--cal-spacing-sm);
+    margin-bottom: var(--cal-space-sm);
   }
   
   .calendar-record-details .no-records p {
-    color: var(--cal-text-muted);
-    font-size: 0.85rem;
+    font-size: .85rem;
     margin: 0;
   }
   
   /* ========================================
-     日記詳細セクション
+     日記詳細
      ======================================== */
   .diary-detailed-sections {
-    margin-top: var(--cal-spacing);
-    padding-top: var(--cal-spacing);
+    margin-top: var(--cal-space);
+    padding-top: var(--cal-space);
     border-top: 1px solid var(--cal-border);
   }
   
   .diary-section {
-    margin-bottom: var(--cal-spacing-lg);
-    padding: var(--cal-spacing);
+    margin-bottom: var(--cal-space-lg);
+    padding: var(--cal-space);
     background: var(--cal-bg-section);
-    border-radius: var(--cal-border-radius);
+    border-radius: var(--cal-radius);
     border-left: 4px solid var(--cal-primary);
   }
   
   .diary-section h5 {
-    margin: 0 0 var(--cal-spacing-sm) 0;
+    margin: 0 0 var(--cal-space-sm);
     color: var(--cal-primary);
-    font-size: 0.9rem;
+    font-size: .9rem;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: var(--cal-spacing-sm);
+    gap: var(--cal-space-sm);
   }
   
   .diary-section p {
-    margin: var(--cal-spacing-sm) 0 0 0;
+    margin: var(--cal-space-sm) 0 0;
     line-height: 1.5;
     color: var(--cal-text);
   }
   
   .diary-section ul {
-    margin: var(--cal-spacing-sm) 0 0 0;
+    margin: var(--cal-space-sm) 0 0;
     padding-left: 1.2rem;
   }
   
   .diary-section li {
-    margin-bottom: 0.3rem;
+    margin-bottom: .3rem;
     line-height: 1.4;
-    color: var(--cal-text);
   }
   
   .diary-metrics {
@@ -787,87 +716,75 @@
     border-left-color: var(--cal-info);
   }
   
-  .diary-metrics h5 {
-    color: var(--cal-info);
-  }
+  .diary-metrics h5 { color: var(--cal-info); }
   
   .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 0.8rem;
-    margin-top: var(--cal-spacing-sm);
+    gap: .8rem;
+    margin-top: var(--cal-space-sm);
   }
   
   .metric-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--cal-spacing-sm);
-    background: rgba(255, 255, 255, 0.7);
+    padding: var(--cal-space-sm);
+    background: rgba(255,255,255,.7);
     border-radius: 6px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0,0,0,.1);
   }
   
   .metric-label {
     font-weight: 500;
-    color: var(--cal-text);
-    font-size: 0.85rem;
+    font-size: .85rem;
   }
   
   .metric-value {
     font-weight: 600;
     color: var(--cal-primary);
-    font-size: 0.9rem;
+    font-size: .9rem;
   }
   
   .diary-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--cal-spacing-sm);
-    margin-top: var(--cal-spacing-sm);
+    gap: var(--cal-space-sm);
+    margin-top: var(--cal-space-sm);
   }
   
   .diary-tag {
     background: var(--cal-primary);
     color: white;
-    padding: 0.2rem 0.6rem;
+    padding: .2rem .6rem;
     border-radius: 12px;
-    font-size: 0.75rem;
+    font-size: .75rem;
     font-weight: 500;
   }
   
   .diary-basic-info {
-    margin-bottom: var(--cal-spacing);
-    padding-bottom: var(--cal-spacing);
+    margin-bottom: var(--cal-space);
+    padding-bottom: var(--cal-space);
     border-bottom: 1px solid var(--cal-border);
   }
   
   /* ========================================
-     月次統計・メモ
+     統計・メモ
      ======================================== */
-  .calendar-monthly-summary,
-  .calendar-monthly-memo {
-    margin-top: var(--cal-spacing-lg);
-    padding: var(--cal-spacing-lg);
-    background: var(--cal-bg-section);
-    border-radius: 10px;
-    border: 1px solid var(--cal-border);
-  }
-  
   .summary-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 0.75rem;
-    animation: slideDown 0.3s ease-out;
+    gap: .75rem;
+    animation: slideDown .3s ease-out;
   }
   
   .summary-item {
     background: var(--cal-bg);
     border: 1px solid var(--cal-border);
-    border-radius: var(--cal-border-radius);
-    padding: 0.75rem;
+    border-radius: var(--cal-radius);
+    padding: .75rem;
     text-align: center;
-    transition: all 0.2s ease;
+    transition: all .2s;
   }
   
   .summary-item:hover {
@@ -877,10 +794,10 @@
   
   .summary-label {
     display: block;
-    font-size: 0.8rem;
+    font-size: .8rem;
     font-weight: 500;
     color: var(--cal-text-muted);
-    margin-bottom: 0.25rem;
+    margin-bottom: .25rem;
   }
   
   .summary-value {
@@ -890,26 +807,28 @@
     color: var(--cal-text);
   }
   
-  .summary-value.income { color: var(--cal-success); }
-  .summary-value.expense { color: var(--cal-danger); }
+  .summary-value.income,
   .summary-value.positive { color: var(--cal-success); }
+  
+  .summary-value.expense,
   .summary-value.negative { color: var(--cal-danger); }
   
-  /* メモ表示 */
-  .memo-content {
-    animation: slideDown 0.3s ease-out;
+  .memo-content { animation: slideDown .3s ease-out; }
+  
+  .memo-display,
+  .memo-edit {
+    background: var(--cal-bg);
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-radius);
+    padding: var(--cal-space);
   }
   
   .memo-display {
-    background: var(--cal-bg);
-    border: 1px solid var(--cal-border);
-    border-radius: var(--cal-border-radius);
-    padding: var(--cal-spacing);
     position: relative;
   }
   
   .memo-display p {
-    margin: 0 0 var(--cal-spacing) 0;
+    margin: 0 0 var(--cal-space);
     color: var(--cal-text);
     line-height: 1.6;
     white-space: pre-wrap;
@@ -918,50 +837,31 @@
   
   .memo-display .edit-button {
     position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    background: var(--cal-info);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .memo-display .edit-button:hover {
-    background: var(--cal-info-hover);
-  }
-  
-  .memo-edit {
-    background: var(--cal-bg);
-    border: 1px solid var(--cal-border);
-    border-radius: var(--cal-border-radius);
-    padding: var(--cal-spacing);
+    top: .75rem;
+    right: .75rem;
   }
   
   .memo-edit textarea {
     width: 100%;
-    padding: 0.75rem;
+    padding: .75rem;
     border: 1px solid var(--cal-border);
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: .9rem;
     font-family: inherit;
     resize: vertical;
     min-height: 100px;
-    margin-bottom: var(--cal-spacing);
+    margin-bottom: var(--cal-space);
   }
   
   .memo-edit textarea:focus {
     outline: none;
     border-color: var(--cal-primary);
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 2px rgba(0,123,255,.25);
   }
   
   .memo-actions {
     display: flex;
-    gap: var(--cal-spacing-sm);
+    gap: var(--cal-space-sm);
     justify-content: flex-end;
   }
   
@@ -971,26 +871,27 @@
   .calendar-action-buttons,
   .calendar-action-buttons-bottom {
     display: flex;
-    gap: var(--cal-spacing);
+    gap: var(--cal-space);
     justify-content: center;
-    margin-top: var(--cal-spacing-lg);
-    padding: var(--cal-spacing);
+    margin-top: var(--cal-space-lg);
+    padding: var(--cal-space);
     background: var(--cal-bg-section);
     border-radius: 10px;
     border: 1px solid var(--cal-border);
   }
   
-  .calendar-action-button {
+  .calendar-action-button,
+  .action-button.refresh-button {
     display: flex;
     align-items: center;
-    gap: var(--cal-spacing-sm);
-    padding: 0.75rem 1.5rem;
+    gap: var(--cal-space-sm);
+    padding: .75rem 1.5rem;
     border: none;
     border-radius: 25px;
-    font-size: 0.9rem;
+    font-size: .9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all .3s;
     box-shadow: var(--cal-shadow-hover);
     min-width: 140px;
     justify-content: center;
@@ -1004,7 +905,7 @@
   .calendar-action-button.income-expense-button:hover {
     background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 4px 12px rgba(40,167,69,.3);
   }
   
   .calendar-action-button.diary-button {
@@ -1015,24 +916,12 @@
   .calendar-action-button.diary-button:hover {
     background: linear-gradient(135deg, #0056b3 0%, #5a32a3 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-  }
-  
-  .calendar-action-button i {
-    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(0,123,255,.3);
   }
   
   .action-button.refresh-button {
     background: var(--cal-info);
     color: white;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: var(--cal-spacing-sm);
   }
   
   .action-button.refresh-button:hover {
@@ -1040,87 +929,70 @@
     transform: translateY(-2px);
   }
   
+  .calendar-action-button i,
+  .action-button i { font-size: 1.1rem; }
+  
   /* ========================================
      アニメーション
      ======================================== */
   @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   
   /* ========================================
-     レスポンシブデザイン
+     レスポンシブ
      ======================================== */
   @media (max-width: 768px) {
     .work-records-calendar,
     .calendar-modal {
-      padding: 0.75rem;
-      margin: 0 -0.5rem;
+      padding: .75rem;
+      margin: 0 -.5rem;
     }
     
     .calendar-header {
       min-width: 320px;
-      margin-bottom: 0.75rem;
+      margin-bottom: .75rem;
       flex-direction: column;
-      gap: var(--cal-spacing-sm);
+      gap: var(--cal-space-sm);
     }
     
-    .calendar-header h3 {
-      font-size: 1rem;
-    }
+    .calendar-header h3 { font-size: 1rem; }
     
     .calendar-nav-button {
-      padding: 0.3rem 0.6rem;
-      font-size: 0.6rem;
+      padding: .3rem .6rem;
+      font-size: .6rem;
       min-width: 50px;
     }
     
-    .calendar-grid {
-      min-width: 320px;
-    }
+    .calendar-grid,
+    .weekday,
+    .calendar-day { min-width: 320px; }
     
     .weekday {
-      padding: 0.4rem 0.2rem;
-      font-size: 0.7rem;
+      padding: .4rem .2rem;
+      font-size: .7rem;
       min-width: 45px;
     }
     
     .calendar-day {
       min-height: 60px;
-      padding: 0.4rem;
+      padding: .4rem;
       min-width: 45px;
     }
     
-    .calendar-days {
-      grid-auto-rows: minmax(60px, auto);
-    }
+    .calendar-days { grid-auto-rows: minmax(60px, auto); }
+    .calendar-days.week-view { grid-auto-rows: minmax(100px, auto); }
     
-    .calendar-days.week-view {
-      grid-auto-rows: minmax(100px, auto);
-    }
+    .day-number { font-size: .8rem; }
     
-    .day-number {
-      font-size: 0.8rem;
-    }
+    .metrics-grid { grid-template-columns: 1fr; }
     
-    .metrics-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .calendar-action-buttons {
-      flex-direction: column;
-      gap: 0.75rem;
-    }
+    .calendar-action-buttons { flex-direction: column; gap: .75rem; }
     
     .calendar-action-button {
-      padding: 0.6rem 1.2rem;
-      font-size: 0.85rem;
+      padding: .6rem 1.2rem;
+      font-size: .85rem;
       min-width: 120px;
     }
   }
@@ -1128,51 +1000,37 @@
   @media (max-width: 480px) {
     .work-records-calendar,
     .calendar-modal {
-      padding: 0.5rem;
-      margin: 0 -0.25rem;
+      padding: .5rem;
+      margin: 0 -.25rem;
       font-size: 14px;
     }
     
     .calendar-header {
       min-width: 300px;
-      flex-direction: column;
-      gap: 0.4rem;
+      gap: .4rem;
     }
     
-    .calendar-grid {
-      min-width: 300px;
-    }
+    .calendar-grid { min-width: 300px; }
     
     .weekday,
-    .calendar-day {
-      min-width: 42px;
-    }
+    .calendar-day { min-width: 42px; }
     
-    .calendar-day {
-      min-height: 50px;
-    }
+    .calendar-day { min-height: 50px; }
     
-    .calendar-days {
-      grid-auto-rows: minmax(50px, auto);
-    }
+    .calendar-days { grid-auto-rows: minmax(50px, auto); }
+    .calendar-days.week-view { grid-auto-rows: minmax(80px, auto); }
     
-    .calendar-days.week-view {
-      grid-auto-rows: minmax(80px, auto);
-    }
-    
-    .day-number {
-      font-size: 0.75rem;
-    }
+    .day-number { font-size: .75rem; }
     
     .view-mode-btn {
-      padding: 0.3rem 0.6rem;
-      font-size: 0.7rem;
+      padding: .3rem .6rem;
+      font-size: .7rem;
       min-width: 35px;
     }
     
     .calendar-action-button {
-      padding: 0.5rem 1rem;
-      font-size: 0.8rem;
+      padding: .5rem 1rem;
+      font-size: .8rem;
       min-width: 100px;
     }
   }
