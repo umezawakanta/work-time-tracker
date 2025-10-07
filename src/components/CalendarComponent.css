@@ -1,1275 +1,1178 @@
-/* カレンダーコンポーネント専用のスタイル */
-
-/* 日記詳細表示のスタイル */
-.diary-detailed-sections {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color, #e9ecef);
-}
-
-.diary-section {
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: var(--background-color, #f8f9fa);
-  border-radius: 8px;
-  border-left: 4px solid var(--primary-color, #007bff);
-}
-
-.diary-section h5 {
-  margin: 0 0 0.5rem 0;
-  color: var(--primary-color, #007bff);
-  font-size: 0.9rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.diary-section h5 i {
-  font-size: 1rem;
-}
-
-.diary-section p {
-  margin: 0.5rem 0 0 0;
-  line-height: 1.5;
-  color: var(--text-color, #333);
-}
-
-.diary-section ul {
-  margin: 0.5rem 0 0 0;
-  padding-left: 1.2rem;
-}
-
-.diary-section li {
-  margin-bottom: 0.3rem;
-  line-height: 1.4;
-  color: var(--text-color, #333);
-}
-
-.diary-metrics {
-  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-  border-left-color: var(--info-color, #17a2b8);
-}
-
-.diary-metrics h5 {
-  color: var(--info-color, #17a2b8);
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.8rem;
-  margin-top: 0.5rem;
-}
-
-.metric-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.metric-label {
-  font-weight: 500;
-  color: var(--text-color, #333);
-  font-size: 0.85rem;
-}
-
-.metric-value {
-  font-weight: 600;
-  color: var(--primary-color, #007bff);
-  font-size: 0.9rem;
-}
-
-.diary-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.diary-tag {
-  background: var(--primary-color, #007bff);
-  color: white;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.diary-basic-info {
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color, #e9ecef);
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-  .metrics-grid {
-    grid-template-columns: 1fr;
+/* ========================================
+   CSS変数定義
+   ======================================== */
+   :root {
+    /* カラー */
+    --cal-primary: var(--primary-color, #007bff);
+    --cal-primary-hover: var(--primary-hover, #0056b3);
+    --cal-danger: var(--danger-color, #dc3545);
+    --cal-danger-hover: var(--danger-hover, #c82333);
+    --cal-danger-light: var(--danger-light, #f8d7da);
+    --cal-success: var(--success-color, #28a745);
+    --cal-success-hover: var(--success-hover, #218838);
+    --cal-info: var(--info-color, #17a2b8);
+    --cal-info-hover: var(--info-hover, #138496);
+    --cal-info-light: var(--info-light, #d1ecf1);
+    --cal-warning: var(--warning-color, #ffc107);
+    --cal-warning-light: var(--warning-light, #fff3cd);
+    --cal-secondary: var(--secondary-color, #6c757d);
+    --cal-secondary-hover: var(--secondary-hover, #5a6268);
+    
+    /* 背景色 */
+    --cal-bg: var(--card-background, #ffffff);
+    --cal-bg-section: var(--section-background, #f8f9fa);
+    --cal-bg-hover: var(--hover-background, #f8f9fa);
+    
+    /* テキスト色 */
+    --cal-text: var(--text-color, #333);
+    --cal-text-muted: var(--text-muted, #6c757d);
+    
+    /* ボーダー */
+    --cal-border: var(--border-color, #e9ecef);
+    
+    /* シャドウ */
+    --cal-shadow: var(--card-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
+    --cal-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --cal-shadow-large: 0 6px 20px rgba(0, 0, 0, 0.15);
+    
+    /* サイズ */
+    --cal-border-radius: 8px;
+    --cal-border-radius-lg: 12px;
+    --cal-spacing: 1rem;
+    --cal-spacing-sm: 0.5rem;
+    --cal-spacing-lg: 1.5rem;
   }
   
-  .diary-section {
-    padding: 0.8rem;
-  }
-  
-  .metric-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.3rem;
-  }
-}
-
-.work-records-calendar {
-  background: var(--card-background, #ffffff);
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: var(--card-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
-  margin-bottom: 1rem;
-  overflow-x: auto;
-  color: var(--text-color, #333);
-  border: 1px solid var(--border-color, #e9ecef);
-}
-
-/* モーダル表示用のスタイル（常に表示モード） */
-.calendar-modal {
-  position: relative;
-  background: var(--card-background, #ffffff);
-  border-radius: 15px;
-  margin: 0 0 2rem 0;
-  padding: 2rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  /* 通常のカレンダーとして表示 */
-  box-shadow: var(--card-shadow, 0 6px 20px rgba(0, 0, 0, 0.15));
-  color: var(--text-color, #333);
-  border: 3px solid var(--border-color, #e9ecef);
-  /* より大きく表示 */
-  min-height: 600px;
-  width: 100%;
-}
-
-.calendar-close-button {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--danger-color, #dc3545);
-  color: white;
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.2rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1001;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
-}
-
-.calendar-close-button:hover {
-  background: var(--danger-hover, #c82333);
-  transform: scale(1.1);
-}
-
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 3px solid var(--border-color, #e9ecef);
-  min-width: 350px;
-  position: relative;
-}
-
-.calendar-title-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-  justify-content: center;
-}
-
-.calendar-nav-buttons {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.calendar-header h3 {
-  margin: 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--text-color, #333);
-  text-align: center;
-  white-space: nowrap;
-}
-
-.view-mode-toggle {
-  display: flex;
-  background: var(--section-background, #f8f9fa);
-  border-radius: 20px;
-  padding: 2px;
-  gap: 2px;
-}
-
-.view-mode-btn {
-  background: transparent;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 18px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-muted, #6c757d);
-  transition: all 0.2s ease;
-  min-width: 40px;
-}
-
-.view-mode-btn.active {
-  background: var(--primary-color, #007bff);
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
-}
-
-.view-mode-btn:hover:not(.active) {
-  background: var(--hover-background, #e9ecef);
-  color: var(--text-color, #333);
-}
-
-.calendar-nav-button {
-  background: var(--section-background, #f8f9fa);
-  color: var(--text-color, #333);
-  border: 1px solid var(--border-color, #e9ecef);
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.7rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  min-width: 60px;
-}
-
-.calendar-nav-button:hover {
-  background: var(--hover-background, #e9ecef);
-  border-color: var(--primary-color, #007bff);
-  transform: translateY(-1px);
-}
-
-.calendar-grid {
-  background: var(--card-background, #ffffff);
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid var(--border-color, #e9ecef);
-  min-width: 350px;
-  box-shadow: var(--item-shadow, 0 1px 3px rgba(0, 0, 0, 0.05));
-}
-
-.calendar-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background: var(--section-background, #f8f9fa);
-  border-bottom: 1px solid var(--border-color, #e9ecef);
-}
-
-.weekday {
-  padding: 0.5rem 0.25rem;
-  text-align: center;
-  font-weight: 600;
-  color: var(--text-muted, #6c757d);
-  font-size: 0.8rem;
-  border-right: 1px solid var(--border-color, #e9ecef);
-  min-width: 50px;
-}
-
-.weekday.sunday {
-  color: var(--danger-color, #dc3545);
-  background-color: var(--danger-light, #f8d7da);
-  font-weight: 700;
-}
-
-.weekday.saturday {
-  color: var(--info-color, #17a2b8);
-  background-color: var(--info-light, #d1ecf1);
-  font-weight: 700;
-}
-
-.calendar-days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: minmax(90px, auto);
-}
-
-/* 週表示モード */
-.calendar-days.week-view {
-  grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: minmax(120px, auto);
-}
-
-.calendar-days.week-view .calendar-day {
-  min-height: 120px;
-  padding: 0.5rem;
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
-}
-
-.calendar-days.week-view .calendar-day:hover {
-  border-color: var(--primary-color, #007bff);
-  transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
-}
-
-.calendar-days.week-view .calendar-day.today {
-  border-color: var(--warning-color, #ff9800);
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-}
-
-.calendar-days.week-view .calendar-day.selected {
-  border-color: var(--primary-color, #007bff);
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-}
-
-.calendar-day {
-  min-height: 90px;
-  padding: 0.75rem;
-  border-right: 1px solid var(--border-color, #e9ecef);
-  border-bottom: 1px solid var(--border-color, #e9ecef);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  min-width: 50px;
-  background: var(--card-background, #ffffff);
-  color: var(--text-color, #333);
-}
-
-.calendar-day.sunday {
-  background-color: var(--danger-light, #f8d7da);
-  color: var(--danger-color, #dc3545);
-  font-weight: 600;
-}
-
-.calendar-day.saturday {
-  background-color: var(--info-light, #d1ecf1);
-  color: var(--info-color, #17a2b8);
-  font-weight: 600;
-}
-
-.calendar-day:hover {
-  background-color: var(--hover-background, #f8f9fa);
-  transform: scale(1.02);
-}
-
-.calendar-day.other-month {
-  color: var(--text-muted, #6c757d);
-  background-color: var(--section-background, #f8f9fa);
-}
-
-.calendar-day.today {
-  background-color: var(--warning-light, #fff3cd);
-  border: 2px solid var(--warning-color, #ffc107);
-  font-weight: 700;
-  position: relative;
-}
-
-.calendar-day.today::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 6px;
-  height: 6px;
-  background: var(--warning-color, #ffc107);
-  border-radius: 50%;
-}
-
-.calendar-day.today .day-number {
-  color: var(--warning-color, #ffc107);
-  font-size: 1.3rem;
-  font-weight: 700;
-}
-
-.calendar-day.selected {
-  background-color: var(--primary-color, #007bff);
-  color: white;
-  border: 2px solid var(--primary-hover, #0056b3);
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-  transform: scale(1.02);
-}
-
-.calendar-day.selected .day-number {
-  color: white;
-  font-size: 1.3rem;
-  font-weight: 700;
-}
-
-.day-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 0.25rem;
-}
-
-.day-number {
-  font-size: 1.3rem;
-  font-weight: 600;
-  display: block;
-  width: 100%;
-  text-align: left;
-  line-height: 1.2;
-  color: var(--text-color, #333);
-}
-
-.today-indicator {
-  font-size: 0.6rem;
-  background-color: var(--warning-color, #ffc107);
-  color: var(--text-color, #333);
-  padding: 0.1rem 0.3rem;
-  border-radius: 3px;
-  font-weight: 600;
-  white-space: nowrap;
-  position: absolute;
-  top: 2px;
-  right: 2px;
-}
-
-.day-amounts {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  margin-bottom: 0.2rem;
-  width: 100%;
-}
-
-.income-amount, .expense-amount {
-  display: flex;
-  align-items: center;
-  gap: 0.1rem;
-  font-size: 0.65rem;
-  line-height: 1.1;
-}
-
-.amount-label {
-  font-weight: 600;
-}
-
-.amount-value {
-  font-weight: 500;
-}
-
-.income-amount .amount-label {
-  color: var(--success-color, #28a745);
-}
-
-.income-amount .amount-value {
-  color: var(--success-color, #28a745);
-}
-
-.expense-amount .amount-label {
-  color: var(--danger-color, #dc3545);
-}
-
-.expense-amount .amount-value {
-  color: var(--danger-color, #dc3545);
-}
-
-.day-diaries {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  margin-bottom: 0.2rem;
-  width: 100%;
-}
-
-.diary-item {
-  display: flex;
-  align-items: center;
-  gap: 0.1rem;
-  font-size: 0.6rem;
-  background-color: var(--info-light, #d1ecf1);
-  padding: 0.2rem;
-  border-radius: 3px;
-  line-height: 1.1;
-  color: var(--info-color, #17a2b8);
-}
-
-.diary-text {
-  flex: 1;
-  overflow: visible;
-  text-overflow: clip;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-word;
-}
-
-.diary-icon {
-  font-size: 0.5rem;
-}
-
-.day-icons {
-  display: flex;
-  gap: 0.1rem;
-  margin-top: auto;
-  width: 100%;
-  justify-content: flex-end;
-}
-
-.icon {
-  font-size: 0.6rem;
-  opacity: 0.7;
-}
-
-.income-icon {
-  color: var(--success-color, #28a745);
-}
-
-.expense-icon {
-  color: var(--danger-color, #dc3545);
-}
-
-.diary-icon {
-  color: var(--info-color, #17a2b8);
-}
-
-/* レスポンシブデザイン */
-@media (max-width: 768px) {
-  .work-records-calendar {
+  /* ========================================
+     共通ユーティリティクラス
+     ======================================== */
+  .cal-card {
+    background: var(--cal-bg);
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-border-radius);
     padding: 0.75rem;
-    margin: 0 -0.5rem;
   }
   
-  .calendar-modal {
-    padding: 0.5rem;
-    /* モバイルでの最適化 */
-    margin: 0 -0.5rem;
-    background: var(--card-background, #ffffff);
-    border-radius: 12px;
+  .cal-section {
+    background: var(--cal-bg-section);
+    border-radius: 10px;
+    border: 1px solid var(--cal-border);
+    padding: var(--cal-spacing-lg);
+    margin-top: var(--cal-spacing-lg);
   }
   
-  .calendar-close-button {
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 35px;
-    height: 35px;
+  .cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--cal-spacing);
+    padding: 0.75rem;
+    background: var(--cal-bg);
+    border-radius: var(--cal-border-radius);
+    border: 1px solid var(--cal-border);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .cal-header:hover {
+    background: var(--cal-bg-hover);
+    box-shadow: var(--cal-shadow-hover);
+  }
+  
+  .cal-header h3,
+  .cal-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--cal-text);
+    display: flex;
+    align-items: center;
+    gap: var(--cal-spacing-sm);
+  }
+  
+  .cal-toggle-icon {
     font-size: 1rem;
+    color: var(--cal-text-muted);
+    transition: transform 0.2s ease;
   }
   
-  /* モバイルでの週表示最適化 */
-  .calendar-days.week-view {
-    grid-auto-rows: minmax(100px, auto);
-  }
-  
-  .calendar-days.week-view .calendar-day {
-    min-height: 100px;
-    padding: 0.4rem;
-  }
-  
-  
-  .calendar-header {
-    min-width: 320px;
-    margin-bottom: 0.75rem;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .calendar-title-container {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .calendar-nav-buttons {
+  /* ボタン共通スタイル */
+  .cal-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
     gap: 0.25rem;
   }
   
-  .calendar-header h3 {
-    font-size: 1rem;
-  }
+  .cal-btn-primary { background: var(--cal-primary); color: white; }
+  .cal-btn-primary:hover { background: var(--cal-primary-hover); }
+  .cal-btn-success { background: var(--cal-success); color: white; }
+  .cal-btn-success:hover { background: var(--cal-success-hover); }
+  .cal-btn-danger { background: var(--cal-danger); color: white; }
+  .cal-btn-danger:hover { background: var(--cal-danger-hover); }
+  .cal-btn-info { background: var(--cal-info); color: white; }
+  .cal-btn-info:hover { background: var(--cal-info-hover); }
+  .cal-btn-secondary { background: var(--cal-secondary); color: white; }
+  .cal-btn-secondary:hover { background: var(--cal-secondary-hover); }
   
-  .calendar-nav-button {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.6rem;
-    min-width: 50px;
-  }
-  
-  .calendar-grid {
-    min-width: 320px;
-  }
-  
-  .weekday {
-    padding: 0.4rem 0.2rem;
-    font-size: 0.7rem;
-    min-width: 45px;
-  }
-  
-  .calendar-day {
-    min-height: 60px;
-    padding: 0.4rem;
-    min-width: 45px;
-  }
-  
-  .calendar-days {
-    grid-auto-rows: minmax(60px, auto);
-  }
-  
-  .day-number {
-    font-size: 0.8rem;
-  }
-  
-  .today-indicator {
-    font-size: 0.55rem;
-    padding: 0.05rem 0.25rem;
-  }
-  
-  .amount-value {
-    font-size: 0.6rem;
-  }
-  
-  .diary-text {
-    font-size: 0.55rem;
-  }
-  
-  .icon {
-    font-size: 0.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .work-records-calendar {
-    padding: 0.5rem;
-    margin: 0 -0.25rem;
-    /* 超小型モバイルでの最適化 */
-    font-size: 14px;
-  }
-  
-  .calendar-modal {
-    padding: 0.4rem;
-    margin: 0 -0.25rem;
-    background: var(--card-background, #ffffff);
-    border-radius: 8px;
-  }
-  
-  .calendar-header {
-    min-width: 300px;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  
-  .calendar-title-container {
-    flex-direction: column;
-    gap: 0.4rem;
-    order: 1;
-  }
-  
-  .calendar-nav-buttons {
-    order: 2;
-    gap: 0.25rem;
-  }
-  
-  .calendar-nav-button {
+  .cal-btn-sm {
     padding: 0.25rem 0.5rem;
-    font-size: 0.55rem;
-    min-width: 45px;
-  }
-  
-  .calendar-grid {
-    min-width: 300px;
-  }
-  
-  .weekday {
-    min-width: 42px;
-    font-size: 0.7rem;
-    padding: 0.3rem 0.1rem;
-  }
-  
-  .calendar-day {
-    min-height: 50px;
-    min-width: 42px;
-  }
-  
-  .calendar-days {
-    grid-auto-rows: minmax(50px, auto);
-  }
-  
-  .day-number {
     font-size: 0.75rem;
   }
   
-  .amount-value {
-    font-size: 0.55rem;
+  /* ========================================
+     カレンダーメインコンテナ
+     ======================================== */
+  .work-records-calendar {
+    background: var(--cal-bg);
+    border-radius: var(--cal-border-radius-lg);
+    padding: var(--cal-spacing);
+    box-shadow: var(--cal-shadow);
+    margin-bottom: var(--cal-spacing);
+    overflow-x: auto;
+    color: var(--cal-text);
+    border: 1px solid var(--cal-border);
   }
   
-  .diary-text {
-    font-size: 0.5rem;
+  .calendar-modal {
+    position: relative;
+    background: var(--cal-bg);
+    border-radius: 15px;
+    margin: 0 0 2rem 0;
+    padding: 2rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--cal-shadow-large);
+    color: var(--cal-text);
+    border: 3px solid var(--cal-border);
+    min-height: 600px;
+    width: 100%;
   }
   
-  /* 週表示モードでの超小型モバイル最適化 */
-  .calendar-days.week-view {
-    grid-auto-rows: minmax(80px, auto);
+  /* ========================================
+     カレンダーヘッダー
+     ======================================== */
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--cal-spacing-lg);
+    padding-bottom: var(--cal-spacing);
+    border-bottom: 3px solid var(--cal-border);
+    min-width: 350px;
+    position: relative;
   }
   
-  .calendar-days.week-view .calendar-day {
-    min-height: 80px;
-    padding: 0.3rem;
+  .calendar-title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--cal-spacing-sm);
+    flex: 1;
+    justify-content: center;
   }
   
-  /* ビューモード切り替えボタンの最適化 */
+  .calendar-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--cal-text);
+    text-align: center;
+    white-space: nowrap;
+  }
+  
+  .calendar-nav-buttons {
+    display: flex;
+    gap: var(--cal-spacing-sm);
+    align-items: center;
+  }
+  
+  .calendar-nav-button {
+    background: var(--cal-bg-section);
+    color: var(--cal-text);
+    border: 1px solid var(--cal-border);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-width: 60px;
+  }
+  
+  .calendar-nav-button:hover {
+    background: var(--cal-bg-hover);
+    border-color: var(--cal-primary);
+    transform: translateY(-1px);
+  }
+  
+  .calendar-close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--cal-danger);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+  }
+  
+  .calendar-close-button:hover {
+    background: var(--cal-danger-hover);
+    transform: scale(1.1);
+  }
+  
+  /* ビューモード切り替え */
   .view-mode-toggle {
-    padding: 1px;
+    display: flex;
+    background: var(--cal-bg-section);
+    border-radius: 20px;
+    padding: 2px;
+    gap: 2px;
   }
   
   .view-mode-btn {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.7rem;
-    min-width: 35px;
-  }
-  
-}
-
-/* カレンダー内の記録詳細 */
-.calendar-record-details {
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  background: var(--section-background, #f8f9fa);
-  border-radius: 10px;
-  border: 1px solid var(--border-color, #e9ecef);
-}
-
-.calendar-record-details h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-color, #333);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.calendar-record-details .day-of-week {
-  font-size: 0.9rem;
-  color: var(--text-muted, #6c757d);
-  font-weight: normal;
-}
-
-.calendar-record-details .income-records-detail,
-.calendar-record-details .expense-records-detail,
-.calendar-record-details .diary-records-detail {
-  margin-bottom: 1rem;
-}
-
-.calendar-record-details .income-records-detail h4,
-.calendar-record-details .expense-records-detail h4,
-.calendar-record-details .diary-records-detail h4 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-color, #333);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.calendar-record-details .total-amount {
-  margin-left: auto;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted, #6c757d);
-}
-
-.calendar-record-details .record-item {
-  background: var(--card-background, #ffffff);
-  border: 1px solid var(--border-color, #e9ecef);
-  border-radius: 8px;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-  transition: all 0.2s ease;
-}
-
-.calendar-record-details .record-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-.calendar-record-details .record-header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.25rem;
-  min-width: 80px;
-}
-
-.calendar-record-details .record-amount {
-  font-size: 0.9rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.calendar-record-details .record-amount.income {
-  color: var(--success-color, #28a745);
-}
-
-.calendar-record-details .record-amount.expense {
-  color: var(--danger-color, #dc3545);
-}
-
-.calendar-record-details .record-time {
-  font-size: 0.75rem;
-  color: var(--text-muted, #6c757d);
-}
-
-.calendar-record-details .record-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.calendar-record-details .record-title {
-  margin: 0 0 0.25rem 0;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-color, #333);
-  line-height: 1.4;
-}
-
-.calendar-record-details .diary-content-full {
-  font-size: 0.8rem;
-  color: var(--text-muted, #6c757d);
-  margin: 0.25rem 0;
-  line-height: 1.4;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-.calendar-record-details .diary-mood {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
-}
-
-.calendar-record-details .record-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-}
-
-.calendar-record-details .edit-button,
-.calendar-record-details .delete-button {
-  padding: 0.25rem 0.5rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.calendar-record-details .edit-button {
-  background: var(--info-color, #17a2b8);
-  color: white;
-}
-
-.calendar-record-details .edit-button:hover {
-  background: var(--info-hover, #138496);
-}
-
-.calendar-record-details .delete-button {
-  background: var(--danger-color, #dc3545);
-  color: white;
-}
-
-.calendar-record-details .delete-button:hover {
-  background: var(--danger-hover, #c82333);
-}
-
-.calendar-record-details .no-records {
-  text-align: center;
-  padding: 2rem 1rem;
-  color: var(--text-muted, #6c757d);
-}
-
-.calendar-record-details .no-records-icon {
-  font-size: 2rem;
-  color: var(--text-muted, #6c757d);
-  margin-bottom: 0.75rem;
-}
-
-.calendar-record-details .no-records h4 {
-  color: var(--text-color, #333);
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.calendar-record-details .no-records p {
-  color: var(--text-muted, #6c757d);
-  font-size: 0.85rem;
-  margin: 0;
-}
-
-/* カレンダー内の月次統計 */
-.calendar-monthly-summary {
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  background: var(--section-background, #f8f9fa);
-  border-radius: 10px;
-  border: 1px solid var(--border-color, #e9ecef);
-}
-
-.calendar-monthly-summary .summary-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: var(--card-background, #ffffff);
-  border-radius: 8px;
-  border: 1px solid var(--border-color, #e9ecef);
-  transition: all 0.2s ease;
-}
-
-.calendar-monthly-summary .summary-header:hover {
-  background: var(--hover-background, #f8f9fa);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.calendar-monthly-summary .summary-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-color, #333);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.calendar-monthly-summary .summary-toggle-icon {
-  font-size: 1rem;
-  color: var(--text-muted, #6c757d);
-  transition: transform 0.2s ease;
-}
-
-.calendar-monthly-summary .summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.75rem;
-  animation: slideDown 0.3s ease-out;
-}
-
-.calendar-monthly-summary .summary-item {
-  background: var(--card-background, #ffffff);
-  border: 1px solid var(--border-color, #e9ecef);
-  border-radius: 8px;
-  padding: 0.75rem;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-.calendar-monthly-summary .summary-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-.calendar-monthly-summary .summary-label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text-muted, #6c757d);
-  margin-bottom: 0.25rem;
-}
-
-.calendar-monthly-summary .summary-value {
-  display: block;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-color, #333);
-}
-
-.calendar-monthly-summary .summary-value.income {
-  color: var(--success-color, #28a745);
-}
-
-.calendar-monthly-summary .summary-value.expense {
-  color: var(--danger-color, #dc3545);
-}
-
-.calendar-monthly-summary .summary-value.positive {
-  color: var(--success-color, #28a745);
-}
-
-.calendar-monthly-summary .summary-value.negative {
-  color: var(--danger-color, #dc3545);
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* カレンダー内の月次メモ */
-.calendar-monthly-memo {
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  background: var(--section-background, #f8f9fa);
-  border-radius: 10px;
-  border: 1px solid var(--border-color, #e9ecef);
-}
-
-.calendar-monthly-memo .memo-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: var(--card-background, #ffffff);
-  border-radius: 8px;
-  border: 1px solid var(--border-color, #e9ecef);
-  transition: all 0.2s ease;
-}
-
-.calendar-monthly-memo .memo-header:hover {
-  background: var(--hover-background, #f8f9fa);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.calendar-monthly-memo .memo-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-color, #333);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.calendar-monthly-memo .memo-toggle-icon {
-  font-size: 1rem;
-  color: var(--text-muted, #6c757d);
-  transition: transform 0.2s ease;
-}
-
-.calendar-monthly-memo .memo-content {
-  animation: slideDown 0.3s ease-out;
-}
-
-.calendar-monthly-memo .memo-display {
-  background: var(--card-background, #ffffff);
-  border: 1px solid var(--border-color, #e9ecef);
-  border-radius: 8px;
-  padding: 1rem;
-  position: relative;
-}
-
-.calendar-monthly-memo .memo-display p {
-  margin: 0 0 1rem 0;
-  color: var(--text-color, #333);
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-.calendar-monthly-memo .memo-display .edit-button {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  background: var(--info-color, #17a2b8);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.calendar-monthly-memo .memo-display .edit-button:hover {
-  background: var(--info-hover, #138496);
-}
-
-.calendar-monthly-memo .memo-edit {
-  background: var(--card-background, #ffffff);
-  border: 1px solid var(--border-color, #e9ecef);
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-.calendar-monthly-memo .memo-edit textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--border-color, #e9ecef);
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-family: inherit;
-  resize: vertical;
-  min-height: 100px;
-  margin-bottom: 1rem;
-}
-
-.calendar-monthly-memo .memo-edit textarea:focus {
-  outline: none;
-  border-color: var(--primary-color, #007bff);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.calendar-monthly-memo .memo-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
-.calendar-monthly-memo .save-button,
-.calendar-monthly-memo .cancel-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.calendar-monthly-memo .save-button {
-  background: var(--success-color, #28a745);
-  color: white;
-}
-
-.calendar-monthly-memo .save-button:hover {
-  background: var(--success-hover, #218838);
-}
-
-.calendar-monthly-memo .cancel-button {
-  background: var(--secondary-color, #6c757d);
-  color: white;
-}
-
-.calendar-monthly-memo .cancel-button:hover {
-  background: var(--secondary-hover, #5a6268);
-}
-
-/* カレンダーアクションボタン */
-.calendar-action-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: var(--section-background, #f8f9fa);
-  border-radius: 10px;
-  border-top: 2px solid var(--border-color, #e9ecef);
-}
-
-/* カレンダー下部のアクションボタン */
-.calendar-action-buttons-bottom {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: var(--section-background, #f8f9fa);
-  border-radius: 10px;
-  border: 1px solid var(--border-color, #e9ecef);
-}
-
-.calendar-action-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 25px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  min-width: 140px;
-  justify-content: center;
-}
-
-.calendar-action-button.income-expense-button {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  color: white;
-}
-
-.calendar-action-button.income-expense-button:hover {
-  background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
-
-.calendar-action-button.diary-button {
-  background: linear-gradient(135deg, #007bff 0%, #6f42c1 100%);
-  color: white;
-}
-
-.calendar-action-button.diary-button:hover {
-  background: linear-gradient(135deg, #0056b3 0%, #5a32a3 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-}
-
-.calendar-action-button i {
-  font-size: 1.1rem;
-}
-
-/* モバイル対応 */
-@media (max-width: 768px) {
-  .calendar-action-buttons {
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 1rem;
-    padding: 0.75rem;
-  }
-  
-  .calendar-action-button {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.85rem;
-    min-width: 120px;
-  }
-  
-  .calendar-action-button i {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .calendar-action-buttons {
-    padding: 0.5rem;
-    gap: 0.5rem;
-  }
-  
-  .calendar-action-button {
-    padding: 0.5rem 1rem;
+    background: transparent;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 18px;
+    cursor: pointer;
     font-size: 0.8rem;
-    min-width: 100px;
+    font-weight: 600;
+    color: var(--cal-text-muted);
+    transition: all 0.2s ease;
+    min-width: 40px;
   }
   
-  .calendar-action-button i {
+  .view-mode-btn.active {
+    background: var(--cal-primary);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+  }
+  
+  .view-mode-btn:hover:not(.active) {
+    background: var(--cal-bg-hover);
+    color: var(--cal-text);
+  }
+  
+  /* ========================================
+     カレンダーグリッド
+     ======================================== */
+  .calendar-grid {
+    background: var(--cal-bg);
+    border-radius: var(--cal-border-radius);
+    overflow: hidden;
+    border: 1px solid var(--cal-border);
+    min-width: 350px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--cal-bg-section);
+    border-bottom: 1px solid var(--cal-border);
+  }
+  
+  .weekday {
+    padding: 0.5rem 0.25rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--cal-text-muted);
+    font-size: 0.8rem;
+    border-right: 1px solid var(--cal-border);
+    min-width: 50px;
+  }
+  
+  .weekday.sunday {
+    color: var(--cal-danger);
+    background-color: var(--cal-danger-light);
+    font-weight: 700;
+  }
+  
+  .weekday.saturday {
+    color: var(--cal-info);
+    background-color: var(--cal-info-light);
+    font-weight: 700;
+  }
+  
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: minmax(90px, auto);
+  }
+  
+  .calendar-days.week-view {
+    grid-auto-rows: minmax(120px, auto);
+  }
+  
+  .calendar-days.week-view .calendar-day {
+    min-height: 120px;
+    padding: var(--cal-spacing-sm);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+  
+  .calendar-days.week-view .calendar-day:hover {
+    border-color: var(--cal-primary);
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+  }
+  
+  .calendar-days.week-view .calendar-day.today {
+    border-color: var(--cal-warning);
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  }
+  
+  .calendar-days.week-view .calendar-day.selected {
+    border-color: var(--cal-primary);
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  }
+  
+  /* ========================================
+     カレンダー日付セル
+     ======================================== */
+  .calendar-day {
+    min-height: 90px;
+    padding: 0.75rem;
+    border-right: 1px solid var(--cal-border);
+    border-bottom: 1px solid var(--cal-border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-width: 50px;
+    background: var(--cal-bg);
+    color: var(--cal-text);
+  }
+  
+  .calendar-day:hover {
+    background-color: var(--cal-bg-hover);
+    transform: scale(1.02);
+  }
+  
+  .calendar-day.other-month {
+    color: var(--cal-text-muted);
+    background-color: var(--cal-bg-section);
+  }
+  
+  .calendar-day.sunday {
+    background-color: var(--cal-danger-light);
+    color: var(--cal-danger);
+    font-weight: 600;
+  }
+  
+  .calendar-day.saturday {
+    background-color: var(--cal-info-light);
+    color: var(--cal-info);
+    font-weight: 600;
+  }
+  
+  .calendar-day.today {
+    background-color: var(--cal-warning-light);
+    border: 2px solid var(--cal-warning);
+    font-weight: 700;
+  }
+  
+  .calendar-day.today::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+    background: var(--cal-warning);
+    border-radius: 50%;
+  }
+  
+  .calendar-day.today .day-number {
+    color: var(--cal-warning);
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  
+  .calendar-day.selected {
+    background-color: var(--cal-primary);
+    color: white;
+    border: 2px solid var(--cal-primary-hover);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    transform: scale(1.02);
+  }
+  
+  .calendar-day.selected .day-number {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  
+  /* 日付ヘッダー */
+  .day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 0.25rem;
+  }
+  
+  .day-number {
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: block;
+    width: 100%;
+    text-align: left;
+    line-height: 1.2;
+    color: var(--cal-text);
+  }
+  
+  .today-indicator {
+    font-size: 0.6rem;
+    background-color: var(--cal-warning);
+    color: var(--cal-text);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-weight: 600;
+    white-space: nowrap;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+  }
+  
+  /* 金額表示 */
+  .day-amounts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    margin-bottom: 0.2rem;
+    width: 100%;
+  }
+  
+  .income-amount,
+  .expense-amount {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    font-size: 0.65rem;
+    line-height: 1.1;
+  }
+  
+  .amount-label {
+    font-weight: 600;
+  }
+  
+  .amount-value {
+    font-weight: 500;
+  }
+  
+  .income-amount .amount-label,
+  .income-amount .amount-value {
+    color: var(--cal-success);
+  }
+  
+  .expense-amount .amount-label,
+  .expense-amount .amount-value {
+    color: var(--cal-danger);
+  }
+  
+  /* 日記表示 */
+  .day-diaries {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    margin-bottom: 0.2rem;
+    width: 100%;
+  }
+  
+  .diary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    font-size: 0.6rem;
+    background-color: var(--cal-info-light);
+    padding: 0.2rem;
+    border-radius: 3px;
+    line-height: 1.1;
+    color: var(--cal-info);
+  }
+  
+  .diary-text {
+    flex: 1;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+  
+  .diary-icon {
+    font-size: 0.5rem;
+  }
+  
+  /* アイコン */
+  .day-icons {
+    display: flex;
+    gap: 0.1rem;
+    margin-top: auto;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .icon {
+    font-size: 0.6rem;
+    opacity: 0.7;
+  }
+  
+  .income-icon { color: var(--cal-success); }
+  .expense-icon { color: var(--cal-danger); }
+  .diary-icon { color: var(--cal-info); }
+  
+  /* ========================================
+     記録詳細表示
+     ======================================== */
+  .calendar-record-details {
+    margin-top: var(--cal-spacing-lg);
+    padding: var(--cal-spacing-lg);
+    background: var(--cal-bg-section);
+    border-radius: 10px;
+    border: 1px solid var(--cal-border);
+  }
+  
+  .calendar-record-details h3 {
+    margin: 0 0 var(--cal-spacing) 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--cal-text);
+    display: flex;
+    align-items: center;
+    gap: var(--cal-spacing-sm);
+  }
+  
+  .calendar-record-details .day-of-week {
+    font-size: 0.9rem;
+    color: var(--cal-text-muted);
+    font-weight: normal;
+  }
+  
+  .calendar-record-details .income-records-detail,
+  .calendar-record-details .expense-records-detail,
+  .calendar-record-details .diary-records-detail {
+    margin-bottom: var(--cal-spacing);
+  }
+  
+  .calendar-record-details h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cal-text);
+    display: flex;
+    align-items: center;
+    gap: var(--cal-spacing-sm);
+  }
+  
+  .calendar-record-details .total-amount {
+    margin-left: auto;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--cal-text-muted);
+  }
+  
+  .calendar-record-details .record-item {
+    background: var(--cal-bg);
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-border-radius);
+    padding: 0.75rem;
+    margin-bottom: var(--cal-spacing-sm);
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    transition: all 0.2s ease;
+  }
+  
+  .calendar-record-details .record-item:hover {
+    box-shadow: var(--cal-shadow-hover);
+    transform: translateY(-1px);
+  }
+  
+  .calendar-record-details .record-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    min-width: 80px;
+  }
+  
+  .calendar-record-details .record-amount {
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  .calendar-record-details .record-amount.income {
+    color: var(--cal-success);
+  }
+  
+  .calendar-record-details .record-amount.expense {
+    color: var(--cal-danger);
+  }
+  
+  .calendar-record-details .record-time {
+    font-size: 0.75rem;
+    color: var(--cal-text-muted);
+  }
+  
+  .calendar-record-details .record-content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .calendar-record-details .record-title {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--cal-text);
+    line-height: 1.4;
+  }
+  
+  .calendar-record-details .diary-content-full {
+    font-size: 0.8rem;
+    color: var(--cal-text-muted);
+    margin: 0.25rem 0;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  
+  .calendar-record-details .diary-mood {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+  
+  .calendar-record-details .record-actions {
+    display: flex;
+    gap: var(--cal-spacing-sm);
+    align-items: flex-start;
+  }
+  
+  .calendar-record-details .edit-button {
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--cal-info);
+    color: white;
+  }
+  
+  .calendar-record-details .edit-button:hover {
+    background: var(--cal-info-hover);
+  }
+  
+  .calendar-record-details .delete-button {
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--cal-danger);
+    color: white;
+  }
+  
+  .calendar-record-details .delete-button:hover {
+    background: var(--cal-danger-hover);
+  }
+  
+  .calendar-record-details .no-records {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--cal-text-muted);
+  }
+  
+  .calendar-record-details .no-records-icon {
+    font-size: 2rem;
+    color: var(--cal-text-muted);
+    margin-bottom: 0.75rem;
+  }
+  
+  .calendar-record-details .no-records h4 {
+    color: var(--cal-text);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--cal-spacing-sm);
+  }
+  
+  .calendar-record-details .no-records p {
+    color: var(--cal-text-muted);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  
+  /* ========================================
+     日記詳細セクション
+     ======================================== */
+  .diary-detailed-sections {
+    margin-top: var(--cal-spacing);
+    padding-top: var(--cal-spacing);
+    border-top: 1px solid var(--cal-border);
+  }
+  
+  .diary-section {
+    margin-bottom: var(--cal-spacing-lg);
+    padding: var(--cal-spacing);
+    background: var(--cal-bg-section);
+    border-radius: var(--cal-border-radius);
+    border-left: 4px solid var(--cal-primary);
+  }
+  
+  .diary-section h5 {
+    margin: 0 0 var(--cal-spacing-sm) 0;
+    color: var(--cal-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--cal-spacing-sm);
+  }
+  
+  .diary-section p {
+    margin: var(--cal-spacing-sm) 0 0 0;
+    line-height: 1.5;
+    color: var(--cal-text);
+  }
+  
+  .diary-section ul {
+    margin: var(--cal-spacing-sm) 0 0 0;
+    padding-left: 1.2rem;
+  }
+  
+  .diary-section li {
+    margin-bottom: 0.3rem;
+    line-height: 1.4;
+    color: var(--cal-text);
+  }
+  
+  .diary-metrics {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border-left-color: var(--cal-info);
+  }
+  
+  .diary-metrics h5 {
+    color: var(--cal-info);
+  }
+  
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.8rem;
+    margin-top: var(--cal-spacing-sm);
+  }
+  
+  .metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--cal-spacing-sm);
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .metric-label {
+    font-weight: 500;
+    color: var(--cal-text);
+    font-size: 0.85rem;
+  }
+  
+  .metric-value {
+    font-weight: 600;
+    color: var(--cal-primary);
     font-size: 0.9rem;
   }
-}
+  
+  .diary-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cal-spacing-sm);
+    margin-top: var(--cal-spacing-sm);
+  }
+  
+  .diary-tag {
+    background: var(--cal-primary);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .diary-basic-info {
+    margin-bottom: var(--cal-spacing);
+    padding-bottom: var(--cal-spacing);
+    border-bottom: 1px solid var(--cal-border);
+  }
+  
+  /* ========================================
+     月次統計・メモ
+     ======================================== */
+  .calendar-monthly-summary,
+  .calendar-monthly-memo {
+    margin-top: var(--cal-spacing-lg);
+    padding: var(--cal-spacing-lg);
+    background: var(--cal-bg-section);
+    border-radius: 10px;
+    border: 1px solid var(--cal-border);
+  }
+  
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  .summary-item {
+    background: var(--cal-bg);
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-border-radius);
+    padding: 0.75rem;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+  
+  .summary-item:hover {
+    box-shadow: var(--cal-shadow-hover);
+    transform: translateY(-1px);
+  }
+  
+  .summary-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--cal-text-muted);
+    margin-bottom: 0.25rem;
+  }
+  
+  .summary-value {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cal-text);
+  }
+  
+  .summary-value.income { color: var(--cal-success); }
+  .summary-value.expense { color: var(--cal-danger); }
+  .summary-value.positive { color: var(--cal-success); }
+  .summary-value.negative { color: var(--cal-danger); }
+  
+  /* メモ表示 */
+  .memo-content {
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  .memo-display {
+    background: var(--cal-bg);
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-border-radius);
+    padding: var(--cal-spacing);
+    position: relative;
+  }
+  
+  .memo-display p {
+    margin: 0 0 var(--cal-spacing) 0;
+    color: var(--cal-text);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  
+  .memo-display .edit-button {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--cal-info);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .memo-display .edit-button:hover {
+    background: var(--cal-info-hover);
+  }
+  
+  .memo-edit {
+    background: var(--cal-bg);
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-border-radius);
+    padding: var(--cal-spacing);
+  }
+  
+  .memo-edit textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--cal-border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    margin-bottom: var(--cal-spacing);
+  }
+  
+  .memo-edit textarea:focus {
+    outline: none;
+    border-color: var(--cal-primary);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  }
+  
+  .memo-actions {
+    display: flex;
+    gap: var(--cal-spacing-sm);
+    justify-content: flex-end;
+  }
+  
+  /* ========================================
+     アクションボタン
+     ======================================== */
+  .calendar-action-buttons,
+  .calendar-action-buttons-bottom {
+    display: flex;
+    gap: var(--cal-spacing);
+    justify-content: center;
+    margin-top: var(--cal-spacing-lg);
+    padding: var(--cal-spacing);
+    background: var(--cal-bg-section);
+    border-radius: 10px;
+    border: 1px solid var(--cal-border);
+  }
+  
+  .calendar-action-button {
+    display: flex;
+    align-items: center;
+    gap: var(--cal-spacing-sm);
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--cal-shadow-hover);
+    min-width: 140px;
+    justify-content: center;
+  }
+  
+  .calendar-action-button.income-expense-button {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+  }
+  
+  .calendar-action-button.income-expense-button:hover {
+    background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+  
+  .calendar-action-button.diary-button {
+    background: linear-gradient(135deg, #007bff 0%, #6f42c1 100%);
+    color: white;
+  }
+  
+  .calendar-action-button.diary-button:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #5a32a3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+  
+  .calendar-action-button i {
+    font-size: 1.1rem;
+  }
+  
+  .action-button.refresh-button {
+    background: var(--cal-info);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--cal-spacing-sm);
+  }
+  
+  .action-button.refresh-button:hover {
+    background: var(--cal-info-hover);
+    transform: translateY(-2px);
+  }
+  
+  /* ========================================
+     アニメーション
+     ======================================== */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* ========================================
+     レスポンシブデザイン
+     ======================================== */
+  @media (max-width: 768px) {
+    .work-records-calendar,
+    .calendar-modal {
+      padding: 0.75rem;
+      margin: 0 -0.5rem;
+    }
+    
+    .calendar-header {
+      min-width: 320px;
+      margin-bottom: 0.75rem;
+      flex-direction: column;
+      gap: var(--cal-spacing-sm);
+    }
+    
+    .calendar-header h3 {
+      font-size: 1rem;
+    }
+    
+    .calendar-nav-button {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.6rem;
+      min-width: 50px;
+    }
+    
+    .calendar-grid {
+      min-width: 320px;
+    }
+    
+    .weekday {
+      padding: 0.4rem 0.2rem;
+      font-size: 0.7rem;
+      min-width: 45px;
+    }
+    
+    .calendar-day {
+      min-height: 60px;
+      padding: 0.4rem;
+      min-width: 45px;
+    }
+    
+    .calendar-days {
+      grid-auto-rows: minmax(60px, auto);
+    }
+    
+    .calendar-days.week-view {
+      grid-auto-rows: minmax(100px, auto);
+    }
+    
+    .day-number {
+      font-size: 0.8rem;
+    }
+    
+    .metrics-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .calendar-action-buttons {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .calendar-action-button {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.85rem;
+      min-width: 120px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .work-records-calendar,
+    .calendar-modal {
+      padding: 0.5rem;
+      margin: 0 -0.25rem;
+      font-size: 14px;
+    }
+    
+    .calendar-header {
+      min-width: 300px;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    
+    .calendar-grid {
+      min-width: 300px;
+    }
+    
+    .weekday,
+    .calendar-day {
+      min-width: 42px;
+    }
+    
+    .calendar-day {
+      min-height: 50px;
+    }
+    
+    .calendar-days {
+      grid-auto-rows: minmax(50px, auto);
+    }
+    
+    .calendar-days.week-view {
+      grid-auto-rows: minmax(80px, auto);
+    }
+    
+    .day-number {
+      font-size: 0.75rem;
+    }
+    
+    .view-mode-btn {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.7rem;
+      min-width: 35px;
+    }
+    
+    .calendar-action-button {
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      min-width: 100px;
+    }
+  }

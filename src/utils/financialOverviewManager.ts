@@ -65,7 +65,7 @@ export class FinancialOverviewManager {
     const bankAccountBalance = this.bankAccountManager.getBankAccountSummary(userId).totalBalance;
     const cardLoanDebt = this.cardLoanManager.getCardLoanSummary(userId).totalDebt;
     const paypayCardDebt = this.paypayCardManager.getPayPayCardSummary(userId).totalDebt;
-    const creditCardDebt = this.creditCardManager.getCreditCardSummary(userId).totalDebt;
+    const creditCardDebt = this.creditCardManager.getCreditCardSummary(userId).totalCurrentBalance;
 
     const totalAssets = cashBalance + walletBalance + bankAccountBalance;
     const totalLiabilities = cardLoanDebt + paypayCardDebt + creditCardDebt;
@@ -248,34 +248,56 @@ export class FinancialOverviewManager {
     let score = 100;
     
     // 負債比率による減点
-    if (debtToAssetRatio > 0.5) score -= 30;
-    else if (debtToAssetRatio > 0.3) score -= 20;
-    else if (debtToAssetRatio > 0.1) score -= 10;
+    if (debtToAssetRatio > 0.5) {
+      score -= 30;
+    } else if (debtToAssetRatio > 0.3) {
+      score -= 20;
+    } else if (debtToAssetRatio > 0.1) {
+      score -= 10;
+    }
     
     // 緊急資金比率による減点
-    if (emergencyFundRatio < 1) score -= 25;
-    else if (emergencyFundRatio < 3) score -= 15;
-    else if (emergencyFundRatio < 6) score -= 5;
+    if (emergencyFundRatio < 1) {
+      score -= 25;
+    } else if (emergencyFundRatio < 3) {
+      score -= 15;
+    } else if (emergencyFundRatio < 6) {
+      score -= 5;
+    }
     
     // 貯蓄率による減点
-    if (monthlySavingsRate < 0) score -= 20;
-    else if (monthlySavingsRate < 0.05) score -= 10;
-    else if (monthlySavingsRate > 0.1) score += 10;
+    if (monthlySavingsRate < 0) {
+      score -= 20;
+    } else if (monthlySavingsRate < 0.05) {
+      score -= 10;
+    } else if (monthlySavingsRate > 0.1) {
+      score += 10;
+    }
     
     // 負債返済比率による減点
-    if (debtServiceRatio > 0.8) score -= 25;
-    else if (debtServiceRatio > 0.5) score -= 15;
-    else if (debtServiceRatio > 0.3) score -= 5;
+    if (debtServiceRatio > 0.8) {
+      score -= 25;
+    } else if (debtServiceRatio > 0.5) {
+      score -= 15;
+    } else if (debtServiceRatio > 0.3) {
+      score -= 5;
+    }
 
     score = Math.max(0, Math.min(100, score));
 
     // グレード決定
     let grade: 'A' | 'B' | 'C' | 'D' | 'F';
-    if (score >= 90) grade = 'A';
-    else if (score >= 80) grade = 'B';
-    else if (score >= 70) grade = 'C';
-    else if (score >= 60) grade = 'D';
-    else grade = 'F';
+    if (score >= 90) {
+      grade = 'A';
+    } else if (score >= 80) {
+      grade = 'B';
+    } else if (score >= 70) {
+      grade = 'C';
+    } else if (score >= 60) {
+      grade = 'D';
+    } else {
+      grade = 'F';
+    }
 
     // 推奨事項
     const recommendations: string[] = [];
@@ -441,7 +463,9 @@ export class FinancialOverviewManager {
   // 目標を更新
   public updateGoal(goalId: string, updates: Partial<FinancialGoal>): FinancialGoal | null {
     const goal = this.goals.find(g => g.id === goalId);
-    if (!goal) return null;
+    if (!goal) {
+      return null;
+    }
 
     Object.assign(goal, updates, { updatedAt: new Date() });
     this.saveToLocalStorage();
@@ -451,7 +475,9 @@ export class FinancialOverviewManager {
   // 目標を削除
   public deleteGoal(goalId: string): boolean {
     const index = this.goals.findIndex(g => g.id === goalId);
-    if (index === -1) return false;
+    if (index === -1) {
+      return false;
+    }
 
     this.goals.splice(index, 1);
     this.saveToLocalStorage();

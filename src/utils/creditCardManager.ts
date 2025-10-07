@@ -4,6 +4,9 @@ import { apiFetch } from './apiClient';
 export class CreditCardManager {
   private static instance: CreditCardManager;
   private creditCards: CreditCard[] = [];
+  private transactions: any[] = [];
+  private settings: any = {};
+  private alerts: any[] = [];
 
   private constructor() {}
 
@@ -34,6 +37,64 @@ export class CreditCardManager {
       }
     } catch (error) {
       console.error('クレジットカードの読み込みエラー:', error);
+      // フォールバックとしてローカルストレージから読み込み
+      this.loadFromLocalStorage();
+    }
+  }
+
+  // データをlocalStorageから読み込み
+  public loadFromLocalStorage(): void {
+    const cards = localStorage.getItem('creditCards');
+    const transactions = localStorage.getItem('creditCardTransactions');
+    const settings = localStorage.getItem('creditCardSettings');
+    const alerts = localStorage.getItem('creditCardAlerts');
+
+    if (cards) {
+      try {
+        this.creditCards = JSON.parse(cards).map((card: any) => ({
+          ...card,
+          paymentDueDate: new Date(card.paymentDueDate),
+          createdAt: new Date(card.createdAt),
+          updatedAt: new Date(card.updatedAt)
+        }));
+      } catch (error) {
+        console.error('クレジットカードデータの解析エラー:', error);
+        this.creditCards = [];
+      }
+    }
+
+    if (transactions) {
+      try {
+        this.transactions = JSON.parse(transactions).map((transaction: any) => ({
+          ...transaction,
+          transactionDate: new Date(transaction.transactionDate),
+          createdAt: new Date(transaction.createdAt)
+        }));
+      } catch (error) {
+        console.error('クレジットカード取引データの解析エラー:', error);
+        this.transactions = [];
+      }
+    }
+
+    if (settings) {
+      try {
+        this.settings = JSON.parse(settings);
+      } catch (error) {
+        console.error('クレジットカード設定データの解析エラー:', error);
+        this.settings = {};
+      }
+    }
+
+    if (alerts) {
+      try {
+        this.alerts = JSON.parse(alerts).map((alert: any) => ({
+          ...alert,
+          createdAt: new Date(alert.createdAt)
+        }));
+      } catch (error) {
+        console.error('クレジットカードアラートデータの解析エラー:', error);
+        this.alerts = [];
+      }
     }
   }
 
@@ -118,10 +179,19 @@ export class CreditCardManager {
   // クレジットカードを取得
   public getCards(userId: string): CreditCard[] {
     return this.creditCards.filter(c => c.userId === userId).sort((a, b) => {
-      if (a.isPrimary && !b.isPrimary) return -1;
-      if (!a.isPrimary && b.isPrimary) return 1;
+      if (a.isPrimary && !b.isPrimary) {
+        return -1;
+      }
+      if (!a.isPrimary && b.isPrimary) {
+        return 1;
+      }
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
+  }
+
+  // クレジットカードのサマリーを取得（getCreditCardSummaryのエイリアス）
+  public getCreditCardSummary(userId: string): CreditCardSummary {
+    return this.getCardSummary(userId);
   }
 
   // クレジットカードのサマリーを取得
@@ -283,7 +353,9 @@ export class CreditCardManager {
 
   // カード番号をマスクする
   public static maskCardNumber(cardNumber: string): string {
-    if (cardNumber.length < 4) return cardNumber;
+    if (cardNumber.length < 4) {
+      return cardNumber;
+    }
     const lastFour = cardNumber.slice(-4);
     const masked = '*'.repeat(cardNumber.length - 4);
     return masked + lastFour;
