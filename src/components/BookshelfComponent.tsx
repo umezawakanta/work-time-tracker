@@ -106,7 +106,8 @@ const BookshelfComponent: React.FC<BookshelfComponentProps> = (props) => {
 
   // 読んだページ数を更新するハンドラー
   const handleReadPagesUpdate = async (bookId: string, newReadPages: number) => {
-    if (newReadPages < 0 || newReadPages > books.find(b => b.id === bookId)?.totalPages || 0) {
+    const book = books.find(b => b.id === bookId);
+    if (newReadPages < 0 || newReadPages > (book?.totalPages || 0)) {
       alert('読んだページ数は0以上、総ページ数以下である必要があります');
       return;
     }
