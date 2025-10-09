@@ -155,8 +155,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      // 利用可能枠の自動計算
-      const calculatedAvailableCredit = creditLimit - currentBalance;
+      // 利用可能枠の自動計算（利用可能額が入力されている場合はそれを使用、そうでなければ計算）
+      const finalAvailableCredit = availableCredit || Math.max(0, creditLimit - currentBalance);
+      const finalCurrentBalance = currentBalance || Math.max(0, creditLimit - availableCredit);
 
       const newCard = new CreditCard({
         userId,
@@ -169,8 +170,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         cardHolderName,
         issuer,
         creditLimit: parseFloat(creditLimit),
-        currentBalance: parseFloat(currentBalance),
-        availableCredit: availableCredit || calculatedAvailableCredit,
+        currentBalance: finalCurrentBalance,
+        availableCredit: finalAvailableCredit,
         minimumPayment: parseFloat(minimumPayment),
         paymentDueDate: new Date(paymentDueDate),
         interestRate: parseFloat(interestRate),

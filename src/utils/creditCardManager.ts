@@ -365,4 +365,51 @@ export class CreditCardManager {
   public static formatExpiryDate(month: number, year: number): string {
     return `${month.toString().padStart(2, '0')}/${year.toString().slice(-2)}`;
   }
+
+  // 利用限度額と利用可能額から現在の残高を計算
+  public static calculateCurrentBalance(creditLimit: number, availableCredit: number): number {
+    return Math.max(0, creditLimit - availableCredit);
+  }
+
+  // 利用限度額と現在の残高から利用可能額を計算
+  public static calculateAvailableCredit(creditLimit: number, currentBalance: number): number {
+    return Math.max(0, creditLimit - currentBalance);
+  }
+
+  // クレジットカードの残高情報を検証・補正
+  public static validateBalanceInfo(creditLimit: number, currentBalance?: number, availableCredit?: number): {
+    currentBalance: number;
+    availableCredit: number;
+    isValid: boolean;
+  } {
+    const currentBalanceValue = currentBalance || 0;
+    const availableCreditValue = availableCredit || 0;
+    
+    // 利用可能額が入力されている場合は、それに基づいて現在の残高を計算
+    if (availableCreditValue > 0) {
+      const calculatedBalance = this.calculateCurrentBalance(creditLimit, availableCreditValue);
+      return {
+        currentBalance: calculatedBalance,
+        availableCredit: availableCreditValue,
+        isValid: true
+      };
+    }
+    
+    // 現在の残高が入力されている場合は、それに基づいて利用可能額を計算
+    if (currentBalanceValue > 0) {
+      const calculatedAvailable = this.calculateAvailableCredit(creditLimit, currentBalanceValue);
+      return {
+        currentBalance: currentBalanceValue,
+        availableCredit: calculatedAvailable,
+        isValid: true
+      };
+    }
+    
+    // どちらも入力されていない場合は、利用可能額を限度額と同じに設定
+    return {
+      currentBalance: 0,
+      availableCredit: creditLimit,
+      isValid: true
+    };
+  }
 }

@@ -911,7 +911,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
             notes: notes,
             date: date,
             change: change
-          }, data.historyId || undefined);
+          }, data.historyId || '');
 
           if (rewardResult.experience > 0 || rewardResult.workCoins > 0) {
             console.log(`財布残高更新報酬付与完了: ${rewardResult.experience}XP, ${rewardResult.workCoins}ワークコイン`);
@@ -4613,6 +4613,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 const cardHolderName = formData.get('cardHolderName') as string;
                 const issuer = formData.get('issuer') as string;
                 const creditLimit = parseFloat(formData.get('creditLimit') as string);
+                const availableCredit = parseFloat(formData.get('availableCredit') as string);
                 const currentBalance = parseFloat(formData.get('currentBalance') as string) || 0;
                 const minimumPayment = parseFloat(formData.get('minimumPayment') as string) || 0;
                 const paymentDueDate = formData.get('paymentDueDate') as string;
@@ -4623,7 +4624,8 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 const isPrimary = formData.get('isPrimary') === 'on';
                 const notes = formData.get('notes') as string;
 
-                const availableCredit = creditLimit - currentBalance;
+                // 利用可能額が入力されていない場合は自動計算
+                const finalAvailableCredit = availableCredit || (creditLimit - currentBalance);
 
                 const success = await creditCardManager.saveToServer(userId, {
                   cardName,
@@ -4636,7 +4638,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   issuer,
                   creditLimit,
                   currentBalance,
-                  availableCredit,
+                  availableCredit: finalAvailableCredit,
                   minimumPayment,
                   paymentDueDate: new Date(paymentDueDate),
                   interestRate,
@@ -4740,7 +4742,38 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     step="0.01"
                     required
                     placeholder="1000000"
+                    onChange={(e) => {
+                      const creditLimit = parseFloat(e.target.value) || 0;
+                      const availableCreditInput = document.getElementById('availableCredit') as HTMLInputElement;
+                      const availableCredit = parseFloat(availableCreditInput?.value) || 0;
+                      const currentBalanceInput = document.getElementById('currentBalance') as HTMLInputElement;
+                      if (currentBalanceInput && availableCredit > 0) {
+                        const calculatedBalance = creditLimit - availableCredit;
+                        currentBalanceInput.value = calculatedBalance.toString();
+                      }
+                    }}
                   />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="availableCredit">利用可能額</label>
+                  <input
+                    type="number"
+                    id="availableCredit"
+                    name="availableCredit"
+                    step="0.01"
+                    placeholder="1000000"
+                    onChange={(e) => {
+                      const availableCredit = parseFloat(e.target.value) || 0;
+                      const creditLimitInput = document.getElementById('creditLimit') as HTMLInputElement;
+                      const creditLimit = parseFloat(creditLimitInput?.value) || 0;
+                      const currentBalanceInput = document.getElementById('currentBalance') as HTMLInputElement;
+                      if (currentBalanceInput && creditLimit > 0) {
+                        const calculatedBalance = creditLimit - availableCredit;
+                        currentBalanceInput.value = calculatedBalance.toString();
+                      }
+                    }}
+                  />
+                  <small className="form-help">利用限度額から現在の残高を自動計算します</small>
                 </div>
                 <div className="form-group">
                   <label htmlFor="currentBalance">現在の残高</label>
@@ -4750,7 +4783,10 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     name="currentBalance"
                     step="0.01"
                     placeholder="0"
+                    readOnly
+                    style={{ backgroundColor: '#f5f5f5', color: '#666' }}
                   />
+                  <small className="form-help">利用限度額と利用可能額から自動計算されます</small>
                 </div>
                 <div className="form-group">
                   <label htmlFor="minimumPayment">最低支払額</label>
@@ -4844,6 +4880,10 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                 e.preventDefault();
                 const formData = new FormData(e.target as HTMLFormElement);
                 
+                const creditLimit = parseFloat(formData.get('creditLimit') as string);
+                const availableCredit = parseFloat(formData.get('availableCredit') as string);
+                const currentBalance = parseFloat(formData.get('currentBalance') as string);
+
                 const updates = {
                   cardName: formData.get('cardName') as string,
                   cardType: formData.get('cardType') as "visa" | "mastercard" | "jcb" | "amex" | "diners" | "discover" | "other",
@@ -4852,8 +4892,9 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                   expiryYear: parseInt(formData.get('expiryYear') as string),
                   cardHolderName: formData.get('cardHolderName') as string,
                   issuer: formData.get('issuer') as string,
-                  creditLimit: parseFloat(formData.get('creditLimit') as string),
-                  currentBalance: parseFloat(formData.get('currentBalance') as string),
+                  creditLimit,
+                  currentBalance,
+                  availableCredit: availableCredit || (creditLimit - currentBalance),
                   minimumPayment: parseFloat(formData.get('minimumPayment') as string),
                   paymentDueDate: new Date(formData.get('paymentDueDate') as string),
                   interestRate: parseFloat(formData.get('interestRate') as string),
@@ -4950,7 +4991,38 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     step="0.01"
                     defaultValue={editingCreditCard.creditLimit}
                     required
+                    onChange={(e) => {
+                      const creditLimit = parseFloat(e.target.value) || 0;
+                      const availableCreditInput = document.getElementById('availableCredit') as HTMLInputElement;
+                      const availableCredit = parseFloat(availableCreditInput?.value) || 0;
+                      const currentBalanceInput = document.getElementById('currentBalance') as HTMLInputElement;
+                      if (currentBalanceInput && availableCredit > 0) {
+                        const calculatedBalance = creditLimit - availableCredit;
+                        currentBalanceInput.value = calculatedBalance.toString();
+                      }
+                    }}
                   />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="availableCredit">利用可能額</label>
+                  <input
+                    type="number"
+                    id="availableCredit"
+                    name="availableCredit"
+                    step="0.01"
+                    defaultValue={editingCreditCard.availableCredit}
+                    onChange={(e) => {
+                      const availableCredit = parseFloat(e.target.value) || 0;
+                      const creditLimitInput = document.getElementById('creditLimit') as HTMLInputElement;
+                      const creditLimit = parseFloat(creditLimitInput?.value) || 0;
+                      const currentBalanceInput = document.getElementById('currentBalance') as HTMLInputElement;
+                      if (currentBalanceInput && creditLimit > 0) {
+                        const calculatedBalance = creditLimit - availableCredit;
+                        currentBalanceInput.value = calculatedBalance.toString();
+                      }
+                    }}
+                  />
+                  <small className="form-help">利用限度額から現在の残高を自動計算します</small>
                 </div>
                 <div className="form-group">
                   <label htmlFor="currentBalance">現在の残高</label>
@@ -4960,7 +5032,10 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                     name="currentBalance"
                     step="0.01"
                     defaultValue={editingCreditCard.currentBalance}
+                    readOnly
+                    style={{ backgroundColor: '#f5f5f5', color: '#666' }}
                   />
+                  <small className="form-help">利用限度額と利用可能額から自動計算されます</small>
                 </div>
                 <div className="form-group">
                   <label htmlFor="minimumPayment">最低支払額</label>
@@ -5059,6 +5134,7 @@ const ComprehensiveDashboard: React.FC<ComprehensiveDashboardProps> = ({
                initialBalance={walletBalance?.amount || 0}
                transactions={walletTransactions}
                bankAccounts={bankAccounts}
+               creditCards={creditCards}
                receipts={receipts}
                walletBalanceHistory={walletBalanceHistory}
              />

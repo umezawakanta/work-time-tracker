@@ -1,6 +1,6 @@
-// マークダウン表示用のユーティリティ関数
+// マークダウン表示用の関数（DocsViewerから移植）
 
-export const renderMarkdown = (content: string) => {
+export const renderMarkdown = (content: string): string => {
   // まずMermaid図を抽出して保護
   const mermaidBlocks: string[] = [];
   let processedContent = content.replace(/```mermaid\s*\n([\s\S]*?)\n```/g, (_, diagram) => {
@@ -44,17 +44,4 @@ export const renderMarkdown = (content: string) => {
   });
 
   return processedContent;
-};
-
-// メモの内容をプレビュー用に短縮する関数
-export const truncateContent = (content: string, maxLength: number = 100): string => {
-  if (content.length <= maxLength) return content;
-  return content.substring(0, maxLength) + '...';
-};
-
-// メモの内容からHTMLタグを除去してテキストのみを取得する関数
-export const stripHtmlTags = (html: string): string => {
-  const temp = document.createElement('div');
-  temp.innerHTML = html;
-  return temp.textContent || temp.innerText || '';
 };

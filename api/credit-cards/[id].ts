@@ -158,9 +158,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         updateData.annualFee = parseFloat(updateData.annualFee);
       }
 
-      // 利用可能枠の自動計算
-      if (updateData.creditLimit !== undefined && updateData.currentBalance !== undefined) {
-        updateData.availableCredit = updateData.creditLimit - updateData.currentBalance;
+      // 利用可能枠の自動計算（利用可能額が入力されている場合はそれを使用、そうでなければ計算）
+      if (updateData.creditLimit !== undefined) {
+        if (updateData.availableCredit !== undefined) {
+          // 利用可能額が入力されている場合は、それに基づいて現在の残高を計算
+          updateData.currentBalance = Math.max(0, updateData.creditLimit - updateData.availableCredit);
+        } else if (updateData.currentBalance !== undefined) {
+          // 現在の残高が入力されている場合は、それに基づいて利用可能額を計算
+          updateData.availableCredit = Math.max(0, updateData.creditLimit - updateData.currentBalance);
+        } else {
+          // どちらも入力されていない場合は、利用可能額を限度額と同じに設定
+          updateData.currentBalance = 0;
+          updateData.availableCredit = updateData.creditLimit;
+        }
       }
 
       const card = await CreditCard.findOneAndUpdate(
