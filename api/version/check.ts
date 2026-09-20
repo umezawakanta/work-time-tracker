@@ -1,4 +1,4 @@
-import { mongoose: mongooseInstance } from '../utils/database.js';
+import { mongoose as mongooseInstance } from '../utils/database.js';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import dotenv from 'dotenv';
 
