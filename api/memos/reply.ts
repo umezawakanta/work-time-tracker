@@ -1,4 +1,4 @@
-import { ensureDatabaseConnection: ensureDBConnection, mongoose: mongooseDB } from '../utils/database.js';
+import { ensureDatabaseConnection as ensureDBConnection, mongoose as mongooseDB } from '../utils/database.js';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 // Memo schema

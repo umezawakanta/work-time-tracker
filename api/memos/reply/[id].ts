@@ -1,4 +1,4 @@
-import { mongoose: mongooseLib, ensureDatabaseConnection: connectDB } from '../../utils/database.js';
+import { mongoose as mongooseLib, ensureDatabaseConnection as connectDB } from '../../utils/database.js';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import dotenv from 'dotenv';
 
